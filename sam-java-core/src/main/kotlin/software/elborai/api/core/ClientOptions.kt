@@ -3,30 +3,34 @@
 package software.elborai.api.core
 
 import com.fasterxml.jackson.databind.json.JsonMapper
-import com.google.common.collect.ArrayListMultimap
+import com.google.common.collect.Multimap
 import com.google.common.collect.ListMultimap
+import com.google.common.collect.ArrayListMultimap
 import java.time.Clock
+import java.util.Base64
 import software.elborai.api.core.http.HttpClient
 import software.elborai.api.core.http.RetryingHttpClient
 
-class ClientOptions
-private constructor(
-    @get:JvmName("httpClient") val httpClient: HttpClient,
-    @get:JvmName("jsonMapper") val jsonMapper: JsonMapper,
-    @get:JvmName("clock") val clock: Clock,
-    @get:JvmName("baseUrl") val baseUrl: String,
-    @get:JvmName("authToken") val authToken: String?,
-    @get:JvmName("headers") val headers: ListMultimap<String, String>,
-    @get:JvmName("responseValidation") val responseValidation: Boolean,
+class ClientOptions private constructor(
+  @get:JvmName("httpClient") val httpClient: HttpClient,
+  @get:JvmName("jsonMapper") val jsonMapper: JsonMapper,
+  @get:JvmName("clock") val clock: Clock,
+  @get:JvmName("baseUrl") val baseUrl: String,
+  @get:JvmName("authToken") val authToken: String?,
+  @get:JvmName("headers") val headers: ListMultimap<String, String>,
+  @get:JvmName("responseValidation") val responseValidation: Boolean,
+
 ) {
 
     companion object {
 
         const val PRODUCTION_URL = "http://localhost:8085/"
 
-        @JvmStatic fun builder() = Builder()
+        @JvmStatic
+        fun builder() = Builder()
 
-        @JvmStatic fun fromEnv(): ClientOptions = builder().fromEnv().build()
+        @JvmStatic
+        fun fromEnv(): ClientOptions = builder().fromEnv().build()
     }
 
     class Builder {
@@ -40,13 +44,21 @@ private constructor(
         private var maxRetries: Int = 2
         private var authToken: String? = null
 
-        fun httpClient(httpClient: HttpClient) = apply { this.httpClient = httpClient }
+        fun httpClient(httpClient: HttpClient) = apply {
+            this.httpClient = httpClient
+        }
 
-        fun jsonMapper(jsonMapper: JsonMapper) = apply { this.jsonMapper = jsonMapper }
+        fun jsonMapper(jsonMapper: JsonMapper) = apply {
+            this.jsonMapper = jsonMapper
+        }
 
-        fun baseUrl(baseUrl: String) = apply { this.baseUrl = baseUrl }
+        fun baseUrl(baseUrl: String) = apply {
+            this.baseUrl = baseUrl
+        }
 
-        fun clock(clock: Clock) = apply { this.clock = clock }
+        fun clock(clock: Clock) = apply {
+            this.clock = clock
+        }
 
         fun headers(headers: Map<String, Iterable<String>>) = apply {
             this.headers.clear()
@@ -65,46 +77,58 @@ private constructor(
             headers.forEach(this::putHeaders)
         }
 
-        fun removeHeader(name: String) = apply { this.headers.put(name, mutableListOf()) }
+        fun removeHeader(name: String) = apply {
+            this.headers.put(name, mutableListOf())
+        }
 
         fun responseValidation(responseValidation: Boolean) = apply {
             this.responseValidation = responseValidation
         }
 
-        fun maxRetries(maxRetries: Int) = apply { this.maxRetries = maxRetries }
+        fun maxRetries(maxRetries: Int) = apply {
+            this.maxRetries = maxRetries
+        }
 
-        fun authToken(authToken: String?) = apply { this.authToken = authToken }
+        fun authToken(authToken: String?) = apply {
+            this.authToken = authToken
+        }
 
-        fun fromEnv() = apply { System.getenv("MAVENAGI_AUTH_TOKEN")?.let { authToken(it) } }
+        fun fromEnv() = apply {
+            System.getenv("MAVENAGI_AUTH_TOKEN")?.let {
+                authToken(it)
+            }
+        }
 
         fun build(): ClientOptions {
-            checkNotNull(httpClient) { "`httpClient` is required but was not set" }
+          checkNotNull(httpClient) {
+              "`httpClient` is required but was not set"
+          }
 
-            val headers = ArrayListMultimap.create<String, String>()
-            headers.put("X-Stainless-Lang", "java")
-            headers.put("X-Stainless-Arch", getOsArch())
-            headers.put("X-Stainless-OS", getOsName())
-            headers.put("X-Stainless-OS-Version", getOsVersion())
-            headers.put("X-Stainless-Package-Version", getPackageVersion())
-            headers.put("X-Stainless-Runtime-Version", getJavaVersion())
-            if (!authToken.isNullOrEmpty()) {
-                headers.put("Authorization", "Bearer ${authToken}")
-            }
-            this.headers.forEach(headers::replaceValues)
+          val headers = ArrayListMultimap.create<String, String>()
+          headers.put("X-Stainless-Lang", "java")
+          headers.put("X-Stainless-Arch", getOsArch())
+          headers.put("X-Stainless-OS", getOsName())
+          headers.put("X-Stainless-OS-Version", getOsVersion())
+          headers.put("X-Stainless-Package-Version", getPackageVersion())
+          headers.put("X-Stainless-Runtime-Version", getJavaVersion())
+          if (!authToken.isNullOrEmpty()) {
+              headers.put("Authorization", "Bearer ${authToken}")
+          }
+          this.headers.forEach(headers::replaceValues)
 
-            return ClientOptions(
-                RetryingHttpClient.builder()
-                    .httpClient(httpClient!!)
-                    .clock(clock)
-                    .maxRetries(maxRetries)
-                    .build(),
-                jsonMapper ?: jsonMapper(),
-                clock,
-                baseUrl,
-                authToken,
-                headers.toUnmodifiable(),
-                responseValidation,
-            )
+          return ClientOptions(
+              RetryingHttpClient.builder()
+              .httpClient(httpClient!!)
+              .clock(clock)
+              .maxRetries(maxRetries)
+              .build(),
+              jsonMapper ?: jsonMapper(),
+              clock,
+              baseUrl,
+              authToken,
+              headers.toUnmodifiable(),
+              responseValidation,
+          )
         }
     }
 }
