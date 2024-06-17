@@ -48,6 +48,7 @@ constructor(
                     "configs",
                     params.getPathParam(1)
                 )
+                .putAllQueryParams(clientOptions.queryParams)
                 .putAllQueryParams(params.getQueryParams())
                 .putAllHeaders(clientOptions.headers)
                 .putAllHeaders(params.getHeaders())
@@ -76,6 +77,7 @@ constructor(
                     "configs",
                     params.getPathParam(1)
                 )
+                .putAllQueryParams(clientOptions.queryParams)
                 .putAllQueryParams(params.getQueryParams())
                 .putAllHeaders(clientOptions.headers)
                 .putAllHeaders(params.getHeaders())
