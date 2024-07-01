@@ -4,25 +4,47 @@ package software.elborai.api.models
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import org.apache.hc.core5.http.ContentType
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Objects
 import java.util.Optional
+import java.util.UUID
+import software.elborai.api.core.BaseDeserializer
+import software.elborai.api.core.BaseSerializer
+import software.elborai.api.core.getOrThrow
 import software.elborai.api.core.ExcludeMissing
+import software.elborai.api.core.JsonField
+import software.elborai.api.core.JsonMissing
 import software.elborai.api.core.JsonValue
-import software.elborai.api.core.NoAutoDetect
+import software.elborai.api.core.MultipartFormValue
 import software.elborai.api.core.toUnmodifiable
+import software.elborai.api.core.NoAutoDetect
+import software.elborai.api.core.Enum
+import software.elborai.api.core.ContentTypes
+import software.elborai.api.errors.SamInvalidDataException
 import software.elborai.api.models.*
 
-class OrganizationUpdateParams
-constructor(
-    private val id: String,
-    private val friendlyId: String,
-    private val name: String,
-    private val defaultLanguage: DefaultLanguage?,
-    private val additionalQueryParams: Map<String, List<String>>,
-    private val additionalHeaders: Map<String, List<String>>,
-    private val additionalBodyProperties: Map<String, JsonValue>,
+class OrganizationUpdateParams constructor(
+  private val id: String,
+  private val friendlyId: String,
+  private val name: String,
+  private val defaultLanguage: DefaultLanguage?,
+  private val additionalQueryParams: Map<String, List<String>>,
+  private val additionalHeaders: Map<String, List<String>>,
+  private val additionalBodyProperties: Map<String, JsonValue>,
+
 ) {
 
     fun id(): String = id
@@ -35,39 +57,45 @@ constructor(
 
     @JvmSynthetic
     internal fun getBody(): OrganizationUpdateBody {
-        return OrganizationUpdateBody(
-            id,
-            friendlyId,
-            name,
-            defaultLanguage,
-            additionalBodyProperties,
-        )
+      return OrganizationUpdateBody(
+          id,
+          friendlyId,
+          name,
+          defaultLanguage,
+          additionalBodyProperties,
+      )
     }
 
-    @JvmSynthetic internal fun getQueryParams(): Map<String, List<String>> = additionalQueryParams
+    @JvmSynthetic
+    internal fun getQueryParams(): Map<String, List<String>> = additionalQueryParams
 
-    @JvmSynthetic internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
+    @JvmSynthetic
+    internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
 
     @JsonDeserialize(builder = OrganizationUpdateBody.Builder::class)
     @NoAutoDetect
-    class OrganizationUpdateBody
-    internal constructor(
-        private val id: String?,
-        private val friendlyId: String?,
-        private val name: String?,
-        private val defaultLanguage: DefaultLanguage?,
-        private val additionalProperties: Map<String, JsonValue>,
+    class OrganizationUpdateBody internal constructor(
+      private val id: String?,
+      private val friendlyId: String?,
+      private val name: String?,
+      private val defaultLanguage: DefaultLanguage?,
+      private val additionalProperties: Map<String, JsonValue>,
+
     ) {
 
         private var hashCode: Int = 0
 
-        @JsonProperty("id") fun id(): String? = id
+        @JsonProperty("id")
+        fun id(): String? = id
 
-        @JsonProperty("friendlyId") fun friendlyId(): String? = friendlyId
+        @JsonProperty("friendlyId")
+        fun friendlyId(): String? = friendlyId
 
-        @JsonProperty("name") fun name(): String? = name
+        @JsonProperty("name")
+        fun name(): String? = name
 
-        @JsonProperty("defaultLanguage") fun defaultLanguage(): DefaultLanguage? = defaultLanguage
+        @JsonProperty("defaultLanguage")
+        fun defaultLanguage(): DefaultLanguage? = defaultLanguage
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -76,38 +104,37 @@ constructor(
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
+          if (this === other) {
+              return true
+          }
 
-            return other is OrganizationUpdateBody &&
-                this.id == other.id &&
-                this.friendlyId == other.friendlyId &&
-                this.name == other.name &&
-                this.defaultLanguage == other.defaultLanguage &&
-                this.additionalProperties == other.additionalProperties
+          return other is OrganizationUpdateBody &&
+              this.id == other.id &&
+              this.friendlyId == other.friendlyId &&
+              this.name == other.name &&
+              this.defaultLanguage == other.defaultLanguage &&
+              this.additionalProperties == other.additionalProperties
         }
 
         override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        id,
-                        friendlyId,
-                        name,
-                        defaultLanguage,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
+          if (hashCode == 0) {
+            hashCode = Objects.hash(
+                id,
+                friendlyId,
+                name,
+                defaultLanguage,
+                additionalProperties,
+            )
+          }
+          return hashCode
         }
 
-        override fun toString() =
-            "OrganizationUpdateBody{id=$id, friendlyId=$friendlyId, name=$name, defaultLanguage=$defaultLanguage, additionalProperties=$additionalProperties}"
+        override fun toString() = "OrganizationUpdateBody{id=$id, friendlyId=$friendlyId, name=$name, defaultLanguage=$defaultLanguage, additionalProperties=$additionalProperties}"
 
         companion object {
 
-            @JvmStatic fun builder() = Builder()
+            @JvmStatic
+            fun builder() = Builder()
         }
 
         class Builder {
@@ -127,12 +154,20 @@ constructor(
                 additionalProperties(organizationUpdateBody.additionalProperties)
             }
 
-            @JsonProperty("id") fun id(id: String) = apply { this.id = id }
+            @JsonProperty("id")
+            fun id(id: String) = apply {
+                this.id = id
+            }
 
             @JsonProperty("friendlyId")
-            fun friendlyId(friendlyId: String) = apply { this.friendlyId = friendlyId }
+            fun friendlyId(friendlyId: String) = apply {
+                this.friendlyId = friendlyId
+            }
 
-            @JsonProperty("name") fun name(name: String) = apply { this.name = name }
+            @JsonProperty("name")
+            fun name(name: String) = apply {
+                this.name = name
+            }
 
             @JsonProperty("defaultLanguage")
             fun defaultLanguage(defaultLanguage: DefaultLanguage) = apply {
@@ -153,14 +188,19 @@ constructor(
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): OrganizationUpdateBody =
-                OrganizationUpdateBody(
-                    checkNotNull(id) { "`id` is required but was not set" },
-                    checkNotNull(friendlyId) { "`friendlyId` is required but was not set" },
-                    checkNotNull(name) { "`name` is required but was not set" },
-                    defaultLanguage,
-                    additionalProperties.toUnmodifiable(),
-                )
+            fun build(): OrganizationUpdateBody = OrganizationUpdateBody(
+                checkNotNull(id) {
+                    "`id` is required but was not set"
+                },
+                checkNotNull(friendlyId) {
+                    "`friendlyId` is required but was not set"
+                },
+                checkNotNull(name) {
+                    "`name` is required but was not set"
+                },
+                defaultLanguage,
+                additionalProperties.toUnmodifiable(),
+            )
         }
     }
 
@@ -171,40 +211,40 @@ constructor(
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
+      if (this === other) {
+          return true
+      }
 
-        return other is OrganizationUpdateParams &&
-            this.id == other.id &&
-            this.friendlyId == other.friendlyId &&
-            this.name == other.name &&
-            this.defaultLanguage == other.defaultLanguage &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders &&
-            this.additionalBodyProperties == other.additionalBodyProperties
+      return other is OrganizationUpdateParams &&
+          this.id == other.id &&
+          this.friendlyId == other.friendlyId &&
+          this.name == other.name &&
+          this.defaultLanguage == other.defaultLanguage &&
+          this.additionalQueryParams == other.additionalQueryParams &&
+          this.additionalHeaders == other.additionalHeaders &&
+          this.additionalBodyProperties == other.additionalBodyProperties
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(
-            id,
-            friendlyId,
-            name,
-            defaultLanguage,
-            additionalQueryParams,
-            additionalHeaders,
-            additionalBodyProperties,
-        )
+      return Objects.hash(
+          id,
+          friendlyId,
+          name,
+          defaultLanguage,
+          additionalQueryParams,
+          additionalHeaders,
+          additionalBodyProperties,
+      )
     }
 
-    override fun toString() =
-        "OrganizationUpdateParams{id=$id, friendlyId=$friendlyId, name=$name, defaultLanguage=$defaultLanguage, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
+    override fun toString() = "OrganizationUpdateParams{id=$id, friendlyId=$friendlyId, name=$name, defaultLanguage=$defaultLanguage, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
 
     fun toBuilder() = Builder().from(this)
 
     companion object {
 
-        @JvmStatic fun builder() = Builder()
+        @JvmStatic
+        fun builder() = Builder()
     }
 
     @NoAutoDetect
@@ -229,11 +269,17 @@ constructor(
             additionalBodyProperties(organizationUpdateParams.additionalBodyProperties)
         }
 
-        fun id(id: String) = apply { this.id = id }
+        fun id(id: String) = apply {
+            this.id = id
+        }
 
-        fun friendlyId(friendlyId: String) = apply { this.friendlyId = friendlyId }
+        fun friendlyId(friendlyId: String) = apply {
+            this.friendlyId = friendlyId
+        }
 
-        fun name(name: String) = apply { this.name = name }
+        fun name(name: String) = apply {
+            this.name = name
+        }
 
         fun defaultLanguage(defaultLanguage: DefaultLanguage) = apply {
             this.defaultLanguage = defaultLanguage
@@ -277,7 +323,9 @@ constructor(
             additionalHeaders.forEach(this::putHeaders)
         }
 
-        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
+        fun removeHeader(name: String) = apply {
+            this.additionalHeaders.put(name, mutableListOf())
+        }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             this.additionalBodyProperties.clear()
@@ -288,37 +336,38 @@ constructor(
             this.additionalBodyProperties.put(key, value)
         }
 
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalBodyProperties.putAll(additionalBodyProperties)
-            }
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            this.additionalBodyProperties.putAll(additionalBodyProperties)
+        }
 
-        fun build(): OrganizationUpdateParams =
-            OrganizationUpdateParams(
-                checkNotNull(id) { "`id` is required but was not set" },
-                checkNotNull(friendlyId) { "`friendlyId` is required but was not set" },
-                checkNotNull(name) { "`name` is required but was not set" },
-                defaultLanguage,
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalBodyProperties.toUnmodifiable(),
-            )
+        fun build(): OrganizationUpdateParams = OrganizationUpdateParams(
+            checkNotNull(id) {
+                "`id` is required but was not set"
+            },
+            checkNotNull(friendlyId) {
+                "`friendlyId` is required but was not set"
+            },
+            checkNotNull(name) {
+                "`name` is required but was not set"
+            },
+            defaultLanguage,
+            additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+            additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+            additionalBodyProperties.toUnmodifiable(),
+        )
     }
 
     @JsonDeserialize(builder = DefaultLanguage.Builder::class)
     @NoAutoDetect
-    class DefaultLanguage
-    private constructor(
-        private val code: String?,
-        private val detected: Boolean?,
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
+    class DefaultLanguage private constructor(private val code: String?, private val detected: Boolean?, private val additionalProperties: Map<String, JsonValue>, ) {
 
         private var hashCode: Int = 0
 
-        @JsonProperty("code") fun code(): String? = code
+        @JsonProperty("code")
+        fun code(): String? = code
 
-        @JsonProperty("detected") fun detected(): Boolean? = detected
+        @JsonProperty("detected")
+        fun detected(): Boolean? = detected
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -327,34 +376,33 @@ constructor(
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
+          if (this === other) {
+              return true
+          }
 
-            return other is DefaultLanguage &&
-                this.code == other.code &&
-                this.detected == other.detected &&
-                this.additionalProperties == other.additionalProperties
+          return other is DefaultLanguage &&
+              this.code == other.code &&
+              this.detected == other.detected &&
+              this.additionalProperties == other.additionalProperties
         }
 
         override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        code,
-                        detected,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
+          if (hashCode == 0) {
+            hashCode = Objects.hash(
+                code,
+                detected,
+                additionalProperties,
+            )
+          }
+          return hashCode
         }
 
-        override fun toString() =
-            "DefaultLanguage{code=$code, detected=$detected, additionalProperties=$additionalProperties}"
+        override fun toString() = "DefaultLanguage{code=$code, detected=$detected, additionalProperties=$additionalProperties}"
 
         companion object {
 
-            @JvmStatic fun builder() = Builder()
+            @JvmStatic
+            fun builder() = Builder()
         }
 
         class Builder {
@@ -370,10 +418,15 @@ constructor(
                 additionalProperties(defaultLanguage.additionalProperties)
             }
 
-            @JsonProperty("code") fun code(code: String) = apply { this.code = code }
+            @JsonProperty("code")
+            fun code(code: String) = apply {
+                this.code = code
+            }
 
             @JsonProperty("detected")
-            fun detected(detected: Boolean) = apply { this.detected = detected }
+            fun detected(detected: Boolean) = apply {
+                this.detected = detected
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -389,12 +442,11 @@ constructor(
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): DefaultLanguage =
-                DefaultLanguage(
-                    code,
-                    detected,
-                    additionalProperties.toUnmodifiable(),
-                )
+            fun build(): DefaultLanguage = DefaultLanguage(
+                code,
+                detected,
+                additionalProperties.toUnmodifiable(),
+            )
         }
     }
 }
