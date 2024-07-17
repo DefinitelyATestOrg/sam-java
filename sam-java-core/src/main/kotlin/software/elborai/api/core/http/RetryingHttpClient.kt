@@ -20,7 +20,7 @@ import java.util.function.Function
 import kotlin.math.min
 import kotlin.math.pow
 import software.elborai.api.core.RequestOptions
-import software.elborai.api.errors.SamIoException
+import software.elborai.api.errors.IncreaseIoException
 
 class RetryingHttpClient
 private constructor(
@@ -150,9 +150,9 @@ private constructor(
     }
 
     private fun shouldRetry(throwable: Throwable): Boolean {
-        // Only retry IOException and SamIoException, other exceptions are not intended to be
+        // Only retry IOException and IncreaseIoException, other exceptions are not intended to be
         // retried.
-        return throwable is IOException || throwable is SamIoException
+        return throwable is IOException || throwable is IncreaseIoException
     }
 
     private fun getRetryBackoffMillis(retries: Int, response: HttpResponse?): Duration {
