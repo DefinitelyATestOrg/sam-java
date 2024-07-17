@@ -5,25 +5,24 @@
 package software.elborai.api.services.blocking
 
 import software.elborai.api.core.RequestOptions
-import software.elborai.api.core.http.BinaryResponseContent
-import software.elborai.api.models.DocumentDeleteParams
+import software.elborai.api.models.Document
+import software.elborai.api.models.DocumentListPage
+import software.elborai.api.models.DocumentListParams
 import software.elborai.api.models.DocumentRetrieveParams
-import software.elborai.api.models.DocumentUpdateParams
 
 interface DocumentService {
 
+    /** Retrieve a Document */
     @JvmOverloads
     fun retrieve(
         params: DocumentRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none()
-    ): BinaryResponseContent
+    ): Document
 
+    /** List Documents */
     @JvmOverloads
-    fun update(
-        params: DocumentUpdateParams,
+    fun list(
+        params: DocumentListParams,
         requestOptions: RequestOptions = RequestOptions.none()
-    ): BinaryResponseContent
-
-    @JvmOverloads
-    fun delete(params: DocumentDeleteParams, requestOptions: RequestOptions = RequestOptions.none())
+    ): DocumentListPage
 }

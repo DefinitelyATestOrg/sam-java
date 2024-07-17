@@ -6,28 +6,24 @@ package software.elborai.api.services.async
 
 import java.util.concurrent.CompletableFuture
 import software.elborai.api.core.RequestOptions
-import software.elborai.api.core.http.BinaryResponseContent
-import software.elborai.api.models.DocumentDeleteParams
+import software.elborai.api.models.Document
+import software.elborai.api.models.DocumentListPageAsync
+import software.elborai.api.models.DocumentListParams
 import software.elborai.api.models.DocumentRetrieveParams
-import software.elborai.api.models.DocumentUpdateParams
 
 interface DocumentServiceAsync {
 
+    /** Retrieve a Document */
     @JvmOverloads
     fun retrieve(
         params: DocumentRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none()
-    ): CompletableFuture<BinaryResponseContent>
+    ): CompletableFuture<Document>
 
+    /** List Documents */
     @JvmOverloads
-    fun update(
-        params: DocumentUpdateParams,
+    fun list(
+        params: DocumentListParams,
         requestOptions: RequestOptions = RequestOptions.none()
-    ): CompletableFuture<BinaryResponseContent>
-
-    @JvmOverloads
-    fun delete(
-        params: DocumentDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
-    ): CompletableFuture<Void>
+    ): CompletableFuture<DocumentListPageAsync>
 }

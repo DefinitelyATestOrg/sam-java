@@ -15,7 +15,8 @@ private constructor(
     @get:JvmName("jsonMapper") val jsonMapper: JsonMapper,
     @get:JvmName("clock") val clock: Clock,
     @get:JvmName("baseUrl") val baseUrl: String,
-    @get:JvmName("authToken") val authToken: String?,
+    @get:JvmName("apiKey") val apiKey: String,
+    @get:JvmName("webhookSecret") val webhookSecret: String?,
     @get:JvmName("headers") val headers: ListMultimap<String, String>,
     @get:JvmName("queryParams") val queryParams: ListMultimap<String, String>,
     @get:JvmName("responseValidation") val responseValidation: Boolean,
@@ -23,7 +24,9 @@ private constructor(
 
     companion object {
 
-        const val PRODUCTION_URL = "http://localhost:8085/"
+        const val PRODUCTION_URL = "https://api.increase.com"
+
+        const val SANDBOX_URL = "https://sandbox.increase.com"
 
         @JvmStatic fun builder() = Builder()
 
@@ -40,7 +43,8 @@ private constructor(
         private var queryParams: MutableMap<String, MutableList<String>> = mutableMapOf()
         private var responseValidation: Boolean = false
         private var maxRetries: Int = 2
-        private var authToken: String? = null
+        private var apiKey: String? = null
+        private var webhookSecret: String? = null
 
         fun httpClient(httpClient: HttpClient) = apply { this.httpClient = httpClient }
 
@@ -94,12 +98,18 @@ private constructor(
 
         fun maxRetries(maxRetries: Int) = apply { this.maxRetries = maxRetries }
 
-        fun authToken(authToken: String?) = apply { this.authToken = authToken }
+        fun apiKey(apiKey: String) = apply { this.apiKey = apiKey }
 
-        fun fromEnv() = apply { System.getenv("MAVENAGI_AUTH_TOKEN")?.let { authToken(it) } }
+        fun webhookSecret(webhookSecret: String?) = apply { this.webhookSecret = webhookSecret }
+
+        fun fromEnv() = apply {
+            System.getenv("INCREASE_API_KEY")?.let { apiKey(it) }
+            System.getenv("INCREASE_WEBHOOK_SECRET")?.let { webhookSecret(it) }
+        }
 
         fun build(): ClientOptions {
             checkNotNull(httpClient) { "`httpClient` is required but was not set" }
+            checkNotNull(apiKey) { "`apiKey` is required but was not set" }
 
             val headers = ArrayListMultimap.create<String, String>()
             val queryParams = ArrayListMultimap.create<String, String>()
@@ -109,8 +119,8 @@ private constructor(
             headers.put("X-Stainless-OS-Version", getOsVersion())
             headers.put("X-Stainless-Package-Version", getPackageVersion())
             headers.put("X-Stainless-Runtime-Version", getJavaVersion())
-            if (!authToken.isNullOrEmpty()) {
-                headers.put("Authorization", "Bearer ${authToken}")
+            if (!apiKey.isNullOrEmpty()) {
+                headers.put("Authorization", "Bearer ${apiKey}")
             }
             this.headers.forEach(headers::replaceValues)
             this.queryParams.forEach(queryParams::replaceValues)
@@ -120,11 +130,13 @@ private constructor(
                     .httpClient(httpClient!!)
                     .clock(clock)
                     .maxRetries(maxRetries)
+                    .idempotencyHeader("Idempotency-Key")
                     .build(),
                 jsonMapper ?: jsonMapper(),
                 clock,
                 baseUrl,
-                authToken,
+                apiKey!!,
+                webhookSecret,
                 headers.toUnmodifiable(),
                 queryParams.toUnmodifiable(),
                 responseValidation,
