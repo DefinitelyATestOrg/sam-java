@@ -2,39 +2,24 @@
 
 package software.elborai.api.models
 
-import java.time.LocalDate
-import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
-import java.util.UUID
-import org.junit.jupiter.api.Test
 import org.assertj.core.api.Assertions.assertThat
-import org.apache.hc.core5.http.ContentType
-import software.elborai.api.core.ContentTypes
-import software.elborai.api.core.JsonNull
-import software.elborai.api.core.JsonString
-import software.elborai.api.core.JsonValue
-import software.elborai.api.core.MultipartFormValue
+import org.junit.jupiter.api.Test
 import software.elborai.api.models.*
-import software.elborai.api.models.ExportRetrieveParams
 
 class ExportRetrieveParamsTest {
 
     @Test
     fun createExportRetrieveParams() {
-      ExportRetrieveParams.builder()
-          .exportId("export_id")
-          .build()
+        ExportRetrieveParams.builder().exportId("export_id").build()
     }
 
     @Test
     fun getPathParam() {
-      val params = ExportRetrieveParams.builder()
-          .exportId("export_id")
-          .build()
-      assertThat(params).isNotNull
-      // path param "exportId"
-      assertThat(params.getPathParam(0)).isEqualTo("export_id")
-      // out-of-bound path param
-      assertThat(params.getPathParam(1)).isEqualTo("")
+        val params = ExportRetrieveParams.builder().exportId("export_id").build()
+        assertThat(params).isNotNull
+        // path param "exportId"
+        assertThat(params.getPathParam(0)).isEqualTo("export_id")
+        // out-of-bound path param
+        assertThat(params.getPathParam(1)).isEqualTo("")
     }
 }
