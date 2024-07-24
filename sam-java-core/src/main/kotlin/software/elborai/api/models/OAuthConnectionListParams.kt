@@ -2,26 +2,48 @@
 
 package software.elborai.api.models
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import org.apache.hc.core5.http.ContentType
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Objects
 import java.util.Optional
-import software.elborai.api.core.Enum
+import java.util.UUID
+import software.elborai.api.core.BaseDeserializer
+import software.elborai.api.core.BaseSerializer
+import software.elborai.api.core.getOrThrow
+import software.elborai.api.core.ExcludeMissing
 import software.elborai.api.core.JsonField
+import software.elborai.api.core.JsonMissing
 import software.elborai.api.core.JsonValue
-import software.elborai.api.core.NoAutoDetect
+import software.elborai.api.core.MultipartFormValue
 import software.elborai.api.core.toUnmodifiable
+import software.elborai.api.core.NoAutoDetect
+import software.elborai.api.core.Enum
+import software.elborai.api.core.ContentTypes
 import software.elborai.api.errors.IncreaseInvalidDataException
 import software.elborai.api.models.*
 
-class OAuthConnectionListParams
-constructor(
-    private val cursor: String?,
-    private val limit: Long?,
-    private val status: Status?,
-    private val additionalQueryParams: Map<String, List<String>>,
-    private val additionalHeaders: Map<String, List<String>>,
-    private val additionalBodyProperties: Map<String, JsonValue>,
+class OAuthConnectionListParams constructor(
+  private val cursor: String?,
+  private val limit: Long?,
+  private val status: Status?,
+  private val additionalQueryParams: Map<String, List<String>>,
+  private val additionalHeaders: Map<String, List<String>>,
+  private val additionalBodyProperties: Map<String, JsonValue>,
+
 ) {
 
     fun cursor(): Optional<String> = Optional.ofNullable(cursor)
@@ -32,15 +54,22 @@ constructor(
 
     @JvmSynthetic
     internal fun getQueryParams(): Map<String, List<String>> {
-        val params = mutableMapOf<String, List<String>>()
-        this.cursor?.let { params.put("cursor", listOf(it.toString())) }
-        this.limit?.let { params.put("limit", listOf(it.toString())) }
-        this.status?.forEachQueryParam { key, values -> params.put("status.$key", values) }
-        params.putAll(additionalQueryParams)
-        return params.toUnmodifiable()
+      val params = mutableMapOf<String, List<String>>()
+      this.cursor?.let {
+          params.put("cursor", listOf(it.toString()))
+      }
+      this.limit?.let {
+          params.put("limit", listOf(it.toString()))
+      }
+      this.status?.forEachQueryParam { key, values -> 
+          params.put("status.$key", values)
+      }
+      params.putAll(additionalQueryParams)
+      return params.toUnmodifiable()
     }
 
-    @JvmSynthetic internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
+    @JvmSynthetic
+    internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
 
     fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
 
@@ -49,38 +78,38 @@ constructor(
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
+      if (this === other) {
+          return true
+      }
 
-        return other is OAuthConnectionListParams &&
-            this.cursor == other.cursor &&
-            this.limit == other.limit &&
-            this.status == other.status &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders &&
-            this.additionalBodyProperties == other.additionalBodyProperties
+      return other is OAuthConnectionListParams &&
+          this.cursor == other.cursor &&
+          this.limit == other.limit &&
+          this.status == other.status &&
+          this.additionalQueryParams == other.additionalQueryParams &&
+          this.additionalHeaders == other.additionalHeaders &&
+          this.additionalBodyProperties == other.additionalBodyProperties
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(
-            cursor,
-            limit,
-            status,
-            additionalQueryParams,
-            additionalHeaders,
-            additionalBodyProperties,
-        )
+      return Objects.hash(
+          cursor,
+          limit,
+          status,
+          additionalQueryParams,
+          additionalHeaders,
+          additionalBodyProperties,
+      )
     }
 
-    override fun toString() =
-        "OAuthConnectionListParams{cursor=$cursor, limit=$limit, status=$status, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
+    override fun toString() = "OAuthConnectionListParams{cursor=$cursor, limit=$limit, status=$status, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
 
     fun toBuilder() = Builder().from(this)
 
     companion object {
 
-        @JvmStatic fun builder() = Builder()
+        @JvmStatic
+        fun builder() = Builder()
     }
 
     @NoAutoDetect
@@ -104,14 +133,21 @@ constructor(
         }
 
         /** Return the page of entries after this one. */
-        fun cursor(cursor: String) = apply { this.cursor = cursor }
+        fun cursor(cursor: String) = apply {
+            this.cursor = cursor
+        }
 
         /**
-         * Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+         * Limit the size of the list that is returned. The default (and maximum) is 100
+         * objects.
          */
-        fun limit(limit: Long) = apply { this.limit = limit }
+        fun limit(limit: Long) = apply {
+            this.limit = limit
+        }
 
-        fun status(status: Status) = apply { this.status = status }
+        fun status(status: Status) = apply {
+            this.status = status
+        }
 
         fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
             this.additionalQueryParams.clear()
@@ -151,7 +187,9 @@ constructor(
             additionalHeaders.forEach(this::putHeaders)
         }
 
-        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
+        fun removeHeader(name: String) = apply {
+            this.additionalHeaders.put(name, mutableListOf())
+        }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             this.additionalBodyProperties.clear()
@@ -162,36 +200,30 @@ constructor(
             this.additionalBodyProperties.put(key, value)
         }
 
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalBodyProperties.putAll(additionalBodyProperties)
-            }
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            this.additionalBodyProperties.putAll(additionalBodyProperties)
+        }
 
-        fun build(): OAuthConnectionListParams =
-            OAuthConnectionListParams(
-                cursor,
-                limit,
-                status,
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalBodyProperties.toUnmodifiable(),
-            )
+        fun build(): OAuthConnectionListParams = OAuthConnectionListParams(
+            cursor,
+            limit,
+            status,
+            additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+            additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+            additionalBodyProperties.toUnmodifiable(),
+        )
     }
 
     @JsonDeserialize(builder = Status.Builder::class)
     @NoAutoDetect
-    class Status
-    private constructor(
-        private val in_: List<In>?,
-        private val additionalProperties: Map<String, List<String>>,
-    ) {
+    class Status private constructor(private val in_: List<In>?, private val additionalProperties: Map<String, List<String>>, ) {
 
         private var hashCode: Int = 0
 
         /**
-         * Filter to OAuth Connections by their status. By default, return only the `active` ones.
-         * For GET requests, this should be encoded as a comma-delimited string, such as
-         * `?in=one,two,three`.
+         * Filter to OAuth Connections by their status. By default, return only the
+         * `active` ones. For GET requests, this should be encoded as a comma-delimited
+         * string, such as `?in=one,two,three`.
          */
         fun in_(): List<In>? = in_
 
@@ -199,34 +231,39 @@ constructor(
 
         @JvmSynthetic
         internal fun forEachQueryParam(putParam: (String, List<String>) -> Unit) {
-            this.in_?.let { putParam("in", listOf(it.joinToString(separator = ","))) }
-            this.additionalProperties.forEach { key, values -> putParam(key, values) }
+          this.in_?.let {
+              putParam("in", listOf(it.joinToString(separator = ",")))
+          }
+          this.additionalProperties.forEach { key, values -> 
+              putParam(key, values)
+          }
         }
 
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
+          if (this === other) {
+              return true
+          }
 
-            return other is Status &&
-                this.in_ == other.in_ &&
-                this.additionalProperties == other.additionalProperties
+          return other is Status &&
+              this.in_ == other.in_ &&
+              this.additionalProperties == other.additionalProperties
         }
 
         override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = Objects.hash(in_, additionalProperties)
-            }
-            return hashCode
+          if (hashCode == 0) {
+            hashCode = Objects.hash(in_, additionalProperties)
+          }
+          return hashCode
         }
 
         override fun toString() = "Status{in_=$in_, additionalProperties=$additionalProperties}"
 
         companion object {
 
-            @JvmStatic fun builder() = Builder()
+            @JvmStatic
+            fun builder() = Builder()
         }
 
         class Builder {
@@ -241,11 +278,13 @@ constructor(
             }
 
             /**
-             * Filter to OAuth Connections by their status. By default, return only the `active`
-             * ones. For GET requests, this should be encoded as a comma-delimited string, such as
-             * `?in=one,two,three`.
+             * Filter to OAuth Connections by their status. By default, return only the
+             * `active` ones. For GET requests, this should be encoded as a comma-delimited
+             * string, such as `?in=one,two,three`.
              */
-            fun in_(in_: List<In>) = apply { this.in_ = in_ }
+            fun in_(in_: List<In>) = apply {
+                this.in_ = in_
+            }
 
             fun additionalProperties(additionalProperties: Map<String, List<String>>) = apply {
                 this.additionalProperties.clear()
@@ -256,29 +295,25 @@ constructor(
                 this.additionalProperties.put(key, value)
             }
 
-            fun putAllAdditionalProperties(additionalProperties: Map<String, List<String>>) =
-                apply {
-                    this.additionalProperties.putAll(additionalProperties)
-                }
+            fun putAllAdditionalProperties(additionalProperties: Map<String, List<String>>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
 
-            fun build(): Status =
-                Status(in_?.toUnmodifiable(), additionalProperties.toUnmodifiable())
+            fun build(): Status = Status(in_?.toUnmodifiable(), additionalProperties.toUnmodifiable())
         }
 
-        class In
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class In @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
 
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+            @com.fasterxml.jackson.annotation.JsonValue
+            fun _value(): JsonField<String> = value
 
             override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
+              if (this === other) {
+                  return true
+              }
 
-                return other is In && this.value == other.value
+              return other is In &&
+                  this.value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -305,19 +340,17 @@ constructor(
                 _UNKNOWN,
             }
 
-            fun value(): Value =
-                when (this) {
-                    ACTIVE -> Value.ACTIVE
-                    INACTIVE -> Value.INACTIVE
-                    else -> Value._UNKNOWN
-                }
+            fun value(): Value = when (this) {
+                ACTIVE -> Value.ACTIVE
+                INACTIVE -> Value.INACTIVE
+                else -> Value._UNKNOWN
+            }
 
-            fun known(): Known =
-                when (this) {
-                    ACTIVE -> Known.ACTIVE
-                    INACTIVE -> Known.INACTIVE
-                    else -> throw IncreaseInvalidDataException("Unknown In: $value")
-                }
+            fun known(): Known = when (this) {
+                ACTIVE -> Known.ACTIVE
+                INACTIVE -> Known.INACTIVE
+                else -> throw IncreaseInvalidDataException("Unknown In: $value")
+            }
 
             fun asString(): String = _value().asStringOrThrow()
         }
