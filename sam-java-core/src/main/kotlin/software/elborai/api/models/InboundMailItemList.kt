@@ -4,39 +4,26 @@ package software.elborai.api.models
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import java.time.LocalDate
-import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
 import java.util.Objects
 import java.util.Optional
-import java.util.UUID
-import software.elborai.api.core.BaseDeserializer
-import software.elborai.api.core.BaseSerializer
-import software.elborai.api.core.getOrThrow
 import software.elborai.api.core.ExcludeMissing
+import software.elborai.api.core.JsonField
 import software.elborai.api.core.JsonMissing
 import software.elborai.api.core.JsonValue
-import software.elborai.api.core.JsonNull
-import software.elborai.api.core.JsonField
-import software.elborai.api.core.Enum
-import software.elborai.api.core.toUnmodifiable
 import software.elborai.api.core.NoAutoDetect
-import software.elborai.api.errors.IncreaseInvalidDataException
+import software.elborai.api.core.toUnmodifiable
 
 /** A list of Inbound Mail Item objects. */
 @JsonDeserialize(builder = InboundMailItemList.Builder::class)
 @NoAutoDetect
-class InboundMailItemList private constructor(private val data: JsonField<List<InboundMailItem>>, private val nextCursor: JsonField<String>, private val additionalProperties: Map<String, JsonValue>, ) {
+class InboundMailItemList
+private constructor(
+    private val data: JsonField<List<InboundMailItem>>,
+    private val nextCursor: JsonField<String>,
+    private val additionalProperties: Map<String, JsonValue>,
+) {
 
     private var validated: Boolean = false
 
@@ -49,14 +36,10 @@ class InboundMailItemList private constructor(private val data: JsonField<List<I
     fun nextCursor(): Optional<String> = Optional.ofNullable(nextCursor.getNullable("next_cursor"))
 
     /** The contents of the list. */
-    @JsonProperty("data")
-    @ExcludeMissing
-    fun _data() = data
+    @JsonProperty("data") @ExcludeMissing fun _data() = data
 
     /** A pointer to a place in the list. */
-    @JsonProperty("next_cursor")
-    @ExcludeMissing
-    fun _nextCursor() = nextCursor
+    @JsonProperty("next_cursor") @ExcludeMissing fun _nextCursor() = nextCursor
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -64,42 +47,43 @@ class InboundMailItemList private constructor(private val data: JsonField<List<I
 
     fun validate(): InboundMailItemList = apply {
         if (!validated) {
-          data().forEach { it.validate() }
-          nextCursor()
-          validated = true
+            data().forEach { it.validate() }
+            nextCursor()
+            validated = true
         }
     }
 
     fun toBuilder() = Builder().from(this)
 
     override fun equals(other: Any?): Boolean {
-      if (this === other) {
-          return true
-      }
+        if (this === other) {
+            return true
+        }
 
-      return other is InboundMailItemList &&
-          this.data == other.data &&
-          this.nextCursor == other.nextCursor &&
-          this.additionalProperties == other.additionalProperties
+        return other is InboundMailItemList &&
+            this.data == other.data &&
+            this.nextCursor == other.nextCursor &&
+            this.additionalProperties == other.additionalProperties
     }
 
     override fun hashCode(): Int {
-      if (hashCode == 0) {
-        hashCode = Objects.hash(
-            data,
-            nextCursor,
-            additionalProperties,
-        )
-      }
-      return hashCode
+        if (hashCode == 0) {
+            hashCode =
+                Objects.hash(
+                    data,
+                    nextCursor,
+                    additionalProperties,
+                )
+        }
+        return hashCode
     }
 
-    override fun toString() = "InboundMailItemList{data=$data, nextCursor=$nextCursor, additionalProperties=$additionalProperties}"
+    override fun toString() =
+        "InboundMailItemList{data=$data, nextCursor=$nextCursor, additionalProperties=$additionalProperties}"
 
     companion object {
 
-        @JvmStatic
-        fun builder() = Builder()
+        @JvmStatic fun builder() = Builder()
     }
 
     class Builder {
@@ -121,9 +105,7 @@ class InboundMailItemList private constructor(private val data: JsonField<List<I
         /** The contents of the list. */
         @JsonProperty("data")
         @ExcludeMissing
-        fun data(data: JsonField<List<InboundMailItem>>) = apply {
-            this.data = data
-        }
+        fun data(data: JsonField<List<InboundMailItem>>) = apply { this.data = data }
 
         /** A pointer to a place in the list. */
         fun nextCursor(nextCursor: String) = nextCursor(JsonField.of(nextCursor))
@@ -131,9 +113,7 @@ class InboundMailItemList private constructor(private val data: JsonField<List<I
         /** A pointer to a place in the list. */
         @JsonProperty("next_cursor")
         @ExcludeMissing
-        fun nextCursor(nextCursor: JsonField<String>) = apply {
-            this.nextCursor = nextCursor
-        }
+        fun nextCursor(nextCursor: JsonField<String>) = apply { this.nextCursor = nextCursor }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -149,10 +129,11 @@ class InboundMailItemList private constructor(private val data: JsonField<List<I
             this.additionalProperties.putAll(additionalProperties)
         }
 
-        fun build(): InboundMailItemList = InboundMailItemList(
-            data.map { it.toUnmodifiable() },
-            nextCursor,
-            additionalProperties.toUnmodifiable(),
-        )
+        fun build(): InboundMailItemList =
+            InboundMailItemList(
+                data.map { it.toUnmodifiable() },
+                nextCursor,
+                additionalProperties.toUnmodifiable(),
+            )
     }
 }
