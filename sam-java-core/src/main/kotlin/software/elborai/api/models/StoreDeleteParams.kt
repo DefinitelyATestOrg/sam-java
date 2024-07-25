@@ -9,7 +9,7 @@ import software.elborai.api.core.NoAutoDetect
 import software.elborai.api.core.toUnmodifiable
 import software.elborai.api.models.*
 
-class StoreOrderDeleteParams
+class StoreDeleteParams
 constructor(
     private val orderId: Long,
     private val additionalQueryParams: Map<String, List<String>>,
@@ -46,7 +46,7 @@ constructor(
             return true
         }
 
-        return other is StoreOrderDeleteParams &&
+        return other is StoreDeleteParams &&
             this.orderId == other.orderId &&
             this.additionalQueryParams == other.additionalQueryParams &&
             this.additionalHeaders == other.additionalHeaders &&
@@ -63,7 +63,7 @@ constructor(
     }
 
     override fun toString() =
-        "StoreOrderDeleteParams{orderId=$orderId, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
+        "StoreDeleteParams{orderId=$orderId, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -81,11 +81,11 @@ constructor(
         private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(storeOrderDeleteParams: StoreOrderDeleteParams) = apply {
-            this.orderId = storeOrderDeleteParams.orderId
-            additionalQueryParams(storeOrderDeleteParams.additionalQueryParams)
-            additionalHeaders(storeOrderDeleteParams.additionalHeaders)
-            additionalBodyProperties(storeOrderDeleteParams.additionalBodyProperties)
+        internal fun from(storeDeleteParams: StoreDeleteParams) = apply {
+            this.orderId = storeDeleteParams.orderId
+            additionalQueryParams(storeDeleteParams.additionalQueryParams)
+            additionalHeaders(storeDeleteParams.additionalHeaders)
+            additionalBodyProperties(storeDeleteParams.additionalBodyProperties)
         }
 
         fun orderId(orderId: Long) = apply { this.orderId = orderId }
@@ -144,8 +144,8 @@ constructor(
                 this.additionalBodyProperties.putAll(additionalBodyProperties)
             }
 
-        fun build(): StoreOrderDeleteParams =
-            StoreOrderDeleteParams(
+        fun build(): StoreDeleteParams =
+            StoreDeleteParams(
                 checkNotNull(orderId) { "`orderId` is required but was not set" },
                 additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
                 additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
