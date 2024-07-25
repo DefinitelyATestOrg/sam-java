@@ -8,7 +8,7 @@ import software.elborai.api.core.NoAutoDetect
 import software.elborai.api.core.toUnmodifiable
 import software.elborai.api.models.*
 
-class StoreOrderRetrieveParams
+class StoreRetrieveParams
 constructor(
     private val orderId: Long,
     private val additionalQueryParams: Map<String, List<String>>,
@@ -40,7 +40,7 @@ constructor(
             return true
         }
 
-        return other is StoreOrderRetrieveParams &&
+        return other is StoreRetrieveParams &&
             this.orderId == other.orderId &&
             this.additionalQueryParams == other.additionalQueryParams &&
             this.additionalHeaders == other.additionalHeaders &&
@@ -57,7 +57,7 @@ constructor(
     }
 
     override fun toString() =
-        "StoreOrderRetrieveParams{orderId=$orderId, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
+        "StoreRetrieveParams{orderId=$orderId, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -75,11 +75,11 @@ constructor(
         private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(storeOrderRetrieveParams: StoreOrderRetrieveParams) = apply {
-            this.orderId = storeOrderRetrieveParams.orderId
-            additionalQueryParams(storeOrderRetrieveParams.additionalQueryParams)
-            additionalHeaders(storeOrderRetrieveParams.additionalHeaders)
-            additionalBodyProperties(storeOrderRetrieveParams.additionalBodyProperties)
+        internal fun from(storeRetrieveParams: StoreRetrieveParams) = apply {
+            this.orderId = storeRetrieveParams.orderId
+            additionalQueryParams(storeRetrieveParams.additionalQueryParams)
+            additionalHeaders(storeRetrieveParams.additionalHeaders)
+            additionalBodyProperties(storeRetrieveParams.additionalBodyProperties)
         }
 
         fun orderId(orderId: Long) = apply { this.orderId = orderId }
@@ -138,8 +138,8 @@ constructor(
                 this.additionalBodyProperties.putAll(additionalBodyProperties)
             }
 
-        fun build(): StoreOrderRetrieveParams =
-            StoreOrderRetrieveParams(
+        fun build(): StoreRetrieveParams =
+            StoreRetrieveParams(
                 checkNotNull(orderId) { "`orderId` is required but was not set" },
                 additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
                 additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
