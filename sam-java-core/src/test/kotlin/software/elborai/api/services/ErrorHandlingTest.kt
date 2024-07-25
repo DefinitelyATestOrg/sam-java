@@ -13,7 +13,6 @@ import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo
 import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import com.google.common.collect.ImmutableListMultimap
 import com.google.common.collect.ListMultimap
-import java.time.LocalDate
 import java.time.OffsetDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -21,17 +20,17 @@ import org.assertj.core.api.InstanceOfAssertFactories
 import org.assertj.guava.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import software.elborai.api.client.IncreaseClient
-import software.elborai.api.client.okhttp.IncreaseOkHttpClient
+import software.elborai.api.client.SamClient
+import software.elborai.api.client.okhttp.SamOkHttpClient
 import software.elborai.api.core.JsonString
 import software.elborai.api.core.jsonMapper
 import software.elborai.api.errors.BadRequestException
-import software.elborai.api.errors.IncreaseError
-import software.elborai.api.errors.IncreaseException
 import software.elborai.api.errors.InternalServerException
 import software.elborai.api.errors.NotFoundException
 import software.elborai.api.errors.PermissionDeniedException
 import software.elborai.api.errors.RateLimitException
+import software.elborai.api.errors.SamError
+import software.elborai.api.errors.SamException
 import software.elborai.api.errors.UnauthorizedException
 import software.elborai.api.errors.UnexpectedStatusCodeException
 import software.elborai.api.errors.UnprocessableEntityException
@@ -42,224 +41,228 @@ class ErrorHandlingTest {
 
     private val JSON_MAPPER: JsonMapper = jsonMapper()
 
-    private val INCREASE_ERROR: IncreaseError =
-        IncreaseError.builder().putAdditionalProperty("key", JsonString.of("value")).build()
+    private val SAM_ERROR: SamError =
+        SamError.builder().putAdditionalProperty("key", JsonString.of("value")).build()
 
-    private lateinit var client: IncreaseClient
+    private lateinit var client: SamClient
 
     @BeforeEach
     fun beforeEach(wmRuntimeInfo: WireMockRuntimeInfo) {
-        client =
-            IncreaseOkHttpClient.builder()
-                .baseUrl(wmRuntimeInfo.getHttpBaseUrl())
-                .apiKey("My API Key")
-                .webhookSecret("My Webhook Secret")
-                .build()
+        client = SamOkHttpClient.builder().baseUrl(wmRuntimeInfo.getHttpBaseUrl()).build()
     }
 
     @Test
-    fun accountsCreate200() {
+    fun storesCreateOrder200() {
         val params =
-            AccountCreateParams.builder()
-                .name("x")
-                .entityId("entity_id")
-                .informationalEntityId("informational_entity_id")
-                .programId("program_id")
+            StoreCreateOrderParams.builder()
+                .id(123L)
+                .complete(true)
+                .petId(123L)
+                .quantity(123L)
+                .shipDate(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .status(StoreCreateOrderParams.Status.PLACED)
                 .build()
 
         val expected =
-            Account.builder()
-                .id("id")
-                .bank(Account.Bank.BLUE_RIDGE_BANK)
-                .closedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
-                .createdAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
-                .currency(Account.Currency.CAD)
-                .entityId("entity_id")
-                .idempotencyKey("idempotency_key")
-                .informationalEntityId("informational_entity_id")
-                .interestAccrued("interest_accrued")
-                .interestAccruedAt(LocalDate.parse("2019-12-27"))
-                .interestRate("interest_rate")
-                .name("name")
-                .programId("program_id")
-                .status(Account.Status.OPEN)
-                .type(Account.Type.ACCOUNT)
+            Order.builder()
+                .id(123L)
+                .complete(true)
+                .petId(123L)
+                .quantity(123L)
+                .shipDate(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .status(Order.Status.PLACED)
                 .build()
 
         stubFor(post(anyUrl()).willReturn(ok().withBody(toJson(expected))))
 
-        assertThat(client.accounts().create(params)).isEqualTo(expected)
+        assertThat(client.stores().createOrder(params)).isEqualTo(expected)
     }
 
     @Test
-    fun accountsCreate400() {
+    fun storesCreateOrder400() {
         val params =
-            AccountCreateParams.builder()
-                .name("x")
-                .entityId("entity_id")
-                .informationalEntityId("informational_entity_id")
-                .programId("program_id")
+            StoreCreateOrderParams.builder()
+                .id(123L)
+                .complete(true)
+                .petId(123L)
+                .quantity(123L)
+                .shipDate(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .status(StoreCreateOrderParams.Status.PLACED)
                 .build()
 
         stubFor(
             post(anyUrl())
-                .willReturn(status(400).withHeader("Foo", "Bar").withBody(toJson(INCREASE_ERROR)))
+                .willReturn(status(400).withHeader("Foo", "Bar").withBody(toJson(SAM_ERROR)))
         )
 
-        assertThatThrownBy({ client.accounts().create(params) })
+        assertThatThrownBy({ client.stores().createOrder(params) })
             .satisfies({ e ->
-                assertBadRequest(e, ImmutableListMultimap.of("Foo", "Bar"), INCREASE_ERROR)
+                assertBadRequest(e, ImmutableListMultimap.of("Foo", "Bar"), SAM_ERROR)
             })
     }
 
     @Test
-    fun accountsCreate401() {
+    fun storesCreateOrder401() {
         val params =
-            AccountCreateParams.builder()
-                .name("x")
-                .entityId("entity_id")
-                .informationalEntityId("informational_entity_id")
-                .programId("program_id")
+            StoreCreateOrderParams.builder()
+                .id(123L)
+                .complete(true)
+                .petId(123L)
+                .quantity(123L)
+                .shipDate(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .status(StoreCreateOrderParams.Status.PLACED)
                 .build()
 
         stubFor(
             post(anyUrl())
-                .willReturn(status(401).withHeader("Foo", "Bar").withBody(toJson(INCREASE_ERROR)))
+                .willReturn(status(401).withHeader("Foo", "Bar").withBody(toJson(SAM_ERROR)))
         )
 
-        assertThatThrownBy({ client.accounts().create(params) })
+        assertThatThrownBy({ client.stores().createOrder(params) })
             .satisfies({ e ->
-                assertUnauthorized(e, ImmutableListMultimap.of("Foo", "Bar"), INCREASE_ERROR)
+                assertUnauthorized(e, ImmutableListMultimap.of("Foo", "Bar"), SAM_ERROR)
             })
     }
 
     @Test
-    fun accountsCreate403() {
+    fun storesCreateOrder403() {
         val params =
-            AccountCreateParams.builder()
-                .name("x")
-                .entityId("entity_id")
-                .informationalEntityId("informational_entity_id")
-                .programId("program_id")
+            StoreCreateOrderParams.builder()
+                .id(123L)
+                .complete(true)
+                .petId(123L)
+                .quantity(123L)
+                .shipDate(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .status(StoreCreateOrderParams.Status.PLACED)
                 .build()
 
         stubFor(
             post(anyUrl())
-                .willReturn(status(403).withHeader("Foo", "Bar").withBody(toJson(INCREASE_ERROR)))
+                .willReturn(status(403).withHeader("Foo", "Bar").withBody(toJson(SAM_ERROR)))
         )
 
-        assertThatThrownBy({ client.accounts().create(params) })
+        assertThatThrownBy({ client.stores().createOrder(params) })
             .satisfies({ e ->
-                assertPermissionDenied(e, ImmutableListMultimap.of("Foo", "Bar"), INCREASE_ERROR)
+                assertPermissionDenied(e, ImmutableListMultimap.of("Foo", "Bar"), SAM_ERROR)
             })
     }
 
     @Test
-    fun accountsCreate404() {
+    fun storesCreateOrder404() {
         val params =
-            AccountCreateParams.builder()
-                .name("x")
-                .entityId("entity_id")
-                .informationalEntityId("informational_entity_id")
-                .programId("program_id")
+            StoreCreateOrderParams.builder()
+                .id(123L)
+                .complete(true)
+                .petId(123L)
+                .quantity(123L)
+                .shipDate(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .status(StoreCreateOrderParams.Status.PLACED)
                 .build()
 
         stubFor(
             post(anyUrl())
-                .willReturn(status(404).withHeader("Foo", "Bar").withBody(toJson(INCREASE_ERROR)))
+                .willReturn(status(404).withHeader("Foo", "Bar").withBody(toJson(SAM_ERROR)))
         )
 
-        assertThatThrownBy({ client.accounts().create(params) })
+        assertThatThrownBy({ client.stores().createOrder(params) })
             .satisfies({ e ->
-                assertNotFound(e, ImmutableListMultimap.of("Foo", "Bar"), INCREASE_ERROR)
+                assertNotFound(e, ImmutableListMultimap.of("Foo", "Bar"), SAM_ERROR)
             })
     }
 
     @Test
-    fun accountsCreate422() {
+    fun storesCreateOrder422() {
         val params =
-            AccountCreateParams.builder()
-                .name("x")
-                .entityId("entity_id")
-                .informationalEntityId("informational_entity_id")
-                .programId("program_id")
+            StoreCreateOrderParams.builder()
+                .id(123L)
+                .complete(true)
+                .petId(123L)
+                .quantity(123L)
+                .shipDate(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .status(StoreCreateOrderParams.Status.PLACED)
                 .build()
 
         stubFor(
             post(anyUrl())
-                .willReturn(status(422).withHeader("Foo", "Bar").withBody(toJson(INCREASE_ERROR)))
+                .willReturn(status(422).withHeader("Foo", "Bar").withBody(toJson(SAM_ERROR)))
         )
 
-        assertThatThrownBy({ client.accounts().create(params) })
+        assertThatThrownBy({ client.stores().createOrder(params) })
             .satisfies({ e ->
-                assertUnprocessableEntity(e, ImmutableListMultimap.of("Foo", "Bar"), INCREASE_ERROR)
+                assertUnprocessableEntity(e, ImmutableListMultimap.of("Foo", "Bar"), SAM_ERROR)
             })
     }
 
     @Test
-    fun accountsCreate429() {
+    fun storesCreateOrder429() {
         val params =
-            AccountCreateParams.builder()
-                .name("x")
-                .entityId("entity_id")
-                .informationalEntityId("informational_entity_id")
-                .programId("program_id")
+            StoreCreateOrderParams.builder()
+                .id(123L)
+                .complete(true)
+                .petId(123L)
+                .quantity(123L)
+                .shipDate(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .status(StoreCreateOrderParams.Status.PLACED)
                 .build()
 
         stubFor(
             post(anyUrl())
-                .willReturn(status(429).withHeader("Foo", "Bar").withBody(toJson(INCREASE_ERROR)))
+                .willReturn(status(429).withHeader("Foo", "Bar").withBody(toJson(SAM_ERROR)))
         )
 
-        assertThatThrownBy({ client.accounts().create(params) })
+        assertThatThrownBy({ client.stores().createOrder(params) })
             .satisfies({ e ->
-                assertRateLimit(e, ImmutableListMultimap.of("Foo", "Bar"), INCREASE_ERROR)
+                assertRateLimit(e, ImmutableListMultimap.of("Foo", "Bar"), SAM_ERROR)
             })
     }
 
     @Test
-    fun accountsCreate500() {
+    fun storesCreateOrder500() {
         val params =
-            AccountCreateParams.builder()
-                .name("x")
-                .entityId("entity_id")
-                .informationalEntityId("informational_entity_id")
-                .programId("program_id")
+            StoreCreateOrderParams.builder()
+                .id(123L)
+                .complete(true)
+                .petId(123L)
+                .quantity(123L)
+                .shipDate(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .status(StoreCreateOrderParams.Status.PLACED)
                 .build()
 
         stubFor(
             post(anyUrl())
-                .willReturn(status(500).withHeader("Foo", "Bar").withBody(toJson(INCREASE_ERROR)))
+                .willReturn(status(500).withHeader("Foo", "Bar").withBody(toJson(SAM_ERROR)))
         )
 
-        assertThatThrownBy({ client.accounts().create(params) })
+        assertThatThrownBy({ client.stores().createOrder(params) })
             .satisfies({ e ->
-                assertInternalServer(e, ImmutableListMultimap.of("Foo", "Bar"), INCREASE_ERROR)
+                assertInternalServer(e, ImmutableListMultimap.of("Foo", "Bar"), SAM_ERROR)
             })
     }
 
     @Test
     fun unexpectedStatusCode() {
         val params =
-            AccountCreateParams.builder()
-                .name("x")
-                .entityId("entity_id")
-                .informationalEntityId("informational_entity_id")
-                .programId("program_id")
+            StoreCreateOrderParams.builder()
+                .id(123L)
+                .complete(true)
+                .petId(123L)
+                .quantity(123L)
+                .shipDate(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .status(StoreCreateOrderParams.Status.PLACED)
                 .build()
 
         stubFor(
             post(anyUrl())
-                .willReturn(status(999).withHeader("Foo", "Bar").withBody(toJson(INCREASE_ERROR)))
+                .willReturn(status(999).withHeader("Foo", "Bar").withBody(toJson(SAM_ERROR)))
         )
 
-        assertThatThrownBy({ client.accounts().create(params) })
+        assertThatThrownBy({ client.stores().createOrder(params) })
             .satisfies({ e ->
                 assertUnexpectedStatusCodeException(
                     e,
                     999,
                     ImmutableListMultimap.of("Foo", "Bar"),
-                    toJson(INCREASE_ERROR)
+                    toJson(SAM_ERROR)
                 )
             })
     }
@@ -267,19 +270,21 @@ class ErrorHandlingTest {
     @Test
     fun invalidBody() {
         val params =
-            AccountCreateParams.builder()
-                .name("x")
-                .entityId("entity_id")
-                .informationalEntityId("informational_entity_id")
-                .programId("program_id")
+            StoreCreateOrderParams.builder()
+                .id(123L)
+                .complete(true)
+                .petId(123L)
+                .quantity(123L)
+                .shipDate(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .status(StoreCreateOrderParams.Status.PLACED)
                 .build()
 
         stubFor(post(anyUrl()).willReturn(status(200).withBody("Not JSON")))
 
-        assertThatThrownBy({ client.accounts().create(params) })
+        assertThatThrownBy({ client.stores().createOrder(params) })
             .satisfies({ e ->
                 assertThat(e)
-                    .isInstanceOf(IncreaseException::class.java)
+                    .isInstanceOf(SamException::class.java)
                     .hasMessage("Error reading response")
             })
     }
@@ -287,18 +292,20 @@ class ErrorHandlingTest {
     @Test
     fun invalidErrorBody() {
         val params =
-            AccountCreateParams.builder()
-                .name("x")
-                .entityId("entity_id")
-                .informationalEntityId("informational_entity_id")
-                .programId("program_id")
+            StoreCreateOrderParams.builder()
+                .id(123L)
+                .complete(true)
+                .petId(123L)
+                .quantity(123L)
+                .shipDate(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .status(StoreCreateOrderParams.Status.PLACED)
                 .build()
 
         stubFor(post(anyUrl()).willReturn(status(400).withBody("Not JSON")))
 
-        assertThatThrownBy({ client.accounts().create(params) })
+        assertThatThrownBy({ client.stores().createOrder(params) })
             .satisfies({ e ->
-                assertBadRequest(e, ImmutableListMultimap.of(), IncreaseError.builder().build())
+                assertBadRequest(e, ImmutableListMultimap.of(), SamError.builder().build())
             })
     }
 
@@ -326,7 +333,7 @@ class ErrorHandlingTest {
     private fun assertBadRequest(
         throwable: Throwable,
         headers: ListMultimap<String, String>,
-        error: IncreaseError
+        error: SamError
     ) {
         assertThat(throwable)
             .asInstanceOf(InstanceOfAssertFactories.throwable(BadRequestException::class.java))
@@ -340,7 +347,7 @@ class ErrorHandlingTest {
     private fun assertUnauthorized(
         throwable: Throwable,
         headers: ListMultimap<String, String>,
-        error: IncreaseError
+        error: SamError
     ) {
         assertThat(throwable)
             .asInstanceOf(InstanceOfAssertFactories.throwable(UnauthorizedException::class.java))
@@ -354,7 +361,7 @@ class ErrorHandlingTest {
     private fun assertPermissionDenied(
         throwable: Throwable,
         headers: ListMultimap<String, String>,
-        error: IncreaseError
+        error: SamError
     ) {
         assertThat(throwable)
             .asInstanceOf(
@@ -370,7 +377,7 @@ class ErrorHandlingTest {
     private fun assertNotFound(
         throwable: Throwable,
         headers: ListMultimap<String, String>,
-        error: IncreaseError
+        error: SamError
     ) {
         assertThat(throwable)
             .asInstanceOf(InstanceOfAssertFactories.throwable(NotFoundException::class.java))
@@ -384,7 +391,7 @@ class ErrorHandlingTest {
     private fun assertUnprocessableEntity(
         throwable: Throwable,
         headers: ListMultimap<String, String>,
-        error: IncreaseError
+        error: SamError
     ) {
         assertThat(throwable)
             .asInstanceOf(
@@ -400,7 +407,7 @@ class ErrorHandlingTest {
     private fun assertRateLimit(
         throwable: Throwable,
         headers: ListMultimap<String, String>,
-        error: IncreaseError
+        error: SamError
     ) {
         assertThat(throwable)
             .asInstanceOf(InstanceOfAssertFactories.throwable(RateLimitException::class.java))
@@ -414,7 +421,7 @@ class ErrorHandlingTest {
     private fun assertInternalServer(
         throwable: Throwable,
         headers: ListMultimap<String, String>,
-        error: IncreaseError
+        error: SamError
     ) {
         assertThat(throwable)
             .asInstanceOf(InstanceOfAssertFactories.throwable(InternalServerException::class.java))
