@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import java.io.InputStream
 import java.io.OutputStream
+import java.util.Optional
 import software.elborai.api.core.http.BinaryResponseContent
 import software.elborai.api.core.http.HttpResponse
 import software.elborai.api.core.http.HttpResponse.Handler
@@ -38,7 +39,18 @@ private object StringHandler : Handler<String> {
 
 private object BinaryHandler : Handler<BinaryResponseContent> {
     override fun handle(response: HttpResponse): BinaryResponseContent {
-        return BinaryResponseContentImpl(response)
+        return object : BinaryResponseContent {
+            override fun contentType(): Optional<String> =
+                Optional.ofNullable(response.headers().get("Content-Type").firstOrNull())
+
+            override fun body(): InputStream = response.body()
+
+            override fun close() = response.close()
+
+            override fun writeTo(outputStream: OutputStream) {
+                response.body().copyTo(outputStream)
+            }
+        }
     }
 }
 
@@ -105,26 +117,5 @@ internal fun <T> Handler<T>.withErrorHandler(errorHandler: Handler<SamError>): H
                     )
             }
         }
-    }
-}
-
-class BinaryResponseContentImpl
-constructor(
-    private val response: HttpResponse,
-) : BinaryResponseContent {
-    override fun contentType(): String? {
-        return response.headers().get("Content-Type").firstOrNull()
-    }
-
-    override fun body(): InputStream {
-        return response.body()
-    }
-
-    override fun writeTo(outputStream: OutputStream) {
-        response.body().copyTo(outputStream)
-    }
-
-    override fun close() {
-        response.body().close()
     }
 }
