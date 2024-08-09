@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.1.0-alpha.2 (2024-08-09)
+
+Full Changelog: [v0.1.0-alpha.1...v0.1.0-alpha.2](https://github.com/DefinitelyATestOrg/sam-java/compare/v0.1.0-alpha.1...v0.1.0-alpha.2)
+
+### Features
+
+* **api:** manual updates ([#30](https://github.com/DefinitelyATestOrg/sam-java/issues/30)) ([663c7d6](https://github.com/DefinitelyATestOrg/sam-java/commit/663c7d6a46171955ed4e73011071ed5f327556dc))
+* **api:** manual updates ([#32](https://github.com/DefinitelyATestOrg/sam-java/issues/32)) ([d92cf8c](https://github.com/DefinitelyATestOrg/sam-java/commit/d92cf8cf2f1b230d882ae5f747247d8e269eafed))
+* **client:** improve binary return values ([#34](https://github.com/DefinitelyATestOrg/sam-java/issues/34)) ([7152805](https://github.com/DefinitelyATestOrg/sam-java/commit/7152805abd6d591ac9f696f4f83a2ebf261e9295))
+
+
+### Chores
+
+* **ci:** bump prism mock server version ([#36](https://github.com/DefinitelyATestOrg/sam-java/issues/36)) ([78682a0](https://github.com/DefinitelyATestOrg/sam-java/commit/78682a0efae126fe2950c4f48ceaa2a35d22f10c))
+* **ci:** run tests in CI ([#35](https://github.com/DefinitelyATestOrg/sam-java/issues/35)) ([7a9c8b1](https://github.com/DefinitelyATestOrg/sam-java/commit/7a9c8b1990af9a6fec9fadf1faee3f4caf1c5bb5))
+* **internal:** remove unused test file ([#33](https://github.com/DefinitelyATestOrg/sam-java/issues/33)) ([5c5f4e9](https://github.com/DefinitelyATestOrg/sam-java/commit/5c5f4e9919cae284c2c7a50a6018ed947170d431))
+
 ## 0.1.0-alpha.1 (2024-07-25)
 
 Full Changelog: [v0.0.1-alpha.0...v0.1.0-alpha.1](https://github.com/DefinitelyATestOrg/sam-java/compare/v0.0.1-alpha.0...v0.1.0-alpha.1)
