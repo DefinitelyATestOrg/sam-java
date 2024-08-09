@@ -6,16 +6,17 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import java.io.InputStream
 import java.io.OutputStream
+import java.util.Optional
 import software.elborai.api.core.http.BinaryResponseContent
 import software.elborai.api.core.http.HttpResponse
 import software.elborai.api.core.http.HttpResponse.Handler
 import software.elborai.api.errors.BadRequestException
-import software.elborai.api.errors.IncreaseError
-import software.elborai.api.errors.IncreaseException
 import software.elborai.api.errors.InternalServerException
 import software.elborai.api.errors.NotFoundException
 import software.elborai.api.errors.PermissionDeniedException
 import software.elborai.api.errors.RateLimitException
+import software.elborai.api.errors.SamError
+import software.elborai.api.errors.SamException
 import software.elborai.api.errors.UnauthorizedException
 import software.elborai.api.errors.UnexpectedStatusCodeException
 import software.elborai.api.errors.UnprocessableEntityException
@@ -38,7 +39,18 @@ private object StringHandler : Handler<String> {
 
 private object BinaryHandler : Handler<BinaryResponseContent> {
     override fun handle(response: HttpResponse): BinaryResponseContent {
-        return BinaryResponseContentImpl(response)
+        return object : BinaryResponseContent {
+            override fun contentType(): Optional<String> =
+                Optional.ofNullable(response.headers().get("Content-Type").firstOrNull())
+
+            override fun body(): InputStream = response.body()
+
+            override fun close() = response.close()
+
+            override fun writeTo(outputStream: OutputStream) {
+                response.body().copyTo(outputStream)
+            }
+        }
     }
 }
 
@@ -49,29 +61,29 @@ internal inline fun <reified T> jsonHandler(jsonMapper: JsonMapper): Handler<T> 
             try {
                 return jsonMapper.readValue(response.body(), jacksonTypeRef())
             } catch (e: Exception) {
-                throw IncreaseException("Error reading response", e)
+                throw SamException("Error reading response", e)
             }
         }
     }
 }
 
 @JvmSynthetic
-internal fun errorHandler(jsonMapper: JsonMapper): Handler<IncreaseError> {
-    val handler = jsonHandler<IncreaseError>(jsonMapper)
+internal fun errorHandler(jsonMapper: JsonMapper): Handler<SamError> {
+    val handler = jsonHandler<SamError>(jsonMapper)
 
-    return object : Handler<IncreaseError> {
-        override fun handle(response: HttpResponse): IncreaseError {
+    return object : Handler<SamError> {
+        override fun handle(response: HttpResponse): SamError {
             try {
                 return handler.handle(response)
             } catch (e: Exception) {
-                return IncreaseError.builder().build()
+                return SamError.builder().build()
             }
         }
     }
 }
 
 @JvmSynthetic
-internal fun <T> Handler<T>.withErrorHandler(errorHandler: Handler<IncreaseError>): Handler<T> {
+internal fun <T> Handler<T>.withErrorHandler(errorHandler: Handler<SamError>): Handler<T> {
     return object : Handler<T> {
         override fun handle(response: HttpResponse): T {
             when (val statusCode = response.statusCode()) {
@@ -105,26 +117,5 @@ internal fun <T> Handler<T>.withErrorHandler(errorHandler: Handler<IncreaseError
                     )
             }
         }
-    }
-}
-
-class BinaryResponseContentImpl
-constructor(
-    private val response: HttpResponse,
-) : BinaryResponseContent {
-    override fun contentType(): String? {
-        return response.headers().get("Content-Type").firstOrNull()
-    }
-
-    override fun body(): InputStream {
-        return response.body()
-    }
-
-    override fun writeTo(outputStream: OutputStream) {
-        response.body().copyTo(outputStream)
-    }
-
-    override fun close() {
-        response.body().close()
     }
 }

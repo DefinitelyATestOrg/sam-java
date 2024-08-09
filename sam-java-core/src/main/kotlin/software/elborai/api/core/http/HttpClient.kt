@@ -1,10 +1,10 @@
 package software.elborai.api.core.http
 
-import java.io.Closeable
+import java.lang.AutoCloseable
 import java.util.concurrent.CompletableFuture
 import software.elborai.api.core.RequestOptions
 
-interface HttpClient : Closeable {
+interface HttpClient : AutoCloseable {
 
     fun execute(
         request: HttpRequest,
