@@ -82,9 +82,10 @@ Sometimes, the API may support other properties that are not yet supported in th
 you can attach them using the `putAdditionalProperty` method.
 
 ```java
+import software.elborai.api.models.core.JsonValue;
 StoreCreateOrderParams params = StoreCreateOrderParams.builder()
     // ... normal properties
-    .putAdditionalProperty("secret_param", "4242")
+    .putAdditionalProperty("secret_param", JsonValue.from("4242"))
     .build();
 ```
 
