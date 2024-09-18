@@ -2,31 +2,30 @@ package software.elborai.api.client.okhttp
 
 import com.google.common.collect.ListMultimap
 import com.google.common.collect.MultimapBuilder
-import software.elborai.api.core.RequestOptions
-import software.elborai.api.core.http.HttpClient
-import software.elborai.api.core.http.HttpRequest
-import software.elborai.api.core.http.HttpRequestBody
-import software.elborai.api.core.http.HttpResponse
-import software.elborai.api.core.http.HttpMethod
-import software.elborai.api.errors.SamIoException
 import java.io.IOException
 import java.io.InputStream
 import java.net.Proxy
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.TimeUnit
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.Headers
 import okhttp3.HttpUrl
-import okhttp3.Response
+import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody
-import okhttp3.MediaType
-import okhttp3.Headers
-import okhttp3.HttpUrl.Companion.toHttpUrl
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import okio.BufferedSink
+import software.elborai.api.core.RequestOptions
+import software.elborai.api.core.http.HttpClient
+import software.elborai.api.core.http.HttpMethod
+import software.elborai.api.core.http.HttpRequest
+import software.elborai.api.core.http.HttpRequestBody
+import software.elborai.api.core.http.HttpResponse
+import software.elborai.api.errors.SamIoException
 
 class OkHttpClient
 private constructor(private val okHttpClient: okhttp3.OkHttpClient, private val baseUrl: HttpUrl) :
@@ -34,7 +33,8 @@ private constructor(private val okHttpClient: okhttp3.OkHttpClient, private val 
 
     private fun getClient(requestOptions: RequestOptions): okhttp3.OkHttpClient {
         val timeout = requestOptions.timeout ?: return okHttpClient
-        return okHttpClient.newBuilder()
+        return okHttpClient
+            .newBuilder()
             .connectTimeout(timeout)
             .readTimeout(timeout)
             .writeTimeout(timeout)
@@ -76,7 +76,8 @@ private constructor(private val okHttpClient: okhttp3.OkHttpClient, private val 
                 override fun onFailure(call: Call, e: IOException) {
                     future.completeExceptionally(SamIoException("Request failed", e))
                 }
-            })
+            }
+        )
 
         return future
     }
