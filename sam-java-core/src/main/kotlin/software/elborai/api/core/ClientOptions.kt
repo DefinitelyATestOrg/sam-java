@@ -3,30 +3,34 @@
 package software.elborai.api.core
 
 import com.fasterxml.jackson.databind.json.JsonMapper
-import com.google.common.collect.ArrayListMultimap
+import com.google.common.collect.Multimap
 import com.google.common.collect.ListMultimap
+import com.google.common.collect.ArrayListMultimap
 import java.time.Clock
+import java.util.Base64
 import software.elborai.api.core.http.HttpClient
 import software.elborai.api.core.http.RetryingHttpClient
 
-class ClientOptions
-private constructor(
-    @get:JvmName("httpClient") val httpClient: HttpClient,
-    @get:JvmName("jsonMapper") val jsonMapper: JsonMapper,
-    @get:JvmName("clock") val clock: Clock,
-    @get:JvmName("baseUrl") val baseUrl: String,
-    @get:JvmName("headers") val headers: ListMultimap<String, String>,
-    @get:JvmName("queryParams") val queryParams: ListMultimap<String, String>,
-    @get:JvmName("responseValidation") val responseValidation: Boolean,
+class ClientOptions private constructor(
+  @get:JvmName("httpClient") val httpClient: HttpClient,
+  @get:JvmName("jsonMapper") val jsonMapper: JsonMapper,
+  @get:JvmName("clock") val clock: Clock,
+  @get:JvmName("baseUrl") val baseUrl: String,
+  @get:JvmName("headers") val headers: ListMultimap<String, String>,
+  @get:JvmName("queryParams") val queryParams: ListMultimap<String, String>,
+  @get:JvmName("responseValidation") val responseValidation: Boolean,
+
 ) {
 
     companion object {
 
         const val PRODUCTION_URL = "/api/v3"
 
-        @JvmStatic fun builder() = Builder()
+        @JvmStatic
+        fun builder() = Builder()
 
-        @JvmStatic fun fromEnv(): ClientOptions = builder().fromEnv().build()
+        @JvmStatic
+        fun fromEnv(): ClientOptions = builder().fromEnv().build()
     }
 
     class Builder {
@@ -40,13 +44,21 @@ private constructor(
         private var responseValidation: Boolean = false
         private var maxRetries: Int = 2
 
-        fun httpClient(httpClient: HttpClient) = apply { this.httpClient = httpClient }
+        fun httpClient(httpClient: HttpClient) = apply {
+            this.httpClient = httpClient
+        }
 
-        fun jsonMapper(jsonMapper: JsonMapper) = apply { this.jsonMapper = jsonMapper }
+        fun jsonMapper(jsonMapper: JsonMapper) = apply {
+            this.jsonMapper = jsonMapper
+        }
 
-        fun baseUrl(baseUrl: String) = apply { this.baseUrl = baseUrl }
+        fun baseUrl(baseUrl: String) = apply {
+            this.baseUrl = baseUrl
+        }
 
-        fun clock(clock: Clock) = apply { this.clock = clock }
+        fun clock(clock: Clock) = apply {
+            this.clock = clock
+        }
 
         fun headers(headers: Map<String, Iterable<String>>) = apply {
             this.headers.clear()
@@ -65,7 +77,9 @@ private constructor(
             headers.forEach(this::putHeaders)
         }
 
-        fun removeHeader(name: String) = apply { this.headers.put(name, mutableListOf()) }
+        fun removeHeader(name: String) = apply {
+            this.headers.put(name, mutableListOf())
+        }
 
         fun queryParams(queryParams: Map<String, Iterable<String>>) = apply {
             this.queryParams.clear()
@@ -84,43 +98,51 @@ private constructor(
             queryParams.forEach(this::putQueryParams)
         }
 
-        fun removeQueryParam(name: String) = apply { this.queryParams.put(name, mutableListOf()) }
+        fun removeQueryParam(name: String) = apply {
+            this.queryParams.put(name, mutableListOf())
+        }
 
         fun responseValidation(responseValidation: Boolean) = apply {
             this.responseValidation = responseValidation
         }
 
-        fun maxRetries(maxRetries: Int) = apply { this.maxRetries = maxRetries }
+        fun maxRetries(maxRetries: Int) = apply {
+            this.maxRetries = maxRetries
+        }
 
-        fun fromEnv() = apply {}
+        fun fromEnv() = apply {
+
+        }
 
         fun build(): ClientOptions {
-            checkNotNull(httpClient) { "`httpClient` is required but was not set" }
+          checkNotNull(httpClient) {
+              "`httpClient` is required but was not set"
+          }
 
-            val headers = ArrayListMultimap.create<String, String>()
-            val queryParams = ArrayListMultimap.create<String, String>()
-            headers.put("X-Stainless-Lang", "java")
-            headers.put("X-Stainless-Arch", getOsArch())
-            headers.put("X-Stainless-OS", getOsName())
-            headers.put("X-Stainless-OS-Version", getOsVersion())
-            headers.put("X-Stainless-Package-Version", getPackageVersion())
-            headers.put("X-Stainless-Runtime-Version", getJavaVersion())
-            this.headers.forEach(headers::replaceValues)
-            this.queryParams.forEach(queryParams::replaceValues)
+          val headers = ArrayListMultimap.create<String, String>()
+          val queryParams = ArrayListMultimap.create<String, String>()
+          headers.put("X-Stainless-Lang", "java")
+          headers.put("X-Stainless-Arch", getOsArch())
+          headers.put("X-Stainless-OS", getOsName())
+          headers.put("X-Stainless-OS-Version", getOsVersion())
+          headers.put("X-Stainless-Package-Version", getPackageVersion())
+          headers.put("X-Stainless-Runtime-Version", getJavaVersion())
+          this.headers.forEach(headers::replaceValues)
+          this.queryParams.forEach(queryParams::replaceValues)
 
-            return ClientOptions(
-                RetryingHttpClient.builder()
-                    .httpClient(httpClient!!)
-                    .clock(clock)
-                    .maxRetries(maxRetries)
-                    .build(),
-                jsonMapper ?: jsonMapper(),
-                clock,
-                baseUrl,
-                headers.toUnmodifiable(),
-                queryParams.toUnmodifiable(),
-                responseValidation,
-            )
+          return ClientOptions(
+              RetryingHttpClient.builder()
+              .httpClient(httpClient!!)
+              .clock(clock)
+              .maxRetries(maxRetries)
+              .build(),
+              jsonMapper ?: jsonMapper(),
+              clock,
+              baseUrl,
+              headers.toUnmodifiable(),
+              queryParams.toUnmodifiable(),
+              responseValidation,
+          )
         }
     }
 }
