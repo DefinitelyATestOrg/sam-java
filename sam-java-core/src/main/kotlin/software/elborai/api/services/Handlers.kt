@@ -5,6 +5,10 @@ package software.elborai.api.services
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.google.common.collect.ListMultimap
+import java.io.ByteArrayInputStream
+import java.io.InputStream
+import java.io.OutputStream
+import java.util.Optional
 import software.elborai.api.core.http.BinaryResponseContent
 import software.elborai.api.core.http.HttpResponse
 import software.elborai.api.core.http.HttpResponse.Handler
@@ -18,23 +22,16 @@ import software.elborai.api.errors.SamException
 import software.elborai.api.errors.UnauthorizedException
 import software.elborai.api.errors.UnexpectedStatusCodeException
 import software.elborai.api.errors.UnprocessableEntityException
-import java.io.ByteArrayInputStream
-import java.io.InputStream
-import java.io.OutputStream
-import java.util.Optional
 
-@JvmSynthetic
-internal fun emptyHandler(): Handler<Void?> = EmptyHandler
+@JvmSynthetic internal fun emptyHandler(): Handler<Void?> = EmptyHandler
 
 private object EmptyHandler : Handler<Void?> {
     override fun handle(response: HttpResponse): Void? = null
 }
 
-@JvmSynthetic
-internal fun stringHandler(): Handler<String> = StringHandler
+@JvmSynthetic internal fun stringHandler(): Handler<String> = StringHandler
 
-@JvmSynthetic
-internal fun binaryHandler(): Handler<BinaryResponseContent> = BinaryHandler
+@JvmSynthetic internal fun binaryHandler(): Handler<BinaryResponseContent> = BinaryHandler
 
 private object StringHandler : Handler<String> {
     override fun handle(response: HttpResponse): String {
@@ -45,7 +42,8 @@ private object StringHandler : Handler<String> {
 private object BinaryHandler : Handler<BinaryResponseContent> {
     override fun handle(response: HttpResponse): BinaryResponseContent {
         return object : BinaryResponseContent {
-            override fun contentType(): Optional<String> = Optional.ofNullable(response.headers().get("Content-Type").firstOrNull())
+            override fun contentType(): Optional<String> =
+                Optional.ofNullable(response.headers().get("Content-Type").firstOrNull())
 
             override fun body(): InputStream = response.body()
 
