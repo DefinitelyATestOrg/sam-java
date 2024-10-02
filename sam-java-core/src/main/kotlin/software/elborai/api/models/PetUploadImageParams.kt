@@ -54,28 +54,9 @@ constructor(
         private val body: String?,
     ) {
 
-        private var hashCode: Int = 0
-
         @JsonProperty("body") fun body(): String? = body
 
         fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is PetUploadImageBody && this.body == other.body
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = Objects.hash(body)
-            }
-            return hashCode
-        }
-
-        override fun toString() = "PetUploadImageBody{body=$body}"
 
         companion object {
 
@@ -93,6 +74,25 @@ constructor(
 
             @JsonProperty("body") fun body(body: String) = apply { this.body = body }
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is PetUploadImageBody && this.body == other.body
+        }
+
+        private var hashCode: Int = 0
+
+        override fun hashCode(): Int {
+            if (hashCode == 0) {
+                hashCode = Objects.hash(body)
+            }
+            return hashCode
+        }
+
+        override fun toString() = "PetUploadImageBody{body=$body}"
     }
 
     fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams

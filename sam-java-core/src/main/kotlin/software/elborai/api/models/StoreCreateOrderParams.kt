@@ -74,8 +74,6 @@ constructor(
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
-        private var hashCode: Int = 0
-
         @JsonProperty("id") fun id(): Long? = id
 
         @JsonProperty("complete") fun complete(): Boolean? = complete
@@ -94,40 +92,6 @@ constructor(
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
         fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is StoreCreateOrderBody &&
-                this.id == other.id &&
-                this.complete == other.complete &&
-                this.petId == other.petId &&
-                this.quantity == other.quantity &&
-                this.shipDate == other.shipDate &&
-                this.status == other.status &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        id,
-                        complete,
-                        petId,
-                        quantity,
-                        shipDate,
-                        status,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "StoreCreateOrderBody{id=$id, complete=$complete, petId=$petId, quantity=$quantity, shipDate=$shipDate, status=$status, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -196,6 +160,42 @@ constructor(
                     additionalProperties.toUnmodifiable(),
                 )
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is StoreCreateOrderBody &&
+                this.id == other.id &&
+                this.complete == other.complete &&
+                this.petId == other.petId &&
+                this.quantity == other.quantity &&
+                this.shipDate == other.shipDate &&
+                this.status == other.status &&
+                this.additionalProperties == other.additionalProperties
+        }
+
+        private var hashCode: Int = 0
+
+        override fun hashCode(): Int {
+            if (hashCode == 0) {
+                hashCode =
+                    Objects.hash(
+                        id,
+                        complete,
+                        petId,
+                        quantity,
+                        shipDate,
+                        status,
+                        additionalProperties,
+                    )
+            }
+            return hashCode
+        }
+
+        override fun toString() =
+            "StoreCreateOrderBody{id=$id, complete=$complete, petId=$petId, quantity=$quantity, shipDate=$shipDate, status=$status, additionalProperties=$additionalProperties}"
     }
 
     fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
