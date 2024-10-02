@@ -33,8 +33,6 @@ private constructor(
 
     private var validated: Boolean = false
 
-    private var hashCode: Int = 0
-
     fun id(): Optional<Long> = Optional.ofNullable(id.getNullable("id"))
 
     fun name(): String = name.getRequired("name")
@@ -78,40 +76,6 @@ private constructor(
     }
 
     fun toBuilder() = Builder().from(this)
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return other is Pet &&
-            this.id == other.id &&
-            this.name == other.name &&
-            this.category == other.category &&
-            this.photoUrls == other.photoUrls &&
-            this.tags == other.tags &&
-            this.status == other.status &&
-            this.additionalProperties == other.additionalProperties
-    }
-
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode =
-                Objects.hash(
-                    id,
-                    name,
-                    category,
-                    photoUrls,
-                    tags,
-                    status,
-                    additionalProperties,
-                )
-        }
-        return hashCode
-    }
-
-    override fun toString() =
-        "Pet{id=$id, name=$name, category=$category, photoUrls=$photoUrls, tags=$tags, status=$status, additionalProperties=$additionalProperties}"
 
     companion object {
 
@@ -212,8 +176,6 @@ private constructor(
 
         private var validated: Boolean = false
 
-        private var hashCode: Int = 0
-
         fun id(): Optional<Long> = Optional.ofNullable(id.getNullable("id"))
 
         fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
@@ -235,32 +197,6 @@ private constructor(
         }
 
         fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Category &&
-                this.id == other.id &&
-                this.name == other.name &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        id,
-                        name,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "Category{id=$id, name=$name, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -311,6 +247,34 @@ private constructor(
                     additionalProperties.toUnmodifiable(),
                 )
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Category &&
+                this.id == other.id &&
+                this.name == other.name &&
+                this.additionalProperties == other.additionalProperties
+        }
+
+        private var hashCode: Int = 0
+
+        override fun hashCode(): Int {
+            if (hashCode == 0) {
+                hashCode =
+                    Objects.hash(
+                        id,
+                        name,
+                        additionalProperties,
+                    )
+            }
+            return hashCode
+        }
+
+        override fun toString() =
+            "Category{id=$id, name=$name, additionalProperties=$additionalProperties}"
     }
 
     class Status
@@ -387,8 +351,6 @@ private constructor(
 
         private var validated: Boolean = false
 
-        private var hashCode: Int = 0
-
         fun id(): Optional<Long> = Optional.ofNullable(id.getNullable("id"))
 
         fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
@@ -410,32 +372,6 @@ private constructor(
         }
 
         fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Tag &&
-                this.id == other.id &&
-                this.name == other.name &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        id,
-                        name,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "Tag{id=$id, name=$name, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -486,5 +422,69 @@ private constructor(
                     additionalProperties.toUnmodifiable(),
                 )
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Tag &&
+                this.id == other.id &&
+                this.name == other.name &&
+                this.additionalProperties == other.additionalProperties
+        }
+
+        private var hashCode: Int = 0
+
+        override fun hashCode(): Int {
+            if (hashCode == 0) {
+                hashCode =
+                    Objects.hash(
+                        id,
+                        name,
+                        additionalProperties,
+                    )
+            }
+            return hashCode
+        }
+
+        override fun toString() =
+            "Tag{id=$id, name=$name, additionalProperties=$additionalProperties}"
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is Pet &&
+            this.id == other.id &&
+            this.name == other.name &&
+            this.category == other.category &&
+            this.photoUrls == other.photoUrls &&
+            this.tags == other.tags &&
+            this.status == other.status &&
+            this.additionalProperties == other.additionalProperties
+    }
+
+    private var hashCode: Int = 0
+
+    override fun hashCode(): Int {
+        if (hashCode == 0) {
+            hashCode =
+                Objects.hash(
+                    id,
+                    name,
+                    category,
+                    photoUrls,
+                    tags,
+                    status,
+                    additionalProperties,
+                )
+        }
+        return hashCode
+    }
+
+    override fun toString() =
+        "Pet{id=$id, name=$name, category=$category, photoUrls=$photoUrls, tags=$tags, status=$status, additionalProperties=$additionalProperties}"
 }

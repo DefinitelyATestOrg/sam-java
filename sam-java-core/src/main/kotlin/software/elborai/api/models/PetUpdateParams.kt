@@ -73,8 +73,6 @@ constructor(
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
-        private var hashCode: Int = 0
-
         @JsonProperty("name") fun name(): String? = name
 
         @JsonProperty("photoUrls") fun photoUrls(): List<String>? = photoUrls
@@ -93,40 +91,6 @@ constructor(
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
         fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is PetUpdateBody &&
-                this.name == other.name &&
-                this.photoUrls == other.photoUrls &&
-                this.id == other.id &&
-                this.category == other.category &&
-                this.status == other.status &&
-                this.tags == other.tags &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        name,
-                        photoUrls,
-                        id,
-                        category,
-                        status,
-                        tags,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "PetUpdateBody{name=$name, photoUrls=$photoUrls, id=$id, category=$category, status=$status, tags=$tags, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -195,6 +159,42 @@ constructor(
                     additionalProperties.toUnmodifiable(),
                 )
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is PetUpdateBody &&
+                this.name == other.name &&
+                this.photoUrls == other.photoUrls &&
+                this.id == other.id &&
+                this.category == other.category &&
+                this.status == other.status &&
+                this.tags == other.tags &&
+                this.additionalProperties == other.additionalProperties
+        }
+
+        private var hashCode: Int = 0
+
+        override fun hashCode(): Int {
+            if (hashCode == 0) {
+                hashCode =
+                    Objects.hash(
+                        name,
+                        photoUrls,
+                        id,
+                        category,
+                        status,
+                        tags,
+                        additionalProperties,
+                    )
+            }
+            return hashCode
+        }
+
+        override fun toString() =
+            "PetUpdateBody{name=$name, photoUrls=$photoUrls, id=$id, category=$category, status=$status, tags=$tags, additionalProperties=$additionalProperties}"
     }
 
     fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
@@ -371,8 +371,6 @@ constructor(
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
-        private var hashCode: Int = 0
-
         @JsonProperty("id") fun id(): Long? = id
 
         @JsonProperty("name") fun name(): String? = name
@@ -382,32 +380,6 @@ constructor(
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
         fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Category &&
-                this.id == other.id &&
-                this.name == other.name &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        id,
-                        name,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "Category{id=$id, name=$name, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -452,6 +424,34 @@ constructor(
                     additionalProperties.toUnmodifiable(),
                 )
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Category &&
+                this.id == other.id &&
+                this.name == other.name &&
+                this.additionalProperties == other.additionalProperties
+        }
+
+        private var hashCode: Int = 0
+
+        override fun hashCode(): Int {
+            if (hashCode == 0) {
+                hashCode =
+                    Objects.hash(
+                        id,
+                        name,
+                        additionalProperties,
+                    )
+            }
+            return hashCode
+        }
+
+        override fun toString() =
+            "Category{id=$id, name=$name, additionalProperties=$additionalProperties}"
     }
 
     class Status
@@ -526,8 +526,6 @@ constructor(
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
-        private var hashCode: Int = 0
-
         @JsonProperty("id") fun id(): Long? = id
 
         @JsonProperty("name") fun name(): String? = name
@@ -537,32 +535,6 @@ constructor(
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
         fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Tag &&
-                this.id == other.id &&
-                this.name == other.name &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        id,
-                        name,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "Tag{id=$id, name=$name, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -607,5 +579,33 @@ constructor(
                     additionalProperties.toUnmodifiable(),
                 )
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Tag &&
+                this.id == other.id &&
+                this.name == other.name &&
+                this.additionalProperties == other.additionalProperties
+        }
+
+        private var hashCode: Int = 0
+
+        override fun hashCode(): Int {
+            if (hashCode == 0) {
+                hashCode =
+                    Objects.hash(
+                        id,
+                        name,
+                        additionalProperties,
+                    )
+            }
+            return hashCode
+        }
+
+        override fun toString() =
+            "Tag{id=$id, name=$name, additionalProperties=$additionalProperties}"
     }
 }
