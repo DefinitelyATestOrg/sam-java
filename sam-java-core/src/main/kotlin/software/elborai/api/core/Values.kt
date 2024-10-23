@@ -30,7 +30,7 @@ import java.nio.charset.Charset
 import java.util.Objects
 import java.util.Optional
 import org.apache.hc.core5.http.ContentType
-import software.elborai.api.errors.IncreaseInvalidDataException
+import software.elborai.api.errors.SamInvalidDataException
 
 @JsonDeserialize(using = JsonField.Deserializer::class)
 sealed class JsonField<out T : Any> {
@@ -77,7 +77,7 @@ sealed class JsonField<out T : Any> {
     fun asStringOrThrow(): String =
         when (this) {
             is JsonString -> value
-            else -> throw IncreaseInvalidDataException("Value is not a string")
+            else -> throw SamInvalidDataException("Value is not a string")
         }
 
     fun asArray(): Optional<List<JsonValue>> =
@@ -96,9 +96,9 @@ sealed class JsonField<out T : Any> {
     internal fun getRequired(name: String): T =
         when (this) {
             is KnownValue -> value
-            is JsonMissing -> throw IncreaseInvalidDataException("'${name}' is not set")
-            is JsonNull -> throw IncreaseInvalidDataException("'${name}' is null")
-            else -> throw IncreaseInvalidDataException("'${name}' is invalid, received ${this}")
+            is JsonMissing -> throw SamInvalidDataException("'${name}' is not set")
+            is JsonNull -> throw SamInvalidDataException("'${name}' is null")
+            else -> throw SamInvalidDataException("'${name}' is invalid, received ${this}")
         }
 
     @JvmSynthetic
@@ -107,7 +107,7 @@ sealed class JsonField<out T : Any> {
             is KnownValue -> value
             is JsonMissing -> null
             is JsonNull -> null
-            else -> throw IncreaseInvalidDataException("'${name}' is invalid, received ${this}")
+            else -> throw SamInvalidDataException("'${name}' is invalid, received ${this}")
         }
 
     @JvmSynthetic
@@ -142,6 +142,8 @@ sealed class JsonField<out T : Any> {
     // This filter should not be used directly and should instead use the @ExcludeMissing annotation
     class IsMissing {
         override fun equals(other: Any?): Boolean = other is JsonMissing
+
+        override fun hashCode(): Int = Objects.hash()
     }
 
     class Deserializer(private val type: JavaType? = null) :
@@ -479,9 +481,8 @@ internal constructor(
         }
     }
 
-    override fun toString(): String {
-        return "MultipartFormValue(name='$name', contentType=$contentType, filename=$filename, value=${valueToString()})"
-    }
+    override fun toString(): String =
+        "MultipartFormValue{name=$name, contentType=$contentType, filename=$filename, value=${valueToString()}}"
 
     private fun valueToString(): String =
         when (value) {
