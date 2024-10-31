@@ -5,7 +5,7 @@ package software.elborai.api.models
 import java.util.Objects
 import java.util.Optional
 import software.elborai.api.core.NoAutoDetect
-import software.elborai.api.core.toUnmodifiable
+import software.elborai.api.core.toImmutable
 import software.elborai.api.models.*
 
 class PetFindByTagsParams
@@ -22,7 +22,7 @@ constructor(
         val params = mutableMapOf<String, List<String>>()
         this.tags?.let { params.put("tags", listOf(it.joinToString(separator = ","))) }
         params.putAll(additionalQueryParams)
-        return params.toUnmodifiable()
+        return params.toImmutable()
     }
 
     @JvmSynthetic internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
@@ -118,9 +118,9 @@ constructor(
 
         fun build(): PetFindByTagsParams =
             PetFindByTagsParams(
-                if (tags.size == 0) null else tags.toUnmodifiable(),
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+                if (tags.size == 0) null else tags.toImmutable(),
+                additionalQueryParams.mapValues { it.value.toImmutable() }.toImmutable(),
+                additionalHeaders.mapValues { it.value.toImmutable() }.toImmutable(),
             )
     }
 }

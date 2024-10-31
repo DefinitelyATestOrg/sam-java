@@ -6,7 +6,7 @@ import java.util.Objects
 import java.util.Optional
 import software.elborai.api.core.JsonValue
 import software.elborai.api.core.NoAutoDetect
-import software.elborai.api.core.toUnmodifiable
+import software.elborai.api.core.toImmutable
 import software.elborai.api.models.*
 
 class PetDeleteParams
@@ -138,9 +138,9 @@ constructor(
         fun build(): PetDeleteParams =
             PetDeleteParams(
                 checkNotNull(petId) { "`petId` is required but was not set" },
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalBodyProperties.toUnmodifiable(),
+                additionalQueryParams.mapValues { it.value.toImmutable() }.toImmutable(),
+                additionalHeaders.mapValues { it.value.toImmutable() }.toImmutable(),
+                additionalBodyProperties.toImmutable(),
             )
     }
 }
