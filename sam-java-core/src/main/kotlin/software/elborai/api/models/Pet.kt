@@ -15,7 +15,7 @@ import software.elborai.api.core.JsonField
 import software.elborai.api.core.JsonMissing
 import software.elborai.api.core.JsonValue
 import software.elborai.api.core.NoAutoDetect
-import software.elborai.api.core.toUnmodifiable
+import software.elborai.api.core.toImmutable
 import software.elborai.api.errors.SamInvalidDataException
 
 @JsonDeserialize(builder = Pet.Builder::class)
@@ -158,10 +158,10 @@ private constructor(
                 id,
                 name,
                 category,
-                photoUrls.map { it.toUnmodifiable() },
-                tags.map { it.toUnmodifiable() },
+                photoUrls.map { it.toImmutable() },
+                tags.map { it.toImmutable() },
                 status,
-                additionalProperties.toUnmodifiable(),
+                additionalProperties.toImmutable(),
             )
     }
 
@@ -244,7 +244,7 @@ private constructor(
                 Category(
                     id,
                     name,
-                    additionalProperties.toUnmodifiable(),
+                    additionalProperties.toImmutable(),
                 )
         }
 
@@ -411,7 +411,7 @@ private constructor(
                 Tag(
                     id,
                     name,
-                    additionalProperties.toUnmodifiable(),
+                    additionalProperties.toImmutable(),
                 )
         }
 

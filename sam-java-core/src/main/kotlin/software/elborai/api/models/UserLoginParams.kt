@@ -5,7 +5,7 @@ package software.elborai.api.models
 import java.util.Objects
 import java.util.Optional
 import software.elborai.api.core.NoAutoDetect
-import software.elborai.api.core.toUnmodifiable
+import software.elborai.api.core.toImmutable
 import software.elborai.api.models.*
 
 class UserLoginParams
@@ -26,7 +26,7 @@ constructor(
         this.password?.let { params.put("password", listOf(it.toString())) }
         this.username?.let { params.put("username", listOf(it.toString())) }
         params.putAll(additionalQueryParams)
-        return params.toUnmodifiable()
+        return params.toImmutable()
     }
 
     @JvmSynthetic internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
@@ -123,8 +123,8 @@ constructor(
             UserLoginParams(
                 password,
                 username,
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+                additionalQueryParams.mapValues { it.value.toImmutable() }.toImmutable(),
+                additionalHeaders.mapValues { it.value.toImmutable() }.toImmutable(),
             )
     }
 }
