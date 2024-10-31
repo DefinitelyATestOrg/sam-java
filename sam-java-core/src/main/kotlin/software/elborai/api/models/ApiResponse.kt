@@ -13,7 +13,7 @@ import software.elborai.api.core.JsonField
 import software.elborai.api.core.JsonMissing
 import software.elborai.api.core.JsonValue
 import software.elborai.api.core.NoAutoDetect
-import software.elborai.api.core.toUnmodifiable
+import software.elborai.api.core.toImmutable
 
 @JsonDeserialize(builder = ApiResponse.Builder::class)
 @NoAutoDetect
@@ -111,7 +111,7 @@ private constructor(
                 code,
                 type,
                 message,
-                additionalProperties.toUnmodifiable(),
+                additionalProperties.toImmutable(),
             )
     }
 
