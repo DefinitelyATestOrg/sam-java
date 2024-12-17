@@ -1,10 +1,6 @@
 # Sam Java API Library
 
-<!-- x-release-please-start-version -->
-
-[![Maven Central](https://img.shields.io/maven-central/v/software.elborai.api/sam-java)](https://central.sonatype.com/artifact/software.elborai.api/sam-java/0.1.0-alpha.1)
-
-<!-- x-release-please-end -->
+[![Maven Central](https://img.shields.io/maven-central/v/com.sam.api/sam-java)](https://central.sonatype.com/artifact/com.sam.api/sam-java/0.1.0-alpha.1)
 
 The Sam Java SDK provides convenient access to the Sam REST API from applications written in Java. It includes helper classes with helpful types and documentation for every request and response property.
 
@@ -24,31 +20,48 @@ The REST API documentation can be found on [docs.sam.com](https://docs.sam.com)
 
 #### Gradle
 
-<!-- x-release-please-start-version -->
-
 ```kotlin
-implementation("software.elborai.api:sam-java:0.1.0-alpha.1")
+implementation("com.sam.api:sam-java:0.1.0-alpha.1")
 ```
 
 #### Maven
 
 ```xml
 <dependency>
-    <groupId>software.elborai.api</groupId>
+    <groupId>com.sam.api</groupId>
     <artifactId>sam-java</artifactId>
     <version>0.1.0-alpha.1</version>
 </dependency>
 ```
 
-<!-- x-release-please-end -->
-
 ### Configure the client
 
-Use `SamOkHttpClient.builder()` to configure the client.
+Use `SamOkHttpClient.builder()` to configure the client. At a minimum you need to set `.apiKey()`:
+
+```java
+import com.sam.api.client.SamClient;
+import com.sam.api.client.okhttp.SamOkHttpClient;
+
+SamClient client = SamOkHttpClient.builder()
+    .apiKey("My API Key")
+    .build();
+```
+
+Alternately, set the environment with `API_KEY`, and use `SamOkHttpClient.fromEnv()` to read from the environment.
 
 ```java
 SamClient client = SamOkHttpClient.fromEnv();
+
+// Note: you can also call fromEnv() from the client builder, for example if you need to set additional properties
+SamClient client = SamOkHttpClient.builder()
+    .fromEnv()
+    // ... set properties on the builder
+    .build();
 ```
+
+| Property | Environment variable | Required | Default value |
+| -------- | -------------------- | -------- | ------------- |
+| apiKey   | `API_KEY`            | true     | —             |
 
 Read the documentation for more configuration options.
 
@@ -56,15 +69,15 @@ Read the documentation for more configuration options.
 
 ### Example: creating a resource
 
-To create a new store, first use the `StoreCreateOrderParams` builder to specify attributes,
-then pass that to the `createOrder` method of the `stores` service.
+To create a new user, first use the `UserCreateParams` builder to specify attributes,
+then pass that to the `create` method of the `users` service.
 
 ```java
-import software.elborai.api.models.Order;
-import software.elborai.api.models.StoreCreateOrderParams;
+import com.sam.api.models.User;
+import com.sam.api.models.UserCreateParams;
 
-StoreCreateOrderParams params = StoreCreateOrderParams.builder().build();
-Order order = client.stores().createOrder(params);
+UserCreateParams params = UserCreateParams.builder().build();
+User user = client.users().create(params);
 ```
 
 ---
@@ -75,15 +88,15 @@ Order order = client.stores().createOrder(params);
 
 To make a request to the Sam API, you generally build an instance of the appropriate `Params` class.
 
-In [Example: creating a resource](#example-creating-a-resource) above, we used the `StoreCreateOrderParams.builder()` to pass to
-the `createOrder` method of the `stores` service.
+In [Example: creating a resource](#example-creating-a-resource) above, we used the `UserCreateParams.builder()` to pass to
+the `create` method of the `users` service.
 
 Sometimes, the API may support other properties that are not yet supported in the Java SDK types. In that case,
 you can attach them using the `putAdditionalProperty` method.
 
 ```java
-import software.elborai.api.models.core.JsonValue;
-StoreCreateOrderParams params = StoreCreateOrderParams.builder()
+import com.sam.api.models.core.JsonValue;
+UserCreateParams params = UserCreateParams.builder()
     // ... normal properties
     .putAdditionalProperty("secret_param", JsonValue.from("4242"))
     .build();
@@ -96,7 +109,7 @@ StoreCreateOrderParams params = StoreCreateOrderParams.builder()
 When receiving a response, the Sam Java SDK will deserialize it into instances of the typed model classes. In rare cases, the API may return a response property that doesn't match the expected Java type. If you directly access the mistaken property, the SDK will throw an unchecked `SamInvalidDataException` at runtime. If you would prefer to check in advance that that response is completely well-typed, call `.validate()` on the returned model.
 
 ```java
-Order order = client.stores().createOrder().validate();
+User user = client.users().create().validate();
 ```
 
 ### Response properties as JSON
@@ -219,6 +232,22 @@ get a map of untyped fields of type `Map<String, JsonValue>`. You can then acces
 `._additionalProperties().get("secret_prop").asString()` or use other helpers defined on the `JsonValue` class
 to extract it to a desired type.
 
+## Logging
+
+We use the standard [OkHttp logging interceptor](https://github.com/square/okhttp/tree/master/okhttp-logging-interceptor).
+
+You can enable logging by setting the environment variable `SAM_LOG` to `info`.
+
+```sh
+$ export SAM_LOG=info
+```
+
+Or to `debug` for more verbose logging.
+
+```sh
+$ export SAM_LOG=debug
+```
+
 ## Semantic versioning
 
 This package generally follows [SemVer](https://semver.org/spec/v2.0.0.html) conventions, though certain backwards-incompatible changes may be released as minor versions:
@@ -228,7 +257,7 @@ This package generally follows [SemVer](https://semver.org/spec/v2.0.0.html) con
 
 We take backwards-compatibility seriously and work hard to ensure you can rely on a smooth upgrade experience.
 
-We are keen for your feedback; please open an [issue](https://www.github.com/DefinitelyATestOrg/sam-java/issues) with questions, bugs, or suggestions.
+We are keen for your feedback; please open an [issue](https://www.github.com/stainless-sdks/sam-java/issues) with questions, bugs, or suggestions.
 
 ## Requirements
 
