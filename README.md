@@ -1,6 +1,10 @@
 # Sam Java API Library
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.sam.api/sam-java)](https://central.sonatype.com/artifact/com.sam.api/sam-java/0.1.0-alpha.1)
+<!-- x-release-please-start-version -->
+
+[![Maven Central](https://img.shields.io/maven-central/v/me.elborai.api/sam-java)](https://central.sonatype.com/artifact/me.elborai.api/sam-java/0.1.0-alpha.1)
+
+<!-- x-release-please-end -->
 
 The Sam Java SDK provides convenient access to the Sam REST API from applications written in Java. It includes helper classes with helpful types and documentation for every request and response property.
 
@@ -20,27 +24,31 @@ The REST API documentation can be found on [docs.sam.com](https://docs.sam.com)
 
 #### Gradle
 
+<!-- x-release-please-start-version -->
+
 ```kotlin
-implementation("com.sam.api:sam-java:0.1.0-alpha.1")
+implementation("me.elborai.api:sam-java:0.1.0-alpha.1")
 ```
 
 #### Maven
 
 ```xml
 <dependency>
-    <groupId>com.sam.api</groupId>
+    <groupId>me.elborai.api</groupId>
     <artifactId>sam-java</artifactId>
     <version>0.1.0-alpha.1</version>
 </dependency>
 ```
+
+<!-- x-release-please-end -->
 
 ### Configure the client
 
 Use `SamOkHttpClient.builder()` to configure the client. At a minimum you need to set `.apiKey()`:
 
 ```java
-import com.sam.api.client.SamClient;
-import com.sam.api.client.okhttp.SamOkHttpClient;
+import me.elborai.api.client.SamClient;
+import me.elborai.api.client.okhttp.SamOkHttpClient;
 
 SamClient client = SamOkHttpClient.builder()
     .apiKey("My API Key")
@@ -73,8 +81,8 @@ To create a new user, first use the `UserCreateParams` builder to specify attrib
 then pass that to the `create` method of the `users` service.
 
 ```java
-import com.sam.api.models.User;
-import com.sam.api.models.UserCreateParams;
+import me.elborai.api.models.User;
+import me.elborai.api.models.UserCreateParams;
 
 UserCreateParams params = UserCreateParams.builder().build();
 User user = client.users().create(params);
@@ -95,7 +103,7 @@ Sometimes, the API may support other properties that are not yet supported in th
 you can attach them using the `putAdditionalProperty` method.
 
 ```java
-import com.sam.api.models.core.JsonValue;
+import me.elborai.api.models.core.JsonValue;
 UserCreateParams params = UserCreateParams.builder()
     // ... normal properties
     .putAdditionalProperty("secret_param", JsonValue.from("4242"))
@@ -257,7 +265,7 @@ This package generally follows [SemVer](https://semver.org/spec/v2.0.0.html) con
 
 We take backwards-compatibility seriously and work hard to ensure you can rely on a smooth upgrade experience.
 
-We are keen for your feedback; please open an [issue](https://www.github.com/stainless-sdks/sam-java/issues) with questions, bugs, or suggestions.
+We are keen for your feedback; please open an [issue](https://www.github.com/DefinitelyATestOrg/sam-java/issues) with questions, bugs, or suggestions.
 
 ## Requirements
 
