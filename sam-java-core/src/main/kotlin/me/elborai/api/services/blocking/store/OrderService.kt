@@ -5,7 +5,7 @@
 package me.elborai.api.services.blocking.store
 
 import me.elborai.api.core.RequestOptions
-import me.elborai.api.models.Order
+import me.elborai.api.models.CoolOrder
 import me.elborai.api.models.StoreOrderDeleteParams
 import me.elborai.api.models.StoreOrderRetrieveParams
 
@@ -19,7 +19,7 @@ interface OrderService {
     fun retrieve(
         params: StoreOrderRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none()
-    ): Order
+    ): CoolOrder
 
     /**
      * For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will
