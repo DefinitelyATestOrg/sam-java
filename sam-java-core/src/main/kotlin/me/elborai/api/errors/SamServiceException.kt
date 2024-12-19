@@ -1,0 +1,23 @@
+package me.elborai.api.errors
+
+import me.elborai.api.core.http.Headers
+
+abstract class SamServiceException
+@JvmOverloads
+constructor(
+    private val statusCode: Int,
+    private val headers: Headers,
+    private val body: String,
+    private val error: SamError,
+    message: String = "$statusCode: $error",
+    cause: Throwable? = null
+) : SamException(message, cause) {
+
+    fun statusCode(): Int = statusCode
+
+    fun headers(): Headers = headers
+
+    fun body(): String = body
+
+    fun error(): SamError = error
+}
