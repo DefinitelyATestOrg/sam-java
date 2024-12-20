@@ -2,7 +2,7 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/me.elborai.api/sam-java)](https://central.sonatype.com/artifact/me.elborai.api/sam-java/0.1.0-alpha.1)
+[![Maven Central](https://img.shields.io/maven-central/v/me.elborai.api/sam-java)](https://central.sonatype.com/artifact/me.elborai.api/sam-java/0.1.0-alpha.2)
 
 <!-- x-release-please-end -->
 
@@ -27,7 +27,7 @@ The REST API documentation can be found on [docs.sam.com](https://docs.sam.com)
 <!-- x-release-please-start-version -->
 
 ```kotlin
-implementation("me.elborai.api:sam-java:0.1.0-alpha.1")
+implementation("me.elborai.api:sam-java:0.1.0-alpha.2")
 ```
 
 #### Maven
@@ -36,7 +36,7 @@ implementation("me.elborai.api:sam-java:0.1.0-alpha.1")
 <dependency>
     <groupId>me.elborai.api</groupId>
     <artifactId>sam-java</artifactId>
-    <version>0.1.0-alpha.1</version>
+    <version>0.1.0-alpha.2</version>
 </dependency>
 ```
 
