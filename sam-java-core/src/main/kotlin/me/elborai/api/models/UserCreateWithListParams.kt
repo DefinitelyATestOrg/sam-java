@@ -2,8 +2,8 @@
 
 package me.elborai.api.models
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.util.Objects
 import me.elborai.api.core.NoAutoDetect
 import me.elborai.api.core.http.Headers
@@ -32,11 +32,11 @@ constructor(
 
     @JvmSynthetic internal fun getQueryParams(): QueryParams = additionalQueryParams
 
-    @JsonDeserialize(builder = UserCreateWithListBody.Builder::class)
     @NoAutoDetect
     class UserCreateWithListBody
+    @JsonCreator
     internal constructor(
-        private val body: List<User>,
+        @JsonProperty("body") private val body: List<User>,
     ) {
 
         @JsonProperty("body") fun body(): List<User> = body
@@ -57,7 +57,7 @@ constructor(
                 body = userCreateWithListBody.body.toMutableList()
             }
 
-            @JsonProperty("body") fun body(body: List<User>) = apply { this.body = body }
+            fun body(body: List<User>) = apply { this.body = body }
 
             fun build(): UserCreateWithListBody =
                 UserCreateWithListBody(
