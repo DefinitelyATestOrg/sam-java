@@ -32,8 +32,6 @@ private constructor(
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
-
     fun id(): Optional<Long> = Optional.ofNullable(id.getNullable("id"))
 
     fun petId(): Optional<Long> = Optional.ofNullable(petId.getNullable("petId"))
@@ -63,6 +61,8 @@ private constructor(
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+    private var validated: Boolean = false
 
     fun validate(): CoolOrder = apply {
         if (!validated) {
@@ -95,13 +95,13 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(coolOrder: CoolOrder) = apply {
-            this.id = coolOrder.id
-            this.petId = coolOrder.petId
-            this.quantity = coolOrder.quantity
-            this.shipDate = coolOrder.shipDate
-            this.status = coolOrder.status
-            this.complete = coolOrder.complete
-            additionalProperties(coolOrder.additionalProperties)
+            id = coolOrder.id
+            petId = coolOrder.petId
+            quantity = coolOrder.quantity
+            shipDate = coolOrder.shipDate
+            status = coolOrder.status
+            complete = coolOrder.complete
+            additionalProperties = coolOrder.additionalProperties.toMutableMap()
         }
 
         fun id(id: Long) = id(JsonField.of(id))
@@ -142,16 +142,22 @@ private constructor(
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
         @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
         }
 
         fun build(): CoolOrder =

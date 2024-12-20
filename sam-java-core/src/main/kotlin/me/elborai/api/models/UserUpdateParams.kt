@@ -96,22 +96,25 @@ constructor(
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
-        @JsonProperty("id") fun id(): Long? = id
+        @JsonProperty("id") fun id(): Optional<Long> = Optional.ofNullable(id)
 
-        @JsonProperty("email") fun email(): String? = email
+        @JsonProperty("email") fun email(): Optional<String> = Optional.ofNullable(email)
 
-        @JsonProperty("firstName") fun firstName(): String? = firstName
+        @JsonProperty("firstName")
+        fun firstName(): Optional<String> = Optional.ofNullable(firstName)
 
-        @JsonProperty("lastName") fun lastName(): String? = lastName
+        @JsonProperty("lastName") fun lastName(): Optional<String> = Optional.ofNullable(lastName)
 
-        @JsonProperty("password") fun password(): String? = password
+        @JsonProperty("password") fun password(): Optional<String> = Optional.ofNullable(password)
 
-        @JsonProperty("phone") fun phone(): String? = phone
+        @JsonProperty("phone") fun phone(): Optional<String> = Optional.ofNullable(phone)
 
-        @JsonProperty("username") fun bodyUsername(): String? = bodyUsername
+        @JsonProperty("username")
+        fun bodyUsername(): Optional<String> = Optional.ofNullable(bodyUsername)
 
         /** User Status */
-        @JsonProperty("userStatus") fun userStatus(): Long? = userStatus
+        @JsonProperty("userStatus")
+        fun userStatus(): Optional<Long> = Optional.ofNullable(userStatus)
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -138,15 +141,15 @@ constructor(
 
             @JvmSynthetic
             internal fun from(userUpdateBody: UserUpdateBody) = apply {
-                this.id = userUpdateBody.id
-                this.email = userUpdateBody.email
-                this.firstName = userUpdateBody.firstName
-                this.lastName = userUpdateBody.lastName
-                this.password = userUpdateBody.password
-                this.phone = userUpdateBody.phone
-                this.bodyUsername = userUpdateBody.bodyUsername
-                this.userStatus = userUpdateBody.userStatus
-                additionalProperties(userUpdateBody.additionalProperties)
+                id = userUpdateBody.id
+                email = userUpdateBody.email
+                firstName = userUpdateBody.firstName
+                lastName = userUpdateBody.lastName
+                password = userUpdateBody.password
+                phone = userUpdateBody.phone
+                bodyUsername = userUpdateBody.bodyUsername
+                userStatus = userUpdateBody.userStatus
+                additionalProperties = userUpdateBody.additionalProperties.toMutableMap()
             }
 
             @JsonProperty("id") fun id(id: Long) = apply { this.id = id }
@@ -173,16 +176,22 @@ constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): UserUpdateBody =
