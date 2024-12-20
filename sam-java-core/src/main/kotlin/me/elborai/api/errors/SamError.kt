@@ -4,21 +4,23 @@ package me.elborai.api.errors
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.annotation.JsonCreator
 import java.util.Objects
 import me.elborai.api.core.ExcludeMissing
 import me.elborai.api.core.JsonValue
 import me.elborai.api.core.NoAutoDetect
+import me.elborai.api.core.immutableEmptyMap
 import me.elborai.api.core.toImmutable
 
-@JsonDeserialize(builder = SamError.Builder::class)
 @NoAutoDetect
 class SamError
+@JsonCreator
 private constructor(
     @JsonAnyGetter
     @ExcludeMissing
+    @JsonAnySetter
     @get:JvmName("additionalProperties")
-    val additionalProperties: Map<String, JsonValue>,
+    val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     fun toBuilder() = Builder().from(this)
@@ -42,7 +44,6 @@ private constructor(
             putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
             additionalProperties.put(key, value)
         }
