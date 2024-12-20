@@ -36,14 +36,14 @@ class UserCreateParamsTest {
                 .build()
         val body = params.getBody()
         assertThat(body).isNotNull
-        assertThat(body.id()).isEqualTo(10L)
-        assertThat(body.email()).isEqualTo("john@email.com")
-        assertThat(body.firstName()).isEqualTo("John")
-        assertThat(body.lastName()).isEqualTo("James")
-        assertThat(body.password()).isEqualTo("12345")
-        assertThat(body.phone()).isEqualTo("12345")
-        assertThat(body.username()).isEqualTo("theUser")
-        assertThat(body.userStatus()).isEqualTo(1L)
+        assertThat(body.id()).contains(10L)
+        assertThat(body.email()).contains("john@email.com")
+        assertThat(body.firstName()).contains("John")
+        assertThat(body.lastName()).contains("James")
+        assertThat(body.password()).contains("12345")
+        assertThat(body.phone()).contains("12345")
+        assertThat(body.username()).contains("theUser")
+        assertThat(body.userStatus()).contains(1L)
     }
 
     @Test
