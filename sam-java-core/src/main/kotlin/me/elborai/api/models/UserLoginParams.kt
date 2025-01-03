@@ -16,8 +16,10 @@ constructor(
     private val additionalQueryParams: QueryParams,
 ) {
 
+    /** The password for login in clear text */
     fun password(): Optional<String> = Optional.ofNullable(password)
 
+    /** The user name for login */
     fun username(): Optional<String> = Optional.ofNullable(username)
 
     fun _additionalHeaders(): Headers = additionalHeaders

@@ -18,55 +18,35 @@ import me.elborai.api.core.toImmutable
 
 class UserCreateParams
 constructor(
-    private val id: Long?,
-    private val email: String?,
-    private val firstName: String?,
-    private val lastName: String?,
-    private val password: String?,
-    private val phone: String?,
-    private val username: String?,
-    private val userStatus: Long?,
+    private val body: UserCreateBody,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
-    private val additionalBodyProperties: Map<String, JsonValue>,
 ) {
 
-    fun id(): Optional<Long> = Optional.ofNullable(id)
+    fun id(): Optional<Long> = body.id()
 
-    fun email(): Optional<String> = Optional.ofNullable(email)
+    fun email(): Optional<String> = body.email()
 
-    fun firstName(): Optional<String> = Optional.ofNullable(firstName)
+    fun firstName(): Optional<String> = body.firstName()
 
-    fun lastName(): Optional<String> = Optional.ofNullable(lastName)
+    fun lastName(): Optional<String> = body.lastName()
 
-    fun password(): Optional<String> = Optional.ofNullable(password)
+    fun password(): Optional<String> = body.password()
 
-    fun phone(): Optional<String> = Optional.ofNullable(phone)
+    fun phone(): Optional<String> = body.phone()
 
-    fun username(): Optional<String> = Optional.ofNullable(username)
+    fun username(): Optional<String> = body.username()
 
-    fun userStatus(): Optional<Long> = Optional.ofNullable(userStatus)
+    /** User Status */
+    fun userStatus(): Optional<Long> = body.userStatus()
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
-    @JvmSynthetic
-    internal fun getBody(): UserCreateBody {
-        return UserCreateBody(
-            id,
-            email,
-            firstName,
-            lastName,
-            password,
-            phone,
-            username,
-            userStatus,
-            additionalBodyProperties,
-        )
-    }
+    @JvmSynthetic internal fun getBody(): UserCreateBody = body
 
     @JvmSynthetic internal fun getHeaders(): Headers = additionalHeaders
 
@@ -221,49 +201,33 @@ constructor(
     @NoAutoDetect
     class Builder {
 
-        private var id: Long? = null
-        private var email: String? = null
-        private var firstName: String? = null
-        private var lastName: String? = null
-        private var password: String? = null
-        private var phone: String? = null
-        private var username: String? = null
-        private var userStatus: Long? = null
+        private var body: UserCreateBody.Builder = UserCreateBody.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
-        private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(userCreateParams: UserCreateParams) = apply {
-            id = userCreateParams.id
-            email = userCreateParams.email
-            firstName = userCreateParams.firstName
-            lastName = userCreateParams.lastName
-            password = userCreateParams.password
-            phone = userCreateParams.phone
-            username = userCreateParams.username
-            userStatus = userCreateParams.userStatus
+            body = userCreateParams.body.toBuilder()
             additionalHeaders = userCreateParams.additionalHeaders.toBuilder()
             additionalQueryParams = userCreateParams.additionalQueryParams.toBuilder()
-            additionalBodyProperties = userCreateParams.additionalBodyProperties.toMutableMap()
         }
 
-        fun id(id: Long) = apply { this.id = id }
+        fun id(id: Long) = apply { body.id(id) }
 
-        fun email(email: String) = apply { this.email = email }
+        fun email(email: String) = apply { body.email(email) }
 
-        fun firstName(firstName: String) = apply { this.firstName = firstName }
+        fun firstName(firstName: String) = apply { body.firstName(firstName) }
 
-        fun lastName(lastName: String) = apply { this.lastName = lastName }
+        fun lastName(lastName: String) = apply { body.lastName(lastName) }
 
-        fun password(password: String) = apply { this.password = password }
+        fun password(password: String) = apply { body.password(password) }
 
-        fun phone(phone: String) = apply { this.phone = phone }
+        fun phone(phone: String) = apply { body.phone(phone) }
 
-        fun username(username: String) = apply { this.username = username }
+        fun username(username: String) = apply { body.username(username) }
 
         /** User Status */
-        fun userStatus(userStatus: Long) = apply { this.userStatus = userStatus }
+        fun userStatus(userStatus: Long) = apply { body.userStatus(userStatus) }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -364,40 +328,29 @@ constructor(
         }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            this.additionalBodyProperties.clear()
-            putAllAdditionalBodyProperties(additionalBodyProperties)
+            body.additionalProperties(additionalBodyProperties)
         }
 
         fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            additionalBodyProperties.put(key, value)
+            body.putAdditionalProperty(key, value)
         }
 
         fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
             apply {
-                this.additionalBodyProperties.putAll(additionalBodyProperties)
+                body.putAllAdditionalProperties(additionalBodyProperties)
             }
 
-        fun removeAdditionalBodyProperty(key: String) = apply {
-            additionalBodyProperties.remove(key)
-        }
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
 
         fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
-            keys.forEach(::removeAdditionalBodyProperty)
+            body.removeAllAdditionalProperties(keys)
         }
 
         fun build(): UserCreateParams =
             UserCreateParams(
-                id,
-                email,
-                firstName,
-                lastName,
-                password,
-                phone,
-                username,
-                userStatus,
+                body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
-                additionalBodyProperties.toImmutable(),
             )
     }
 
@@ -406,11 +359,11 @@ constructor(
             return true
         }
 
-        return /* spotless:off */ other is UserCreateParams && id == other.id && email == other.email && firstName == other.firstName && lastName == other.lastName && password == other.password && phone == other.phone && username == other.username && userStatus == other.userStatus && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+        return /* spotless:off */ other is UserCreateParams && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(id, email, firstName, lastName, password, phone, username, userStatus, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(body, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
-        "UserCreateParams{id=$id, email=$email, firstName=$firstName, lastName=$lastName, password=$password, phone=$phone, username=$username, userStatus=$userStatus, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
+        "UserCreateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }
