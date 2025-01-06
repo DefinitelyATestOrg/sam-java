@@ -24,6 +24,9 @@ class CoolOrder
 @JsonCreator
 private constructor(
     @JsonProperty("id") @ExcludeMissing private val id: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("complete")
+    @ExcludeMissing
+    private val complete: JsonField<Boolean> = JsonMissing.of(),
     @JsonProperty("petId") @ExcludeMissing private val petId: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("quantity")
     @ExcludeMissing
@@ -34,13 +37,12 @@ private constructor(
     @JsonProperty("status")
     @ExcludeMissing
     private val status: JsonField<Status> = JsonMissing.of(),
-    @JsonProperty("complete")
-    @ExcludeMissing
-    private val complete: JsonField<Boolean> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     fun id(): Optional<Long> = Optional.ofNullable(id.getNullable("id"))
+
+    fun complete(): Optional<Boolean> = Optional.ofNullable(complete.getNullable("complete"))
 
     fun petId(): Optional<Long> = Optional.ofNullable(petId.getNullable("petId"))
 
@@ -51,9 +53,9 @@ private constructor(
     /** Order Status */
     fun status(): Optional<Status> = Optional.ofNullable(status.getNullable("status"))
 
-    fun complete(): Optional<Boolean> = Optional.ofNullable(complete.getNullable("complete"))
-
     @JsonProperty("id") @ExcludeMissing fun _id() = id
+
+    @JsonProperty("complete") @ExcludeMissing fun _complete() = complete
 
     @JsonProperty("petId") @ExcludeMissing fun _petId() = petId
 
@@ -64,8 +66,6 @@ private constructor(
     /** Order Status */
     @JsonProperty("status") @ExcludeMissing fun _status() = status
 
-    @JsonProperty("complete") @ExcludeMissing fun _complete() = complete
-
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -75,11 +75,11 @@ private constructor(
     fun validate(): CoolOrder = apply {
         if (!validated) {
             id()
+            complete()
             petId()
             quantity()
             shipDate()
             status()
-            complete()
             validated = true
         }
     }
@@ -94,27 +94,31 @@ private constructor(
     class Builder {
 
         private var id: JsonField<Long> = JsonMissing.of()
+        private var complete: JsonField<Boolean> = JsonMissing.of()
         private var petId: JsonField<Long> = JsonMissing.of()
         private var quantity: JsonField<Long> = JsonMissing.of()
         private var shipDate: JsonField<OffsetDateTime> = JsonMissing.of()
         private var status: JsonField<Status> = JsonMissing.of()
-        private var complete: JsonField<Boolean> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(coolOrder: CoolOrder) = apply {
             id = coolOrder.id
+            complete = coolOrder.complete
             petId = coolOrder.petId
             quantity = coolOrder.quantity
             shipDate = coolOrder.shipDate
             status = coolOrder.status
-            complete = coolOrder.complete
             additionalProperties = coolOrder.additionalProperties.toMutableMap()
         }
 
         fun id(id: Long) = id(JsonField.of(id))
 
         fun id(id: JsonField<Long>) = apply { this.id = id }
+
+        fun complete(complete: Boolean) = complete(JsonField.of(complete))
+
+        fun complete(complete: JsonField<Boolean>) = apply { this.complete = complete }
 
         fun petId(petId: Long) = petId(JsonField.of(petId))
 
@@ -133,10 +137,6 @@ private constructor(
 
         /** Order Status */
         fun status(status: JsonField<Status>) = apply { this.status = status }
-
-        fun complete(complete: Boolean) = complete(JsonField.of(complete))
-
-        fun complete(complete: JsonField<Boolean>) = apply { this.complete = complete }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -160,11 +160,11 @@ private constructor(
         fun build(): CoolOrder =
             CoolOrder(
                 id,
+                complete,
                 petId,
                 quantity,
                 shipDate,
                 status,
-                complete,
                 additionalProperties.toImmutable(),
             )
     }
@@ -237,15 +237,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is CoolOrder && id == other.id && petId == other.petId && quantity == other.quantity && shipDate == other.shipDate && status == other.status && complete == other.complete && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is CoolOrder && id == other.id && complete == other.complete && petId == other.petId && quantity == other.quantity && shipDate == other.shipDate && status == other.status && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, petId, quantity, shipDate, status, complete, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, complete, petId, quantity, shipDate, status, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "CoolOrder{id=$id, petId=$petId, quantity=$quantity, shipDate=$shipDate, status=$status, complete=$complete, additionalProperties=$additionalProperties}"
+        "CoolOrder{id=$id, complete=$complete, petId=$petId, quantity=$quantity, shipDate=$shipDate, status=$status, additionalProperties=$additionalProperties}"
 }
