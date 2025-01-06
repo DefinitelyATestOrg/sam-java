@@ -61,10 +61,16 @@ constructor(
         }
 
         /** The password for login in clear text */
-        fun password(password: String) = apply { this.password = password }
+        fun password(password: String?) = apply { this.password = password }
+
+        /** The password for login in clear text */
+        fun password(password: Optional<String>) = password(password.orElse(null))
 
         /** The user name for login */
-        fun username(username: String) = apply { this.username = username }
+        fun username(username: String?) = apply { this.username = username }
+
+        /** The user name for login */
+        fun username(username: Optional<String>) = username(username.orElse(null))
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()

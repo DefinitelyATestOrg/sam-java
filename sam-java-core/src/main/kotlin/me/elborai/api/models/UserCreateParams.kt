@@ -123,22 +123,47 @@ constructor(
                 additionalProperties = userCreateBody.additionalProperties.toMutableMap()
             }
 
-            fun id(id: Long) = apply { this.id = id }
+            fun id(id: Long?) = apply { this.id = id }
 
-            fun email(email: String) = apply { this.email = email }
+            fun id(id: Long) = id(id as Long?)
 
-            fun firstName(firstName: String) = apply { this.firstName = firstName }
+            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+            fun id(id: Optional<Long>) = id(id.orElse(null) as Long?)
 
-            fun lastName(lastName: String) = apply { this.lastName = lastName }
+            fun email(email: String?) = apply { this.email = email }
 
-            fun password(password: String) = apply { this.password = password }
+            fun email(email: Optional<String>) = email(email.orElse(null))
 
-            fun phone(phone: String) = apply { this.phone = phone }
+            fun firstName(firstName: String?) = apply { this.firstName = firstName }
 
-            fun username(username: String) = apply { this.username = username }
+            fun firstName(firstName: Optional<String>) = firstName(firstName.orElse(null))
+
+            fun lastName(lastName: String?) = apply { this.lastName = lastName }
+
+            fun lastName(lastName: Optional<String>) = lastName(lastName.orElse(null))
+
+            fun password(password: String?) = apply { this.password = password }
+
+            fun password(password: Optional<String>) = password(password.orElse(null))
+
+            fun phone(phone: String?) = apply { this.phone = phone }
+
+            fun phone(phone: Optional<String>) = phone(phone.orElse(null))
+
+            fun username(username: String?) = apply { this.username = username }
+
+            fun username(username: Optional<String>) = username(username.orElse(null))
 
             /** User Status */
-            fun userStatus(userStatus: Long) = apply { this.userStatus = userStatus }
+            fun userStatus(userStatus: Long?) = apply { this.userStatus = userStatus }
+
+            /** User Status */
+            fun userStatus(userStatus: Long) = userStatus(userStatus as Long?)
+
+            /** User Status */
+            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+            fun userStatus(userStatus: Optional<Long>) =
+                userStatus(userStatus.orElse(null) as Long?)
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -212,22 +237,46 @@ constructor(
             additionalQueryParams = userCreateParams.additionalQueryParams.toBuilder()
         }
 
-        fun id(id: Long) = apply { body.id(id) }
+        fun id(id: Long?) = apply { body.id(id) }
 
-        fun email(email: String) = apply { body.email(email) }
+        fun id(id: Long) = id(id as Long?)
 
-        fun firstName(firstName: String) = apply { body.firstName(firstName) }
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun id(id: Optional<Long>) = id(id.orElse(null) as Long?)
 
-        fun lastName(lastName: String) = apply { body.lastName(lastName) }
+        fun email(email: String?) = apply { body.email(email) }
 
-        fun password(password: String) = apply { body.password(password) }
+        fun email(email: Optional<String>) = email(email.orElse(null))
 
-        fun phone(phone: String) = apply { body.phone(phone) }
+        fun firstName(firstName: String?) = apply { body.firstName(firstName) }
 
-        fun username(username: String) = apply { body.username(username) }
+        fun firstName(firstName: Optional<String>) = firstName(firstName.orElse(null))
+
+        fun lastName(lastName: String?) = apply { body.lastName(lastName) }
+
+        fun lastName(lastName: Optional<String>) = lastName(lastName.orElse(null))
+
+        fun password(password: String?) = apply { body.password(password) }
+
+        fun password(password: Optional<String>) = password(password.orElse(null))
+
+        fun phone(phone: String?) = apply { body.phone(phone) }
+
+        fun phone(phone: Optional<String>) = phone(phone.orElse(null))
+
+        fun username(username: String?) = apply { body.username(username) }
+
+        fun username(username: Optional<String>) = username(username.orElse(null))
 
         /** User Status */
-        fun userStatus(userStatus: Long) = apply { body.userStatus(userStatus) }
+        fun userStatus(userStatus: Long?) = apply { body.userStatus(userStatus) }
+
+        /** User Status */
+        fun userStatus(userStatus: Long) = userStatus(userStatus as Long?)
+
+        /** User Status */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun userStatus(userStatus: Optional<Long>) = userStatus(userStatus.orElse(null) as Long?)
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
