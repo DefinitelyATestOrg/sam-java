@@ -73,15 +73,17 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): CoolOrder = apply {
-        if (!validated) {
-            id()
-            complete()
-            petId()
-            quantity()
-            shipDate()
-            status()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        id()
+        complete()
+        petId()
+        quantity()
+        shipDate()
+        status()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
