@@ -4,6 +4,7 @@ package me.elborai.api.models
 
 import java.util.Objects
 import me.elborai.api.core.NoAutoDetect
+import me.elborai.api.core.checkRequired
 import me.elborai.api.core.http.Headers
 import me.elborai.api.core.http.QueryParams
 
@@ -155,7 +156,7 @@ constructor(
 
         fun build(): UserRetrieveParams =
             UserRetrieveParams(
-                checkNotNull(username) { "`username` is required but was not set" },
+                checkRequired("username", username),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
