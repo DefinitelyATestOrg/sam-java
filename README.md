@@ -8,8 +8,6 @@
 
 The Sam Java SDK provides convenient access to the Sam REST API from applications written in Java. It includes helper classes with helpful types and documentation for every request and response property.
 
-The Sam Java SDK is similar to the Sam Kotlin SDK but with minor differences that make it more ergonomic for use in Java, such as `Optional` instead of nullable values, `Stream` instead of `Sequence`, and `CompletableFuture` instead of suspend functions.
-
 It is generated with [Stainless](https://www.stainlessapi.com/).
 
 ## Documentation
