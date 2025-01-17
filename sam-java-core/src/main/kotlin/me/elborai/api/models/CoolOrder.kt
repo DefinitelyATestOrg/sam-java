@@ -171,6 +171,7 @@ private constructor(
             )
     }
 
+    /** Order Status */
     class Status
     @JsonCreator
     private constructor(
