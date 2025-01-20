@@ -18,7 +18,7 @@ import me.elborai.api.models.StoreOrderDeleteParams
 import me.elborai.api.models.StoreOrderRetrieveParams
 
 class OrderServiceImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : OrderService {
 
