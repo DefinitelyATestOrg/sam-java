@@ -24,7 +24,7 @@ import me.elborai.api.models.UserRetrieveParams
 import me.elborai.api.models.UserUpdateParams
 
 class UserServiceImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : UserService {
 

@@ -25,7 +25,7 @@ import me.elborai.api.models.UserRetrieveParams
 import me.elborai.api.models.UserUpdateParams
 
 class UserServiceAsyncImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : UserServiceAsync {
 
