@@ -6,29 +6,23 @@
 
 <!-- x-release-please-end -->
 
-The Sam Java SDK provides convenient access to the Sam REST API from applications written in Java. It includes helper classes with helpful types and documentation for every request and response property.
+The Sam Java SDK provides convenient access to the Sam REST API from applications written in Java.
 
 It is generated with [Stainless](https://www.stainlessapi.com/).
 
-## Documentation
+The REST API documentation can be found on [docs.sam.com](https://docs.sam.com).
 
-The REST API documentation can be found on [docs.sam.com](https://docs.sam.com).
-
----
-
-## Getting started
-
-### Install dependencies
-
-#### Gradle
+## Installation
 
 <!-- x-release-please-start-version -->
+
+### Gradle
 
 ```kotlin
 implementation("me.elborai.api:sam-java:0.1.0-alpha.1")
 ```
 
-#### Maven
+### Maven
 
 ```xml
 <dependency>
@@ -39,6 +33,8 @@ implementation("me.elborai.api:sam-java:0.1.0-alpha.1")
 ```
 
 <!-- x-release-please-end -->
+
+## Usage
 
 ### Configure the client
 
