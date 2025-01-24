@@ -17,6 +17,7 @@ import java.util.function.Function
 import kotlin.math.min
 import kotlin.math.pow
 import me.elborai.api.core.RequestOptions
+import me.elborai.api.core.checkRequired
 import me.elborai.api.errors.SamIoException
 
 class RetryingHttpClient
@@ -259,7 +260,7 @@ private constructor(
 
         fun build(): HttpClient =
             RetryingHttpClient(
-                checkNotNull(httpClient) { "`httpClient` is required but was not set" },
+                checkRequired("httpClient", httpClient),
                 clock,
                 maxRetries,
                 idempotencyHeader,
