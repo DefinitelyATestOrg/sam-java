@@ -21,6 +21,12 @@ import me.elborai.api.services.blocking.UserService
  */
 interface SamClient {
 
+    /**
+     * Returns a version of this client that uses asynchronous execution.
+     *
+     * The returned client shares its resources, like its connection pool and thread pools, with
+     * this client.
+     */
     fun async(): SamClientAsync
 
     fun store(): StoreService
