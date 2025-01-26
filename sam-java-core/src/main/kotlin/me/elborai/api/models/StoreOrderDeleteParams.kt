@@ -16,7 +16,7 @@ import me.elborai.api.core.toImmutable
  * generate API errors
  */
 class StoreOrderDeleteParams
-constructor(
+private constructor(
     private val orderId: Long,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -54,7 +54,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var orderId: Long? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()

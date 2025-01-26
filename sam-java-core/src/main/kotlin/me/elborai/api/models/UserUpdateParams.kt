@@ -21,7 +21,7 @@ import me.elborai.api.core.toImmutable
 
 /** This can only be done by the logged in user. */
 class UserUpdateParams
-constructor(
+private constructor(
     private val username1: String,
     private val body: UserUpdateBody,
     private val additionalHeaders: Headers,
@@ -176,7 +176,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var id: JsonField<Long> = JsonMissing.of()
             private var email: JsonField<String> = JsonMissing.of()
@@ -294,7 +294,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var username1: String? = null
         private var body: UserUpdateBody.Builder = UserUpdateBody.builder()
