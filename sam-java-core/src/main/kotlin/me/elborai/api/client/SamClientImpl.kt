@@ -34,4 +34,6 @@ constructor(
     override fun store(): StoreService = store
 
     override fun users(): UserService = users
+
+    override fun close() = clientOptions.httpClient.close()
 }
