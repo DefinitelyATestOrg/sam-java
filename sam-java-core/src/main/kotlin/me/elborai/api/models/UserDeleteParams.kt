@@ -13,7 +13,7 @@ import me.elborai.api.core.toImmutable
 
 /** This can only be done by the logged in user. */
 class UserDeleteParams
-constructor(
+private constructor(
     private val username: String,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -51,7 +51,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var username: String? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()

@@ -9,8 +9,7 @@ import me.elborai.api.services.async.StoreServiceAsyncImpl
 import me.elborai.api.services.async.UserServiceAsync
 import me.elborai.api.services.async.UserServiceAsyncImpl
 
-class SamClientAsyncImpl
-constructor(
+class SamClientAsyncImpl(
     private val clientOptions: ClientOptions,
 ) : SamClientAsync {
 
