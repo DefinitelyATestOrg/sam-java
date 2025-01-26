@@ -93,7 +93,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var id: JsonField<Long> = JsonMissing.of()
         private var complete: JsonField<Boolean> = JsonMissing.of()

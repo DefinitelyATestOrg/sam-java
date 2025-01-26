@@ -21,7 +21,7 @@ class SamOkHttpClient private constructor() {
         @JvmStatic fun fromEnv(): SamClient = builder().fromEnv().build()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var clientOptions: ClientOptions.Builder = ClientOptions.builder()
         private var baseUrl: String = ClientOptions.PRODUCTION_URL

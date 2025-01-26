@@ -10,7 +10,7 @@ import me.elborai.api.core.http.QueryParams
 
 /** Logs user into the system */
 class UserLoginParams
-constructor(
+private constructor(
     private val password: String?,
     private val username: String?,
     private val additionalHeaders: Headers,
@@ -46,7 +46,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var password: String? = null
         private var username: String? = null
