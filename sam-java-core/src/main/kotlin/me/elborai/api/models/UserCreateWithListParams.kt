@@ -36,6 +36,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [UserCreateWithListParams]. */
     @NoAutoDetect
     class Builder internal constructor() {
 

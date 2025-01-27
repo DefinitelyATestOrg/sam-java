@@ -176,6 +176,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [UserUpdateBody]. */
         class Builder internal constructor() {
 
             private var id: JsonField<Long> = JsonMissing.of()
@@ -293,6 +294,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [UserUpdateParams]. */
     @NoAutoDetect
     class Builder internal constructor() {
 

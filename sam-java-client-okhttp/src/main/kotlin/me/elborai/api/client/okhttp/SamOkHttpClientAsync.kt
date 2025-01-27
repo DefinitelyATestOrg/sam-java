@@ -21,6 +21,7 @@ class SamOkHttpClientAsync private constructor() {
         @JvmStatic fun fromEnv(): SamClientAsync = builder().fromEnv().build()
     }
 
+    /** A builder for [SamOkHttpClientAsync]. */
     class Builder internal constructor() {
 
         private var clientOptions: ClientOptions.Builder = ClientOptions.builder()
