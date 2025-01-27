@@ -104,6 +104,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [User]. */
     class Builder internal constructor() {
 
         private var id: JsonField<Long> = JsonMissing.of()
