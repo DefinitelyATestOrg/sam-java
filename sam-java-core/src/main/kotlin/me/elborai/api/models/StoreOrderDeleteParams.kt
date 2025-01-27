@@ -53,6 +53,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [StoreOrderDeleteParams]. */
     @NoAutoDetect
     class Builder internal constructor() {
 

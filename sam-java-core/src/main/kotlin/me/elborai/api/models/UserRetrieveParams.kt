@@ -40,6 +40,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [UserRetrieveParams]. */
     @NoAutoDetect
     class Builder internal constructor() {
 
