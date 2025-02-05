@@ -106,7 +106,7 @@ private constructor(
         private val phone: JsonField<String> = JsonMissing.of(),
         @JsonProperty("username")
         @ExcludeMissing
-        private val username2: JsonField<String> = JsonMissing.of(),
+        private val username: JsonField<String> = JsonMissing.of(),
         @JsonProperty("userStatus")
         @ExcludeMissing
         private val userStatus: JsonField<Long> = JsonMissing.of(),
@@ -126,7 +126,7 @@ private constructor(
 
         fun phone(): Optional<String> = Optional.ofNullable(phone.getNullable("phone"))
 
-        fun username2(): Optional<String> = Optional.ofNullable(username2.getNullable("username"))
+        fun username(): Optional<String> = Optional.ofNullable(username.getNullable("username"))
 
         /** User Status */
         fun userStatus(): Optional<Long> = Optional.ofNullable(userStatus.getNullable("userStatus"))
@@ -143,7 +143,7 @@ private constructor(
 
         @JsonProperty("phone") @ExcludeMissing fun _phone(): JsonField<String> = phone
 
-        @JsonProperty("username") @ExcludeMissing fun _username2(): JsonField<String> = username2
+        @JsonProperty("username") @ExcludeMissing fun _username(): JsonField<String> = username
 
         /** User Status */
         @JsonProperty("userStatus") @ExcludeMissing fun _userStatus(): JsonField<Long> = userStatus
@@ -165,7 +165,7 @@ private constructor(
             lastName()
             password()
             phone()
-            username2()
+            username()
             userStatus()
             validated = true
         }
@@ -186,7 +186,7 @@ private constructor(
             private var lastName: JsonField<String> = JsonMissing.of()
             private var password: JsonField<String> = JsonMissing.of()
             private var phone: JsonField<String> = JsonMissing.of()
-            private var username2: JsonField<String> = JsonMissing.of()
+            private var username: JsonField<String> = JsonMissing.of()
             private var userStatus: JsonField<Long> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -198,7 +198,7 @@ private constructor(
                 lastName = userUpdateBody.lastName
                 password = userUpdateBody.password
                 phone = userUpdateBody.phone
-                username2 = userUpdateBody.username2
+                username = userUpdateBody.username
                 userStatus = userUpdateBody.userStatus
                 additionalProperties = userUpdateBody.additionalProperties.toMutableMap()
             }
@@ -227,9 +227,9 @@ private constructor(
 
             fun phone(phone: JsonField<String>) = apply { this.phone = phone }
 
-            fun username2(username2: String) = username2(JsonField.of(username2))
+            fun username(username: String) = username(JsonField.of(username))
 
-            fun username2(username2: JsonField<String>) = apply { this.username2 = username2 }
+            fun username(username: JsonField<String>) = apply { this.username = username }
 
             /** User Status */
             fun userStatus(userStatus: Long) = userStatus(JsonField.of(userStatus))
@@ -264,7 +264,7 @@ private constructor(
                     lastName,
                     password,
                     phone,
-                    username2,
+                    username,
                     userStatus,
                     additionalProperties.toImmutable(),
                 )
@@ -275,17 +275,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is UserUpdateBody && id == other.id && email == other.email && firstName == other.firstName && lastName == other.lastName && password == other.password && phone == other.phone && username2 == other.username2 && userStatus == other.userStatus && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is UserUpdateBody && id == other.id && email == other.email && firstName == other.firstName && lastName == other.lastName && password == other.password && phone == other.phone && username == other.username && userStatus == other.userStatus && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(id, email, firstName, lastName, password, phone, username2, userStatus, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(id, email, firstName, lastName, password, phone, username, userStatus, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "UserUpdateBody{id=$id, email=$email, firstName=$firstName, lastName=$lastName, password=$password, phone=$phone, username2=$username2, userStatus=$userStatus, additionalProperties=$additionalProperties}"
+            "UserUpdateBody{id=$id, email=$email, firstName=$firstName, lastName=$lastName, password=$password, phone=$phone, username=$username, userStatus=$userStatus, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
