@@ -30,5 +30,5 @@ interface OrderServiceAsync {
     fun delete(
         params: StoreOrderDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none()
-    ): CompletableFuture<Void>
+    ): CompletableFuture<Void?>
 }
