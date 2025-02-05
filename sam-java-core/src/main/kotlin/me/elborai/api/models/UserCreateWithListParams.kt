@@ -4,6 +4,7 @@ package me.elborai.api.models
 
 import java.util.Objects
 import me.elborai.api.core.NoAutoDetect
+import me.elborai.api.core.Params
 import me.elborai.api.core.checkRequired
 import me.elborai.api.core.http.Headers
 import me.elborai.api.core.http.QueryParams
@@ -15,7 +16,7 @@ private constructor(
     private val body: List<User>,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
-) {
+) : Params {
 
     fun body(): List<User> = body
 
@@ -23,11 +24,11 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun getBody(): List<User> = body
+    @JvmSynthetic internal fun _body(): List<User> = body
 
-    @JvmSynthetic internal fun getHeaders(): Headers = additionalHeaders
+    override fun _headers(): Headers = additionalHeaders
 
-    @JvmSynthetic internal fun getQueryParams(): QueryParams = additionalQueryParams
+    override fun _queryParams(): QueryParams = additionalQueryParams
 
     fun toBuilder() = Builder().from(this)
 

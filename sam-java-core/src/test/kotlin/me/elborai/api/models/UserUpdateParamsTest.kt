@@ -23,7 +23,7 @@ class UserUpdateParamsTest {
     }
 
     @Test
-    fun getBody() {
+    fun body() {
         val params =
             UserUpdateParams.builder()
                 .username1("username")
@@ -36,7 +36,7 @@ class UserUpdateParamsTest {
                 .username2("theUser")
                 .userStatus(1L)
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.id()).contains(10L)
         assertThat(body.email()).contains("john@email.com")
@@ -49,9 +49,9 @@ class UserUpdateParamsTest {
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params = UserUpdateParams.builder().username1("username").build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
     }
 

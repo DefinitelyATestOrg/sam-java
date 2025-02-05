@@ -5,6 +5,7 @@ package me.elborai.api.models
 import java.util.Objects
 import java.util.Optional
 import me.elborai.api.core.NoAutoDetect
+import me.elborai.api.core.Params
 import me.elborai.api.core.http.Headers
 import me.elborai.api.core.http.QueryParams
 
@@ -15,7 +16,7 @@ private constructor(
     private val username: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
-) {
+) : Params {
 
     /** The password for login in clear text */
     fun password(): Optional<String> = Optional.ofNullable(password)
@@ -27,10 +28,9 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun getHeaders(): Headers = additionalHeaders
+    override fun _headers(): Headers = additionalHeaders
 
-    @JvmSynthetic
-    internal fun getQueryParams(): QueryParams {
+    override fun _queryParams(): QueryParams {
         val queryParams = QueryParams.builder()
         this.password?.let { queryParams.put("password", listOf(it.toString())) }
         this.username?.let { queryParams.put("username", listOf(it.toString())) }
