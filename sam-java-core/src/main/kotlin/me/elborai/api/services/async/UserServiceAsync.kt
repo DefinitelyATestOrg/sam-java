@@ -36,14 +36,14 @@ interface UserServiceAsync {
     fun update(
         params: UserUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none()
-    ): CompletableFuture<Void>
+    ): CompletableFuture<Void?>
 
     /** This can only be done by the logged in user. */
     @JvmOverloads
     fun delete(
         params: UserDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none()
-    ): CompletableFuture<Void>
+    ): CompletableFuture<Void?>
 
     /** Creates list of users with given input array */
     @JvmOverloads
@@ -64,5 +64,5 @@ interface UserServiceAsync {
     fun logout(
         params: UserLogoutParams,
         requestOptions: RequestOptions = RequestOptions.none()
-    ): CompletableFuture<Void>
+    ): CompletableFuture<Void?>
 }
