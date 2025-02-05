@@ -23,13 +23,13 @@ import me.elborai.api.core.toImmutable
 /** This can only be done by the logged in user. */
 class UserUpdateParams
 private constructor(
-    private val username1: String,
+    private val pathUsername: String,
     private val body: UserUpdateBody,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun username1(): String = username1
+    fun pathUsername(): String = pathUsername
 
     fun id(): Optional<Long> = body.id()
 
@@ -43,7 +43,7 @@ private constructor(
 
     fun phone(): Optional<String> = body.phone()
 
-    fun username2(): Optional<String> = body.username2()
+    fun bodyUsername(): Optional<String> = body.bodyUsername()
 
     /** User Status */
     fun userStatus(): Optional<Long> = body.userStatus()
@@ -60,7 +60,7 @@ private constructor(
 
     fun _phone(): JsonField<String> = body._phone()
 
-    fun _username2(): JsonField<String> = body._username2()
+    fun _bodyUsername(): JsonField<String> = body._bodyUsername()
 
     /** User Status */
     fun _userStatus(): JsonField<Long> = body._userStatus()
@@ -79,7 +79,7 @@ private constructor(
 
     fun getPathParam(index: Int): String {
         return when (index) {
-            0 -> username1
+            0 -> pathUsername
             else -> ""
         }
     }
@@ -299,20 +299,20 @@ private constructor(
     @NoAutoDetect
     class Builder internal constructor() {
 
-        private var username1: String? = null
+        private var pathUsername: String? = null
         private var body: UserUpdateBody.Builder = UserUpdateBody.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
         internal fun from(userUpdateParams: UserUpdateParams) = apply {
-            username1 = userUpdateParams.username1
+            pathUsername = userUpdateParams.pathUsername
             body = userUpdateParams.body.toBuilder()
             additionalHeaders = userUpdateParams.additionalHeaders.toBuilder()
             additionalQueryParams = userUpdateParams.additionalQueryParams.toBuilder()
         }
 
-        fun username1(username1: String) = apply { this.username1 = username1 }
+        fun pathUsername(pathUsername: String) = apply { this.pathUsername = pathUsername }
 
         fun id(id: Long) = apply { body.id(id) }
 
@@ -338,9 +338,11 @@ private constructor(
 
         fun phone(phone: JsonField<String>) = apply { body.phone(phone) }
 
-        fun username2(username2: String) = apply { body.username2(username2) }
+        fun bodyUsername(bodyUsername: String) = apply { body.bodyUsername(bodyUsername) }
 
-        fun username2(username2: JsonField<String>) = apply { body.username2(username2) }
+        fun bodyUsername(bodyUsername: JsonField<String>) = apply {
+            body.bodyUsername(bodyUsername)
+        }
 
         /** User Status */
         fun userStatus(userStatus: Long) = apply { body.userStatus(userStatus) }
@@ -467,7 +469,7 @@ private constructor(
 
         fun build(): UserUpdateParams =
             UserUpdateParams(
-                checkRequired("username1", username1),
+                checkRequired("pathUsername", pathUsername),
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -479,11 +481,11 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is UserUpdateParams && username1 == other.username1 && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return /* spotless:off */ other is UserUpdateParams && pathUsername == other.pathUsername && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(username1, body, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(pathUsername, body, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
-        "UserUpdateParams{username1=$username1, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "UserUpdateParams{pathUsername=$pathUsername, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }
