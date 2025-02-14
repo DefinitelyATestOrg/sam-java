@@ -6,8 +6,8 @@ package me.elborai.api.services.blocking
 
 import me.elborai.api.core.RequestOptions
 import me.elborai.api.models.User
+import me.elborai.api.models.UserCreateListParams
 import me.elborai.api.models.UserCreateParams
-import me.elborai.api.models.UserCreateWithListParams
 import me.elborai.api.models.UserDeleteParams
 import me.elborai.api.models.UserLoginParams
 import me.elborai.api.models.UserLogoutParams
@@ -40,8 +40,8 @@ interface UserService {
 
     /** Creates list of users with given input array */
     @JvmOverloads
-    fun createWithList(
-        params: UserCreateWithListParams,
+    fun createList(
+        params: UserCreateListParams,
         requestOptions: RequestOptions = RequestOptions.none()
     ): User
 
