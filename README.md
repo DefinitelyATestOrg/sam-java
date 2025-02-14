@@ -78,14 +78,14 @@ Read the documentation for more configuration options.
 
 ### Example: creating a resource
 
-To create a new user, first use the `UserCreateParams` builder to specify attributes, then pass that to the `create` method of the `users` service.
+To create a new user, first use the `UserCreateParams` builder to specify attributes, then pass that to the `create` method of the `user` service.
 
 ```java
 import me.elborai.api.models.User;
 import me.elborai.api.models.UserCreateParams;
 
 UserCreateParams params = UserCreateParams.builder().build();
-User user = client.users().create(params);
+User user = client.user().create(params);
 ```
 
 ---
@@ -107,7 +107,7 @@ When receiving a response, the Sam Java SDK will deserialize it into instances o
 ```java
 import me.elborai.api.models.User;
 
-User user = client.users().create().validate();
+User user = client.user().create().validate();
 ```
 
 ### Response properties as JSON
@@ -141,7 +141,7 @@ Sometimes, the server response may include additional properties that are not ye
 ```java
 import me.elborai.api.core.JsonValue;
 
-JsonValue secret = coolOrder._additionalProperties().get("secret_field");
+JsonValue secret = order._additionalProperties().get("secret_field");
 ```
 
 ---
@@ -224,7 +224,7 @@ This library is typed for convenient access to the documented API. If you need t
 
 ### Undocumented request params
 
-In [Example: creating a resource](#example-creating-a-resource) above, we used the `UserCreateParams.builder()` to pass to the `create` method of the `users` service.
+In [Example: creating a resource](#example-creating-a-resource) above, we used the `UserCreateParams.builder()` to pass to the `create` method of the `user` service.
 
 Sometimes, the API may support other properties that are not yet supported in the Java SDK types. In that case, you can attach them using raw setters:
 

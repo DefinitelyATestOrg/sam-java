@@ -17,8 +17,8 @@ import me.elborai.api.core.json
 import me.elborai.api.core.prepareAsync
 import me.elborai.api.errors.SamError
 import me.elborai.api.models.User
+import me.elborai.api.models.UserCreateListParams
 import me.elborai.api.models.UserCreateParams
-import me.elborai.api.models.UserCreateWithListParams
 import me.elborai.api.models.UserDeleteParams
 import me.elborai.api.models.UserLoginParams
 import me.elborai.api.models.UserLogoutParams
@@ -125,12 +125,12 @@ internal constructor(
             .thenApply { response -> response.use { deleteHandler.handle(it) } }
     }
 
-    private val createWithListHandler: Handler<User> =
+    private val createListHandler: Handler<User> =
         jsonHandler<User>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
     /** Creates list of users with given input array */
-    override fun createWithList(
-        params: UserCreateWithListParams,
+    override fun createList(
+        params: UserCreateListParams,
         requestOptions: RequestOptions
     ): CompletableFuture<User> {
         val request =
@@ -144,7 +144,7 @@ internal constructor(
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
                 response
-                    .use { createWithListHandler.handle(it) }
+                    .use { createListHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
                             it.validate()
