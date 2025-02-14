@@ -11,7 +11,7 @@ import me.elborai.api.core.http.QueryParams
 import me.elborai.api.core.toImmutable
 
 /** Creates list of users with given input array */
-class UserCreateWithListParams
+class UserCreateListParams
 private constructor(
     private val body: List<User>,
     private val additionalHeaders: Headers,
@@ -37,7 +37,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [UserCreateWithListParams]. */
+    /** A builder for [UserCreateListParams]. */
     @NoAutoDetect
     class Builder internal constructor() {
 
@@ -46,10 +46,10 @@ private constructor(
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
-        internal fun from(userCreateWithListParams: UserCreateWithListParams) = apply {
-            body = userCreateWithListParams.body.toMutableList()
-            additionalHeaders = userCreateWithListParams.additionalHeaders.toBuilder()
-            additionalQueryParams = userCreateWithListParams.additionalQueryParams.toBuilder()
+        internal fun from(userCreateListParams: UserCreateListParams) = apply {
+            body = userCreateListParams.body.toMutableList()
+            additionalHeaders = userCreateListParams.additionalHeaders.toBuilder()
+            additionalQueryParams = userCreateListParams.additionalQueryParams.toBuilder()
         }
 
         fun body(body: List<User>) = apply { this.body = body.toMutableList() }
@@ -156,8 +156,8 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
-        fun build(): UserCreateWithListParams =
-            UserCreateWithListParams(
+        fun build(): UserCreateListParams =
+            UserCreateListParams(
                 checkRequired("body", body).toImmutable(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -169,11 +169,11 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is UserCreateWithListParams && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return /* spotless:off */ other is UserCreateListParams && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
     override fun hashCode(): Int = /* spotless:off */ Objects.hash(body, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
-        "UserCreateWithListParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "UserCreateListParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }
