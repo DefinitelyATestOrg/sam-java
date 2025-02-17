@@ -25,10 +25,8 @@ import me.elborai.api.models.UserLogoutParams
 import me.elborai.api.models.UserRetrieveParams
 import me.elborai.api.models.UserUpdateParams
 
-class UserServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : UserServiceAsync {
+class UserServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    UserServiceAsync {
 
     private val errorHandler: Handler<SamError> = errorHandler(clientOptions.jsonMapper)
 
@@ -38,7 +36,7 @@ internal constructor(
     /** This can only be done by the logged in user. */
     override fun create(
         params: UserCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<User> {
         val request =
             HttpRequest.builder()
@@ -66,7 +64,7 @@ internal constructor(
     /** Get user by user name */
     override fun retrieve(
         params: UserRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<User> {
         val request =
             HttpRequest.builder()
@@ -92,7 +90,7 @@ internal constructor(
     /** This can only be done by the logged in user. */
     override fun update(
         params: UserUpdateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Void?> {
         val request =
             HttpRequest.builder()
@@ -111,7 +109,7 @@ internal constructor(
     /** This can only be done by the logged in user. */
     override fun delete(
         params: UserDeleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Void?> {
         val request =
             HttpRequest.builder()
@@ -131,7 +129,7 @@ internal constructor(
     /** Creates list of users with given input array */
     override fun createList(
         params: UserCreateListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<User> {
         val request =
             HttpRequest.builder()
@@ -158,7 +156,7 @@ internal constructor(
     /** Logs user into the system */
     override fun login(
         params: UserLoginParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<String> {
         val request =
             HttpRequest.builder()
@@ -176,7 +174,7 @@ internal constructor(
     /** Logs out current logged in user session */
     override fun logout(
         params: UserLogoutParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Void?> {
         val request =
             HttpRequest.builder()
