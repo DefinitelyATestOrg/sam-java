@@ -10,15 +10,19 @@ class UserUpdateParamsTest {
     @Test
     fun create() {
         UserUpdateParams.builder()
-            .pathUsername("username")
-            .id(10L)
-            .email("john@email.com")
-            .firstName("John")
-            .lastName("James")
-            .password("12345")
-            .phone("12345")
-            .bodyUsername("theUser")
-            .userStatus(1L)
+            .username("username")
+            .user(
+                User.builder()
+                    .id(10L)
+                    .email("john@email.com")
+                    .firstName("John")
+                    .lastName("James")
+                    .password("12345")
+                    .phone("12345")
+                    .username("theUser")
+                    .userStatus(1L)
+                    .build()
+            )
             .build()
     }
 
@@ -26,40 +30,56 @@ class UserUpdateParamsTest {
     fun body() {
         val params =
             UserUpdateParams.builder()
-                .pathUsername("username")
-                .id(10L)
-                .email("john@email.com")
-                .firstName("John")
-                .lastName("James")
-                .password("12345")
-                .phone("12345")
-                .bodyUsername("theUser")
-                .userStatus(1L)
+                .username("username")
+                .user(
+                    User.builder()
+                        .id(10L)
+                        .email("john@email.com")
+                        .firstName("John")
+                        .lastName("James")
+                        .password("12345")
+                        .phone("12345")
+                        .username("theUser")
+                        .userStatus(1L)
+                        .build()
+                )
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
-        assertThat(body.id()).contains(10L)
-        assertThat(body.email()).contains("john@email.com")
-        assertThat(body.firstName()).contains("John")
-        assertThat(body.lastName()).contains("James")
-        assertThat(body.password()).contains("12345")
-        assertThat(body.phone()).contains("12345")
-        assertThat(body.bodyUsername()).contains("theUser")
-        assertThat(body.userStatus()).contains(1L)
+        assertThat(body)
+            .isEqualTo(
+                User.builder()
+                    .id(10L)
+                    .email("john@email.com")
+                    .firstName("John")
+                    .lastName("James")
+                    .password("12345")
+                    .phone("12345")
+                    .username("theUser")
+                    .userStatus(1L)
+                    .build()
+            )
     }
 
     @Test
     fun bodyWithoutOptionalFields() {
-        val params = UserUpdateParams.builder().pathUsername("username").build()
+        val params =
+            UserUpdateParams.builder().username("username").user(User.builder().build()).build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
+        assertThat(body).isEqualTo(User.builder().build())
     }
 
     @Test
     fun getPathParam() {
-        val params = UserUpdateParams.builder().pathUsername("username").build()
+        val params =
+            UserUpdateParams.builder().username("username").user(User.builder().build()).build()
         assertThat(params).isNotNull
-        // path param "pathUsername"
+        // path param "username"
         assertThat(params.getPathParam(0)).isEqualTo("username")
         // out-of-bound path param
         assertThat(params.getPathParam(1)).isEqualTo("")
