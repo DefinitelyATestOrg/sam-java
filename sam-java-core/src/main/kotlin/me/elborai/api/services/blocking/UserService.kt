@@ -20,14 +20,14 @@ interface UserService {
     @JvmOverloads
     fun create(
         params: UserCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): User
 
     /** Get user by user name */
     @JvmOverloads
     fun retrieve(
         params: UserRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): User
 
     /** This can only be done by the logged in user. */
@@ -42,14 +42,14 @@ interface UserService {
     @JvmOverloads
     fun createList(
         params: UserCreateListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): User
 
     /** Logs user into the system */
     @JvmOverloads
     fun login(
         params: UserLoginParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): String
 
     /** Logs out current logged in user session */

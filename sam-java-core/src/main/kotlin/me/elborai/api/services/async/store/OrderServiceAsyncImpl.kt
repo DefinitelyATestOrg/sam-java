@@ -19,10 +19,8 @@ import me.elborai.api.models.Order
 import me.elborai.api.models.StoreOrderDeleteParams
 import me.elborai.api.models.StoreOrderRetrieveParams
 
-class OrderServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : OrderServiceAsync {
+class OrderServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    OrderServiceAsync {
 
     private val errorHandler: Handler<SamError> = errorHandler(clientOptions.jsonMapper)
 
@@ -35,7 +33,7 @@ internal constructor(
      */
     override fun retrieve(
         params: StoreOrderRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Order> {
         val request =
             HttpRequest.builder()
@@ -64,7 +62,7 @@ internal constructor(
      */
     override fun delete(
         params: StoreOrderDeleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Void?> {
         val request =
             HttpRequest.builder()
