@@ -18,7 +18,7 @@ interface OrderService {
     @JvmOverloads
     fun retrieve(
         params: StoreOrderRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Order
 
     /**
@@ -28,6 +28,6 @@ interface OrderService {
     @JvmOverloads
     fun delete(
         params: StoreOrderDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     )
 }

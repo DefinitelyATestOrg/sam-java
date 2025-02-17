@@ -21,48 +21,48 @@ interface UserServiceAsync {
     @JvmOverloads
     fun create(
         params: UserCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<User>
 
     /** Get user by user name */
     @JvmOverloads
     fun retrieve(
         params: UserRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<User>
 
     /** This can only be done by the logged in user. */
     @JvmOverloads
     fun update(
         params: UserUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Void?>
 
     /** This can only be done by the logged in user. */
     @JvmOverloads
     fun delete(
         params: UserDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Void?>
 
     /** Creates list of users with given input array */
     @JvmOverloads
     fun createList(
         params: UserCreateListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<User>
 
     /** Logs user into the system */
     @JvmOverloads
     fun login(
         params: UserLoginParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<String>
 
     /** Logs out current logged in user session */
     @JvmOverloads
     fun logout(
         params: UserLogoutParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Void?>
 }

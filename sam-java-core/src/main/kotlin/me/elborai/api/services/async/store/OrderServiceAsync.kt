@@ -19,7 +19,7 @@ interface OrderServiceAsync {
     @JvmOverloads
     fun retrieve(
         params: StoreOrderRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Order>
 
     /**
@@ -29,6 +29,6 @@ interface OrderServiceAsync {
     @JvmOverloads
     fun delete(
         params: StoreOrderDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Void?>
 }
