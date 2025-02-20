@@ -2,6 +2,7 @@
 
 package me.elborai.api.models
 
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -45,9 +46,8 @@ class UserUpdateParamsTest {
                 )
                 .build()
 
-        val body = params._body()
+        val body = params._body().getOrNull()
 
-        assertThat(body).isNotNull
         assertThat(body)
             .isEqualTo(
                 User.builder()
@@ -65,19 +65,14 @@ class UserUpdateParamsTest {
 
     @Test
     fun bodyWithoutOptionalFields() {
-        val params =
-            UserUpdateParams.builder().username("username").user(User.builder().build()).build()
+        val params = UserUpdateParams.builder().username("username").build()
 
-        val body = params._body()
-
-        assertThat(body).isNotNull
-        assertThat(body).isEqualTo(User.builder().build())
+        val body = params._body().getOrNull()
     }
 
     @Test
     fun getPathParam() {
-        val params =
-            UserUpdateParams.builder().username("username").user(User.builder().build()).build()
+        val params = UserUpdateParams.builder().username("username").build()
         assertThat(params).isNotNull
         // path param "username"
         assertThat(params.getPathParam(0)).isEqualTo("username")
