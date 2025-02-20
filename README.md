@@ -49,9 +49,7 @@ import me.elborai.api.models.UserCreateParams;
 // Configures using the `API_KEY` environment variable
 SamClient client = SamOkHttpClient.fromEnv();
 
-UserCreateParams params = UserCreateParams.builder()
-    .user(User.builder().build())
-    .build();
+UserCreateParams params = UserCreateParams.builder().build();
 User user = client.user().create(params);
 ```
 
@@ -121,9 +119,7 @@ import me.elborai.api.models.UserCreateParams;
 // Configures using the `API_KEY` environment variable
 SamClient client = SamOkHttpClient.fromEnv();
 
-UserCreateParams params = UserCreateParams.builder()
-    .user(User.builder().build())
-    .build();
+UserCreateParams params = UserCreateParams.builder().build();
 CompletableFuture<User> user = client.async().user().create(params);
 ```
 
@@ -139,9 +135,7 @@ import me.elborai.api.models.UserCreateParams;
 // Configures using the `API_KEY` environment variable
 SamClientAsync client = SamOkHttpClientAsync.fromEnv();
 
-UserCreateParams params = UserCreateParams.builder()
-    .user(User.builder().build())
-    .build();
+UserCreateParams params = UserCreateParams.builder().build();
 CompletableFuture<User> user = client.user().create(params);
 ```
 
@@ -286,12 +280,9 @@ These can be accessed on the built object later using the `_additionalHeaders()`
 To set a documented parameter or property to an undocumented or not yet supported _value_, pass a `JsonValue` object to its setter:
 
 ```java
-import me.elborai.api.models.User;
 import me.elborai.api.models.UserCreateParams;
 
-UserCreateParams params = UserCreateParams.builder()
-    .user(User.builder().build())
-    .build();
+UserCreateParams params = UserCreateParams.builder().build();
 ```
 
 ### Response properties
