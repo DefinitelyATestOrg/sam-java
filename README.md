@@ -49,8 +49,7 @@ import me.elborai.api.models.UserCreateParams;
 // Configures using the `API_KEY` environment variable
 SamClient client = SamOkHttpClient.fromEnv();
 
-UserCreateParams params = UserCreateParams.builder().build();
-User user = client.user().create(params);
+User user = client.user().create();
 ```
 
 ## Client configuration
@@ -127,8 +126,7 @@ import me.elborai.api.models.UserCreateParams;
 // Configures using the `API_KEY` environment variable
 SamClient client = SamOkHttpClient.fromEnv();
 
-UserCreateParams params = UserCreateParams.builder().build();
-CompletableFuture<User> user = client.async().user().create(params);
+CompletableFuture<User> user = client.async().user().create();
 ```
 
 Or create an asynchronous client from the beginning:
@@ -143,8 +141,7 @@ import me.elborai.api.models.UserCreateParams;
 // Configures using the `API_KEY` environment variable
 SamClientAsync client = SamOkHttpClientAsync.fromEnv();
 
-UserCreateParams params = UserCreateParams.builder().build();
-CompletableFuture<User> user = client.user().create(params);
+CompletableFuture<User> user = client.user().create();
 ```
 
 The asynchronous client supports the same options as the synchronous one, except most methods return `CompletableFuture`s.
@@ -226,9 +223,7 @@ To set a custom timeout, configure the method call using the `timeout` method:
 import me.elborai.api.models.User;
 import me.elborai.api.models.UserCreateParams;
 
-User user = client.user().create(
-  params, RequestOptions.builder().timeout(Duration.ofSeconds(30)).build()
-);
+User user = client.user().create(RequestOptions.builder().timeout(Duration.ofSeconds(30)).build());
 ```
 
 Or configure the default for all method calls at the client level:
@@ -367,9 +362,7 @@ Or configure the method call to validate the response using the `responseValidat
 import me.elborai.api.models.User;
 import me.elborai.api.models.UserCreateParams;
 
-User user = client.user().create(
-  params, RequestOptions.builder().responseValidation(true).build()
-);
+User user = client.user().create(RequestOptions.builder().responseValidation(true).build());
 ```
 
 Or configure the default for all method calls at the client level:

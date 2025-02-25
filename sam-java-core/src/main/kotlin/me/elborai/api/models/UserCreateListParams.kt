@@ -34,6 +34,8 @@ private constructor(
 
     companion object {
 
+        fun none(): UserCreateListParams = builder().build()
+
         @JvmStatic fun builder() = Builder()
     }
 
