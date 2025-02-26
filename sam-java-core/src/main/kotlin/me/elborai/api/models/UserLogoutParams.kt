@@ -27,7 +27,7 @@ private constructor(
 
     companion object {
 
-        fun none(): UserLogoutParams = builder().build()
+        @JvmStatic fun none(): UserLogoutParams = builder().build()
 
         @JvmStatic fun builder() = Builder()
     }
