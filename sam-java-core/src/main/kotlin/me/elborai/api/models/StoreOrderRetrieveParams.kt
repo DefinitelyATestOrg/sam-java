@@ -41,6 +41,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [StoreOrderRetrieveParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .orderId()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

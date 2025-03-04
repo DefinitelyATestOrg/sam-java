@@ -51,6 +51,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [StoreOrderDeleteParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .orderId()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
