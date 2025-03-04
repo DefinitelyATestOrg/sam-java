@@ -146,6 +146,32 @@ CompletableFuture<User> user = client.user().create();
 
 The asynchronous client supports the same options as the synchronous one, except most methods return `CompletableFuture`s.
 
+## Raw responses
+
+The SDK defines methods that deserialize responses into instances of Java classes. However, these methods don't provide access to the response headers, status code, or the raw response body.
+
+To access this data, prefix any HTTP method call on a client or service with `withRawResponse()`:
+
+```java
+import me.elborai.api.core.http.Headers;
+import me.elborai.api.core.http.HttpResponseFor;
+import me.elborai.api.models.User;
+import me.elborai.api.models.UserCreateParams;
+
+HttpResponseFor<User> user = client.user().withRawResponse().create();
+
+int statusCode = user.statusCode();
+Headers headers = user.headers();
+```
+
+You can still deserialize the response into an instance of a Java class if needed:
+
+```java
+import me.elborai.api.models.User;
+
+User parsedUser = user.parse();
+```
+
 ## Error handling
 
 The SDK throws custom unchecked exception types:
