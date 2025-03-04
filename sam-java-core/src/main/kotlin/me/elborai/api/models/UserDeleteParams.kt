@@ -48,6 +48,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [UserDeleteParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .username()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
