@@ -40,6 +40,7 @@ private constructor(
 
         @JvmStatic fun none(): UserCreateParams = builder().build()
 
+        /** Returns a mutable builder for constructing an instance of [UserCreateParams]. */
         @JvmStatic fun builder() = Builder()
     }
 

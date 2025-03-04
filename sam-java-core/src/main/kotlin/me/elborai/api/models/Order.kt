@@ -90,6 +90,7 @@ private constructor(
 
     companion object {
 
+        /** Returns a mutable builder for constructing an instance of [Order]. */
         @JvmStatic fun builder() = Builder()
     }
 
