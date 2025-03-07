@@ -4,6 +4,7 @@ package me.elborai.api.models
 
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 import me.elborai.api.core.NoAutoDetect
 import me.elborai.api.core.Params
 import me.elborai.api.core.http.Headers
@@ -57,7 +58,7 @@ private constructor(
 
         fun body(body: List<User>?) = apply { this.body = body?.toMutableList() }
 
-        fun body(body: Optional<List<User>>) = body(body.orElse(null))
+        fun body(body: Optional<List<User>>) = body(body.getOrNull())
 
         fun addBody(body: User) = apply {
             this.body = (this.body ?: mutableListOf()).apply { add(body) }
