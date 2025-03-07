@@ -4,6 +4,7 @@ package me.elborai.api.models
 
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 import me.elborai.api.core.NoAutoDetect
 import me.elborai.api.core.Params
 import me.elborai.api.core.http.Headers
@@ -69,13 +70,13 @@ private constructor(
         fun password(password: String?) = apply { this.password = password }
 
         /** The password for login in clear text */
-        fun password(password: Optional<String>) = password(password.orElse(null))
+        fun password(password: Optional<String>) = password(password.getOrNull())
 
         /** The user name for login */
         fun username(username: String?) = apply { this.username = username }
 
         /** The user name for login */
-        fun username(username: Optional<String>) = username(username.orElse(null))
+        fun username(username: Optional<String>) = username(username.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()

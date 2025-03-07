@@ -4,6 +4,7 @@ package me.elborai.api.models
 
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 import me.elborai.api.core.JsonValue
 import me.elborai.api.core.NoAutoDetect
 import me.elborai.api.core.Params
@@ -81,7 +82,7 @@ private constructor(
 
         fun user(user: User?) = apply { this.user = user }
 
-        fun user(user: Optional<User>) = user(user.orElse(null))
+        fun user(user: Optional<User>) = user(user.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
