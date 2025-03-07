@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package me.elborai.api.services.blocking.store
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -23,7 +21,9 @@ interface OrderService {
      * For valid response try integer IDs with value <= 5 or > 10. Other values will generate
      * exceptions.
      */
-    @JvmOverloads
+    fun retrieve(params: StoreOrderRetrieveParams): Order = retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
     fun retrieve(
         params: StoreOrderRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -33,7 +33,9 @@ interface OrderService {
      * For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will
      * generate API errors
      */
-    @JvmOverloads
+    fun delete(params: StoreOrderDeleteParams) = delete(params, RequestOptions.none())
+
+    /** @see [delete] */
     fun delete(
         params: StoreOrderDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -46,7 +48,11 @@ interface OrderService {
          * Returns a raw HTTP response for `get /store/order/{orderId}`, but is otherwise the same
          * as [OrderService.retrieve].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(params: StoreOrderRetrieveParams): HttpResponseFor<Order> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
             params: StoreOrderRetrieveParams,
@@ -57,7 +63,11 @@ interface OrderService {
          * Returns a raw HTTP response for `delete /store/order/{orderId}`, but is otherwise the
          * same as [OrderService.delete].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun delete(params: StoreOrderDeleteParams): HttpResponse =
+            delete(params, RequestOptions.none())
+
+        /** @see [delete] */
         @MustBeClosed
         fun delete(
             params: StoreOrderDeleteParams,
