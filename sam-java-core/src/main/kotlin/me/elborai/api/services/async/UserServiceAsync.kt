@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package me.elborai.api.services.async
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -26,67 +24,101 @@ interface UserServiceAsync {
     fun withRawResponse(): WithRawResponse
 
     /** This can only be done by the logged in user. */
-    @JvmOverloads
+    fun create(): CompletableFuture<User> = create(UserCreateParams.none())
+
+    /** @see [create] */
     fun create(
         params: UserCreateParams = UserCreateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<User>
 
-    /** This can only be done by the logged in user. */
+    /** @see [create] */
+    fun create(params: UserCreateParams = UserCreateParams.none()): CompletableFuture<User> =
+        create(params, RequestOptions.none())
+
+    /** @see [create] */
     fun create(requestOptions: RequestOptions): CompletableFuture<User> =
         create(UserCreateParams.none(), requestOptions)
 
     /** Get user by user name */
-    @JvmOverloads
+    fun retrieve(params: UserRetrieveParams): CompletableFuture<User> =
+        retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
     fun retrieve(
         params: UserRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<User>
 
     /** This can only be done by the logged in user. */
-    @JvmOverloads
+    fun update(params: UserUpdateParams): CompletableFuture<Void?> =
+        update(params, RequestOptions.none())
+
+    /** @see [update] */
     fun update(
         params: UserUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Void?>
 
     /** This can only be done by the logged in user. */
-    @JvmOverloads
+    fun delete(params: UserDeleteParams): CompletableFuture<Void?> =
+        delete(params, RequestOptions.none())
+
+    /** @see [delete] */
     fun delete(
         params: UserDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Void?>
 
     /** Creates list of users with given input array */
-    @JvmOverloads
+    fun createList(): CompletableFuture<User> = createList(UserCreateListParams.none())
+
+    /** @see [createList] */
     fun createList(
         params: UserCreateListParams = UserCreateListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<User>
 
-    /** Creates list of users with given input array */
+    /** @see [createList] */
+    fun createList(
+        params: UserCreateListParams = UserCreateListParams.none()
+    ): CompletableFuture<User> = createList(params, RequestOptions.none())
+
+    /** @see [createList] */
     fun createList(requestOptions: RequestOptions): CompletableFuture<User> =
         createList(UserCreateListParams.none(), requestOptions)
 
     /** Logs user into the system */
-    @JvmOverloads
+    fun login(): CompletableFuture<String> = login(UserLoginParams.none())
+
+    /** @see [login] */
     fun login(
         params: UserLoginParams = UserLoginParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<String>
 
-    /** Logs user into the system */
+    /** @see [login] */
+    fun login(params: UserLoginParams = UserLoginParams.none()): CompletableFuture<String> =
+        login(params, RequestOptions.none())
+
+    /** @see [login] */
     fun login(requestOptions: RequestOptions): CompletableFuture<String> =
         login(UserLoginParams.none(), requestOptions)
 
     /** Logs out current logged in user session */
-    @JvmOverloads
+    fun logout(): CompletableFuture<Void?> = logout(UserLogoutParams.none())
+
+    /** @see [logout] */
     fun logout(
         params: UserLogoutParams = UserLogoutParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Void?>
 
-    /** Logs out current logged in user session */
+    /** @see [logout] */
+    fun logout(params: UserLogoutParams = UserLogoutParams.none()): CompletableFuture<Void?> =
+        logout(params, RequestOptions.none())
+
+    /** @see [logout] */
     fun logout(requestOptions: RequestOptions): CompletableFuture<Void?> =
         logout(UserLogoutParams.none(), requestOptions)
 
@@ -97,17 +129,23 @@ interface UserServiceAsync {
          * Returns a raw HTTP response for `post /user`, but is otherwise the same as
          * [UserServiceAsync.create].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun create(): CompletableFuture<HttpResponseFor<User>> = create(UserCreateParams.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(
             params: UserCreateParams = UserCreateParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<User>>
 
-        /**
-         * Returns a raw HTTP response for `post /user`, but is otherwise the same as
-         * [UserServiceAsync.create].
-         */
+        /** @see [create] */
+        @MustBeClosed
+        fun create(
+            params: UserCreateParams = UserCreateParams.none()
+        ): CompletableFuture<HttpResponseFor<User>> = create(params, RequestOptions.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(requestOptions: RequestOptions): CompletableFuture<HttpResponseFor<User>> =
             create(UserCreateParams.none(), requestOptions)
@@ -116,7 +154,11 @@ interface UserServiceAsync {
          * Returns a raw HTTP response for `get /user/{username}`, but is otherwise the same as
          * [UserServiceAsync.retrieve].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(params: UserRetrieveParams): CompletableFuture<HttpResponseFor<User>> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
             params: UserRetrieveParams,
@@ -127,7 +169,11 @@ interface UserServiceAsync {
          * Returns a raw HTTP response for `put /user/{username}`, but is otherwise the same as
          * [UserServiceAsync.update].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun update(params: UserUpdateParams): CompletableFuture<HttpResponse> =
+            update(params, RequestOptions.none())
+
+        /** @see [update] */
         @MustBeClosed
         fun update(
             params: UserUpdateParams,
@@ -138,7 +184,11 @@ interface UserServiceAsync {
          * Returns a raw HTTP response for `delete /user/{username}`, but is otherwise the same as
          * [UserServiceAsync.delete].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun delete(params: UserDeleteParams): CompletableFuture<HttpResponse> =
+            delete(params, RequestOptions.none())
+
+        /** @see [delete] */
         @MustBeClosed
         fun delete(
             params: UserDeleteParams,
@@ -149,17 +199,24 @@ interface UserServiceAsync {
          * Returns a raw HTTP response for `post /user/createWithList`, but is otherwise the same as
          * [UserServiceAsync.createList].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun createList(): CompletableFuture<HttpResponseFor<User>> =
+            createList(UserCreateListParams.none())
+
+        /** @see [createList] */
         @MustBeClosed
         fun createList(
             params: UserCreateListParams = UserCreateListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<User>>
 
-        /**
-         * Returns a raw HTTP response for `post /user/createWithList`, but is otherwise the same as
-         * [UserServiceAsync.createList].
-         */
+        /** @see [createList] */
+        @MustBeClosed
+        fun createList(
+            params: UserCreateListParams = UserCreateListParams.none()
+        ): CompletableFuture<HttpResponseFor<User>> = createList(params, RequestOptions.none())
+
+        /** @see [createList] */
         @MustBeClosed
         fun createList(requestOptions: RequestOptions): CompletableFuture<HttpResponseFor<User>> =
             createList(UserCreateListParams.none(), requestOptions)
@@ -168,17 +225,23 @@ interface UserServiceAsync {
          * Returns a raw HTTP response for `get /user/login`, but is otherwise the same as
          * [UserServiceAsync.login].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun login(): CompletableFuture<HttpResponseFor<String>> = login(UserLoginParams.none())
+
+        /** @see [login] */
         @MustBeClosed
         fun login(
             params: UserLoginParams = UserLoginParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<String>>
 
-        /**
-         * Returns a raw HTTP response for `get /user/login`, but is otherwise the same as
-         * [UserServiceAsync.login].
-         */
+        /** @see [login] */
+        @MustBeClosed
+        fun login(
+            params: UserLoginParams = UserLoginParams.none()
+        ): CompletableFuture<HttpResponseFor<String>> = login(params, RequestOptions.none())
+
+        /** @see [login] */
         @MustBeClosed
         fun login(requestOptions: RequestOptions): CompletableFuture<HttpResponseFor<String>> =
             login(UserLoginParams.none(), requestOptions)
@@ -187,17 +250,23 @@ interface UserServiceAsync {
          * Returns a raw HTTP response for `get /user/logout`, but is otherwise the same as
          * [UserServiceAsync.logout].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun logout(): CompletableFuture<HttpResponse> = logout(UserLogoutParams.none())
+
+        /** @see [logout] */
         @MustBeClosed
         fun logout(
             params: UserLogoutParams = UserLogoutParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponse>
 
-        /**
-         * Returns a raw HTTP response for `get /user/logout`, but is otherwise the same as
-         * [UserServiceAsync.logout].
-         */
+        /** @see [logout] */
+        @MustBeClosed
+        fun logout(
+            params: UserLogoutParams = UserLogoutParams.none()
+        ): CompletableFuture<HttpResponse> = logout(params, RequestOptions.none())
+
+        /** @see [logout] */
         @MustBeClosed
         fun logout(requestOptions: RequestOptions): CompletableFuture<HttpResponse> =
             logout(UserLogoutParams.none(), requestOptions)

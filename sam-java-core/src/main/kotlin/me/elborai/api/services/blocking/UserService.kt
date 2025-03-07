@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package me.elborai.api.services.blocking
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -25,61 +23,91 @@ interface UserService {
     fun withRawResponse(): WithRawResponse
 
     /** This can only be done by the logged in user. */
-    @JvmOverloads
+    fun create(): User = create(UserCreateParams.none())
+
+    /** @see [create] */
     fun create(
         params: UserCreateParams = UserCreateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): User
 
-    /** This can only be done by the logged in user. */
+    /** @see [create] */
+    fun create(params: UserCreateParams = UserCreateParams.none()): User =
+        create(params, RequestOptions.none())
+
+    /** @see [create] */
     fun create(requestOptions: RequestOptions): User =
         create(UserCreateParams.none(), requestOptions)
 
     /** Get user by user name */
-    @JvmOverloads
+    fun retrieve(params: UserRetrieveParams): User = retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
     fun retrieve(
         params: UserRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): User
 
     /** This can only be done by the logged in user. */
-    @JvmOverloads
+    fun update(params: UserUpdateParams) = update(params, RequestOptions.none())
+
+    /** @see [update] */
     fun update(params: UserUpdateParams, requestOptions: RequestOptions = RequestOptions.none())
 
     /** This can only be done by the logged in user. */
-    @JvmOverloads
+    fun delete(params: UserDeleteParams) = delete(params, RequestOptions.none())
+
+    /** @see [delete] */
     fun delete(params: UserDeleteParams, requestOptions: RequestOptions = RequestOptions.none())
 
     /** Creates list of users with given input array */
-    @JvmOverloads
+    fun createList(): User = createList(UserCreateListParams.none())
+
+    /** @see [createList] */
     fun createList(
         params: UserCreateListParams = UserCreateListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): User
 
-    /** Creates list of users with given input array */
+    /** @see [createList] */
+    fun createList(params: UserCreateListParams = UserCreateListParams.none()): User =
+        createList(params, RequestOptions.none())
+
+    /** @see [createList] */
     fun createList(requestOptions: RequestOptions): User =
         createList(UserCreateListParams.none(), requestOptions)
 
     /** Logs user into the system */
-    @JvmOverloads
+    fun login(): String = login(UserLoginParams.none())
+
+    /** @see [login] */
     fun login(
         params: UserLoginParams = UserLoginParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): String
 
-    /** Logs user into the system */
+    /** @see [login] */
+    fun login(params: UserLoginParams = UserLoginParams.none()): String =
+        login(params, RequestOptions.none())
+
+    /** @see [login] */
     fun login(requestOptions: RequestOptions): String =
         login(UserLoginParams.none(), requestOptions)
 
     /** Logs out current logged in user session */
-    @JvmOverloads
+    fun logout() = logout(UserLogoutParams.none())
+
+    /** @see [logout] */
     fun logout(
         params: UserLogoutParams = UserLogoutParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     )
 
-    /** Logs out current logged in user session */
+    /** @see [logout] */
+    fun logout(params: UserLogoutParams = UserLogoutParams.none()) =
+        logout(params, RequestOptions.none())
+
+    /** @see [logout] */
     fun logout(requestOptions: RequestOptions) = logout(UserLogoutParams.none(), requestOptions)
 
     /** A view of [UserService] that provides access to raw HTTP responses for each method. */
@@ -89,17 +117,21 @@ interface UserService {
          * Returns a raw HTTP response for `post /user`, but is otherwise the same as
          * [UserService.create].
          */
-        @JvmOverloads
+        @MustBeClosed fun create(): HttpResponseFor<User> = create(UserCreateParams.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(
             params: UserCreateParams = UserCreateParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<User>
 
-        /**
-         * Returns a raw HTTP response for `post /user`, but is otherwise the same as
-         * [UserService.create].
-         */
+        /** @see [create] */
+        @MustBeClosed
+        fun create(params: UserCreateParams = UserCreateParams.none()): HttpResponseFor<User> =
+            create(params, RequestOptions.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(requestOptions: RequestOptions): HttpResponseFor<User> =
             create(UserCreateParams.none(), requestOptions)
@@ -108,7 +140,11 @@ interface UserService {
          * Returns a raw HTTP response for `get /user/{username}`, but is otherwise the same as
          * [UserService.retrieve].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(params: UserRetrieveParams): HttpResponseFor<User> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
             params: UserRetrieveParams,
@@ -119,7 +155,10 @@ interface UserService {
          * Returns a raw HTTP response for `put /user/{username}`, but is otherwise the same as
          * [UserService.update].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun update(params: UserUpdateParams): HttpResponse = update(params, RequestOptions.none())
+
+        /** @see [update] */
         @MustBeClosed
         fun update(
             params: UserUpdateParams,
@@ -130,7 +169,10 @@ interface UserService {
          * Returns a raw HTTP response for `delete /user/{username}`, but is otherwise the same as
          * [UserService.delete].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun delete(params: UserDeleteParams): HttpResponse = delete(params, RequestOptions.none())
+
+        /** @see [delete] */
         @MustBeClosed
         fun delete(
             params: UserDeleteParams,
@@ -141,17 +183,23 @@ interface UserService {
          * Returns a raw HTTP response for `post /user/createWithList`, but is otherwise the same as
          * [UserService.createList].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun createList(): HttpResponseFor<User> = createList(UserCreateListParams.none())
+
+        /** @see [createList] */
         @MustBeClosed
         fun createList(
             params: UserCreateListParams = UserCreateListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<User>
 
-        /**
-         * Returns a raw HTTP response for `post /user/createWithList`, but is otherwise the same as
-         * [UserService.createList].
-         */
+        /** @see [createList] */
+        @MustBeClosed
+        fun createList(
+            params: UserCreateListParams = UserCreateListParams.none()
+        ): HttpResponseFor<User> = createList(params, RequestOptions.none())
+
+        /** @see [createList] */
         @MustBeClosed
         fun createList(requestOptions: RequestOptions): HttpResponseFor<User> =
             createList(UserCreateListParams.none(), requestOptions)
@@ -160,17 +208,21 @@ interface UserService {
          * Returns a raw HTTP response for `get /user/login`, but is otherwise the same as
          * [UserService.login].
          */
-        @JvmOverloads
+        @MustBeClosed fun login(): HttpResponseFor<String> = login(UserLoginParams.none())
+
+        /** @see [login] */
         @MustBeClosed
         fun login(
             params: UserLoginParams = UserLoginParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<String>
 
-        /**
-         * Returns a raw HTTP response for `get /user/login`, but is otherwise the same as
-         * [UserService.login].
-         */
+        /** @see [login] */
+        @MustBeClosed
+        fun login(params: UserLoginParams = UserLoginParams.none()): HttpResponseFor<String> =
+            login(params, RequestOptions.none())
+
+        /** @see [login] */
         @MustBeClosed
         fun login(requestOptions: RequestOptions): HttpResponseFor<String> =
             login(UserLoginParams.none(), requestOptions)
@@ -179,17 +231,21 @@ interface UserService {
          * Returns a raw HTTP response for `get /user/logout`, but is otherwise the same as
          * [UserService.logout].
          */
-        @JvmOverloads
+        @MustBeClosed fun logout(): HttpResponse = logout(UserLogoutParams.none())
+
+        /** @see [logout] */
         @MustBeClosed
         fun logout(
             params: UserLogoutParams = UserLogoutParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponse
 
-        /**
-         * Returns a raw HTTP response for `get /user/logout`, but is otherwise the same as
-         * [UserService.logout].
-         */
+        /** @see [logout] */
+        @MustBeClosed
+        fun logout(params: UserLogoutParams = UserLogoutParams.none()): HttpResponse =
+            logout(params, RequestOptions.none())
+
+        /** @see [logout] */
         @MustBeClosed
         fun logout(requestOptions: RequestOptions): HttpResponse =
             logout(UserLogoutParams.none(), requestOptions)
