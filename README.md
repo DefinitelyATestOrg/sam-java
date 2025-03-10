@@ -44,13 +44,21 @@ This library requires Java 8 or later.
 ```java
 import me.elborai.api.client.SamClient;
 import me.elborai.api.client.okhttp.SamOkHttpClient;
-import me.elborai.api.models.User;
-import me.elborai.api.models.UserCreateParams;
+import me.elborai.api.models.MessageCreateParams;
+import me.elborai.api.models.MessageCreateResponse;
 
 // Configures using the `API_KEY` environment variable
 SamClient client = SamOkHttpClient.fromEnv();
 
-User user = client.user().create();
+MessageCreateParams params = MessageCreateParams.builder()
+    .maxTokens(1024L)
+    .addMessage(MessageCreateParams.Message.builder()
+        .content("Hello, world")
+        .role(MessageCreateParams.Message.Role.USER)
+        .build())
+    .model("claude-3-7-sonnet-20250219")
+    .build();
+MessageCreateResponse message = client.messages().create(params);
 ```
 
 ## Client configuration
@@ -103,7 +111,7 @@ See this table for the available options:
 
 To send a request to the Sam API, build an instance of some `Params` class and pass it to the corresponding client method. When the response is received, it will be deserialized into an instance of a Java class.
 
-For example, `client.user().create(...)` should be called with an instance of `UserCreateParams`, and it will return an instance of `User`.
+For example, `client.messages().create(...)` should be called with an instance of `MessageCreateParams`, and it will return an instance of `MessageCreateResponse`.
 
 ## Immutability
 
@@ -121,13 +129,21 @@ The default client is synchronous. To switch to asynchronous execution, call the
 import java.util.concurrent.CompletableFuture;
 import me.elborai.api.client.SamClient;
 import me.elborai.api.client.okhttp.SamOkHttpClient;
-import me.elborai.api.models.User;
-import me.elborai.api.models.UserCreateParams;
+import me.elborai.api.models.MessageCreateParams;
+import me.elborai.api.models.MessageCreateResponse;
 
 // Configures using the `API_KEY` environment variable
 SamClient client = SamOkHttpClient.fromEnv();
 
-CompletableFuture<User> user = client.async().user().create();
+MessageCreateParams params = MessageCreateParams.builder()
+    .maxTokens(1024L)
+    .addMessage(MessageCreateParams.Message.builder()
+        .content("Hello, world")
+        .role(MessageCreateParams.Message.Role.USER)
+        .build())
+    .model("claude-3-7-sonnet-20250219")
+    .build();
+CompletableFuture<MessageCreateResponse> message = client.async().messages().create(params);
 ```
 
 Or create an asynchronous client from the beginning:
@@ -136,13 +152,21 @@ Or create an asynchronous client from the beginning:
 import java.util.concurrent.CompletableFuture;
 import me.elborai.api.client.SamClientAsync;
 import me.elborai.api.client.okhttp.SamOkHttpClientAsync;
-import me.elborai.api.models.User;
-import me.elborai.api.models.UserCreateParams;
+import me.elborai.api.models.MessageCreateParams;
+import me.elborai.api.models.MessageCreateResponse;
 
 // Configures using the `API_KEY` environment variable
 SamClientAsync client = SamOkHttpClientAsync.fromEnv();
 
-CompletableFuture<User> user = client.user().create();
+MessageCreateParams params = MessageCreateParams.builder()
+    .maxTokens(1024L)
+    .addMessage(MessageCreateParams.Message.builder()
+        .content("Hello, world")
+        .role(MessageCreateParams.Message.Role.USER)
+        .build())
+    .model("claude-3-7-sonnet-20250219")
+    .build();
+CompletableFuture<MessageCreateResponse> message = client.messages().create(params);
 ```
 
 The asynchronous client supports the same options as the synchronous one, except most methods return `CompletableFuture`s.
@@ -156,21 +180,29 @@ To access this data, prefix any HTTP method call on a client or service with `wi
 ```java
 import me.elborai.api.core.http.Headers;
 import me.elborai.api.core.http.HttpResponseFor;
-import me.elborai.api.models.User;
-import me.elborai.api.models.UserCreateParams;
+import me.elborai.api.models.MessageCreateParams;
+import me.elborai.api.models.MessageCreateResponse;
 
-HttpResponseFor<User> user = client.user().withRawResponse().create();
+MessageCreateParams params = MessageCreateParams.builder()
+    .maxTokens(1024L)
+    .addMessage(MessageCreateParams.Message.builder()
+        .content("Hello, world")
+        .role(MessageCreateParams.Message.Role.USER)
+        .build())
+    .model("claude-3-7-sonnet-20250219")
+    .build();
+HttpResponseFor<MessageCreateResponse> message = client.messages().withRawResponse().create(params);
 
-int statusCode = user.statusCode();
-Headers headers = user.headers();
+int statusCode = message.statusCode();
+Headers headers = message.headers();
 ```
 
 You can still deserialize the response into an instance of a Java class if needed:
 
 ```java
-import me.elborai.api.models.User;
+import me.elborai.api.models.MessageCreateResponse;
 
-User parsedUser = user.parse();
+MessageCreateResponse parsedMessage = message.parse();
 ```
 
 ## Error handling
@@ -247,10 +279,12 @@ Requests time out after 1 minute by default.
 To set a custom timeout, configure the method call using the `timeout` method:
 
 ```java
-import me.elborai.api.models.User;
-import me.elborai.api.models.UserCreateParams;
+import me.elborai.api.models.MessageCreateParams;
+import me.elborai.api.models.MessageCreateResponse;
 
-User user = client.user().create(RequestOptions.builder().timeout(Duration.ofSeconds(30)).build());
+MessageCreateResponse message = client.messages().create(
+  params, RequestOptions.builder().timeout(Duration.ofSeconds(30)).build()
+);
 ```
 
 Or configure the default for all method calls at the client level:
@@ -296,9 +330,9 @@ To set undocumented parameters, call the `putAdditionalHeader`, `putAdditionalQu
 
 ```java
 import me.elborai.api.core.JsonValue;
-import me.elborai.api.models.UserCreateParams;
+import me.elborai.api.models.MessageCreateParams;
 
-UserCreateParams params = UserCreateParams.builder()
+MessageCreateParams params = MessageCreateParams.builder()
     .putAdditionalHeader("Secret-Header", "42")
     .putAdditionalQueryParam("secret_query_param", "42")
     .putAdditionalBodyProperty("secretProperty", JsonValue.from("42"))
@@ -307,12 +341,34 @@ UserCreateParams params = UserCreateParams.builder()
 
 These can be accessed on the built object later using the `_additionalHeaders()`, `_additionalQueryParams()`, and `_additionalBodyProperties()` methods.
 
+To set undocumented parameters on _nested_ headers, query params, or body classes, call the `putAdditionalProperty` method on the nested class:
+
+```java
+import me.elborai.api.core.JsonValue;
+import me.elborai.api.models.MessageCreateParams;
+
+MessageCreateParams params = MessageCreateParams.builder()
+    .metadata(MessageCreateParams.Metadata.builder()
+        .putAdditionalProperty("secretProperty", JsonValue.from("42"))
+        .build())
+    .build();
+```
+
+These properties can be accessed on the nested built object later using the `_additionalProperties()` method.
+
 To set a documented parameter or property to an undocumented or not yet supported _value_, pass a [`JsonValue`](sam-java-core/src/main/kotlin/me/elborai/api/core/Values.kt) object to its setter:
 
 ```java
-import me.elborai.api.models.UserCreateParams;
+import me.elborai.api.models.MessageCreateParams;
 
-UserCreateParams params = UserCreateParams.builder().build();
+MessageCreateParams params = MessageCreateParams.builder()
+    .maxTokens(1024L)
+    .addMessage(MessageCreateParams.Message.builder()
+        .content("Hello, world")
+        .role(MessageCreateParams.Message.Role.USER)
+        .build())
+    .model("claude-3-7-sonnet-20250219")
+    .build();
 ```
 
 The most straightforward way to create a [`JsonValue`](sam-java-core/src/main/kotlin/me/elborai/api/core/Values.kt) is using its `from(...)` method:
@@ -362,7 +418,7 @@ To access undocumented response properties, call the `_additionalProperties()` m
 import java.util.Map;
 import me.elborai.api.core.JsonValue;
 
-Map<String, JsonValue> additionalProperties = client.user().create(params)._additionalProperties();
+Map<String, JsonValue> additionalProperties = client.messages().create(params)._additionalProperties();
 JsonValue secretPropertyValue = additionalProperties.get("secretProperty");
 
 String result = secretPropertyValue.accept(new JsonValue.Visitor<>() {
@@ -392,19 +448,19 @@ To access a property's raw JSON value, which may be undocumented, call its `_` p
 import java.util.Optional;
 import me.elborai.api.core.JsonField;
 
-JsonField<Object> field = client.user().create(params)._field();
+JsonField<Long> maxTokens = client.messages().create(params)._maxTokens();
 
-if (field.isMissing()) {
+if (maxTokens.isMissing()) {
   // The property is absent from the JSON response
-} else if (field.isNull()) {
+} else if (maxTokens.isNull()) {
   // The property was set to literal null
 } else {
   // Check if value was provided as a string
   // Other methods include `asNumber()`, `asBoolean()`, etc.
-  Optional<String> jsonString = field.asString();
+  Optional<String> jsonString = maxTokens.asString();
 
   // Try to deserialize into a custom type
-  MyClass myObject = field.asUnknown().orElseThrow().convert(MyClass.class);
+  MyClass myObject = maxTokens.asUnknown().orElseThrow().convert(MyClass.class);
 }
 ```
 
@@ -417,18 +473,20 @@ By default, the SDK will not throw an exception in this case. It will throw [`Sa
 If you would prefer to check that the response is completely well-typed upfront, then either call `validate()`:
 
 ```java
-import me.elborai.api.models.User;
+import me.elborai.api.models.MessageCreateResponse;
 
-User user = client.user().create(params).validate();
+MessageCreateResponse message = client.messages().create(params).validate();
 ```
 
 Or configure the method call to validate the response using the `responseValidation` method:
 
 ```java
-import me.elborai.api.models.User;
-import me.elborai.api.models.UserCreateParams;
+import me.elborai.api.models.MessageCreateParams;
+import me.elborai.api.models.MessageCreateResponse;
 
-User user = client.user().create(RequestOptions.builder().responseValidation(true).build());
+MessageCreateResponse message = client.messages().create(
+  params, RequestOptions.builder().responseValidation(true).build()
+);
 ```
 
 Or configure the default for all method calls at the client level:

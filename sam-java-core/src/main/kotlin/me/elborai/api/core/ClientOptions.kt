@@ -4,6 +4,10 @@ package me.elborai.api.core
 
 import com.fasterxml.jackson.databind.json.JsonMapper
 import java.time.Clock
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
+import java.util.concurrent.ThreadFactory
+import java.util.concurrent.atomic.AtomicLong
 import me.elborai.api.core.http.Headers
 import me.elborai.api.core.http.HttpClient
 import me.elborai.api.core.http.PhantomReachableClosingHttpClient
@@ -15,6 +19,7 @@ private constructor(
     private val originalHttpClient: HttpClient,
     @get:JvmName("httpClient") val httpClient: HttpClient,
     @get:JvmName("jsonMapper") val jsonMapper: JsonMapper,
+    @get:JvmName("streamHandlerExecutor") val streamHandlerExecutor: Executor,
     @get:JvmName("clock") val clock: Clock,
     @get:JvmName("baseUrl") val baseUrl: String,
     @get:JvmName("headers") val headers: Headers,
@@ -50,6 +55,7 @@ private constructor(
 
         private var httpClient: HttpClient? = null
         private var jsonMapper: JsonMapper = jsonMapper()
+        private var streamHandlerExecutor: Executor? = null
         private var clock: Clock = Clock.systemUTC()
         private var baseUrl: String = PRODUCTION_URL
         private var headers: Headers.Builder = Headers.builder()
@@ -63,6 +69,7 @@ private constructor(
         internal fun from(clientOptions: ClientOptions) = apply {
             httpClient = clientOptions.originalHttpClient
             jsonMapper = clientOptions.jsonMapper
+            streamHandlerExecutor = clientOptions.streamHandlerExecutor
             clock = clientOptions.clock
             baseUrl = clientOptions.baseUrl
             headers = clientOptions.headers.toBuilder()
@@ -76,6 +83,10 @@ private constructor(
         fun httpClient(httpClient: HttpClient) = apply { this.httpClient = httpClient }
 
         fun jsonMapper(jsonMapper: JsonMapper) = apply { this.jsonMapper = jsonMapper }
+
+        fun streamHandlerExecutor(streamHandlerExecutor: Executor) = apply {
+            this.streamHandlerExecutor = streamHandlerExecutor
+        }
 
         fun clock(clock: Clock) = apply { this.clock = clock }
 
@@ -186,11 +197,6 @@ private constructor(
             headers.put("X-Stainless-Package-Version", getPackageVersion())
             headers.put("X-Stainless-Runtime", "JRE")
             headers.put("X-Stainless-Runtime-Version", getJavaVersion())
-            apiKey.let {
-                if (!it.isEmpty()) {
-                    headers.put("api_key", it)
-                }
-            }
             headers.replaceAll(this.headers.build())
             queryParams.replaceAll(this.queryParams.build())
 
@@ -204,6 +210,20 @@ private constructor(
                         .build()
                 ),
                 jsonMapper,
+                streamHandlerExecutor
+                    ?: Executors.newCachedThreadPool(
+                        object : ThreadFactory {
+
+                            private val threadFactory: ThreadFactory =
+                                Executors.defaultThreadFactory()
+                            private val count = AtomicLong(0)
+
+                            override fun newThread(runnable: Runnable): Thread =
+                                threadFactory.newThread(runnable).also {
+                                    it.name = "sam-stream-handler-thread-${count.getAndIncrement()}"
+                                }
+                        }
+                    ),
                 clock,
                 baseUrl,
                 headers.build(),
