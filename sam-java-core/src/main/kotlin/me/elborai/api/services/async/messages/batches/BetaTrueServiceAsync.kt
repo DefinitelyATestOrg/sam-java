@@ -6,10 +6,10 @@ import com.google.errorprone.annotations.MustBeClosed
 import java.util.concurrent.CompletableFuture
 import me.elborai.api.core.RequestOptions
 import me.elborai.api.core.http.HttpResponseFor
-import me.elborai.api.models.MessageBatchBetaTrueDeleteParams
-import me.elborai.api.models.MessageBatchBetaTrueDeleteResponse
-import me.elborai.api.models.MessageBatchBetaTrueRetrieveParams
-import me.elborai.api.models.MessageBatchBetaTrueRetrieveResponse
+import me.elborai.api.models.messages.batches.betatrue.BetaTrueDeleteParams
+import me.elborai.api.models.messages.batches.betatrue.BetaTrueDeleteResponse
+import me.elborai.api.models.messages.batches.betatrue.BetaTrueRetrieveParams
+import me.elborai.api.models.messages.batches.betatrue.BetaTrueRetrieveResponse
 
 interface BetaTrueServiceAsync {
 
@@ -25,16 +25,14 @@ interface BetaTrueServiceAsync {
      * Learn more about the Message Batches API in our
      * [user guide](/en/docs/build-with-claude/batch-processing)
      */
-    fun retrieve(
-        params: MessageBatchBetaTrueRetrieveParams
-    ): CompletableFuture<MessageBatchBetaTrueRetrieveResponse> =
+    fun retrieve(params: BetaTrueRetrieveParams): CompletableFuture<BetaTrueRetrieveResponse> =
         retrieve(params, RequestOptions.none())
 
     /** @see [retrieve] */
     fun retrieve(
-        params: MessageBatchBetaTrueRetrieveParams,
+        params: BetaTrueRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<MessageBatchBetaTrueRetrieveResponse>
+    ): CompletableFuture<BetaTrueRetrieveResponse>
 
     /**
      * Delete a Message Batch.
@@ -45,15 +43,14 @@ interface BetaTrueServiceAsync {
      * Learn more about the Message Batches API in our
      * [user guide](/en/docs/build-with-claude/batch-processing)
      */
-    fun delete(
-        params: MessageBatchBetaTrueDeleteParams
-    ): CompletableFuture<MessageBatchBetaTrueDeleteResponse> = delete(params, RequestOptions.none())
+    fun delete(params: BetaTrueDeleteParams): CompletableFuture<BetaTrueDeleteResponse> =
+        delete(params, RequestOptions.none())
 
     /** @see [delete] */
     fun delete(
-        params: MessageBatchBetaTrueDeleteParams,
+        params: BetaTrueDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<MessageBatchBetaTrueDeleteResponse>
+    ): CompletableFuture<BetaTrueDeleteResponse>
 
     /**
      * A view of [BetaTrueServiceAsync] that provides access to raw HTTP responses for each method.
@@ -66,16 +63,16 @@ interface BetaTrueServiceAsync {
          */
         @MustBeClosed
         fun retrieve(
-            params: MessageBatchBetaTrueRetrieveParams
-        ): CompletableFuture<HttpResponseFor<MessageBatchBetaTrueRetrieveResponse>> =
+            params: BetaTrueRetrieveParams
+        ): CompletableFuture<HttpResponseFor<BetaTrueRetrieveResponse>> =
             retrieve(params, RequestOptions.none())
 
         /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
-            params: MessageBatchBetaTrueRetrieveParams,
+            params: BetaTrueRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<MessageBatchBetaTrueRetrieveResponse>>
+        ): CompletableFuture<HttpResponseFor<BetaTrueRetrieveResponse>>
 
         /**
          * Returns a raw HTTP response for `delete
@@ -84,15 +81,15 @@ interface BetaTrueServiceAsync {
          */
         @MustBeClosed
         fun delete(
-            params: MessageBatchBetaTrueDeleteParams
-        ): CompletableFuture<HttpResponseFor<MessageBatchBetaTrueDeleteResponse>> =
+            params: BetaTrueDeleteParams
+        ): CompletableFuture<HttpResponseFor<BetaTrueDeleteResponse>> =
             delete(params, RequestOptions.none())
 
         /** @see [delete] */
         @MustBeClosed
         fun delete(
-            params: MessageBatchBetaTrueDeleteParams,
+            params: BetaTrueDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<MessageBatchBetaTrueDeleteResponse>>
+        ): CompletableFuture<HttpResponseFor<BetaTrueDeleteResponse>>
     }
 }

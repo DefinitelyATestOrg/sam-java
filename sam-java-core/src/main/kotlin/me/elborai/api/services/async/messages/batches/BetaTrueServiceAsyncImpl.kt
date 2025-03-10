@@ -16,10 +16,10 @@ import me.elborai.api.core.http.json
 import me.elborai.api.core.http.parseable
 import me.elborai.api.core.prepareAsync
 import me.elborai.api.errors.SamError
-import me.elborai.api.models.MessageBatchBetaTrueDeleteParams
-import me.elborai.api.models.MessageBatchBetaTrueDeleteResponse
-import me.elborai.api.models.MessageBatchBetaTrueRetrieveParams
-import me.elborai.api.models.MessageBatchBetaTrueRetrieveResponse
+import me.elborai.api.models.messages.batches.betatrue.BetaTrueDeleteParams
+import me.elborai.api.models.messages.batches.betatrue.BetaTrueDeleteResponse
+import me.elborai.api.models.messages.batches.betatrue.BetaTrueRetrieveParams
+import me.elborai.api.models.messages.batches.betatrue.BetaTrueRetrieveResponse
 
 class BetaTrueServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     BetaTrueServiceAsync {
@@ -31,16 +31,16 @@ class BetaTrueServiceAsyncImpl internal constructor(private val clientOptions: C
     override fun withRawResponse(): BetaTrueServiceAsync.WithRawResponse = withRawResponse
 
     override fun retrieve(
-        params: MessageBatchBetaTrueRetrieveParams,
+        params: BetaTrueRetrieveParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<MessageBatchBetaTrueRetrieveResponse> =
+    ): CompletableFuture<BetaTrueRetrieveResponse> =
         // get /v1/messages/batches/{message_batch_id}?beta=true
         withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
     override fun delete(
-        params: MessageBatchBetaTrueDeleteParams,
+        params: BetaTrueDeleteParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<MessageBatchBetaTrueDeleteResponse> =
+    ): CompletableFuture<BetaTrueDeleteResponse> =
         // delete /v1/messages/batches/{message_batch_id}?beta=true
         withRawResponse().delete(params, requestOptions).thenApply { it.parse() }
 
@@ -49,14 +49,14 @@ class BetaTrueServiceAsyncImpl internal constructor(private val clientOptions: C
 
         private val errorHandler: Handler<SamError> = errorHandler(clientOptions.jsonMapper)
 
-        private val retrieveHandler: Handler<MessageBatchBetaTrueRetrieveResponse> =
-            jsonHandler<MessageBatchBetaTrueRetrieveResponse>(clientOptions.jsonMapper)
+        private val retrieveHandler: Handler<BetaTrueRetrieveResponse> =
+            jsonHandler<BetaTrueRetrieveResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun retrieve(
-            params: MessageBatchBetaTrueRetrieveParams,
+            params: BetaTrueRetrieveParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<MessageBatchBetaTrueRetrieveResponse>> {
+        ): CompletableFuture<HttpResponseFor<BetaTrueRetrieveResponse>> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -80,14 +80,14 @@ class BetaTrueServiceAsyncImpl internal constructor(private val clientOptions: C
                 }
         }
 
-        private val deleteHandler: Handler<MessageBatchBetaTrueDeleteResponse> =
-            jsonHandler<MessageBatchBetaTrueDeleteResponse>(clientOptions.jsonMapper)
+        private val deleteHandler: Handler<BetaTrueDeleteResponse> =
+            jsonHandler<BetaTrueDeleteResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun delete(
-            params: MessageBatchBetaTrueDeleteParams,
+            params: BetaTrueDeleteParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<MessageBatchBetaTrueDeleteResponse>> {
+        ): CompletableFuture<HttpResponseFor<BetaTrueDeleteResponse>> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)

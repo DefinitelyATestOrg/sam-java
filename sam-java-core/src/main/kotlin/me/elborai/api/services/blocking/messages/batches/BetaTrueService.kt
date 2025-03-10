@@ -5,10 +5,10 @@ package me.elborai.api.services.blocking.messages.batches
 import com.google.errorprone.annotations.MustBeClosed
 import me.elborai.api.core.RequestOptions
 import me.elborai.api.core.http.HttpResponseFor
-import me.elborai.api.models.MessageBatchBetaTrueDeleteParams
-import me.elborai.api.models.MessageBatchBetaTrueDeleteResponse
-import me.elborai.api.models.MessageBatchBetaTrueRetrieveParams
-import me.elborai.api.models.MessageBatchBetaTrueRetrieveResponse
+import me.elborai.api.models.messages.batches.betatrue.BetaTrueDeleteParams
+import me.elborai.api.models.messages.batches.betatrue.BetaTrueDeleteResponse
+import me.elborai.api.models.messages.batches.betatrue.BetaTrueRetrieveParams
+import me.elborai.api.models.messages.batches.betatrue.BetaTrueRetrieveResponse
 
 interface BetaTrueService {
 
@@ -24,14 +24,14 @@ interface BetaTrueService {
      * Learn more about the Message Batches API in our
      * [user guide](/en/docs/build-with-claude/batch-processing)
      */
-    fun retrieve(params: MessageBatchBetaTrueRetrieveParams): MessageBatchBetaTrueRetrieveResponse =
+    fun retrieve(params: BetaTrueRetrieveParams): BetaTrueRetrieveResponse =
         retrieve(params, RequestOptions.none())
 
     /** @see [retrieve] */
     fun retrieve(
-        params: MessageBatchBetaTrueRetrieveParams,
+        params: BetaTrueRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): MessageBatchBetaTrueRetrieveResponse
+    ): BetaTrueRetrieveResponse
 
     /**
      * Delete a Message Batch.
@@ -42,14 +42,14 @@ interface BetaTrueService {
      * Learn more about the Message Batches API in our
      * [user guide](/en/docs/build-with-claude/batch-processing)
      */
-    fun delete(params: MessageBatchBetaTrueDeleteParams): MessageBatchBetaTrueDeleteResponse =
+    fun delete(params: BetaTrueDeleteParams): BetaTrueDeleteResponse =
         delete(params, RequestOptions.none())
 
     /** @see [delete] */
     fun delete(
-        params: MessageBatchBetaTrueDeleteParams,
+        params: BetaTrueDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): MessageBatchBetaTrueDeleteResponse
+    ): BetaTrueDeleteResponse
 
     /** A view of [BetaTrueService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -59,17 +59,15 @@ interface BetaTrueService {
          * but is otherwise the same as [BetaTrueService.retrieve].
          */
         @MustBeClosed
-        fun retrieve(
-            params: MessageBatchBetaTrueRetrieveParams
-        ): HttpResponseFor<MessageBatchBetaTrueRetrieveResponse> =
+        fun retrieve(params: BetaTrueRetrieveParams): HttpResponseFor<BetaTrueRetrieveResponse> =
             retrieve(params, RequestOptions.none())
 
         /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
-            params: MessageBatchBetaTrueRetrieveParams,
+            params: BetaTrueRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<MessageBatchBetaTrueRetrieveResponse>
+        ): HttpResponseFor<BetaTrueRetrieveResponse>
 
         /**
          * Returns a raw HTTP response for `delete
@@ -77,16 +75,14 @@ interface BetaTrueService {
          * [BetaTrueService.delete].
          */
         @MustBeClosed
-        fun delete(
-            params: MessageBatchBetaTrueDeleteParams
-        ): HttpResponseFor<MessageBatchBetaTrueDeleteResponse> =
+        fun delete(params: BetaTrueDeleteParams): HttpResponseFor<BetaTrueDeleteResponse> =
             delete(params, RequestOptions.none())
 
         /** @see [delete] */
         @MustBeClosed
         fun delete(
-            params: MessageBatchBetaTrueDeleteParams,
+            params: BetaTrueDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<MessageBatchBetaTrueDeleteResponse>
+        ): HttpResponseFor<BetaTrueDeleteResponse>
     }
 }
