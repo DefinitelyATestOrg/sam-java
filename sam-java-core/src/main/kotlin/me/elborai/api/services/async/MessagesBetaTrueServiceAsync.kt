@@ -6,8 +6,8 @@ import com.google.errorprone.annotations.MustBeClosed
 import java.util.concurrent.CompletableFuture
 import me.elborai.api.core.RequestOptions
 import me.elborai.api.core.http.HttpResponseFor
-import me.elborai.api.models.MessagesBetaTrueCreateParams
-import me.elborai.api.models.MessagesBetaTrueCreateResponse
+import me.elborai.api.models.messagesbetatrue.MessagesBetaTrueCreateParams
+import me.elborai.api.models.messagesbetatrue.MessagesBetaTrueCreateResponse
 
 interface MessagesBetaTrueServiceAsync {
 

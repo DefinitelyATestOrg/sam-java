@@ -6,8 +6,8 @@ import com.google.errorprone.annotations.MustBeClosed
 import java.util.concurrent.CompletableFuture
 import me.elborai.api.core.RequestOptions
 import me.elborai.api.core.http.HttpResponseFor
-import me.elborai.api.models.CompleteCreateParams
-import me.elborai.api.models.CompleteCreateResponse
+import me.elborai.api.models.complete.CompleteCreateParams
+import me.elborai.api.models.complete.CompleteCreateResponse
 
 interface CompleteServiceAsync {
 

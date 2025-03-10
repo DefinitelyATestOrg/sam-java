@@ -21,22 +21,22 @@ import me.elborai.api.core.http.parseable
 import me.elborai.api.core.http.toAsync
 import me.elborai.api.core.prepareAsync
 import me.elborai.api.errors.SamError
-import me.elborai.api.models.MessageBatchCancelBetaParams
-import me.elborai.api.models.MessageBatchCancelBetaResponse
-import me.elborai.api.models.MessageBatchCancelParams
-import me.elborai.api.models.MessageBatchCancelResponse
-import me.elborai.api.models.MessageBatchCreateParams
-import me.elborai.api.models.MessageBatchCreateResponse
-import me.elborai.api.models.MessageBatchDeleteParams
-import me.elborai.api.models.MessageBatchDeleteResponse
-import me.elborai.api.models.MessageBatchListParams
-import me.elborai.api.models.MessageBatchListResponse
-import me.elborai.api.models.MessageBatchResultsBetaParams
-import me.elborai.api.models.MessageBatchResultsBetaResponse
-import me.elborai.api.models.MessageBatchResultsParams
-import me.elborai.api.models.MessageBatchResultsResponse
-import me.elborai.api.models.MessageBatchRetrieveParams
-import me.elborai.api.models.MessageBatchRetrieveResponse
+import me.elborai.api.models.messages.batches.BatchCancelBetaParams
+import me.elborai.api.models.messages.batches.BatchCancelBetaResponse
+import me.elborai.api.models.messages.batches.BatchCancelParams
+import me.elborai.api.models.messages.batches.BatchCancelResponse
+import me.elborai.api.models.messages.batches.BatchCreateParams
+import me.elborai.api.models.messages.batches.BatchCreateResponse
+import me.elborai.api.models.messages.batches.BatchDeleteParams
+import me.elborai.api.models.messages.batches.BatchDeleteResponse
+import me.elborai.api.models.messages.batches.BatchListParams
+import me.elborai.api.models.messages.batches.BatchListResponse
+import me.elborai.api.models.messages.batches.BatchResultsBetaParams
+import me.elborai.api.models.messages.batches.BatchResultsBetaResponse
+import me.elborai.api.models.messages.batches.BatchResultsParams
+import me.elborai.api.models.messages.batches.BatchResultsResponse
+import me.elborai.api.models.messages.batches.BatchRetrieveParams
+import me.elborai.api.models.messages.batches.BatchRetrieveResponse
 import me.elborai.api.services.async.messages.batches.BetaTrueServiceAsync
 import me.elborai.api.services.async.messages.batches.BetaTrueServiceAsyncImpl
 
@@ -54,51 +54,51 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
     override fun betaTrue(): BetaTrueServiceAsync = betaTrue
 
     override fun create(
-        params: MessageBatchCreateParams,
+        params: BatchCreateParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<MessageBatchCreateResponse> =
+    ): CompletableFuture<BatchCreateResponse> =
         // post /v1/messages/batches
         withRawResponse().create(params, requestOptions).thenApply { it.parse() }
 
     override fun retrieve(
-        params: MessageBatchRetrieveParams,
+        params: BatchRetrieveParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<MessageBatchRetrieveResponse> =
+    ): CompletableFuture<BatchRetrieveResponse> =
         // get /v1/messages/batches/{message_batch_id}
         withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
     override fun list(
-        params: MessageBatchListParams,
+        params: BatchListParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<MessageBatchListResponse> =
+    ): CompletableFuture<BatchListResponse> =
         // get /v1/messages/batches
         withRawResponse().list(params, requestOptions).thenApply { it.parse() }
 
     override fun delete(
-        params: MessageBatchDeleteParams,
+        params: BatchDeleteParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<MessageBatchDeleteResponse> =
+    ): CompletableFuture<BatchDeleteResponse> =
         // delete /v1/messages/batches/{message_batch_id}
         withRawResponse().delete(params, requestOptions).thenApply { it.parse() }
 
     override fun cancel(
-        params: MessageBatchCancelParams,
+        params: BatchCancelParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<MessageBatchCancelResponse> =
+    ): CompletableFuture<BatchCancelResponse> =
         // post /v1/messages/batches/{message_batch_id}/cancel
         withRawResponse().cancel(params, requestOptions).thenApply { it.parse() }
 
     override fun cancelBeta(
-        params: MessageBatchCancelBetaParams,
+        params: BatchCancelBetaParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<MessageBatchCancelBetaResponse> =
+    ): CompletableFuture<BatchCancelBetaResponse> =
         // post /v1/messages/batches/{message_batch_id}/cancel?beta=true
         withRawResponse().cancelBeta(params, requestOptions).thenApply { it.parse() }
 
     override fun resultsStreaming(
-        params: MessageBatchResultsParams,
+        params: BatchResultsParams,
         requestOptions: RequestOptions,
-    ): AsyncStreamResponse<MessageBatchResultsResponse> =
+    ): AsyncStreamResponse<BatchResultsResponse> =
         // get /v1/messages/batches/{message_batch_id}/results
         withRawResponse()
             .resultsStreaming(params, requestOptions)
@@ -106,9 +106,9 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
             .toAsync(clientOptions.streamHandlerExecutor)
 
     override fun resultsBetaStreaming(
-        params: MessageBatchResultsBetaParams,
+        params: BatchResultsBetaParams,
         requestOptions: RequestOptions,
-    ): AsyncStreamResponse<MessageBatchResultsBetaResponse> =
+    ): AsyncStreamResponse<BatchResultsBetaResponse> =
         // get /v1/messages/batches/{message_batch_id}/results?beta=true
         withRawResponse()
             .resultsBetaStreaming(params, requestOptions)
@@ -126,14 +126,14 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
         override fun betaTrue(): BetaTrueServiceAsync.WithRawResponse = betaTrue
 
-        private val createHandler: Handler<MessageBatchCreateResponse> =
-            jsonHandler<MessageBatchCreateResponse>(clientOptions.jsonMapper)
+        private val createHandler: Handler<BatchCreateResponse> =
+            jsonHandler<BatchCreateResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun create(
-            params: MessageBatchCreateParams,
+            params: BatchCreateParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<MessageBatchCreateResponse>> {
+        ): CompletableFuture<HttpResponseFor<BatchCreateResponse>> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -157,14 +157,14 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
                 }
         }
 
-        private val retrieveHandler: Handler<MessageBatchRetrieveResponse> =
-            jsonHandler<MessageBatchRetrieveResponse>(clientOptions.jsonMapper)
+        private val retrieveHandler: Handler<BatchRetrieveResponse> =
+            jsonHandler<BatchRetrieveResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun retrieve(
-            params: MessageBatchRetrieveParams,
+            params: BatchRetrieveParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<MessageBatchRetrieveResponse>> {
+        ): CompletableFuture<HttpResponseFor<BatchRetrieveResponse>> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -187,14 +187,13 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
                 }
         }
 
-        private val listHandler: Handler<MessageBatchListResponse> =
-            jsonHandler<MessageBatchListResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
+        private val listHandler: Handler<BatchListResponse> =
+            jsonHandler<BatchListResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun list(
-            params: MessageBatchListParams,
+            params: BatchListParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<MessageBatchListResponse>> {
+        ): CompletableFuture<HttpResponseFor<BatchListResponse>> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -217,14 +216,14 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
                 }
         }
 
-        private val deleteHandler: Handler<MessageBatchDeleteResponse> =
-            jsonHandler<MessageBatchDeleteResponse>(clientOptions.jsonMapper)
+        private val deleteHandler: Handler<BatchDeleteResponse> =
+            jsonHandler<BatchDeleteResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun delete(
-            params: MessageBatchDeleteParams,
+            params: BatchDeleteParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<MessageBatchDeleteResponse>> {
+        ): CompletableFuture<HttpResponseFor<BatchDeleteResponse>> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
@@ -248,14 +247,14 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
                 }
         }
 
-        private val cancelHandler: Handler<MessageBatchCancelResponse> =
-            jsonHandler<MessageBatchCancelResponse>(clientOptions.jsonMapper)
+        private val cancelHandler: Handler<BatchCancelResponse> =
+            jsonHandler<BatchCancelResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun cancel(
-            params: MessageBatchCancelParams,
+            params: BatchCancelParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<MessageBatchCancelResponse>> {
+        ): CompletableFuture<HttpResponseFor<BatchCancelResponse>> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -279,14 +278,14 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
                 }
         }
 
-        private val cancelBetaHandler: Handler<MessageBatchCancelBetaResponse> =
-            jsonHandler<MessageBatchCancelBetaResponse>(clientOptions.jsonMapper)
+        private val cancelBetaHandler: Handler<BatchCancelBetaResponse> =
+            jsonHandler<BatchCancelBetaResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun cancelBeta(
-            params: MessageBatchCancelBetaParams,
+            params: BatchCancelBetaParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<MessageBatchCancelBetaResponse>> {
+        ): CompletableFuture<HttpResponseFor<BatchCancelBetaResponse>> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -311,14 +310,14 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
                 }
         }
 
-        private val resultsStreamingHandler: Handler<StreamResponse<MessageBatchResultsResponse>> =
-            jsonlHandler<MessageBatchResultsResponse>(clientOptions.jsonMapper)
+        private val resultsStreamingHandler: Handler<StreamResponse<BatchResultsResponse>> =
+            jsonlHandler<BatchResultsResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun resultsStreaming(
-            params: MessageBatchResultsParams,
+            params: BatchResultsParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<StreamResponse<MessageBatchResultsResponse>>> {
+        ): CompletableFuture<HttpResponseFor<StreamResponse<BatchResultsResponse>>> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -343,15 +342,14 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
                 }
         }
 
-        private val resultsBetaStreamingHandler:
-            Handler<StreamResponse<MessageBatchResultsBetaResponse>> =
-            jsonlHandler<MessageBatchResultsBetaResponse>(clientOptions.jsonMapper)
+        private val resultsBetaStreamingHandler: Handler<StreamResponse<BatchResultsBetaResponse>> =
+            jsonlHandler<BatchResultsBetaResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun resultsBetaStreaming(
-            params: MessageBatchResultsBetaParams,
+            params: BatchResultsBetaParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<StreamResponse<MessageBatchResultsBetaResponse>>> {
+        ): CompletableFuture<HttpResponseFor<StreamResponse<BatchResultsBetaResponse>>> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)

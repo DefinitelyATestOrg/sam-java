@@ -8,22 +8,22 @@ import me.elborai.api.core.RequestOptions
 import me.elborai.api.core.http.AsyncStreamResponse
 import me.elborai.api.core.http.HttpResponseFor
 import me.elborai.api.core.http.StreamResponse
-import me.elborai.api.models.MessageBatchCancelBetaParams
-import me.elborai.api.models.MessageBatchCancelBetaResponse
-import me.elborai.api.models.MessageBatchCancelParams
-import me.elborai.api.models.MessageBatchCancelResponse
-import me.elborai.api.models.MessageBatchCreateParams
-import me.elborai.api.models.MessageBatchCreateResponse
-import me.elborai.api.models.MessageBatchDeleteParams
-import me.elborai.api.models.MessageBatchDeleteResponse
-import me.elborai.api.models.MessageBatchListParams
-import me.elborai.api.models.MessageBatchListResponse
-import me.elborai.api.models.MessageBatchResultsBetaParams
-import me.elborai.api.models.MessageBatchResultsBetaResponse
-import me.elborai.api.models.MessageBatchResultsParams
-import me.elborai.api.models.MessageBatchResultsResponse
-import me.elborai.api.models.MessageBatchRetrieveParams
-import me.elborai.api.models.MessageBatchRetrieveResponse
+import me.elborai.api.models.messages.batches.BatchCancelBetaParams
+import me.elborai.api.models.messages.batches.BatchCancelBetaResponse
+import me.elborai.api.models.messages.batches.BatchCancelParams
+import me.elborai.api.models.messages.batches.BatchCancelResponse
+import me.elborai.api.models.messages.batches.BatchCreateParams
+import me.elborai.api.models.messages.batches.BatchCreateResponse
+import me.elborai.api.models.messages.batches.BatchDeleteParams
+import me.elborai.api.models.messages.batches.BatchDeleteResponse
+import me.elborai.api.models.messages.batches.BatchListParams
+import me.elborai.api.models.messages.batches.BatchListResponse
+import me.elborai.api.models.messages.batches.BatchResultsBetaParams
+import me.elborai.api.models.messages.batches.BatchResultsBetaResponse
+import me.elborai.api.models.messages.batches.BatchResultsParams
+import me.elborai.api.models.messages.batches.BatchResultsResponse
+import me.elborai.api.models.messages.batches.BatchRetrieveParams
+import me.elborai.api.models.messages.batches.BatchRetrieveResponse
 import me.elborai.api.services.async.messages.batches.BetaTrueServiceAsync
 
 interface BatchServiceAsync {
@@ -45,14 +45,14 @@ interface BatchServiceAsync {
      * Learn more about the Message Batches API in our
      * [user guide](/en/docs/build-with-claude/batch-processing)
      */
-    fun create(params: MessageBatchCreateParams): CompletableFuture<MessageBatchCreateResponse> =
+    fun create(params: BatchCreateParams): CompletableFuture<BatchCreateResponse> =
         create(params, RequestOptions.none())
 
     /** @see [create] */
     fun create(
-        params: MessageBatchCreateParams,
+        params: BatchCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<MessageBatchCreateResponse>
+    ): CompletableFuture<BatchCreateResponse>
 
     /**
      * This endpoint is idempotent and can be used to poll for Message Batch completion. To access
@@ -61,15 +61,14 @@ interface BatchServiceAsync {
      * Learn more about the Message Batches API in our
      * [user guide](/en/docs/build-with-claude/batch-processing)
      */
-    fun retrieve(
-        params: MessageBatchRetrieveParams
-    ): CompletableFuture<MessageBatchRetrieveResponse> = retrieve(params, RequestOptions.none())
+    fun retrieve(params: BatchRetrieveParams): CompletableFuture<BatchRetrieveResponse> =
+        retrieve(params, RequestOptions.none())
 
     /** @see [retrieve] */
     fun retrieve(
-        params: MessageBatchRetrieveParams,
+        params: BatchRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<MessageBatchRetrieveResponse>
+    ): CompletableFuture<BatchRetrieveResponse>
 
     /**
      * List all Message Batches within a Workspace. Most recently created batches are returned
@@ -78,22 +77,22 @@ interface BatchServiceAsync {
      * Learn more about the Message Batches API in our
      * [user guide](/en/docs/build-with-claude/batch-processing)
      */
-    fun list(): CompletableFuture<MessageBatchListResponse> = list(MessageBatchListParams.none())
+    fun list(): CompletableFuture<BatchListResponse> = list(BatchListParams.none())
 
     /** @see [list] */
     fun list(
-        params: MessageBatchListParams = MessageBatchListParams.none(),
+        params: BatchListParams = BatchListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<MessageBatchListResponse>
+    ): CompletableFuture<BatchListResponse>
 
     /** @see [list] */
     fun list(
-        params: MessageBatchListParams = MessageBatchListParams.none()
-    ): CompletableFuture<MessageBatchListResponse> = list(params, RequestOptions.none())
+        params: BatchListParams = BatchListParams.none()
+    ): CompletableFuture<BatchListResponse> = list(params, RequestOptions.none())
 
     /** @see [list] */
-    fun list(requestOptions: RequestOptions): CompletableFuture<MessageBatchListResponse> =
-        list(MessageBatchListParams.none(), requestOptions)
+    fun list(requestOptions: RequestOptions): CompletableFuture<BatchListResponse> =
+        list(BatchListParams.none(), requestOptions)
 
     /**
      * Delete a Message Batch.
@@ -104,14 +103,14 @@ interface BatchServiceAsync {
      * Learn more about the Message Batches API in our
      * [user guide](/en/docs/build-with-claude/batch-processing)
      */
-    fun delete(params: MessageBatchDeleteParams): CompletableFuture<MessageBatchDeleteResponse> =
+    fun delete(params: BatchDeleteParams): CompletableFuture<BatchDeleteResponse> =
         delete(params, RequestOptions.none())
 
     /** @see [delete] */
     fun delete(
-        params: MessageBatchDeleteParams,
+        params: BatchDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<MessageBatchDeleteResponse>
+    ): CompletableFuture<BatchDeleteResponse>
 
     /**
      * Batches may be canceled any time before processing ends. Once cancellation is initiated, the
@@ -125,14 +124,14 @@ interface BatchServiceAsync {
      * Learn more about the Message Batches API in our
      * [user guide](/en/docs/build-with-claude/batch-processing)
      */
-    fun cancel(params: MessageBatchCancelParams): CompletableFuture<MessageBatchCancelResponse> =
+    fun cancel(params: BatchCancelParams): CompletableFuture<BatchCancelResponse> =
         cancel(params, RequestOptions.none())
 
     /** @see [cancel] */
     fun cancel(
-        params: MessageBatchCancelParams,
+        params: BatchCancelParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<MessageBatchCancelResponse>
+    ): CompletableFuture<BatchCancelResponse>
 
     /**
      * Batches may be canceled any time before processing ends. Once cancellation is initiated, the
@@ -146,15 +145,14 @@ interface BatchServiceAsync {
      * Learn more about the Message Batches API in our
      * [user guide](/en/docs/build-with-claude/batch-processing)
      */
-    fun cancelBeta(
-        params: MessageBatchCancelBetaParams
-    ): CompletableFuture<MessageBatchCancelBetaResponse> = cancelBeta(params, RequestOptions.none())
+    fun cancelBeta(params: BatchCancelBetaParams): CompletableFuture<BatchCancelBetaResponse> =
+        cancelBeta(params, RequestOptions.none())
 
     /** @see [cancelBeta] */
     fun cancelBeta(
-        params: MessageBatchCancelBetaParams,
+        params: BatchCancelBetaParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<MessageBatchCancelBetaResponse>
+    ): CompletableFuture<BatchCancelBetaResponse>
 
     /**
      * Streams the results of a Message Batch as a `.jsonl` file.
@@ -166,16 +164,14 @@ interface BatchServiceAsync {
      * Learn more about the Message Batches API in our
      * [user guide](/en/docs/build-with-claude/batch-processing)
      */
-    fun resultsStreaming(
-        params: MessageBatchResultsParams
-    ): AsyncStreamResponse<MessageBatchResultsResponse> =
+    fun resultsStreaming(params: BatchResultsParams): AsyncStreamResponse<BatchResultsResponse> =
         resultsStreaming(params, RequestOptions.none())
 
     /** @see [resultsStreaming] */
     fun resultsStreaming(
-        params: MessageBatchResultsParams,
+        params: BatchResultsParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): AsyncStreamResponse<MessageBatchResultsResponse>
+    ): AsyncStreamResponse<BatchResultsResponse>
 
     /**
      * Streams the results of a Message Batch as a `.jsonl` file.
@@ -188,15 +184,15 @@ interface BatchServiceAsync {
      * [user guide](/en/docs/build-with-claude/batch-processing)
      */
     fun resultsBetaStreaming(
-        params: MessageBatchResultsBetaParams
-    ): AsyncStreamResponse<MessageBatchResultsBetaResponse> =
+        params: BatchResultsBetaParams
+    ): AsyncStreamResponse<BatchResultsBetaResponse> =
         resultsBetaStreaming(params, RequestOptions.none())
 
     /** @see [resultsBetaStreaming] */
     fun resultsBetaStreaming(
-        params: MessageBatchResultsBetaParams,
+        params: BatchResultsBetaParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): AsyncStreamResponse<MessageBatchResultsBetaResponse>
+    ): AsyncStreamResponse<BatchResultsBetaResponse>
 
     /** A view of [BatchServiceAsync] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -209,16 +205,16 @@ interface BatchServiceAsync {
          */
         @MustBeClosed
         fun create(
-            params: MessageBatchCreateParams
-        ): CompletableFuture<HttpResponseFor<MessageBatchCreateResponse>> =
+            params: BatchCreateParams
+        ): CompletableFuture<HttpResponseFor<BatchCreateResponse>> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
         @MustBeClosed
         fun create(
-            params: MessageBatchCreateParams,
+            params: BatchCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<MessageBatchCreateResponse>>
+        ): CompletableFuture<HttpResponseFor<BatchCreateResponse>>
 
         /**
          * Returns a raw HTTP response for `get /v1/messages/batches/{message_batch_id}`, but is
@@ -226,45 +222,45 @@ interface BatchServiceAsync {
          */
         @MustBeClosed
         fun retrieve(
-            params: MessageBatchRetrieveParams
-        ): CompletableFuture<HttpResponseFor<MessageBatchRetrieveResponse>> =
+            params: BatchRetrieveParams
+        ): CompletableFuture<HttpResponseFor<BatchRetrieveResponse>> =
             retrieve(params, RequestOptions.none())
 
         /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
-            params: MessageBatchRetrieveParams,
+            params: BatchRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<MessageBatchRetrieveResponse>>
+        ): CompletableFuture<HttpResponseFor<BatchRetrieveResponse>>
 
         /**
          * Returns a raw HTTP response for `get /v1/messages/batches`, but is otherwise the same as
          * [BatchServiceAsync.list].
          */
         @MustBeClosed
-        fun list(): CompletableFuture<HttpResponseFor<MessageBatchListResponse>> =
-            list(MessageBatchListParams.none())
+        fun list(): CompletableFuture<HttpResponseFor<BatchListResponse>> =
+            list(BatchListParams.none())
 
         /** @see [list] */
         @MustBeClosed
         fun list(
-            params: MessageBatchListParams = MessageBatchListParams.none(),
+            params: BatchListParams = BatchListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<MessageBatchListResponse>>
+        ): CompletableFuture<HttpResponseFor<BatchListResponse>>
 
         /** @see [list] */
         @MustBeClosed
         fun list(
-            params: MessageBatchListParams = MessageBatchListParams.none()
-        ): CompletableFuture<HttpResponseFor<MessageBatchListResponse>> =
+            params: BatchListParams = BatchListParams.none()
+        ): CompletableFuture<HttpResponseFor<BatchListResponse>> =
             list(params, RequestOptions.none())
 
         /** @see [list] */
         @MustBeClosed
         fun list(
             requestOptions: RequestOptions
-        ): CompletableFuture<HttpResponseFor<MessageBatchListResponse>> =
-            list(MessageBatchListParams.none(), requestOptions)
+        ): CompletableFuture<HttpResponseFor<BatchListResponse>> =
+            list(BatchListParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `delete /v1/messages/batches/{message_batch_id}`, but is
@@ -272,16 +268,16 @@ interface BatchServiceAsync {
          */
         @MustBeClosed
         fun delete(
-            params: MessageBatchDeleteParams
-        ): CompletableFuture<HttpResponseFor<MessageBatchDeleteResponse>> =
+            params: BatchDeleteParams
+        ): CompletableFuture<HttpResponseFor<BatchDeleteResponse>> =
             delete(params, RequestOptions.none())
 
         /** @see [delete] */
         @MustBeClosed
         fun delete(
-            params: MessageBatchDeleteParams,
+            params: BatchDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<MessageBatchDeleteResponse>>
+        ): CompletableFuture<HttpResponseFor<BatchDeleteResponse>>
 
         /**
          * Returns a raw HTTP response for `post /v1/messages/batches/{message_batch_id}/cancel`,
@@ -289,16 +285,16 @@ interface BatchServiceAsync {
          */
         @MustBeClosed
         fun cancel(
-            params: MessageBatchCancelParams
-        ): CompletableFuture<HttpResponseFor<MessageBatchCancelResponse>> =
+            params: BatchCancelParams
+        ): CompletableFuture<HttpResponseFor<BatchCancelResponse>> =
             cancel(params, RequestOptions.none())
 
         /** @see [cancel] */
         @MustBeClosed
         fun cancel(
-            params: MessageBatchCancelParams,
+            params: BatchCancelParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<MessageBatchCancelResponse>>
+        ): CompletableFuture<HttpResponseFor<BatchCancelResponse>>
 
         /**
          * Returns a raw HTTP response for `post
@@ -307,16 +303,16 @@ interface BatchServiceAsync {
          */
         @MustBeClosed
         fun cancelBeta(
-            params: MessageBatchCancelBetaParams
-        ): CompletableFuture<HttpResponseFor<MessageBatchCancelBetaResponse>> =
+            params: BatchCancelBetaParams
+        ): CompletableFuture<HttpResponseFor<BatchCancelBetaResponse>> =
             cancelBeta(params, RequestOptions.none())
 
         /** @see [cancelBeta] */
         @MustBeClosed
         fun cancelBeta(
-            params: MessageBatchCancelBetaParams,
+            params: BatchCancelBetaParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<MessageBatchCancelBetaResponse>>
+        ): CompletableFuture<HttpResponseFor<BatchCancelBetaResponse>>
 
         /**
          * Returns a raw HTTP response for `get /v1/messages/batches/{message_batch_id}/results`,
@@ -324,16 +320,16 @@ interface BatchServiceAsync {
          */
         @MustBeClosed
         fun resultsStreaming(
-            params: MessageBatchResultsParams
-        ): CompletableFuture<HttpResponseFor<StreamResponse<MessageBatchResultsResponse>>> =
+            params: BatchResultsParams
+        ): CompletableFuture<HttpResponseFor<StreamResponse<BatchResultsResponse>>> =
             resultsStreaming(params, RequestOptions.none())
 
         /** @see [resultsStreaming] */
         @MustBeClosed
         fun resultsStreaming(
-            params: MessageBatchResultsParams,
+            params: BatchResultsParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<StreamResponse<MessageBatchResultsResponse>>>
+        ): CompletableFuture<HttpResponseFor<StreamResponse<BatchResultsResponse>>>
 
         /**
          * Returns a raw HTTP response for `get
@@ -342,15 +338,15 @@ interface BatchServiceAsync {
          */
         @MustBeClosed
         fun resultsBetaStreaming(
-            params: MessageBatchResultsBetaParams
-        ): CompletableFuture<HttpResponseFor<StreamResponse<MessageBatchResultsBetaResponse>>> =
+            params: BatchResultsBetaParams
+        ): CompletableFuture<HttpResponseFor<StreamResponse<BatchResultsBetaResponse>>> =
             resultsBetaStreaming(params, RequestOptions.none())
 
         /** @see [resultsBetaStreaming] */
         @MustBeClosed
         fun resultsBetaStreaming(
-            params: MessageBatchResultsBetaParams,
+            params: BatchResultsBetaParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<StreamResponse<MessageBatchResultsBetaResponse>>>
+        ): CompletableFuture<HttpResponseFor<StreamResponse<BatchResultsBetaResponse>>>
     }
 }
