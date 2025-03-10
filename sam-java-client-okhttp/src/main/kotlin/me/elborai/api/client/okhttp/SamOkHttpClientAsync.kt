@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import java.net.Proxy
 import java.time.Clock
 import java.time.Duration
+import java.util.concurrent.Executor
 import me.elborai.api.client.SamClientAsync
 import me.elborai.api.client.SamClientAsyncImpl
 import me.elborai.api.core.ClientOptions
@@ -37,6 +38,10 @@ class SamOkHttpClientAsync private constructor() {
         }
 
         fun jsonMapper(jsonMapper: JsonMapper) = apply { clientOptions.jsonMapper(jsonMapper) }
+
+        fun streamHandlerExecutor(streamHandlerExecutor: Executor) = apply {
+            clientOptions.streamHandlerExecutor(streamHandlerExecutor)
+        }
 
         fun clock(clock: Clock) = apply { clientOptions.clock(clock) }
 
