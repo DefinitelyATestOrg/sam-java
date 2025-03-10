@@ -5,10 +5,10 @@ package me.elborai.api.services.blocking.messages
 import com.google.errorprone.annotations.MustBeClosed
 import me.elborai.api.core.RequestOptions
 import me.elborai.api.core.http.HttpResponseFor
-import me.elborai.api.models.MessageBatchesBetaTrueCreateParams
-import me.elborai.api.models.MessageBatchesBetaTrueCreateResponse
-import me.elborai.api.models.MessageBatchesBetaTrueListParams
-import me.elborai.api.models.MessageBatchesBetaTrueListResponse
+import me.elborai.api.models.messages.batchesbetatrue.BatchesBetaTrueCreateParams
+import me.elborai.api.models.messages.batchesbetatrue.BatchesBetaTrueCreateResponse
+import me.elborai.api.models.messages.batchesbetatrue.BatchesBetaTrueListParams
+import me.elborai.api.models.messages.batchesbetatrue.BatchesBetaTrueListResponse
 
 interface BatchesBetaTrueService {
 
@@ -27,14 +27,14 @@ interface BatchesBetaTrueService {
      * Learn more about the Message Batches API in our
      * [user guide](/en/docs/build-with-claude/batch-processing)
      */
-    fun create(params: MessageBatchesBetaTrueCreateParams): MessageBatchesBetaTrueCreateResponse =
+    fun create(params: BatchesBetaTrueCreateParams): BatchesBetaTrueCreateResponse =
         create(params, RequestOptions.none())
 
     /** @see [create] */
     fun create(
-        params: MessageBatchesBetaTrueCreateParams,
+        params: BatchesBetaTrueCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): MessageBatchesBetaTrueCreateResponse
+    ): BatchesBetaTrueCreateResponse
 
     /**
      * List all Message Batches within a Workspace. Most recently created batches are returned
@@ -43,22 +43,22 @@ interface BatchesBetaTrueService {
      * Learn more about the Message Batches API in our
      * [user guide](/en/docs/build-with-claude/batch-processing)
      */
-    fun list(): MessageBatchesBetaTrueListResponse = list(MessageBatchesBetaTrueListParams.none())
+    fun list(): BatchesBetaTrueListResponse = list(BatchesBetaTrueListParams.none())
 
     /** @see [list] */
     fun list(
-        params: MessageBatchesBetaTrueListParams = MessageBatchesBetaTrueListParams.none(),
+        params: BatchesBetaTrueListParams = BatchesBetaTrueListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): MessageBatchesBetaTrueListResponse
+    ): BatchesBetaTrueListResponse
 
     /** @see [list] */
     fun list(
-        params: MessageBatchesBetaTrueListParams = MessageBatchesBetaTrueListParams.none()
-    ): MessageBatchesBetaTrueListResponse = list(params, RequestOptions.none())
+        params: BatchesBetaTrueListParams = BatchesBetaTrueListParams.none()
+    ): BatchesBetaTrueListResponse = list(params, RequestOptions.none())
 
     /** @see [list] */
-    fun list(requestOptions: RequestOptions): MessageBatchesBetaTrueListResponse =
-        list(MessageBatchesBetaTrueListParams.none(), requestOptions)
+    fun list(requestOptions: RequestOptions): BatchesBetaTrueListResponse =
+        list(BatchesBetaTrueListParams.none(), requestOptions)
 
     /**
      * A view of [BatchesBetaTrueService] that provides access to raw HTTP responses for each
@@ -72,43 +72,40 @@ interface BatchesBetaTrueService {
          */
         @MustBeClosed
         fun create(
-            params: MessageBatchesBetaTrueCreateParams
-        ): HttpResponseFor<MessageBatchesBetaTrueCreateResponse> =
-            create(params, RequestOptions.none())
+            params: BatchesBetaTrueCreateParams
+        ): HttpResponseFor<BatchesBetaTrueCreateResponse> = create(params, RequestOptions.none())
 
         /** @see [create] */
         @MustBeClosed
         fun create(
-            params: MessageBatchesBetaTrueCreateParams,
+            params: BatchesBetaTrueCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<MessageBatchesBetaTrueCreateResponse>
+        ): HttpResponseFor<BatchesBetaTrueCreateResponse>
 
         /**
          * Returns a raw HTTP response for `get /v1/messages/batches?beta=true`, but is otherwise
          * the same as [BatchesBetaTrueService.list].
          */
         @MustBeClosed
-        fun list(): HttpResponseFor<MessageBatchesBetaTrueListResponse> =
-            list(MessageBatchesBetaTrueListParams.none())
+        fun list(): HttpResponseFor<BatchesBetaTrueListResponse> =
+            list(BatchesBetaTrueListParams.none())
 
         /** @see [list] */
         @MustBeClosed
         fun list(
-            params: MessageBatchesBetaTrueListParams = MessageBatchesBetaTrueListParams.none(),
+            params: BatchesBetaTrueListParams = BatchesBetaTrueListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<MessageBatchesBetaTrueListResponse>
+        ): HttpResponseFor<BatchesBetaTrueListResponse>
 
         /** @see [list] */
         @MustBeClosed
         fun list(
-            params: MessageBatchesBetaTrueListParams = MessageBatchesBetaTrueListParams.none()
-        ): HttpResponseFor<MessageBatchesBetaTrueListResponse> = list(params, RequestOptions.none())
+            params: BatchesBetaTrueListParams = BatchesBetaTrueListParams.none()
+        ): HttpResponseFor<BatchesBetaTrueListResponse> = list(params, RequestOptions.none())
 
         /** @see [list] */
         @MustBeClosed
-        fun list(
-            requestOptions: RequestOptions
-        ): HttpResponseFor<MessageBatchesBetaTrueListResponse> =
-            list(MessageBatchesBetaTrueListParams.none(), requestOptions)
+        fun list(requestOptions: RequestOptions): HttpResponseFor<BatchesBetaTrueListResponse> =
+            list(BatchesBetaTrueListParams.none(), requestOptions)
     }
 }
