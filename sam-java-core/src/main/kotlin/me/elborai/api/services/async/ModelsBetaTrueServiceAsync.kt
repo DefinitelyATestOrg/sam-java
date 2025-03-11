@@ -12,67 +12,57 @@ import me.elborai.api.models.modelsbetatrue.ModelsBetaTrueListResponse
 interface ModelsBetaTrueServiceAsync {
 
     /**
-     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     * Returns a view of this service that provides access to raw HTTP responses for
+     * each method.
      */
     fun withRawResponse(): WithRawResponse
 
     /**
      * List available models.
      *
-     * The Models API response can be used to determine which models are available for use in the
-     * API. More recently released models are listed first.
+     * The Models API response can be used to determine which models are available for
+     * use in the API. More recently released models are listed first.
      */
-    fun list(): CompletableFuture<ModelsBetaTrueListResponse> =
-        list(ModelsBetaTrueListParams.none())
+    fun list(): CompletableFuture<ModelsBetaTrueListResponse> = list(ModelsBetaTrueListParams.none())
 
     /** @see [list] */
-    fun list(
-        params: ModelsBetaTrueListParams = ModelsBetaTrueListParams.none(),
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<ModelsBetaTrueListResponse>
+    fun list(params: ModelsBetaTrueListParams = ModelsBetaTrueListParams.none(), requestOptions: RequestOptions = RequestOptions.none()): CompletableFuture<ModelsBetaTrueListResponse>
 
     /** @see [list] */
-    fun list(
-        params: ModelsBetaTrueListParams = ModelsBetaTrueListParams.none()
-    ): CompletableFuture<ModelsBetaTrueListResponse> = list(params, RequestOptions.none())
+    fun list(params: ModelsBetaTrueListParams = ModelsBetaTrueListParams.none()): CompletableFuture<ModelsBetaTrueListResponse> =
+        list(
+          params, RequestOptions.none()
+        )
 
     /** @see [list] */
-    fun list(requestOptions: RequestOptions): CompletableFuture<ModelsBetaTrueListResponse> =
-        list(ModelsBetaTrueListParams.none(), requestOptions)
+    fun list(requestOptions: RequestOptions): CompletableFuture<ModelsBetaTrueListResponse> = list(ModelsBetaTrueListParams.none(), requestOptions)
 
     /**
-     * A view of [ModelsBetaTrueServiceAsync] that provides access to raw HTTP responses for each
-     * method.
+     * A view of [ModelsBetaTrueServiceAsync] that provides access to raw HTTP
+     * responses for each method.
      */
     interface WithRawResponse {
 
         /**
-         * Returns a raw HTTP response for `get /v1/models?beta=true`, but is otherwise the same as
-         * [ModelsBetaTrueServiceAsync.list].
+         * Returns a raw HTTP response for `get /v1/models?beta=true`, but is otherwise the
+         * same as [ModelsBetaTrueServiceAsync.list].
          */
         @MustBeClosed
-        fun list(): CompletableFuture<HttpResponseFor<ModelsBetaTrueListResponse>> =
-            list(ModelsBetaTrueListParams.none())
+        fun list(): CompletableFuture<HttpResponseFor<ModelsBetaTrueListResponse>> = list(ModelsBetaTrueListParams.none())
 
         /** @see [list] */
         @MustBeClosed
-        fun list(
-            params: ModelsBetaTrueListParams = ModelsBetaTrueListParams.none(),
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<ModelsBetaTrueListResponse>>
+        fun list(params: ModelsBetaTrueListParams = ModelsBetaTrueListParams.none(), requestOptions: RequestOptions = RequestOptions.none()): CompletableFuture<HttpResponseFor<ModelsBetaTrueListResponse>>
 
         /** @see [list] */
         @MustBeClosed
-        fun list(
-            params: ModelsBetaTrueListParams = ModelsBetaTrueListParams.none()
-        ): CompletableFuture<HttpResponseFor<ModelsBetaTrueListResponse>> =
-            list(params, RequestOptions.none())
+        fun list(params: ModelsBetaTrueListParams = ModelsBetaTrueListParams.none()): CompletableFuture<HttpResponseFor<ModelsBetaTrueListResponse>> =
+            list(
+              params, RequestOptions.none()
+            )
 
         /** @see [list] */
         @MustBeClosed
-        fun list(
-            requestOptions: RequestOptions
-        ): CompletableFuture<HttpResponseFor<ModelsBetaTrueListResponse>> =
-            list(ModelsBetaTrueListParams.none(), requestOptions)
+        fun list(requestOptions: RequestOptions): CompletableFuture<HttpResponseFor<ModelsBetaTrueListResponse>> = list(ModelsBetaTrueListParams.none(), requestOptions)
     }
 }
