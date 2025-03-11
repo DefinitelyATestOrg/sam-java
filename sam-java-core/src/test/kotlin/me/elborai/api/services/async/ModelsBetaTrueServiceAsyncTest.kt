@@ -13,25 +13,21 @@ class ModelsBetaTrueServiceAsyncTest {
 
     @Test
     fun list() {
-        val client =
-            SamOkHttpClientAsync.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("My API Key")
-                .build()
-        val modelsBetaTrueServiceAsync = client.modelsBetaTrue()
+      val client = SamOkHttpClientAsync.builder()
+          .baseUrl(TestServerExtension.BASE_URL)
+          .apiKey("My API Key")
+          .build()
+      val modelsBetaTrueServiceAsync = client.modelsBetaTrue()
 
-        val modelsBetaTrueFuture =
-            modelsBetaTrueServiceAsync.list(
-                ModelsBetaTrueListParams.builder()
-                    .afterId("after_id")
-                    .beforeId("before_id")
-                    .limit(1L)
-                    .anthropicVersion("anthropic-version")
-                    .xApiKey("x-api-key")
-                    .build()
-            )
+      val modelsBetaTrueFuture = modelsBetaTrueServiceAsync.list(ModelsBetaTrueListParams.builder()
+          .afterId("after_id")
+          .beforeId("before_id")
+          .limit(1L)
+          .anthropicVersion("anthropic-version")
+          .xApiKey("x-api-key")
+          .build())
 
-        val modelsBetaTrue = modelsBetaTrueFuture.get()
-        modelsBetaTrue.validate()
+      val modelsBetaTrue = modelsBetaTrueFuture.get()
+      modelsBetaTrue.validate()
     }
 }

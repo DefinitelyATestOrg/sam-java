@@ -18,7 +18,8 @@ import me.elborai.api.services.async.messages.BatchesBetaTrueServiceAsync
 interface MessageServiceAsync {
 
     /**
-     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     * Returns a view of this service that provides access to raw HTTP responses for
+     * each method.
      */
     fun withRawResponse(): WithRawResponse
 
@@ -27,63 +28,59 @@ interface MessageServiceAsync {
     fun batchesBetaTrue(): BatchesBetaTrueServiceAsync
 
     /**
-     * Send a structured list of input messages with text and/or image content, and the model will
-     * generate the next message in the conversation.
+     * Send a structured list of input messages with text and/or image content, and the
+     * model will generate the next message in the conversation.
      *
-     * The Messages API can be used for either single queries or stateless multi-turn conversations.
+     * The Messages API can be used for either single queries or stateless multi-turn
+     * conversations.
      *
      * Learn more about the Messages API in our [user guide](/en/docs/initial-setup)
      */
     fun create(params: MessageCreateParams): CompletableFuture<MessageCreateResponse> =
-        create(params, RequestOptions.none())
+        create(
+          params, RequestOptions.none()
+        )
 
     /** @see [create] */
-    fun create(
-        params: MessageCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<MessageCreateResponse>
+    fun create(params: MessageCreateParams, requestOptions: RequestOptions = RequestOptions.none()): CompletableFuture<MessageCreateResponse>
 
     /**
      * Count the number of tokens in a Message.
      *
-     * The Token Count API can be used to count the number of tokens in a Message, including tools,
-     * images, and documents, without creating it.
+     * The Token Count API can be used to count the number of tokens in a Message,
+     * including tools, images, and documents, without creating it.
      *
      * Learn more about token counting in our
      * [user guide](/en/docs/build-with-claude/token-counting)
      */
-    fun countTokens(
-        params: MessageCountTokensParams
-    ): CompletableFuture<MessageCountTokensResponse> = countTokens(params, RequestOptions.none())
+    fun countTokens(params: MessageCountTokensParams): CompletableFuture<MessageCountTokensResponse> =
+        countTokens(
+          params, RequestOptions.none()
+        )
 
     /** @see [countTokens] */
-    fun countTokens(
-        params: MessageCountTokensParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<MessageCountTokensResponse>
+    fun countTokens(params: MessageCountTokensParams, requestOptions: RequestOptions = RequestOptions.none()): CompletableFuture<MessageCountTokensResponse>
 
     /**
      * Count the number of tokens in a Message.
      *
-     * The Token Count API can be used to count the number of tokens in a Message, including tools,
-     * images, and documents, without creating it.
+     * The Token Count API can be used to count the number of tokens in a Message,
+     * including tools, images, and documents, without creating it.
      *
      * Learn more about token counting in our
      * [user guide](/en/docs/build-with-claude/token-counting)
      */
-    fun countTokensBeta(
-        params: MessageCountTokensBetaParams
-    ): CompletableFuture<MessageCountTokensBetaResponse> =
-        countTokensBeta(params, RequestOptions.none())
+    fun countTokensBeta(params: MessageCountTokensBetaParams): CompletableFuture<MessageCountTokensBetaResponse> =
+        countTokensBeta(
+          params, RequestOptions.none()
+        )
 
     /** @see [countTokensBeta] */
-    fun countTokensBeta(
-        params: MessageCountTokensBetaParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<MessageCountTokensBetaResponse>
+    fun countTokensBeta(params: MessageCountTokensBetaParams, requestOptions: RequestOptions = RequestOptions.none()): CompletableFuture<MessageCountTokensBetaResponse>
 
     /**
-     * A view of [MessageServiceAsync] that provides access to raw HTTP responses for each method.
+     * A view of [MessageServiceAsync] that provides access to raw HTTP responses for
+     * each method.
      */
     interface WithRawResponse {
 
@@ -92,54 +89,45 @@ interface MessageServiceAsync {
         fun batchesBetaTrue(): BatchesBetaTrueServiceAsync.WithRawResponse
 
         /**
-         * Returns a raw HTTP response for `post /v1/messages`, but is otherwise the same as
-         * [MessageServiceAsync.create].
+         * Returns a raw HTTP response for `post /v1/messages`, but is otherwise the same
+         * as [MessageServiceAsync.create].
          */
         @MustBeClosed
-        fun create(
-            params: MessageCreateParams
-        ): CompletableFuture<HttpResponseFor<MessageCreateResponse>> =
-            create(params, RequestOptions.none())
+        fun create(params: MessageCreateParams): CompletableFuture<HttpResponseFor<MessageCreateResponse>> =
+            create(
+              params, RequestOptions.none()
+            )
 
         /** @see [create] */
         @MustBeClosed
-        fun create(
-            params: MessageCreateParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<MessageCreateResponse>>
+        fun create(params: MessageCreateParams, requestOptions: RequestOptions = RequestOptions.none()): CompletableFuture<HttpResponseFor<MessageCreateResponse>>
 
         /**
-         * Returns a raw HTTP response for `post /v1/messages/count_tokens`, but is otherwise the
-         * same as [MessageServiceAsync.countTokens].
+         * Returns a raw HTTP response for `post /v1/messages/count_tokens`, but is
+         * otherwise the same as [MessageServiceAsync.countTokens].
          */
         @MustBeClosed
-        fun countTokens(
-            params: MessageCountTokensParams
-        ): CompletableFuture<HttpResponseFor<MessageCountTokensResponse>> =
-            countTokens(params, RequestOptions.none())
+        fun countTokens(params: MessageCountTokensParams): CompletableFuture<HttpResponseFor<MessageCountTokensResponse>> =
+            countTokens(
+              params, RequestOptions.none()
+            )
 
         /** @see [countTokens] */
         @MustBeClosed
-        fun countTokens(
-            params: MessageCountTokensParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<MessageCountTokensResponse>>
+        fun countTokens(params: MessageCountTokensParams, requestOptions: RequestOptions = RequestOptions.none()): CompletableFuture<HttpResponseFor<MessageCountTokensResponse>>
 
         /**
-         * Returns a raw HTTP response for `post /v1/messages/count_tokens?beta=true`, but is
-         * otherwise the same as [MessageServiceAsync.countTokensBeta].
+         * Returns a raw HTTP response for `post /v1/messages/count_tokens?beta=true`, but
+         * is otherwise the same as [MessageServiceAsync.countTokensBeta].
          */
         @MustBeClosed
-        fun countTokensBeta(
-            params: MessageCountTokensBetaParams
-        ): CompletableFuture<HttpResponseFor<MessageCountTokensBetaResponse>> =
-            countTokensBeta(params, RequestOptions.none())
+        fun countTokensBeta(params: MessageCountTokensBetaParams): CompletableFuture<HttpResponseFor<MessageCountTokensBetaResponse>> =
+            countTokensBeta(
+              params, RequestOptions.none()
+            )
 
         /** @see [countTokensBeta] */
         @MustBeClosed
-        fun countTokensBeta(
-            params: MessageCountTokensBetaParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<MessageCountTokensBetaResponse>>
+        fun countTokensBeta(params: MessageCountTokensBetaParams, requestOptions: RequestOptions = RequestOptions.none()): CompletableFuture<HttpResponseFor<MessageCountTokensBetaResponse>>
     }
 }

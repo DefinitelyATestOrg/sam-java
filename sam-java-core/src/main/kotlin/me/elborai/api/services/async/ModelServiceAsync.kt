@@ -16,128 +16,113 @@ import me.elborai.api.models.models.ModelRetrieveResponse
 interface ModelServiceAsync {
 
     /**
-     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     * Returns a view of this service that provides access to raw HTTP responses for
+     * each method.
      */
     fun withRawResponse(): WithRawResponse
 
     /**
      * Get a specific model.
      *
-     * The Models API response can be used to determine information about a specific model or
-     * resolve a model alias to a model ID.
+     * The Models API response can be used to determine information about a specific
+     * model or resolve a model alias to a model ID.
      */
     fun retrieve(params: ModelRetrieveParams): CompletableFuture<ModelRetrieveResponse> =
-        retrieve(params, RequestOptions.none())
+        retrieve(
+          params, RequestOptions.none()
+        )
 
     /** @see [retrieve] */
-    fun retrieve(
-        params: ModelRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<ModelRetrieveResponse>
+    fun retrieve(params: ModelRetrieveParams, requestOptions: RequestOptions = RequestOptions.none()): CompletableFuture<ModelRetrieveResponse>
 
     /**
      * List available models.
      *
-     * The Models API response can be used to determine which models are available for use in the
-     * API. More recently released models are listed first.
+     * The Models API response can be used to determine which models are available for
+     * use in the API. More recently released models are listed first.
      */
     fun list(): CompletableFuture<ModelListResponse> = list(ModelListParams.none())
 
     /** @see [list] */
-    fun list(
-        params: ModelListParams = ModelListParams.none(),
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<ModelListResponse>
+    fun list(params: ModelListParams = ModelListParams.none(), requestOptions: RequestOptions = RequestOptions.none()): CompletableFuture<ModelListResponse>
 
     /** @see [list] */
-    fun list(
-        params: ModelListParams = ModelListParams.none()
-    ): CompletableFuture<ModelListResponse> = list(params, RequestOptions.none())
+    fun list(params: ModelListParams = ModelListParams.none()): CompletableFuture<ModelListResponse> =
+        list(
+          params, RequestOptions.none()
+        )
 
     /** @see [list] */
-    fun list(requestOptions: RequestOptions): CompletableFuture<ModelListResponse> =
-        list(ModelListParams.none(), requestOptions)
+    fun list(requestOptions: RequestOptions): CompletableFuture<ModelListResponse> = list(ModelListParams.none(), requestOptions)
 
     /**
      * Get a specific model.
      *
-     * The Models API response can be used to determine information about a specific model or
-     * resolve a model alias to a model ID.
+     * The Models API response can be used to determine information about a specific
+     * model or resolve a model alias to a model ID.
      */
-    fun retrieveBeta(
-        params: ModelRetrieveBetaParams
-    ): CompletableFuture<ModelRetrieveBetaResponse> = retrieveBeta(params, RequestOptions.none())
+    fun retrieveBeta(params: ModelRetrieveBetaParams): CompletableFuture<ModelRetrieveBetaResponse> =
+        retrieveBeta(
+          params, RequestOptions.none()
+        )
 
     /** @see [retrieveBeta] */
-    fun retrieveBeta(
-        params: ModelRetrieveBetaParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<ModelRetrieveBetaResponse>
+    fun retrieveBeta(params: ModelRetrieveBetaParams, requestOptions: RequestOptions = RequestOptions.none()): CompletableFuture<ModelRetrieveBetaResponse>
 
-    /** A view of [ModelServiceAsync] that provides access to raw HTTP responses for each method. */
+    /**
+     * A view of [ModelServiceAsync] that provides access to raw HTTP responses for
+     * each method.
+     */
     interface WithRawResponse {
 
         /**
-         * Returns a raw HTTP response for `get /v1/models/{model_id}`, but is otherwise the same as
-         * [ModelServiceAsync.retrieve].
+         * Returns a raw HTTP response for `get /v1/models/{model_id}`, but is otherwise
+         * the same as [ModelServiceAsync.retrieve].
          */
         @MustBeClosed
-        fun retrieve(
-            params: ModelRetrieveParams
-        ): CompletableFuture<HttpResponseFor<ModelRetrieveResponse>> =
-            retrieve(params, RequestOptions.none())
+        fun retrieve(params: ModelRetrieveParams): CompletableFuture<HttpResponseFor<ModelRetrieveResponse>> =
+            retrieve(
+              params, RequestOptions.none()
+            )
 
         /** @see [retrieve] */
         @MustBeClosed
-        fun retrieve(
-            params: ModelRetrieveParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<ModelRetrieveResponse>>
+        fun retrieve(params: ModelRetrieveParams, requestOptions: RequestOptions = RequestOptions.none()): CompletableFuture<HttpResponseFor<ModelRetrieveResponse>>
 
         /**
          * Returns a raw HTTP response for `get /v1/models`, but is otherwise the same as
          * [ModelServiceAsync.list].
          */
         @MustBeClosed
-        fun list(): CompletableFuture<HttpResponseFor<ModelListResponse>> =
-            list(ModelListParams.none())
+        fun list(): CompletableFuture<HttpResponseFor<ModelListResponse>> = list(ModelListParams.none())
 
         /** @see [list] */
         @MustBeClosed
-        fun list(
-            params: ModelListParams = ModelListParams.none(),
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<ModelListResponse>>
+        fun list(params: ModelListParams = ModelListParams.none(), requestOptions: RequestOptions = RequestOptions.none()): CompletableFuture<HttpResponseFor<ModelListResponse>>
 
         /** @see [list] */
         @MustBeClosed
-        fun list(
-            params: ModelListParams = ModelListParams.none()
-        ): CompletableFuture<HttpResponseFor<ModelListResponse>> =
-            list(params, RequestOptions.none())
+        fun list(params: ModelListParams = ModelListParams.none()): CompletableFuture<HttpResponseFor<ModelListResponse>> =
+            list(
+              params, RequestOptions.none()
+            )
 
         /** @see [list] */
         @MustBeClosed
-        fun list(
-            requestOptions: RequestOptions
-        ): CompletableFuture<HttpResponseFor<ModelListResponse>> =
-            list(ModelListParams.none(), requestOptions)
+        fun list(requestOptions: RequestOptions): CompletableFuture<HttpResponseFor<ModelListResponse>> = list(ModelListParams.none(), requestOptions)
 
         /**
-         * Returns a raw HTTP response for `get /v1/models/{model_id}?beta=true`, but is otherwise
-         * the same as [ModelServiceAsync.retrieveBeta].
+         * Returns a raw HTTP response for `get /v1/models/{model_id}?beta=true`, but is
+         * otherwise the same as [ModelServiceAsync.retrieveBeta].
          */
         @MustBeClosed
-        fun retrieveBeta(
-            params: ModelRetrieveBetaParams
-        ): CompletableFuture<HttpResponseFor<ModelRetrieveBetaResponse>> =
-            retrieveBeta(params, RequestOptions.none())
+        fun retrieveBeta(params: ModelRetrieveBetaParams): CompletableFuture<HttpResponseFor<ModelRetrieveBetaResponse>> =
+            retrieveBeta(
+              params, RequestOptions.none()
+            )
 
         /** @see [retrieveBeta] */
         @MustBeClosed
-        fun retrieveBeta(
-            params: ModelRetrieveBetaParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<ModelRetrieveBetaResponse>>
+        fun retrieveBeta(params: ModelRetrieveBetaParams, requestOptions: RequestOptions = RequestOptions.none()): CompletableFuture<HttpResponseFor<ModelRetrieveBetaResponse>>
     }
 }
