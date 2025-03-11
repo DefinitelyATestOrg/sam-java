@@ -2,12 +2,12 @@
 
 package me.elborai.api.core.handlers
 
+import java.util.stream.Stream
+import kotlin.streams.asStream
 import me.elborai.api.core.http.HttpResponse
 import me.elborai.api.core.http.HttpResponse.Handler
 import me.elborai.api.core.http.PhantomReachableClosingStreamResponse
 import me.elborai.api.core.http.StreamResponse
-import java.util.stream.Stream
-import kotlin.streams.asStream
 
 @JvmSynthetic
 internal fun <T> streamHandler(

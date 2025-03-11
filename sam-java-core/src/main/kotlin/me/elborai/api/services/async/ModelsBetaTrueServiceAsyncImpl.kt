@@ -18,49 +18,56 @@ import me.elborai.api.errors.SamError
 import me.elborai.api.models.modelsbetatrue.ModelsBetaTrueListParams
 import me.elborai.api.models.modelsbetatrue.ModelsBetaTrueListResponse
 
-class ModelsBetaTrueServiceAsyncImpl internal constructor(
-    private val clientOptions: ClientOptions,
+class ModelsBetaTrueServiceAsyncImpl
+internal constructor(private val clientOptions: ClientOptions) : ModelsBetaTrueServiceAsync {
 
-) : ModelsBetaTrueServiceAsync {
-
-    private val withRawResponse: ModelsBetaTrueServiceAsync.WithRawResponse by lazy { WithRawResponseImpl(clientOptions) }
+    private val withRawResponse: ModelsBetaTrueServiceAsync.WithRawResponse by lazy {
+        WithRawResponseImpl(clientOptions)
+    }
 
     override fun withRawResponse(): ModelsBetaTrueServiceAsync.WithRawResponse = withRawResponse
 
-    override fun list(params: ModelsBetaTrueListParams, requestOptions: RequestOptions): CompletableFuture<ModelsBetaTrueListResponse> =
+    override fun list(
+        params: ModelsBetaTrueListParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<ModelsBetaTrueListResponse> =
         // get /v1/models?beta=true
         withRawResponse().list(params, requestOptions).thenApply { it.parse() }
 
-    class WithRawResponseImpl internal constructor(
-        private val clientOptions: ClientOptions,
-
-    ) : ModelsBetaTrueServiceAsync.WithRawResponse {
+    class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
+        ModelsBetaTrueServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<SamError> = errorHandler(clientOptions.jsonMapper)
 
-        private val listHandler: Handler<ModelsBetaTrueListResponse> = jsonHandler<ModelsBetaTrueListResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val listHandler: Handler<ModelsBetaTrueListResponse> =
+            jsonHandler<ModelsBetaTrueListResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
 
-        override fun list(params: ModelsBetaTrueListParams, requestOptions: RequestOptions): CompletableFuture<HttpResponseFor<ModelsBetaTrueListResponse>> {
-          val request = HttpRequest.builder()
-            .method(HttpMethod.GET)
-            .addPathSegments("v1", "models")
-            .putQueryParam("beta", "true")
-            .build()
-            .prepareAsync(clientOptions, params)
-          val requestOptions = requestOptions
-              .applyDefaults(RequestOptions.from(clientOptions))
-          return request.thenComposeAsync { clientOptions.httpClient.executeAsync(
-            it, requestOptions
-          ) }.thenApply { response -> response.parseable {
-              response.use {
-                  listHandler.handle(it)
-              }
-              .also {
-                  if (requestOptions.responseValidation!!) {
-                    it.validate()
-                  }
-              }
-          } }
+        override fun list(
+            params: ModelsBetaTrueListParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<ModelsBetaTrueListResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments("v1", "models")
+                    .putQueryParam("beta", "true")
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { listHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
         }
     }
 }
