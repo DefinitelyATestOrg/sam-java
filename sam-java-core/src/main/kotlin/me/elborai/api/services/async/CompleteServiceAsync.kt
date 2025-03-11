@@ -12,7 +12,8 @@ import me.elborai.api.models.complete.CompleteCreateResponse
 interface CompleteServiceAsync {
 
     /**
-     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     * Returns a view of this service that provides access to raw HTTP responses for
+     * each method.
      */
     fun withRawResponse(): WithRawResponse
 
@@ -27,34 +28,31 @@ interface CompleteServiceAsync {
      * for guidance in migrating from Text Completions to Messages.
      */
     fun create(params: CompleteCreateParams): CompletableFuture<CompleteCreateResponse> =
-        create(params, RequestOptions.none())
+        create(
+          params, RequestOptions.none()
+        )
 
     /** @see [create] */
-    fun create(
-        params: CompleteCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<CompleteCreateResponse>
+    fun create(params: CompleteCreateParams, requestOptions: RequestOptions = RequestOptions.none()): CompletableFuture<CompleteCreateResponse>
 
     /**
-     * A view of [CompleteServiceAsync] that provides access to raw HTTP responses for each method.
+     * A view of [CompleteServiceAsync] that provides access to raw HTTP responses for
+     * each method.
      */
     interface WithRawResponse {
 
         /**
-         * Returns a raw HTTP response for `post /v1/complete`, but is otherwise the same as
-         * [CompleteServiceAsync.create].
+         * Returns a raw HTTP response for `post /v1/complete`, but is otherwise the same
+         * as [CompleteServiceAsync.create].
          */
         @MustBeClosed
-        fun create(
-            params: CompleteCreateParams
-        ): CompletableFuture<HttpResponseFor<CompleteCreateResponse>> =
-            create(params, RequestOptions.none())
+        fun create(params: CompleteCreateParams): CompletableFuture<HttpResponseFor<CompleteCreateResponse>> =
+            create(
+              params, RequestOptions.none()
+            )
 
         /** @see [create] */
         @MustBeClosed
-        fun create(
-            params: CompleteCreateParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<CompleteCreateResponse>>
+        fun create(params: CompleteCreateParams, requestOptions: RequestOptions = RequestOptions.none()): CompletableFuture<HttpResponseFor<CompleteCreateResponse>>
     }
 }

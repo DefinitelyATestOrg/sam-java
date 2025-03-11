@@ -1,7 +1,7 @@
 package me.elborai.api.core.http
 
-import java.util.stream.Stream
 import me.elborai.api.core.closeWhenPhantomReachable
+import java.util.stream.Stream
 
 /**
  * A delegating wrapper around a `StreamResponse` that closes it once it's only phantom reachable.

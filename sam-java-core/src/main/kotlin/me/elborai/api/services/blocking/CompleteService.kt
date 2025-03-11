@@ -11,7 +11,8 @@ import me.elborai.api.models.complete.CompleteCreateResponse
 interface CompleteService {
 
     /**
-     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     * Returns a view of this service that provides access to raw HTTP responses for
+     * each method.
      */
     fun withRawResponse(): WithRawResponse
 
@@ -26,30 +27,31 @@ interface CompleteService {
      * for guidance in migrating from Text Completions to Messages.
      */
     fun create(params: CompleteCreateParams): CompleteCreateResponse =
-        create(params, RequestOptions.none())
+        create(
+          params, RequestOptions.none()
+        )
 
     /** @see [create] */
-    fun create(
-        params: CompleteCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompleteCreateResponse
+    fun create(params: CompleteCreateParams, requestOptions: RequestOptions = RequestOptions.none()): CompleteCreateResponse
 
-    /** A view of [CompleteService] that provides access to raw HTTP responses for each method. */
+    /**
+     * A view of [CompleteService] that provides access to raw HTTP responses for each
+     * method.
+     */
     interface WithRawResponse {
 
         /**
-         * Returns a raw HTTP response for `post /v1/complete`, but is otherwise the same as
-         * [CompleteService.create].
+         * Returns a raw HTTP response for `post /v1/complete`, but is otherwise the same
+         * as [CompleteService.create].
          */
         @MustBeClosed
         fun create(params: CompleteCreateParams): HttpResponseFor<CompleteCreateResponse> =
-            create(params, RequestOptions.none())
+            create(
+              params, RequestOptions.none()
+            )
 
         /** @see [create] */
         @MustBeClosed
-        fun create(
-            params: CompleteCreateParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<CompleteCreateResponse>
+        fun create(params: CompleteCreateParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<CompleteCreateResponse>
     }
 }
