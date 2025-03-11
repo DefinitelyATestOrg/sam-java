@@ -40,12 +40,12 @@ import me.elborai.api.models.messages.batches.BatchRetrieveResponse
 import me.elborai.api.services.async.messages.batches.BetaTrueServiceAsync
 import me.elborai.api.services.async.messages.batches.BetaTrueServiceAsyncImpl
 
-class BatchServiceAsyncImpl internal constructor(
-    private val clientOptions: ClientOptions,
+class BatchServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    BatchServiceAsync {
 
-) : BatchServiceAsync {
-
-    private val withRawResponse: BatchServiceAsync.WithRawResponse by lazy { WithRawResponseImpl(clientOptions) }
+    private val withRawResponse: BatchServiceAsync.WithRawResponse by lazy {
+        WithRawResponseImpl(clientOptions)
+    }
 
     private val betaTrue: BetaTrueServiceAsync by lazy { BetaTrueServiceAsyncImpl(clientOptions) }
 
@@ -53,251 +53,326 @@ class BatchServiceAsyncImpl internal constructor(
 
     override fun betaTrue(): BetaTrueServiceAsync = betaTrue
 
-    override fun create(params: BatchCreateParams, requestOptions: RequestOptions): CompletableFuture<BatchCreateResponse> =
+    override fun create(
+        params: BatchCreateParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<BatchCreateResponse> =
         // post /v1/messages/batches
         withRawResponse().create(params, requestOptions).thenApply { it.parse() }
 
-    override fun retrieve(params: BatchRetrieveParams, requestOptions: RequestOptions): CompletableFuture<BatchRetrieveResponse> =
+    override fun retrieve(
+        params: BatchRetrieveParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<BatchRetrieveResponse> =
         // get /v1/messages/batches/{message_batch_id}
         withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
-    override fun list(params: BatchListParams, requestOptions: RequestOptions): CompletableFuture<BatchListResponse> =
+    override fun list(
+        params: BatchListParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<BatchListResponse> =
         // get /v1/messages/batches
         withRawResponse().list(params, requestOptions).thenApply { it.parse() }
 
-    override fun delete(params: BatchDeleteParams, requestOptions: RequestOptions): CompletableFuture<BatchDeleteResponse> =
+    override fun delete(
+        params: BatchDeleteParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<BatchDeleteResponse> =
         // delete /v1/messages/batches/{message_batch_id}
         withRawResponse().delete(params, requestOptions).thenApply { it.parse() }
 
-    override fun cancel(params: BatchCancelParams, requestOptions: RequestOptions): CompletableFuture<BatchCancelResponse> =
+    override fun cancel(
+        params: BatchCancelParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<BatchCancelResponse> =
         // post /v1/messages/batches/{message_batch_id}/cancel
         withRawResponse().cancel(params, requestOptions).thenApply { it.parse() }
 
-    override fun cancelBeta(params: BatchCancelBetaParams, requestOptions: RequestOptions): CompletableFuture<BatchCancelBetaResponse> =
+    override fun cancelBeta(
+        params: BatchCancelBetaParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<BatchCancelBetaResponse> =
         // post /v1/messages/batches/{message_batch_id}/cancel?beta=true
         withRawResponse().cancelBeta(params, requestOptions).thenApply { it.parse() }
 
-    override fun resultsStreaming(params: BatchResultsParams, requestOptions: RequestOptions): AsyncStreamResponse<BatchResultsResponse> =
+    override fun resultsStreaming(
+        params: BatchResultsParams,
+        requestOptions: RequestOptions,
+    ): AsyncStreamResponse<BatchResultsResponse> =
         // get /v1/messages/batches/{message_batch_id}/results
-        withRawResponse().resultsStreaming(params, requestOptions).thenApply { it.parse() }.toAsync(clientOptions.streamHandlerExecutor)
+        withRawResponse()
+            .resultsStreaming(params, requestOptions)
+            .thenApply { it.parse() }
+            .toAsync(clientOptions.streamHandlerExecutor)
 
-    override fun resultsBetaStreaming(params: BatchResultsBetaParams, requestOptions: RequestOptions): AsyncStreamResponse<BatchResultsBetaResponse> =
+    override fun resultsBetaStreaming(
+        params: BatchResultsBetaParams,
+        requestOptions: RequestOptions,
+    ): AsyncStreamResponse<BatchResultsBetaResponse> =
         // get /v1/messages/batches/{message_batch_id}/results?beta=true
-        withRawResponse().resultsBetaStreaming(params, requestOptions).thenApply { it.parse() }.toAsync(clientOptions.streamHandlerExecutor)
+        withRawResponse()
+            .resultsBetaStreaming(params, requestOptions)
+            .thenApply { it.parse() }
+            .toAsync(clientOptions.streamHandlerExecutor)
 
-    class WithRawResponseImpl internal constructor(
-        private val clientOptions: ClientOptions,
-
-    ) : BatchServiceAsync.WithRawResponse {
+    class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
+        BatchServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<SamError> = errorHandler(clientOptions.jsonMapper)
 
-        private val betaTrue: BetaTrueServiceAsync.WithRawResponse by lazy { BetaTrueServiceAsyncImpl.WithRawResponseImpl(clientOptions) }
+        private val betaTrue: BetaTrueServiceAsync.WithRawResponse by lazy {
+            BetaTrueServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
 
         override fun betaTrue(): BetaTrueServiceAsync.WithRawResponse = betaTrue
 
-        private val createHandler: Handler<BatchCreateResponse> = jsonHandler<BatchCreateResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val createHandler: Handler<BatchCreateResponse> =
+            jsonHandler<BatchCreateResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
 
-        override fun create(params: BatchCreateParams, requestOptions: RequestOptions): CompletableFuture<HttpResponseFor<BatchCreateResponse>> {
-          val request = HttpRequest.builder()
-            .method(HttpMethod.POST)
-            .addPathSegments("v1", "messages", "batches")
-            .body(json(clientOptions.jsonMapper, params._body()))
-            .build()
-            .prepareAsync(clientOptions, params)
-          val requestOptions = requestOptions
-              .applyDefaults(RequestOptions.from(clientOptions))
-          return request.thenComposeAsync { clientOptions.httpClient.executeAsync(
-            it, requestOptions
-          ) }.thenApply { response -> response.parseable {
-              response.use {
-                  createHandler.handle(it)
-              }
-              .also {
-                  if (requestOptions.responseValidation!!) {
-                    it.validate()
-                  }
-              }
-          } }
+        override fun create(
+            params: BatchCreateParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<BatchCreateResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("v1", "messages", "batches")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { createHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
         }
 
-        private val retrieveHandler: Handler<BatchRetrieveResponse> = jsonHandler<BatchRetrieveResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val retrieveHandler: Handler<BatchRetrieveResponse> =
+            jsonHandler<BatchRetrieveResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
 
-        override fun retrieve(params: BatchRetrieveParams, requestOptions: RequestOptions): CompletableFuture<HttpResponseFor<BatchRetrieveResponse>> {
-          val request = HttpRequest.builder()
-            .method(HttpMethod.GET)
-            .addPathSegments("v1", "messages", "batches", params.getPathParam(0))
-            .build()
-            .prepareAsync(clientOptions, params)
-          val requestOptions = requestOptions
-              .applyDefaults(RequestOptions.from(clientOptions))
-          return request.thenComposeAsync { clientOptions.httpClient.executeAsync(
-            it, requestOptions
-          ) }.thenApply { response -> response.parseable {
-              response.use {
-                  retrieveHandler.handle(it)
-              }
-              .also {
-                  if (requestOptions.responseValidation!!) {
-                    it.validate()
-                  }
-              }
-          } }
+        override fun retrieve(
+            params: BatchRetrieveParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<BatchRetrieveResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments("v1", "messages", "batches", params.getPathParam(0))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { retrieveHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
         }
 
-        private val listHandler: Handler<BatchListResponse> = jsonHandler<BatchListResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val listHandler: Handler<BatchListResponse> =
+            jsonHandler<BatchListResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
-        override fun list(params: BatchListParams, requestOptions: RequestOptions): CompletableFuture<HttpResponseFor<BatchListResponse>> {
-          val request = HttpRequest.builder()
-            .method(HttpMethod.GET)
-            .addPathSegments("v1", "messages", "batches")
-            .build()
-            .prepareAsync(clientOptions, params)
-          val requestOptions = requestOptions
-              .applyDefaults(RequestOptions.from(clientOptions))
-          return request.thenComposeAsync { clientOptions.httpClient.executeAsync(
-            it, requestOptions
-          ) }.thenApply { response -> response.parseable {
-              response.use {
-                  listHandler.handle(it)
-              }
-              .also {
-                  if (requestOptions.responseValidation!!) {
-                    it.validate()
-                  }
-              }
-          } }
+        override fun list(
+            params: BatchListParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<BatchListResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments("v1", "messages", "batches")
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { listHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
         }
 
-        private val deleteHandler: Handler<BatchDeleteResponse> = jsonHandler<BatchDeleteResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val deleteHandler: Handler<BatchDeleteResponse> =
+            jsonHandler<BatchDeleteResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
 
-        override fun delete(params: BatchDeleteParams, requestOptions: RequestOptions): CompletableFuture<HttpResponseFor<BatchDeleteResponse>> {
-          val request = HttpRequest.builder()
-            .method(HttpMethod.DELETE)
-            .addPathSegments("v1", "messages", "batches", params.getPathParam(0))
-            .apply { params._body().ifPresent{ body(json(clientOptions.jsonMapper, it)) } }
-            .build()
-            .prepareAsync(clientOptions, params)
-          val requestOptions = requestOptions
-              .applyDefaults(RequestOptions.from(clientOptions))
-          return request.thenComposeAsync { clientOptions.httpClient.executeAsync(
-            it, requestOptions
-          ) }.thenApply { response -> response.parseable {
-              response.use {
-                  deleteHandler.handle(it)
-              }
-              .also {
-                  if (requestOptions.responseValidation!!) {
-                    it.validate()
-                  }
-              }
-          } }
+        override fun delete(
+            params: BatchDeleteParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<BatchDeleteResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.DELETE)
+                    .addPathSegments("v1", "messages", "batches", params.getPathParam(0))
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { deleteHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
         }
 
-        private val cancelHandler: Handler<BatchCancelResponse> = jsonHandler<BatchCancelResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val cancelHandler: Handler<BatchCancelResponse> =
+            jsonHandler<BatchCancelResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
 
-        override fun cancel(params: BatchCancelParams, requestOptions: RequestOptions): CompletableFuture<HttpResponseFor<BatchCancelResponse>> {
-          val request = HttpRequest.builder()
-            .method(HttpMethod.POST)
-            .addPathSegments("v1", "messages", "batches", params.getPathParam(0), "cancel")
-            .apply { params._body().ifPresent{ body(json(clientOptions.jsonMapper, it)) } }
-            .build()
-            .prepareAsync(clientOptions, params)
-          val requestOptions = requestOptions
-              .applyDefaults(RequestOptions.from(clientOptions))
-          return request.thenComposeAsync { clientOptions.httpClient.executeAsync(
-            it, requestOptions
-          ) }.thenApply { response -> response.parseable {
-              response.use {
-                  cancelHandler.handle(it)
-              }
-              .also {
-                  if (requestOptions.responseValidation!!) {
-                    it.validate()
-                  }
-              }
-          } }
+        override fun cancel(
+            params: BatchCancelParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<BatchCancelResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("v1", "messages", "batches", params.getPathParam(0), "cancel")
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { cancelHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
         }
 
-        private val cancelBetaHandler: Handler<BatchCancelBetaResponse> = jsonHandler<BatchCancelBetaResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val cancelBetaHandler: Handler<BatchCancelBetaResponse> =
+            jsonHandler<BatchCancelBetaResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
 
-        override fun cancelBeta(params: BatchCancelBetaParams, requestOptions: RequestOptions): CompletableFuture<HttpResponseFor<BatchCancelBetaResponse>> {
-          val request = HttpRequest.builder()
-            .method(HttpMethod.POST)
-            .addPathSegments("v1", "messages", "batches", params.getPathParam(0), "cancel")
-            .putQueryParam("beta", "true")
-            .apply { params._body().ifPresent{ body(json(clientOptions.jsonMapper, it)) } }
-            .build()
-            .prepareAsync(clientOptions, params)
-          val requestOptions = requestOptions
-              .applyDefaults(RequestOptions.from(clientOptions))
-          return request.thenComposeAsync { clientOptions.httpClient.executeAsync(
-            it, requestOptions
-          ) }.thenApply { response -> response.parseable {
-              response.use {
-                  cancelBetaHandler.handle(it)
-              }
-              .also {
-                  if (requestOptions.responseValidation!!) {
-                    it.validate()
-                  }
-              }
-          } }
+        override fun cancelBeta(
+            params: BatchCancelBetaParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<BatchCancelBetaResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("v1", "messages", "batches", params.getPathParam(0), "cancel")
+                    .putQueryParam("beta", "true")
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { cancelBetaHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
         }
 
-        private val resultsStreamingHandler: Handler<StreamResponse<BatchResultsResponse>> = jsonlHandler<BatchResultsResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val resultsStreamingHandler: Handler<StreamResponse<BatchResultsResponse>> =
+            jsonlHandler<BatchResultsResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
 
-        override fun resultsStreaming(params: BatchResultsParams, requestOptions: RequestOptions): CompletableFuture<HttpResponseFor<StreamResponse<BatchResultsResponse>>> {
-          val request = HttpRequest.builder()
-            .method(HttpMethod.GET)
-            .addPathSegments("v1", "messages", "batches", params.getPathParam(0), "results")
-            .build()
-            .prepareAsync(clientOptions, params)
-          val requestOptions = requestOptions
-              .applyDefaults(RequestOptions.from(clientOptions))
-          return request.thenComposeAsync { clientOptions.httpClient.executeAsync(
-            it, requestOptions
-          ) }.thenApply { response -> response.parseable {
-              response.let {
-                  resultsStreamingHandler.handle(it)
-              }
-              .let { streamResponse ->
-                  if (requestOptions.responseValidation!!) {
-                    streamResponse.map { it.validate() }
-                  }
-                  else {
-                    streamResponse
-                  }
-              }
-          } }
+        override fun resultsStreaming(
+            params: BatchResultsParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<StreamResponse<BatchResultsResponse>>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments("v1", "messages", "batches", params.getPathParam(0), "results")
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .let { resultsStreamingHandler.handle(it) }
+                            .let { streamResponse ->
+                                if (requestOptions.responseValidation!!) {
+                                    streamResponse.map { it.validate() }
+                                } else {
+                                    streamResponse
+                                }
+                            }
+                    }
+                }
         }
 
-        private val resultsBetaStreamingHandler: Handler<StreamResponse<BatchResultsBetaResponse>> = jsonlHandler<BatchResultsBetaResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val resultsBetaStreamingHandler: Handler<StreamResponse<BatchResultsBetaResponse>> =
+            jsonlHandler<BatchResultsBetaResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
 
-        override fun resultsBetaStreaming(params: BatchResultsBetaParams, requestOptions: RequestOptions): CompletableFuture<HttpResponseFor<StreamResponse<BatchResultsBetaResponse>>> {
-          val request = HttpRequest.builder()
-            .method(HttpMethod.GET)
-            .addPathSegments("v1", "messages", "batches", params.getPathParam(0), "results")
-            .putQueryParam("beta", "true")
-            .build()
-            .prepareAsync(clientOptions, params)
-          val requestOptions = requestOptions
-              .applyDefaults(RequestOptions.from(clientOptions))
-          return request.thenComposeAsync { clientOptions.httpClient.executeAsync(
-            it, requestOptions
-          ) }.thenApply { response -> response.parseable {
-              response.let {
-                  resultsBetaStreamingHandler.handle(it)
-              }
-              .let { streamResponse ->
-                  if (requestOptions.responseValidation!!) {
-                    streamResponse.map { it.validate() }
-                  }
-                  else {
-                    streamResponse
-                  }
-              }
-          } }
+        override fun resultsBetaStreaming(
+            params: BatchResultsBetaParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<StreamResponse<BatchResultsBetaResponse>>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments("v1", "messages", "batches", params.getPathParam(0), "results")
+                    .putQueryParam("beta", "true")
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .let { resultsBetaStreamingHandler.handle(it) }
+                            .let { streamResponse ->
+                                if (requestOptions.responseValidation!!) {
+                                    streamResponse.map { it.validate() }
+                                } else {
+                                    streamResponse
+                                }
+                            }
+                    }
+                }
         }
     }
 }

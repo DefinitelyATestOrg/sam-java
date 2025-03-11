@@ -1,10 +1,10 @@
 package me.elborai.api.core.http
 
-import me.elborai.api.core.http.AsyncStreamResponse.Handler
 import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import java.util.concurrent.atomic.AtomicReference
+import me.elborai.api.core.http.AsyncStreamResponse.Handler
 
 /**
  * A class providing access to an API response as an asynchronous stream of chunks of type [T],
@@ -31,7 +31,10 @@ interface AsyncStreamResponse<T> {
      */
     fun subscribe(handler: Handler<T>, executor: Executor): AsyncStreamResponse<T>
 
-    /** Returns a future that completes when a stream is fully consumed, errors, or gets closed early. */
+    /**
+     * Returns a future that completes when a stream is fully consumed, errors, or gets closed
+     * early.
+     */
     fun onCompleteFuture(): CompletableFuture<Void?>
 
     /**

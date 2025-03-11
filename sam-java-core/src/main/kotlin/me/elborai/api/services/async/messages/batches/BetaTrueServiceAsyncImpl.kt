@@ -21,79 +21,95 @@ import me.elborai.api.models.messages.batches.betatrue.BetaTrueDeleteResponse
 import me.elborai.api.models.messages.batches.betatrue.BetaTrueRetrieveParams
 import me.elborai.api.models.messages.batches.betatrue.BetaTrueRetrieveResponse
 
-class BetaTrueServiceAsyncImpl internal constructor(
-    private val clientOptions: ClientOptions,
+class BetaTrueServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    BetaTrueServiceAsync {
 
-) : BetaTrueServiceAsync {
-
-    private val withRawResponse: BetaTrueServiceAsync.WithRawResponse by lazy { WithRawResponseImpl(clientOptions) }
+    private val withRawResponse: BetaTrueServiceAsync.WithRawResponse by lazy {
+        WithRawResponseImpl(clientOptions)
+    }
 
     override fun withRawResponse(): BetaTrueServiceAsync.WithRawResponse = withRawResponse
 
-    override fun retrieve(params: BetaTrueRetrieveParams, requestOptions: RequestOptions): CompletableFuture<BetaTrueRetrieveResponse> =
+    override fun retrieve(
+        params: BetaTrueRetrieveParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<BetaTrueRetrieveResponse> =
         // get /v1/messages/batches/{message_batch_id}?beta=true
         withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
-    override fun delete(params: BetaTrueDeleteParams, requestOptions: RequestOptions): CompletableFuture<BetaTrueDeleteResponse> =
+    override fun delete(
+        params: BetaTrueDeleteParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<BetaTrueDeleteResponse> =
         // delete /v1/messages/batches/{message_batch_id}?beta=true
         withRawResponse().delete(params, requestOptions).thenApply { it.parse() }
 
-    class WithRawResponseImpl internal constructor(
-        private val clientOptions: ClientOptions,
-
-    ) : BetaTrueServiceAsync.WithRawResponse {
+    class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
+        BetaTrueServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<SamError> = errorHandler(clientOptions.jsonMapper)
 
-        private val retrieveHandler: Handler<BetaTrueRetrieveResponse> = jsonHandler<BetaTrueRetrieveResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val retrieveHandler: Handler<BetaTrueRetrieveResponse> =
+            jsonHandler<BetaTrueRetrieveResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
 
-        override fun retrieve(params: BetaTrueRetrieveParams, requestOptions: RequestOptions): CompletableFuture<HttpResponseFor<BetaTrueRetrieveResponse>> {
-          val request = HttpRequest.builder()
-            .method(HttpMethod.GET)
-            .addPathSegments("v1", "messages", "batches", params.getPathParam(0))
-            .putQueryParam("beta", "true")
-            .build()
-            .prepareAsync(clientOptions, params)
-          val requestOptions = requestOptions
-              .applyDefaults(RequestOptions.from(clientOptions))
-          return request.thenComposeAsync { clientOptions.httpClient.executeAsync(
-            it, requestOptions
-          ) }.thenApply { response -> response.parseable {
-              response.use {
-                  retrieveHandler.handle(it)
-              }
-              .also {
-                  if (requestOptions.responseValidation!!) {
-                    it.validate()
-                  }
-              }
-          } }
+        override fun retrieve(
+            params: BetaTrueRetrieveParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<BetaTrueRetrieveResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments("v1", "messages", "batches", params.getPathParam(0))
+                    .putQueryParam("beta", "true")
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { retrieveHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
         }
 
-        private val deleteHandler: Handler<BetaTrueDeleteResponse> = jsonHandler<BetaTrueDeleteResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val deleteHandler: Handler<BetaTrueDeleteResponse> =
+            jsonHandler<BetaTrueDeleteResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
 
-        override fun delete(params: BetaTrueDeleteParams, requestOptions: RequestOptions): CompletableFuture<HttpResponseFor<BetaTrueDeleteResponse>> {
-          val request = HttpRequest.builder()
-            .method(HttpMethod.DELETE)
-            .addPathSegments("v1", "messages", "batches", params.getPathParam(0))
-            .putQueryParam("beta", "true")
-            .apply { params._body().ifPresent{ body(json(clientOptions.jsonMapper, it)) } }
-            .build()
-            .prepareAsync(clientOptions, params)
-          val requestOptions = requestOptions
-              .applyDefaults(RequestOptions.from(clientOptions))
-          return request.thenComposeAsync { clientOptions.httpClient.executeAsync(
-            it, requestOptions
-          ) }.thenApply { response -> response.parseable {
-              response.use {
-                  deleteHandler.handle(it)
-              }
-              .also {
-                  if (requestOptions.responseValidation!!) {
-                    it.validate()
-                  }
-              }
-          } }
+        override fun delete(
+            params: BetaTrueDeleteParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<BetaTrueDeleteResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.DELETE)
+                    .addPathSegments("v1", "messages", "batches", params.getPathParam(0))
+                    .putQueryParam("beta", "true")
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { deleteHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
         }
     }
 }

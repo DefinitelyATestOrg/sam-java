@@ -1,31 +1,30 @@
 package me.elborai.api.client.okhttp
 
-import me.elborai.api.core.RequestOptions
-import me.elborai.api.core.Timeout
-import me.elborai.api.core.checkRequired
-import me.elborai.api.core.http.Headers
-import me.elborai.api.core.http.HttpClient
-import me.elborai.api.core.http.HttpRequest
-import me.elborai.api.core.http.HttpRequestBody
-import me.elborai.api.core.http.HttpResponse
-import me.elborai.api.core.http.HttpMethod
-import me.elborai.api.errors.SamIoException
 import java.io.IOException
 import java.io.InputStream
 import java.net.Proxy
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.TimeUnit
+import me.elborai.api.core.RequestOptions
+import me.elborai.api.core.Timeout
+import me.elborai.api.core.checkRequired
+import me.elborai.api.core.http.Headers
+import me.elborai.api.core.http.HttpClient
+import me.elborai.api.core.http.HttpMethod
+import me.elborai.api.core.http.HttpRequest
+import me.elborai.api.core.http.HttpRequestBody
+import me.elborai.api.core.http.HttpResponse
+import me.elborai.api.errors.SamIoException
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.HttpUrl
-import okhttp3.Response
+import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody
-import okhttp3.MediaType
-import okhttp3.HttpUrl.Companion.toHttpUrl
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import okio.BufferedSink
 
@@ -33,10 +32,7 @@ class OkHttpClient
 private constructor(private val okHttpClient: okhttp3.OkHttpClient, private val baseUrl: HttpUrl) :
     HttpClient {
 
-    override fun execute(
-        request: HttpRequest,
-        requestOptions: RequestOptions,
-    ): HttpResponse {
+    override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
         val call = newCall(request, requestOptions)
 
         return try {
@@ -56,16 +52,18 @@ private constructor(private val okHttpClient: okhttp3.OkHttpClient, private val 
 
         request.body?.run { future.whenComplete { _, _ -> close() } }
 
-        newCall(request, requestOptions).enqueue(
-            object : Callback {
-                override fun onResponse(call: Call, response: Response) {
-                    future.complete(response.toResponse())
-                }
+        newCall(request, requestOptions)
+            .enqueue(
+                object : Callback {
+                    override fun onResponse(call: Call, response: Response) {
+                        future.complete(response.toResponse())
+                    }
 
-                override fun onFailure(call: Call, e: IOException) {
-                    future.completeExceptionally(SamIoException("Request failed", e))
+                    override fun onFailure(call: Call, e: IOException) {
+                        future.completeExceptionally(SamIoException("Request failed", e))
+                    }
                 }
-            })
+            )
 
         return future
     }
@@ -86,11 +84,7 @@ private constructor(private val okHttpClient: okhttp3.OkHttpClient, private val 
                 else -> null
             }
         if (logLevel != null) {
-            clientBuilder.addNetworkInterceptor(
-                HttpLoggingInterceptor()
-                    .setLevel(logLevel)
-                    
-            )
+            clientBuilder.addNetworkInterceptor(HttpLoggingInterceptor().setLevel(logLevel))
         }
 
         requestOptions.timeout?.let {
@@ -116,16 +110,18 @@ private constructor(private val okHttpClient: okhttp3.OkHttpClient, private val 
             headers.values(name).forEach { builder.header(name, it) }
         }
 
-        if (!headers.names().contains("X-Stainless-Read-Timeout") && client.readTimeoutMillis != 0) {
+        if (
+            !headers.names().contains("X-Stainless-Read-Timeout") && client.readTimeoutMillis != 0
+        ) {
             builder.header(
                 "X-Stainless-Read-Timeout",
-                Duration.ofMillis(client.readTimeoutMillis.toLong()).seconds.toString()
+                Duration.ofMillis(client.readTimeoutMillis.toLong()).seconds.toString(),
             )
         }
         if (!headers.names().contains("X-Stainless-Timeout") && client.callTimeoutMillis != 0) {
             builder.header(
                 "X-Stainless-Timeout",
-                Duration.ofMillis(client.callTimeoutMillis.toLong()).seconds.toString()
+                Duration.ofMillis(client.callTimeoutMillis.toLong()).seconds.toString(),
             )
         }
 
@@ -185,9 +181,9 @@ private constructor(private val okHttpClient: okhttp3.OkHttpClient, private val 
     }
 
     private fun okhttp3.Headers.toHeaders(): Headers {
-      val headersBuilder = Headers.builder()
-      forEach { (name, value) -> headersBuilder.put(name, value) }
-      return headersBuilder.build()
+        val headersBuilder = Headers.builder()
+        forEach { (name, value) -> headersBuilder.put(name, value) }
+        return headersBuilder.build()
     }
 
     companion object {

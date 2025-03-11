@@ -19,50 +19,57 @@ import me.elborai.api.errors.SamError
 import me.elborai.api.models.messagesbetatrue.MessagesBetaTrueCreateParams
 import me.elborai.api.models.messagesbetatrue.MessagesBetaTrueCreateResponse
 
-class MessagesBetaTrueServiceAsyncImpl internal constructor(
-    private val clientOptions: ClientOptions,
+class MessagesBetaTrueServiceAsyncImpl
+internal constructor(private val clientOptions: ClientOptions) : MessagesBetaTrueServiceAsync {
 
-) : MessagesBetaTrueServiceAsync {
-
-    private val withRawResponse: MessagesBetaTrueServiceAsync.WithRawResponse by lazy { WithRawResponseImpl(clientOptions) }
+    private val withRawResponse: MessagesBetaTrueServiceAsync.WithRawResponse by lazy {
+        WithRawResponseImpl(clientOptions)
+    }
 
     override fun withRawResponse(): MessagesBetaTrueServiceAsync.WithRawResponse = withRawResponse
 
-    override fun create(params: MessagesBetaTrueCreateParams, requestOptions: RequestOptions): CompletableFuture<MessagesBetaTrueCreateResponse> =
+    override fun create(
+        params: MessagesBetaTrueCreateParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<MessagesBetaTrueCreateResponse> =
         // post /v1/messages?beta=true
         withRawResponse().create(params, requestOptions).thenApply { it.parse() }
 
-    class WithRawResponseImpl internal constructor(
-        private val clientOptions: ClientOptions,
-
-    ) : MessagesBetaTrueServiceAsync.WithRawResponse {
+    class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
+        MessagesBetaTrueServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<SamError> = errorHandler(clientOptions.jsonMapper)
 
-        private val createHandler: Handler<MessagesBetaTrueCreateResponse> = jsonHandler<MessagesBetaTrueCreateResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val createHandler: Handler<MessagesBetaTrueCreateResponse> =
+            jsonHandler<MessagesBetaTrueCreateResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
 
-        override fun create(params: MessagesBetaTrueCreateParams, requestOptions: RequestOptions): CompletableFuture<HttpResponseFor<MessagesBetaTrueCreateResponse>> {
-          val request = HttpRequest.builder()
-            .method(HttpMethod.POST)
-            .addPathSegments("v1", "messages")
-            .putQueryParam("beta", "true")
-            .body(json(clientOptions.jsonMapper, params._body()))
-            .build()
-            .prepareAsync(clientOptions, params)
-          val requestOptions = requestOptions
-              .applyDefaults(RequestOptions.from(clientOptions))
-          return request.thenComposeAsync { clientOptions.httpClient.executeAsync(
-            it, requestOptions
-          ) }.thenApply { response -> response.parseable {
-              response.use {
-                  createHandler.handle(it)
-              }
-              .also {
-                  if (requestOptions.responseValidation!!) {
-                    it.validate()
-                  }
-              }
-          } }
+        override fun create(
+            params: MessagesBetaTrueCreateParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<MessagesBetaTrueCreateResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("v1", "messages")
+                    .putQueryParam("beta", "true")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { createHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
         }
     }
 }
