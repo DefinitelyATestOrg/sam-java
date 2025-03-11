@@ -1,13 +1,12 @@
 package me.elborai.api.core.http
 
-import me.elborai.api.core.toImmutable
-import java.util.Collections
 import java.util.TreeMap
+import me.elborai.api.core.toImmutable
 
 class Headers
 private constructor(
     private val map: Map<String, List<String>>,
-    @get:JvmName("size") val size: Int
+    @get:JvmName("size") val size: Int,
 ) {
 
     fun isEmpty(): Boolean = map.isEmpty()
@@ -75,7 +74,7 @@ private constructor(
                         values.toImmutable()
                     }
                     .toImmutable(),
-                size
+                size,
             )
     }
 
