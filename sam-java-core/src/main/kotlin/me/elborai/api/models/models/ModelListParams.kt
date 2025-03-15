@@ -123,10 +123,7 @@ private constructor(
          */
         fun afterId(afterId: String?) = apply { this.afterId = afterId }
 
-        /**
-         * ID of the object to use as a cursor for pagination. When provided, returns the page of
-         * results immediately after this object.
-         */
+        /** Alias for calling [Builder.afterId] with `afterId.orElse(null)`. */
         fun afterId(afterId: Optional<String>) = afterId(afterId.getOrNull())
 
         /**
@@ -135,10 +132,7 @@ private constructor(
          */
         fun beforeId(beforeId: String?) = apply { this.beforeId = beforeId }
 
-        /**
-         * ID of the object to use as a cursor for pagination. When provided, returns the page of
-         * results immediately before this object.
-         */
+        /** Alias for calling [Builder.beforeId] with `beforeId.orElse(null)`. */
         fun beforeId(beforeId: Optional<String>) = beforeId(beforeId.getOrNull())
 
         /**
@@ -149,17 +143,13 @@ private constructor(
         fun limit(limit: Long?) = apply { this.limit = limit }
 
         /**
-         * Number of items to return per page.
+         * Alias for [Builder.limit].
          *
-         * Defaults to `20`. Ranges from `1` to `1000`.
+         * This unboxed primitive overload exists for backwards compatibility.
          */
         fun limit(limit: Long) = limit(limit as Long?)
 
-        /**
-         * Number of items to return per page.
-         *
-         * Defaults to `20`. Ranges from `1` to `1000`.
-         */
+        /** Alias for calling [Builder.limit] with `limit.orElse(null)`. */
         fun limit(limit: Optional<Long>) = limit(limit.getOrNull())
 
         /**
@@ -172,12 +162,7 @@ private constructor(
             this.anthropicVersion = anthropicVersion
         }
 
-        /**
-         * The version of the Anthropic API you want to use.
-         *
-         * Read more about versioning and our version history
-         * [here](https://docs.anthropic.com/en/api/versioning).
-         */
+        /** Alias for calling [Builder.anthropicVersion] with `anthropicVersion.orElse(null)`. */
         fun anthropicVersion(anthropicVersion: Optional<String>) =
             anthropicVersion(anthropicVersion.getOrNull())
 
@@ -191,14 +176,7 @@ private constructor(
          */
         fun xApiKey(xApiKey: String?) = apply { this.xApiKey = xApiKey }
 
-        /**
-         * Your unique API key for authentication.
-         *
-         * This key is required in the header of all API requests, to authenticate your account and
-         * access Anthropic's services. Get your API key through the
-         * [Console](https://console.anthropic.com/settings/keys). Each key is scoped to a
-         * Workspace.
-         */
+        /** Alias for calling [Builder.xApiKey] with `xApiKey.orElse(null)`. */
         fun xApiKey(xApiKey: Optional<String>) = xApiKey(xApiKey.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
