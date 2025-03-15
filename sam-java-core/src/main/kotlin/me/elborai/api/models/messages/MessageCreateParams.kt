@@ -85,6 +85,9 @@ private constructor(
      *
      * Different models have different maximum values for this parameter. See
      * [models](https://docs.anthropic.com/en/docs/models-overview) for details.
+     *
+     * @throws SamInvalidDataException if the JSON field has an unexpected type or is unexpectedly
+     *   missing or null (e.g. if the server responded with an unexpected value).
      */
     fun maxTokens(): Long = body.maxTokens()
 
@@ -165,6 +168,9 @@ private constructor(
      * Note that if you want to include a
      * [system prompt](https://docs.anthropic.com/en/docs/system-prompts), you can use the top-level
      * `system` parameter — there is no `"system"` role for input messages in the Messages API.
+     *
+     * @throws SamInvalidDataException if the JSON field has an unexpected type or is unexpectedly
+     *   missing or null (e.g. if the server responded with an unexpected value).
      */
     fun messages(): List<Message> = body.messages()
 
@@ -173,10 +179,18 @@ private constructor(
      *
      * See [models](https://docs.anthropic.com/en/docs/models-overview) for additional details and
      * options.
+     *
+     * @throws SamInvalidDataException if the JSON field has an unexpected type or is unexpectedly
+     *   missing or null (e.g. if the server responded with an unexpected value).
      */
     fun model(): String = body.model()
 
-    /** An object describing metadata about the request. */
+    /**
+     * An object describing metadata about the request.
+     *
+     * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the server
+     *   responded with an unexpected value).
+     */
     fun metadata(): Optional<Metadata> = body.metadata()
 
     /**
@@ -189,6 +203,9 @@ private constructor(
      * use the `stop_sequences` parameter. If the model encounters one of the custom sequences, the
      * response `stop_reason` value will be `"stop_sequence"` and the response `stop_sequence` value
      * will contain the matched stop sequence.
+     *
+     * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the server
+     *   responded with an unexpected value).
      */
     fun stopSequences(): Optional<List<String>> = body.stopSequences()
 
@@ -196,6 +213,9 @@ private constructor(
      * Whether to incrementally stream the response using server-sent events.
      *
      * See [streaming](https://docs.anthropic.com/en/api/messages-streaming) for details.
+     *
+     * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the server
+     *   responded with an unexpected value).
      */
     fun stream(): Optional<Boolean> = body.stream()
 
@@ -205,6 +225,9 @@ private constructor(
      * A system prompt is a way of providing context and instructions to Claude, such as specifying
      * a particular goal or role. See our
      * [guide to system prompts](https://docs.anthropic.com/en/docs/system-prompts).
+     *
+     * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the server
+     *   responded with an unexpected value).
      */
     fun system(): Optional<System> = body.system()
 
@@ -215,6 +238,9 @@ private constructor(
      * analytical / multiple choice, and closer to `1.0` for creative and generative tasks.
      *
      * Note that even with `temperature` of `0.0`, the results will not be fully deterministic.
+     *
+     * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the server
+     *   responded with an unexpected value).
      */
     fun temperature(): Optional<Double> = body.temperature()
 
@@ -228,12 +254,18 @@ private constructor(
      * See
      * [extended thinking](https://docs.anthropic.com/en/docs/build-with-claude/extended-thinking)
      * for details.
+     *
+     * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the server
+     *   responded with an unexpected value).
      */
     fun thinking(): Optional<Thinking> = body.thinking()
 
     /**
      * How the model should use the provided tools. The model can use a specific tool, any available
      * tool, decide by itself, or not use tools at all.
+     *
+     * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the server
+     *   responded with an unexpected value).
      */
     fun toolChoice(): Optional<ToolChoice> = body.toolChoice()
 
@@ -300,6 +332,9 @@ private constructor(
      * generally whenever you want the model to produce a particular JSON structure of output.
      *
      * See our [guide](https://docs.anthropic.com/en/docs/tool-use) for more details.
+     *
+     * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the server
+     *   responded with an unexpected value).
      */
     fun tools(): Optional<List<Tool>> = body.tools()
 
@@ -310,6 +345,9 @@ private constructor(
      * [Learn more technical details here](https://towardsdatascience.com/how-to-sample-from-language-models-682bceb97277).
      *
      * Recommended for advanced use cases only. You usually only need to use `temperature`.
+     *
+     * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the server
+     *   responded with an unexpected value).
      */
     fun topK(): Optional<Long> = body.topK()
 
@@ -322,254 +360,100 @@ private constructor(
      * both.
      *
      * Recommended for advanced use cases only. You usually only need to use `temperature`.
+     *
+     * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the server
+     *   responded with an unexpected value).
      */
     fun topP(): Optional<Double> = body.topP()
 
     /**
-     * The maximum number of tokens to generate before stopping.
+     * Returns the raw JSON value of [maxTokens].
      *
-     * Note that our models may stop _before_ reaching this maximum. This parameter only specifies
-     * the absolute maximum number of tokens to generate.
-     *
-     * Different models have different maximum values for this parameter. See
-     * [models](https://docs.anthropic.com/en/docs/models-overview) for details.
+     * Unlike [maxTokens], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _maxTokens(): JsonField<Long> = body._maxTokens()
 
     /**
-     * Input messages.
+     * Returns the raw JSON value of [messages].
      *
-     * Our models are trained to operate on alternating `user` and `assistant` conversational turns.
-     * When creating a new `Message`, you specify the prior conversational turns with the `messages`
-     * parameter, and the model then generates the next `Message` in the conversation. Consecutive
-     * `user` or `assistant` turns in your request will be combined into a single turn.
-     *
-     * Each input message must be an object with a `role` and `content`. You can specify a single
-     * `user`-role message, or you can include multiple `user` and `assistant` messages.
-     *
-     * If the final message uses the `assistant` role, the response content will continue
-     * immediately from the content in that message. This can be used to constrain part of the
-     * model's response.
-     *
-     * Example with a single `user` message:
-     * ```json
-     * [{ "role": "user", "content": "Hello, Claude" }]
-     * ```
-     *
-     * Example with multiple conversational turns:
-     * ```json
-     * [
-     *   { "role": "user", "content": "Hello there." },
-     *   { "role": "assistant", "content": "Hi, I'm Claude. How can I help you?" },
-     *   { "role": "user", "content": "Can you explain LLMs in plain English?" }
-     * ]
-     * ```
-     *
-     * Example with a partially-filled response from Claude:
-     * ```json
-     * [
-     *   {
-     *     "role": "user",
-     *     "content": "What's the Greek name for Sun? (A) Sol (B) Helios (C) Sun"
-     *   },
-     *   { "role": "assistant", "content": "The best answer is (" }
-     * ]
-     * ```
-     *
-     * Each input message `content` may be either a single `string` or an array of content blocks,
-     * where each block has a specific `type`. Using a `string` for `content` is shorthand for an
-     * array of one content block of type `"text"`. The following input messages are equivalent:
-     * ```json
-     * { "role": "user", "content": "Hello, Claude" }
-     * ```
-     * ```json
-     * { "role": "user", "content": [{ "type": "text", "text": "Hello, Claude" }] }
-     * ```
-     *
-     * Starting with Claude 3 models, you can also send image content blocks:
-     * ```json
-     * {
-     *   "role": "user",
-     *   "content": [
-     *     {
-     *       "type": "image",
-     *       "source": {
-     *         "type": "base64",
-     *         "media_type": "image/jpeg",
-     *         "data": "/9j/4AAQSkZJRg..."
-     *       }
-     *     },
-     *     { "type": "text", "text": "What is in this image?" }
-     *   ]
-     * }
-     * ```
-     *
-     * We currently support the `base64` source type for images, and the `image/jpeg`, `image/png`,
-     * `image/gif`, and `image/webp` media types.
-     *
-     * See [examples](https://docs.anthropic.com/en/api/messages-examples#vision) for more input
-     * examples.
-     *
-     * Note that if you want to include a
-     * [system prompt](https://docs.anthropic.com/en/docs/system-prompts), you can use the top-level
-     * `system` parameter — there is no `"system"` role for input messages in the Messages API.
+     * Unlike [messages], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _messages(): JsonField<List<Message>> = body._messages()
 
     /**
-     * The model that will complete your prompt.
+     * Returns the raw JSON value of [model].
      *
-     * See [models](https://docs.anthropic.com/en/docs/models-overview) for additional details and
-     * options.
+     * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _model(): JsonField<String> = body._model()
 
-    /** An object describing metadata about the request. */
+    /**
+     * Returns the raw JSON value of [metadata].
+     *
+     * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _metadata(): JsonField<Metadata> = body._metadata()
 
     /**
-     * Custom text sequences that will cause the model to stop generating.
+     * Returns the raw JSON value of [stopSequences].
      *
-     * Our models will normally stop when they have naturally completed their turn, which will
-     * result in a response `stop_reason` of `"end_turn"`.
-     *
-     * If you want the model to stop generating when it encounters custom strings of text, you can
-     * use the `stop_sequences` parameter. If the model encounters one of the custom sequences, the
-     * response `stop_reason` value will be `"stop_sequence"` and the response `stop_sequence` value
-     * will contain the matched stop sequence.
+     * Unlike [stopSequences], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _stopSequences(): JsonField<List<String>> = body._stopSequences()
 
     /**
-     * Whether to incrementally stream the response using server-sent events.
+     * Returns the raw JSON value of [stream].
      *
-     * See [streaming](https://docs.anthropic.com/en/api/messages-streaming) for details.
+     * Unlike [stream], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _stream(): JsonField<Boolean> = body._stream()
 
     /**
-     * System prompt.
+     * Returns the raw JSON value of [system].
      *
-     * A system prompt is a way of providing context and instructions to Claude, such as specifying
-     * a particular goal or role. See our
-     * [guide to system prompts](https://docs.anthropic.com/en/docs/system-prompts).
+     * Unlike [system], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _system(): JsonField<System> = body._system()
 
     /**
-     * Amount of randomness injected into the response.
+     * Returns the raw JSON value of [temperature].
      *
-     * Defaults to `1.0`. Ranges from `0.0` to `1.0`. Use `temperature` closer to `0.0` for
-     * analytical / multiple choice, and closer to `1.0` for creative and generative tasks.
-     *
-     * Note that even with `temperature` of `0.0`, the results will not be fully deterministic.
+     * Unlike [temperature], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _temperature(): JsonField<Double> = body._temperature()
 
     /**
-     * Configuration for enabling Claude's extended thinking.
+     * Returns the raw JSON value of [thinking].
      *
-     * When enabled, responses include `thinking` content blocks showing Claude's thinking process
-     * before the final answer. Requires a minimum budget of 1,024 tokens and counts towards your
-     * `max_tokens` limit.
-     *
-     * See
-     * [extended thinking](https://docs.anthropic.com/en/docs/build-with-claude/extended-thinking)
-     * for details.
+     * Unlike [thinking], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _thinking(): JsonField<Thinking> = body._thinking()
 
     /**
-     * How the model should use the provided tools. The model can use a specific tool, any available
-     * tool, decide by itself, or not use tools at all.
+     * Returns the raw JSON value of [toolChoice].
+     *
+     * Unlike [toolChoice], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _toolChoice(): JsonField<ToolChoice> = body._toolChoice()
 
     /**
-     * Definitions of tools that the model may use.
+     * Returns the raw JSON value of [tools].
      *
-     * If you include `tools` in your API request, the model may return `tool_use` content blocks
-     * that represent the model's use of those tools. You can then run those tools using the tool
-     * input generated by the model and then optionally return results back to the model using
-     * `tool_result` content blocks.
-     *
-     * Each tool definition includes:
-     * - `name`: Name of the tool.
-     * - `description`: Optional, but strongly-recommended description of the tool.
-     * - `input_schema`: [JSON schema](https://json-schema.org/draft/2020-12) for the tool `input`
-     *   shape that the model will produce in `tool_use` output content blocks.
-     *
-     * For example, if you defined `tools` as:
-     * ```json
-     * [
-     *   {
-     *     "name": "get_stock_price",
-     *     "description": "Get the current stock price for a given ticker symbol.",
-     *     "input_schema": {
-     *       "type": "object",
-     *       "properties": {
-     *         "ticker": {
-     *           "type": "string",
-     *           "description": "The stock ticker symbol, e.g. AAPL for Apple Inc."
-     *         }
-     *       },
-     *       "required": ["ticker"]
-     *     }
-     *   }
-     * ]
-     * ```
-     *
-     * And then asked the model "What's the S&P 500 at today?", the model might produce `tool_use`
-     * content blocks in the response like this:
-     * ```json
-     * [
-     *   {
-     *     "type": "tool_use",
-     *     "id": "toolu_01D7FLrfh4GYq7yT1ULFeyMV",
-     *     "name": "get_stock_price",
-     *     "input": { "ticker": "^GSPC" }
-     *   }
-     * ]
-     * ```
-     *
-     * You might then run your `get_stock_price` tool with `{"ticker": "^GSPC"}` as an input, and
-     * return the following back to the model in a subsequent `user` message:
-     * ```json
-     * [
-     *   {
-     *     "type": "tool_result",
-     *     "tool_use_id": "toolu_01D7FLrfh4GYq7yT1ULFeyMV",
-     *     "content": "259.75 USD"
-     *   }
-     * ]
-     * ```
-     *
-     * Tools can be used for workflows that include running client-side tools and functions, or more
-     * generally whenever you want the model to produce a particular JSON structure of output.
-     *
-     * See our [guide](https://docs.anthropic.com/en/docs/tool-use) for more details.
+     * Unlike [tools], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _tools(): JsonField<List<Tool>> = body._tools()
 
     /**
-     * Only sample from the top K options for each subsequent token.
+     * Returns the raw JSON value of [topK].
      *
-     * Used to remove "long tail" low probability responses.
-     * [Learn more technical details here](https://towardsdatascience.com/how-to-sample-from-language-models-682bceb97277).
-     *
-     * Recommended for advanced use cases only. You usually only need to use `temperature`.
+     * Unlike [topK], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _topK(): JsonField<Long> = body._topK()
 
     /**
-     * Use nucleus sampling.
+     * Returns the raw JSON value of [topP].
      *
-     * In nucleus sampling, we compute the cumulative distribution over all the options for each
-     * subsequent token in decreasing probability order and cut it off once it reaches a particular
-     * probability specified by `top_p`. You should either alter `temperature` or `top_p`, but not
-     * both.
-     *
-     * Recommended for advanced use cases only. You usually only need to use `temperature`.
+     * Unlike [topP], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _topP(): JsonField<Double> = body._topP()
 
@@ -645,6 +529,9 @@ private constructor(
          *
          * Different models have different maximum values for this parameter. See
          * [models](https://docs.anthropic.com/en/docs/models-overview) for details.
+         *
+         * @throws SamInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun maxTokens(): Long = maxTokens.getRequired("max_tokens")
 
@@ -728,6 +615,9 @@ private constructor(
          * [system prompt](https://docs.anthropic.com/en/docs/system-prompts), you can use the
          * top-level `system` parameter — there is no `"system"` role for input messages in the
          * Messages API.
+         *
+         * @throws SamInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun messages(): List<Message> = messages.getRequired("messages")
 
@@ -736,10 +626,18 @@ private constructor(
          *
          * See [models](https://docs.anthropic.com/en/docs/models-overview) for additional details
          * and options.
+         *
+         * @throws SamInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun model(): String = model.getRequired("model")
 
-        /** An object describing metadata about the request. */
+        /**
+         * An object describing metadata about the request.
+         *
+         * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
 
         /**
@@ -752,6 +650,9 @@ private constructor(
          * can use the `stop_sequences` parameter. If the model encounters one of the custom
          * sequences, the response `stop_reason` value will be `"stop_sequence"` and the response
          * `stop_sequence` value will contain the matched stop sequence.
+         *
+         * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun stopSequences(): Optional<List<String>> =
             Optional.ofNullable(stopSequences.getNullable("stop_sequences"))
@@ -760,6 +661,9 @@ private constructor(
          * Whether to incrementally stream the response using server-sent events.
          *
          * See [streaming](https://docs.anthropic.com/en/api/messages-streaming) for details.
+         *
+         * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun stream(): Optional<Boolean> = Optional.ofNullable(stream.getNullable("stream"))
 
@@ -769,6 +673,9 @@ private constructor(
          * A system prompt is a way of providing context and instructions to Claude, such as
          * specifying a particular goal or role. See our
          * [guide to system prompts](https://docs.anthropic.com/en/docs/system-prompts).
+         *
+         * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun system(): Optional<System> = Optional.ofNullable(system.getNullable("system"))
 
@@ -779,6 +686,9 @@ private constructor(
          * analytical / multiple choice, and closer to `1.0` for creative and generative tasks.
          *
          * Note that even with `temperature` of `0.0`, the results will not be fully deterministic.
+         *
+         * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun temperature(): Optional<Double> =
             Optional.ofNullable(temperature.getNullable("temperature"))
@@ -793,12 +703,18 @@ private constructor(
          * See
          * [extended thinking](https://docs.anthropic.com/en/docs/build-with-claude/extended-thinking)
          * for details.
+         *
+         * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun thinking(): Optional<Thinking> = Optional.ofNullable(thinking.getNullable("thinking"))
 
         /**
          * How the model should use the provided tools. The model can use a specific tool, any
          * available tool, decide by itself, or not use tools at all.
+         *
+         * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun toolChoice(): Optional<ToolChoice> =
             Optional.ofNullable(toolChoice.getNullable("tool_choice"))
@@ -867,6 +783,9 @@ private constructor(
          * output.
          *
          * See our [guide](https://docs.anthropic.com/en/docs/tool-use) for more details.
+         *
+         * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun tools(): Optional<List<Tool>> = Optional.ofNullable(tools.getNullable("tools"))
 
@@ -877,6 +796,9 @@ private constructor(
          * [Learn more technical details here](https://towardsdatascience.com/how-to-sample-from-language-models-682bceb97277).
          *
          * Recommended for advanced use cases only. You usually only need to use `temperature`.
+         *
+         * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun topK(): Optional<Long> = Optional.ofNullable(topK.getNullable("top_k"))
 
@@ -889,266 +811,109 @@ private constructor(
          * `top_p`, but not both.
          *
          * Recommended for advanced use cases only. You usually only need to use `temperature`.
+         *
+         * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun topP(): Optional<Double> = Optional.ofNullable(topP.getNullable("top_p"))
 
         /**
-         * The maximum number of tokens to generate before stopping.
+         * Returns the raw JSON value of [maxTokens].
          *
-         * Note that our models may stop _before_ reaching this maximum. This parameter only
-         * specifies the absolute maximum number of tokens to generate.
-         *
-         * Different models have different maximum values for this parameter. See
-         * [models](https://docs.anthropic.com/en/docs/models-overview) for details.
+         * Unlike [maxTokens], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("max_tokens") @ExcludeMissing fun _maxTokens(): JsonField<Long> = maxTokens
 
         /**
-         * Input messages.
+         * Returns the raw JSON value of [messages].
          *
-         * Our models are trained to operate on alternating `user` and `assistant` conversational
-         * turns. When creating a new `Message`, you specify the prior conversational turns with the
-         * `messages` parameter, and the model then generates the next `Message` in the
-         * conversation. Consecutive `user` or `assistant` turns in your request will be combined
-         * into a single turn.
-         *
-         * Each input message must be an object with a `role` and `content`. You can specify a
-         * single `user`-role message, or you can include multiple `user` and `assistant` messages.
-         *
-         * If the final message uses the `assistant` role, the response content will continue
-         * immediately from the content in that message. This can be used to constrain part of the
-         * model's response.
-         *
-         * Example with a single `user` message:
-         * ```json
-         * [{ "role": "user", "content": "Hello, Claude" }]
-         * ```
-         *
-         * Example with multiple conversational turns:
-         * ```json
-         * [
-         *   { "role": "user", "content": "Hello there." },
-         *   { "role": "assistant", "content": "Hi, I'm Claude. How can I help you?" },
-         *   { "role": "user", "content": "Can you explain LLMs in plain English?" }
-         * ]
-         * ```
-         *
-         * Example with a partially-filled response from Claude:
-         * ```json
-         * [
-         *   {
-         *     "role": "user",
-         *     "content": "What's the Greek name for Sun? (A) Sol (B) Helios (C) Sun"
-         *   },
-         *   { "role": "assistant", "content": "The best answer is (" }
-         * ]
-         * ```
-         *
-         * Each input message `content` may be either a single `string` or an array of content
-         * blocks, where each block has a specific `type`. Using a `string` for `content` is
-         * shorthand for an array of one content block of type `"text"`. The following input
-         * messages are equivalent:
-         * ```json
-         * { "role": "user", "content": "Hello, Claude" }
-         * ```
-         * ```json
-         * { "role": "user", "content": [{ "type": "text", "text": "Hello, Claude" }] }
-         * ```
-         *
-         * Starting with Claude 3 models, you can also send image content blocks:
-         * ```json
-         * {
-         *   "role": "user",
-         *   "content": [
-         *     {
-         *       "type": "image",
-         *       "source": {
-         *         "type": "base64",
-         *         "media_type": "image/jpeg",
-         *         "data": "/9j/4AAQSkZJRg..."
-         *       }
-         *     },
-         *     { "type": "text", "text": "What is in this image?" }
-         *   ]
-         * }
-         * ```
-         *
-         * We currently support the `base64` source type for images, and the `image/jpeg`,
-         * `image/png`, `image/gif`, and `image/webp` media types.
-         *
-         * See [examples](https://docs.anthropic.com/en/api/messages-examples#vision) for more input
-         * examples.
-         *
-         * Note that if you want to include a
-         * [system prompt](https://docs.anthropic.com/en/docs/system-prompts), you can use the
-         * top-level `system` parameter — there is no `"system"` role for input messages in the
-         * Messages API.
+         * Unlike [messages], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("messages")
         @ExcludeMissing
         fun _messages(): JsonField<List<Message>> = messages
 
         /**
-         * The model that will complete your prompt.
+         * Returns the raw JSON value of [model].
          *
-         * See [models](https://docs.anthropic.com/en/docs/models-overview) for additional details
-         * and options.
+         * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
 
-        /** An object describing metadata about the request. */
+        /**
+         * Returns the raw JSON value of [metadata].
+         *
+         * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
 
         /**
-         * Custom text sequences that will cause the model to stop generating.
+         * Returns the raw JSON value of [stopSequences].
          *
-         * Our models will normally stop when they have naturally completed their turn, which will
-         * result in a response `stop_reason` of `"end_turn"`.
-         *
-         * If you want the model to stop generating when it encounters custom strings of text, you
-         * can use the `stop_sequences` parameter. If the model encounters one of the custom
-         * sequences, the response `stop_reason` value will be `"stop_sequence"` and the response
-         * `stop_sequence` value will contain the matched stop sequence.
+         * Unlike [stopSequences], this method doesn't throw if the JSON field has an unexpected
+         * type.
          */
         @JsonProperty("stop_sequences")
         @ExcludeMissing
         fun _stopSequences(): JsonField<List<String>> = stopSequences
 
         /**
-         * Whether to incrementally stream the response using server-sent events.
+         * Returns the raw JSON value of [stream].
          *
-         * See [streaming](https://docs.anthropic.com/en/api/messages-streaming) for details.
+         * Unlike [stream], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("stream") @ExcludeMissing fun _stream(): JsonField<Boolean> = stream
 
         /**
-         * System prompt.
+         * Returns the raw JSON value of [system].
          *
-         * A system prompt is a way of providing context and instructions to Claude, such as
-         * specifying a particular goal or role. See our
-         * [guide to system prompts](https://docs.anthropic.com/en/docs/system-prompts).
+         * Unlike [system], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("system") @ExcludeMissing fun _system(): JsonField<System> = system
 
         /**
-         * Amount of randomness injected into the response.
+         * Returns the raw JSON value of [temperature].
          *
-         * Defaults to `1.0`. Ranges from `0.0` to `1.0`. Use `temperature` closer to `0.0` for
-         * analytical / multiple choice, and closer to `1.0` for creative and generative tasks.
-         *
-         * Note that even with `temperature` of `0.0`, the results will not be fully deterministic.
+         * Unlike [temperature], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("temperature")
         @ExcludeMissing
         fun _temperature(): JsonField<Double> = temperature
 
         /**
-         * Configuration for enabling Claude's extended thinking.
+         * Returns the raw JSON value of [thinking].
          *
-         * When enabled, responses include `thinking` content blocks showing Claude's thinking
-         * process before the final answer. Requires a minimum budget of 1,024 tokens and counts
-         * towards your `max_tokens` limit.
-         *
-         * See
-         * [extended thinking](https://docs.anthropic.com/en/docs/build-with-claude/extended-thinking)
-         * for details.
+         * Unlike [thinking], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("thinking") @ExcludeMissing fun _thinking(): JsonField<Thinking> = thinking
 
         /**
-         * How the model should use the provided tools. The model can use a specific tool, any
-         * available tool, decide by itself, or not use tools at all.
+         * Returns the raw JSON value of [toolChoice].
+         *
+         * Unlike [toolChoice], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("tool_choice")
         @ExcludeMissing
         fun _toolChoice(): JsonField<ToolChoice> = toolChoice
 
         /**
-         * Definitions of tools that the model may use.
+         * Returns the raw JSON value of [tools].
          *
-         * If you include `tools` in your API request, the model may return `tool_use` content
-         * blocks that represent the model's use of those tools. You can then run those tools using
-         * the tool input generated by the model and then optionally return results back to the
-         * model using `tool_result` content blocks.
-         *
-         * Each tool definition includes:
-         * - `name`: Name of the tool.
-         * - `description`: Optional, but strongly-recommended description of the tool.
-         * - `input_schema`: [JSON schema](https://json-schema.org/draft/2020-12) for the tool
-         *   `input` shape that the model will produce in `tool_use` output content blocks.
-         *
-         * For example, if you defined `tools` as:
-         * ```json
-         * [
-         *   {
-         *     "name": "get_stock_price",
-         *     "description": "Get the current stock price for a given ticker symbol.",
-         *     "input_schema": {
-         *       "type": "object",
-         *       "properties": {
-         *         "ticker": {
-         *           "type": "string",
-         *           "description": "The stock ticker symbol, e.g. AAPL for Apple Inc."
-         *         }
-         *       },
-         *       "required": ["ticker"]
-         *     }
-         *   }
-         * ]
-         * ```
-         *
-         * And then asked the model "What's the S&P 500 at today?", the model might produce
-         * `tool_use` content blocks in the response like this:
-         * ```json
-         * [
-         *   {
-         *     "type": "tool_use",
-         *     "id": "toolu_01D7FLrfh4GYq7yT1ULFeyMV",
-         *     "name": "get_stock_price",
-         *     "input": { "ticker": "^GSPC" }
-         *   }
-         * ]
-         * ```
-         *
-         * You might then run your `get_stock_price` tool with `{"ticker": "^GSPC"}` as an input,
-         * and return the following back to the model in a subsequent `user` message:
-         * ```json
-         * [
-         *   {
-         *     "type": "tool_result",
-         *     "tool_use_id": "toolu_01D7FLrfh4GYq7yT1ULFeyMV",
-         *     "content": "259.75 USD"
-         *   }
-         * ]
-         * ```
-         *
-         * Tools can be used for workflows that include running client-side tools and functions, or
-         * more generally whenever you want the model to produce a particular JSON structure of
-         * output.
-         *
-         * See our [guide](https://docs.anthropic.com/en/docs/tool-use) for more details.
+         * Unlike [tools], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<Tool>> = tools
 
         /**
-         * Only sample from the top K options for each subsequent token.
+         * Returns the raw JSON value of [topK].
          *
-         * Used to remove "long tail" low probability responses.
-         * [Learn more technical details here](https://towardsdatascience.com/how-to-sample-from-language-models-682bceb97277).
-         *
-         * Recommended for advanced use cases only. You usually only need to use `temperature`.
+         * Unlike [topK], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("top_k") @ExcludeMissing fun _topK(): JsonField<Long> = topK
 
         /**
-         * Use nucleus sampling.
+         * Returns the raw JSON value of [topP].
          *
-         * In nucleus sampling, we compute the cumulative distribution over all the options for each
-         * subsequent token in decreasing probability order and cut it off once it reaches a
-         * particular probability specified by `top_p`. You should either alter `temperature` or
-         * `top_p`, but not both.
-         *
-         * Recommended for advanced use cases only. You usually only need to use `temperature`.
+         * Unlike [topP], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("top_p") @ExcludeMissing fun _topP(): JsonField<Double> = topP
 
@@ -1244,13 +1009,11 @@ private constructor(
             fun maxTokens(maxTokens: Long) = maxTokens(JsonField.of(maxTokens))
 
             /**
-             * The maximum number of tokens to generate before stopping.
+             * Sets [Builder.maxTokens] to an arbitrary JSON value.
              *
-             * Note that our models may stop _before_ reaching this maximum. This parameter only
-             * specifies the absolute maximum number of tokens to generate.
-             *
-             * Different models have different maximum values for this parameter. See
-             * [models](https://docs.anthropic.com/en/docs/models-overview) for details.
+             * You should usually call [Builder.maxTokens] with a well-typed [Long] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun maxTokens(maxTokens: JsonField<Long>) = apply { this.maxTokens = maxTokens }
 
@@ -1339,172 +1102,20 @@ private constructor(
             fun messages(messages: List<Message>) = messages(JsonField.of(messages))
 
             /**
-             * Input messages.
+             * Sets [Builder.messages] to an arbitrary JSON value.
              *
-             * Our models are trained to operate on alternating `user` and `assistant`
-             * conversational turns. When creating a new `Message`, you specify the prior
-             * conversational turns with the `messages` parameter, and the model then generates the
-             * next `Message` in the conversation. Consecutive `user` or `assistant` turns in your
-             * request will be combined into a single turn.
-             *
-             * Each input message must be an object with a `role` and `content`. You can specify a
-             * single `user`-role message, or you can include multiple `user` and `assistant`
-             * messages.
-             *
-             * If the final message uses the `assistant` role, the response content will continue
-             * immediately from the content in that message. This can be used to constrain part of
-             * the model's response.
-             *
-             * Example with a single `user` message:
-             * ```json
-             * [{ "role": "user", "content": "Hello, Claude" }]
-             * ```
-             *
-             * Example with multiple conversational turns:
-             * ```json
-             * [
-             *   { "role": "user", "content": "Hello there." },
-             *   { "role": "assistant", "content": "Hi, I'm Claude. How can I help you?" },
-             *   { "role": "user", "content": "Can you explain LLMs in plain English?" }
-             * ]
-             * ```
-             *
-             * Example with a partially-filled response from Claude:
-             * ```json
-             * [
-             *   {
-             *     "role": "user",
-             *     "content": "What's the Greek name for Sun? (A) Sol (B) Helios (C) Sun"
-             *   },
-             *   { "role": "assistant", "content": "The best answer is (" }
-             * ]
-             * ```
-             *
-             * Each input message `content` may be either a single `string` or an array of content
-             * blocks, where each block has a specific `type`. Using a `string` for `content` is
-             * shorthand for an array of one content block of type `"text"`. The following input
-             * messages are equivalent:
-             * ```json
-             * { "role": "user", "content": "Hello, Claude" }
-             * ```
-             * ```json
-             * { "role": "user", "content": [{ "type": "text", "text": "Hello, Claude" }] }
-             * ```
-             *
-             * Starting with Claude 3 models, you can also send image content blocks:
-             * ```json
-             * {
-             *   "role": "user",
-             *   "content": [
-             *     {
-             *       "type": "image",
-             *       "source": {
-             *         "type": "base64",
-             *         "media_type": "image/jpeg",
-             *         "data": "/9j/4AAQSkZJRg..."
-             *       }
-             *     },
-             *     { "type": "text", "text": "What is in this image?" }
-             *   ]
-             * }
-             * ```
-             *
-             * We currently support the `base64` source type for images, and the `image/jpeg`,
-             * `image/png`, `image/gif`, and `image/webp` media types.
-             *
-             * See [examples](https://docs.anthropic.com/en/api/messages-examples#vision) for more
-             * input examples.
-             *
-             * Note that if you want to include a
-             * [system prompt](https://docs.anthropic.com/en/docs/system-prompts), you can use the
-             * top-level `system` parameter — there is no `"system"` role for input messages in the
-             * Messages API.
+             * You should usually call [Builder.messages] with a well-typed `List<Message>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun messages(messages: JsonField<List<Message>>) = apply {
                 this.messages = messages.map { it.toMutableList() }
             }
 
             /**
-             * Input messages.
+             * Adds a single [Message] to [messages].
              *
-             * Our models are trained to operate on alternating `user` and `assistant`
-             * conversational turns. When creating a new `Message`, you specify the prior
-             * conversational turns with the `messages` parameter, and the model then generates the
-             * next `Message` in the conversation. Consecutive `user` or `assistant` turns in your
-             * request will be combined into a single turn.
-             *
-             * Each input message must be an object with a `role` and `content`. You can specify a
-             * single `user`-role message, or you can include multiple `user` and `assistant`
-             * messages.
-             *
-             * If the final message uses the `assistant` role, the response content will continue
-             * immediately from the content in that message. This can be used to constrain part of
-             * the model's response.
-             *
-             * Example with a single `user` message:
-             * ```json
-             * [{ "role": "user", "content": "Hello, Claude" }]
-             * ```
-             *
-             * Example with multiple conversational turns:
-             * ```json
-             * [
-             *   { "role": "user", "content": "Hello there." },
-             *   { "role": "assistant", "content": "Hi, I'm Claude. How can I help you?" },
-             *   { "role": "user", "content": "Can you explain LLMs in plain English?" }
-             * ]
-             * ```
-             *
-             * Example with a partially-filled response from Claude:
-             * ```json
-             * [
-             *   {
-             *     "role": "user",
-             *     "content": "What's the Greek name for Sun? (A) Sol (B) Helios (C) Sun"
-             *   },
-             *   { "role": "assistant", "content": "The best answer is (" }
-             * ]
-             * ```
-             *
-             * Each input message `content` may be either a single `string` or an array of content
-             * blocks, where each block has a specific `type`. Using a `string` for `content` is
-             * shorthand for an array of one content block of type `"text"`. The following input
-             * messages are equivalent:
-             * ```json
-             * { "role": "user", "content": "Hello, Claude" }
-             * ```
-             * ```json
-             * { "role": "user", "content": [{ "type": "text", "text": "Hello, Claude" }] }
-             * ```
-             *
-             * Starting with Claude 3 models, you can also send image content blocks:
-             * ```json
-             * {
-             *   "role": "user",
-             *   "content": [
-             *     {
-             *       "type": "image",
-             *       "source": {
-             *         "type": "base64",
-             *         "media_type": "image/jpeg",
-             *         "data": "/9j/4AAQSkZJRg..."
-             *       }
-             *     },
-             *     { "type": "text", "text": "What is in this image?" }
-             *   ]
-             * }
-             * ```
-             *
-             * We currently support the `base64` source type for images, and the `image/jpeg`,
-             * `image/png`, `image/gif`, and `image/webp` media types.
-             *
-             * See [examples](https://docs.anthropic.com/en/api/messages-examples#vision) for more
-             * input examples.
-             *
-             * Note that if you want to include a
-             * [system prompt](https://docs.anthropic.com/en/docs/system-prompts), you can use the
-             * top-level `system` parameter — there is no `"system"` role for input messages in the
-             * Messages API.
+             * @throws IllegalStateException if the field was previously set to a non-list.
              */
             fun addMessage(message: Message) = apply {
                 messages =
@@ -1522,17 +1133,24 @@ private constructor(
             fun model(model: String) = model(JsonField.of(model))
 
             /**
-             * The model that will complete your prompt.
+             * Sets [Builder.model] to an arbitrary JSON value.
              *
-             * See [models](https://docs.anthropic.com/en/docs/models-overview) for additional
-             * details and options.
+             * You should usually call [Builder.model] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun model(model: JsonField<String>) = apply { this.model = model }
 
             /** An object describing metadata about the request. */
             fun metadata(metadata: Metadata) = metadata(JsonField.of(metadata))
 
-            /** An object describing metadata about the request. */
+            /**
+             * Sets [Builder.metadata] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.metadata] with a well-typed [Metadata] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
             /**
@@ -1550,30 +1168,20 @@ private constructor(
                 stopSequences(JsonField.of(stopSequences))
 
             /**
-             * Custom text sequences that will cause the model to stop generating.
+             * Sets [Builder.stopSequences] to an arbitrary JSON value.
              *
-             * Our models will normally stop when they have naturally completed their turn, which
-             * will result in a response `stop_reason` of `"end_turn"`.
-             *
-             * If you want the model to stop generating when it encounters custom strings of text,
-             * you can use the `stop_sequences` parameter. If the model encounters one of the custom
-             * sequences, the response `stop_reason` value will be `"stop_sequence"` and the
-             * response `stop_sequence` value will contain the matched stop sequence.
+             * You should usually call [Builder.stopSequences] with a well-typed `List<String>`
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
              */
             fun stopSequences(stopSequences: JsonField<List<String>>) = apply {
                 this.stopSequences = stopSequences.map { it.toMutableList() }
             }
 
             /**
-             * Custom text sequences that will cause the model to stop generating.
+             * Adds a single [String] to [stopSequences].
              *
-             * Our models will normally stop when they have naturally completed their turn, which
-             * will result in a response `stop_reason` of `"end_turn"`.
-             *
-             * If you want the model to stop generating when it encounters custom strings of text,
-             * you can use the `stop_sequences` parameter. If the model encounters one of the custom
-             * sequences, the response `stop_reason` value will be `"stop_sequence"` and the
-             * response `stop_sequence` value will contain the matched stop sequence.
+             * @throws IllegalStateException if the field was previously set to a non-list.
              */
             fun addStopSequence(stopSequence: String) = apply {
                 stopSequences =
@@ -1590,9 +1198,11 @@ private constructor(
             fun stream(stream: Boolean) = stream(JsonField.of(stream))
 
             /**
-             * Whether to incrementally stream the response using server-sent events.
+             * Sets [Builder.stream] to an arbitrary JSON value.
              *
-             * See [streaming](https://docs.anthropic.com/en/api/messages-streaming) for details.
+             * You should usually call [Builder.stream] with a well-typed [Boolean] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun stream(stream: JsonField<Boolean>) = apply { this.stream = stream }
 
@@ -1606,30 +1216,18 @@ private constructor(
             fun system(system: System) = system(JsonField.of(system))
 
             /**
-             * System prompt.
+             * Sets [Builder.system] to an arbitrary JSON value.
              *
-             * A system prompt is a way of providing context and instructions to Claude, such as
-             * specifying a particular goal or role. See our
-             * [guide to system prompts](https://docs.anthropic.com/en/docs/system-prompts).
+             * You should usually call [Builder.system] with a well-typed [System] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun system(system: JsonField<System>) = apply { this.system = system }
 
-            /**
-             * System prompt.
-             *
-             * A system prompt is a way of providing context and instructions to Claude, such as
-             * specifying a particular goal or role. See our
-             * [guide to system prompts](https://docs.anthropic.com/en/docs/system-prompts).
-             */
+            /** Alias for calling [system] with `System.ofString(string)`. */
             fun system(string: String) = system(System.ofString(string))
 
-            /**
-             * System prompt.
-             *
-             * A system prompt is a way of providing context and instructions to Claude, such as
-             * specifying a particular goal or role. See our
-             * [guide to system prompts](https://docs.anthropic.com/en/docs/system-prompts).
-             */
+            /** Alias for calling [system] with `System.ofRequestTextBlocks(requestTextBlocks)`. */
             fun systemOfRequestTextBlocks(requestTextBlocks: List<System.RequestTextBlock>) =
                 system(System.ofRequestTextBlocks(requestTextBlocks))
 
@@ -1645,13 +1243,11 @@ private constructor(
             fun temperature(temperature: Double) = temperature(JsonField.of(temperature))
 
             /**
-             * Amount of randomness injected into the response.
+             * Sets [Builder.temperature] to an arbitrary JSON value.
              *
-             * Defaults to `1.0`. Ranges from `0.0` to `1.0`. Use `temperature` closer to `0.0` for
-             * analytical / multiple choice, and closer to `1.0` for creative and generative tasks.
-             *
-             * Note that even with `temperature` of `0.0`, the results will not be fully
-             * deterministic.
+             * You should usually call [Builder.temperature] with a well-typed [Double] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun temperature(temperature: JsonField<Double>) = apply {
                 this.temperature = temperature
@@ -1671,42 +1267,26 @@ private constructor(
             fun thinking(thinking: Thinking) = thinking(JsonField.of(thinking))
 
             /**
-             * Configuration for enabling Claude's extended thinking.
+             * Sets [Builder.thinking] to an arbitrary JSON value.
              *
-             * When enabled, responses include `thinking` content blocks showing Claude's thinking
-             * process before the final answer. Requires a minimum budget of 1,024 tokens and counts
-             * towards your `max_tokens` limit.
-             *
-             * See
-             * [extended thinking](https://docs.anthropic.com/en/docs/build-with-claude/extended-thinking)
-             * for details.
+             * You should usually call [Builder.thinking] with a well-typed [Thinking] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun thinking(thinking: JsonField<Thinking>) = apply { this.thinking = thinking }
 
-            /**
-             * Configuration for enabling Claude's extended thinking.
-             *
-             * When enabled, responses include `thinking` content blocks showing Claude's thinking
-             * process before the final answer. Requires a minimum budget of 1,024 tokens and counts
-             * towards your `max_tokens` limit.
-             *
-             * See
-             * [extended thinking](https://docs.anthropic.com/en/docs/build-with-claude/extended-thinking)
-             * for details.
-             */
+            /** Alias for calling [thinking] with `Thinking.ofConfigEnabled(configEnabled)`. */
             fun thinking(configEnabled: Thinking.ThinkingConfigEnabled) =
                 thinking(Thinking.ofConfigEnabled(configEnabled))
 
             /**
-             * Configuration for enabling Claude's extended thinking.
-             *
-             * When enabled, responses include `thinking` content blocks showing Claude's thinking
-             * process before the final answer. Requires a minimum budget of 1,024 tokens and counts
-             * towards your `max_tokens` limit.
-             *
-             * See
-             * [extended thinking](https://docs.anthropic.com/en/docs/build-with-claude/extended-thinking)
-             * for details.
+             * Alias for calling [thinking] with the following:
+             * ```java
+             * Thinking.ThinkingConfigEnabled.builder()
+             *     .type(MessageCreateParams.Thinking.ThinkingConfigEnabled.Type.ENABLED)
+             *     .budgetTokens(budgetTokens)
+             *     .build()
+             * ```
              */
             fun configEnabledThinking(budgetTokens: Long) =
                 thinking(
@@ -1716,17 +1296,7 @@ private constructor(
                         .build()
                 )
 
-            /**
-             * Configuration for enabling Claude's extended thinking.
-             *
-             * When enabled, responses include `thinking` content blocks showing Claude's thinking
-             * process before the final answer. Requires a minimum budget of 1,024 tokens and counts
-             * towards your `max_tokens` limit.
-             *
-             * See
-             * [extended thinking](https://docs.anthropic.com/en/docs/build-with-claude/extended-thinking)
-             * for details.
-             */
+            /** Alias for calling [thinking] with `Thinking.ofConfigDisabled(configDisabled)`. */
             fun thinking(configDisabled: Thinking.ThinkingConfigDisabled) =
                 thinking(Thinking.ofConfigDisabled(configDisabled))
 
@@ -1737,23 +1307,34 @@ private constructor(
             fun toolChoice(toolChoice: ToolChoice) = toolChoice(JsonField.of(toolChoice))
 
             /**
-             * How the model should use the provided tools. The model can use a specific tool, any
-             * available tool, decide by itself, or not use tools at all.
+             * Sets [Builder.toolChoice] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.toolChoice] with a well-typed [ToolChoice] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun toolChoice(toolChoice: JsonField<ToolChoice>) = apply {
                 this.toolChoice = toolChoice
             }
 
-            /** The model will automatically decide whether to use tools. */
+            /** Alias for calling [toolChoice] with `ToolChoice.ofAuto(auto)`. */
             fun toolChoice(auto: ToolChoice.ToolChoiceAuto) = toolChoice(ToolChoice.ofAuto(auto))
 
-            /** The model will use any available tools. */
+            /** Alias for calling [toolChoice] with `ToolChoice.ofAny(any)`. */
             fun toolChoice(any: ToolChoice.ToolChoiceAny) = toolChoice(ToolChoice.ofAny(any))
 
-            /** The model will use the specified tool with `tool_choice.name`. */
+            /** Alias for calling [toolChoice] with `ToolChoice.ofTool(tool)`. */
             fun toolChoice(tool: ToolChoice.ToolChoiceTool) = toolChoice(ToolChoice.ofTool(tool))
 
-            /** The model will use the specified tool with `tool_choice.name`. */
+            /**
+             * Alias for calling [toolChoice] with the following:
+             * ```java
+             * ToolChoice.ToolChoiceTool.builder()
+             *     .type(MessageCreateParams.ToolChoice.ToolChoiceTool.Type.TOOL)
+             *     .name(name)
+             *     .build()
+             * ```
+             */
             fun toolToolChoice(name: String) =
                 toolChoice(
                     ToolChoice.ToolChoiceTool.builder()
@@ -1762,7 +1343,7 @@ private constructor(
                         .build()
                 )
 
-            /** The model will not be allowed to use tools. */
+            /** Alias for calling [toolChoice] with `ToolChoice.ofNone(none)`. */
             fun toolChoice(none: ToolChoice.ToolChoiceNone) = toolChoice(ToolChoice.ofNone(none))
 
             /**
@@ -1833,138 +1414,20 @@ private constructor(
             fun tools(tools: List<Tool>) = tools(JsonField.of(tools))
 
             /**
-             * Definitions of tools that the model may use.
+             * Sets [Builder.tools] to an arbitrary JSON value.
              *
-             * If you include `tools` in your API request, the model may return `tool_use` content
-             * blocks that represent the model's use of those tools. You can then run those tools
-             * using the tool input generated by the model and then optionally return results back
-             * to the model using `tool_result` content blocks.
-             *
-             * Each tool definition includes:
-             * - `name`: Name of the tool.
-             * - `description`: Optional, but strongly-recommended description of the tool.
-             * - `input_schema`: [JSON schema](https://json-schema.org/draft/2020-12) for the tool
-             *   `input` shape that the model will produce in `tool_use` output content blocks.
-             *
-             * For example, if you defined `tools` as:
-             * ```json
-             * [
-             *   {
-             *     "name": "get_stock_price",
-             *     "description": "Get the current stock price for a given ticker symbol.",
-             *     "input_schema": {
-             *       "type": "object",
-             *       "properties": {
-             *         "ticker": {
-             *           "type": "string",
-             *           "description": "The stock ticker symbol, e.g. AAPL for Apple Inc."
-             *         }
-             *       },
-             *       "required": ["ticker"]
-             *     }
-             *   }
-             * ]
-             * ```
-             *
-             * And then asked the model "What's the S&P 500 at today?", the model might produce
-             * `tool_use` content blocks in the response like this:
-             * ```json
-             * [
-             *   {
-             *     "type": "tool_use",
-             *     "id": "toolu_01D7FLrfh4GYq7yT1ULFeyMV",
-             *     "name": "get_stock_price",
-             *     "input": { "ticker": "^GSPC" }
-             *   }
-             * ]
-             * ```
-             *
-             * You might then run your `get_stock_price` tool with `{"ticker": "^GSPC"}` as an
-             * input, and return the following back to the model in a subsequent `user` message:
-             * ```json
-             * [
-             *   {
-             *     "type": "tool_result",
-             *     "tool_use_id": "toolu_01D7FLrfh4GYq7yT1ULFeyMV",
-             *     "content": "259.75 USD"
-             *   }
-             * ]
-             * ```
-             *
-             * Tools can be used for workflows that include running client-side tools and functions,
-             * or more generally whenever you want the model to produce a particular JSON structure
-             * of output.
-             *
-             * See our [guide](https://docs.anthropic.com/en/docs/tool-use) for more details.
+             * You should usually call [Builder.tools] with a well-typed `List<Tool>` value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun tools(tools: JsonField<List<Tool>>) = apply {
                 this.tools = tools.map { it.toMutableList() }
             }
 
             /**
-             * Definitions of tools that the model may use.
+             * Adds a single [Tool] to [tools].
              *
-             * If you include `tools` in your API request, the model may return `tool_use` content
-             * blocks that represent the model's use of those tools. You can then run those tools
-             * using the tool input generated by the model and then optionally return results back
-             * to the model using `tool_result` content blocks.
-             *
-             * Each tool definition includes:
-             * - `name`: Name of the tool.
-             * - `description`: Optional, but strongly-recommended description of the tool.
-             * - `input_schema`: [JSON schema](https://json-schema.org/draft/2020-12) for the tool
-             *   `input` shape that the model will produce in `tool_use` output content blocks.
-             *
-             * For example, if you defined `tools` as:
-             * ```json
-             * [
-             *   {
-             *     "name": "get_stock_price",
-             *     "description": "Get the current stock price for a given ticker symbol.",
-             *     "input_schema": {
-             *       "type": "object",
-             *       "properties": {
-             *         "ticker": {
-             *           "type": "string",
-             *           "description": "The stock ticker symbol, e.g. AAPL for Apple Inc."
-             *         }
-             *       },
-             *       "required": ["ticker"]
-             *     }
-             *   }
-             * ]
-             * ```
-             *
-             * And then asked the model "What's the S&P 500 at today?", the model might produce
-             * `tool_use` content blocks in the response like this:
-             * ```json
-             * [
-             *   {
-             *     "type": "tool_use",
-             *     "id": "toolu_01D7FLrfh4GYq7yT1ULFeyMV",
-             *     "name": "get_stock_price",
-             *     "input": { "ticker": "^GSPC" }
-             *   }
-             * ]
-             * ```
-             *
-             * You might then run your `get_stock_price` tool with `{"ticker": "^GSPC"}` as an
-             * input, and return the following back to the model in a subsequent `user` message:
-             * ```json
-             * [
-             *   {
-             *     "type": "tool_result",
-             *     "tool_use_id": "toolu_01D7FLrfh4GYq7yT1ULFeyMV",
-             *     "content": "259.75 USD"
-             *   }
-             * ]
-             * ```
-             *
-             * Tools can be used for workflows that include running client-side tools and functions,
-             * or more generally whenever you want the model to produce a particular JSON structure
-             * of output.
-             *
-             * See our [guide](https://docs.anthropic.com/en/docs/tool-use) for more details.
+             * @throws IllegalStateException if the field was previously set to a non-list.
              */
             fun addTool(tool: Tool) = apply {
                 tools =
@@ -1973,206 +1436,14 @@ private constructor(
                     }
             }
 
-            /**
-             * Definitions of tools that the model may use.
-             *
-             * If you include `tools` in your API request, the model may return `tool_use` content
-             * blocks that represent the model's use of those tools. You can then run those tools
-             * using the tool input generated by the model and then optionally return results back
-             * to the model using `tool_result` content blocks.
-             *
-             * Each tool definition includes:
-             * - `name`: Name of the tool.
-             * - `description`: Optional, but strongly-recommended description of the tool.
-             * - `input_schema`: [JSON schema](https://json-schema.org/draft/2020-12) for the tool
-             *   `input` shape that the model will produce in `tool_use` output content blocks.
-             *
-             * For example, if you defined `tools` as:
-             * ```json
-             * [
-             *   {
-             *     "name": "get_stock_price",
-             *     "description": "Get the current stock price for a given ticker symbol.",
-             *     "input_schema": {
-             *       "type": "object",
-             *       "properties": {
-             *         "ticker": {
-             *           "type": "string",
-             *           "description": "The stock ticker symbol, e.g. AAPL for Apple Inc."
-             *         }
-             *       },
-             *       "required": ["ticker"]
-             *     }
-             *   }
-             * ]
-             * ```
-             *
-             * And then asked the model "What's the S&P 500 at today?", the model might produce
-             * `tool_use` content blocks in the response like this:
-             * ```json
-             * [
-             *   {
-             *     "type": "tool_use",
-             *     "id": "toolu_01D7FLrfh4GYq7yT1ULFeyMV",
-             *     "name": "get_stock_price",
-             *     "input": { "ticker": "^GSPC" }
-             *   }
-             * ]
-             * ```
-             *
-             * You might then run your `get_stock_price` tool with `{"ticker": "^GSPC"}` as an
-             * input, and return the following back to the model in a subsequent `user` message:
-             * ```json
-             * [
-             *   {
-             *     "type": "tool_result",
-             *     "tool_use_id": "toolu_01D7FLrfh4GYq7yT1ULFeyMV",
-             *     "content": "259.75 USD"
-             *   }
-             * ]
-             * ```
-             *
-             * Tools can be used for workflows that include running client-side tools and functions,
-             * or more generally whenever you want the model to produce a particular JSON structure
-             * of output.
-             *
-             * See our [guide](https://docs.anthropic.com/en/docs/tool-use) for more details.
-             */
+            /** Alias for calling [addTool] with `Tool.ofTool(tool)`. */
             fun addTool(tool: Tool.InnerTool) = addTool(Tool.ofTool(tool))
 
-            /**
-             * Definitions of tools that the model may use.
-             *
-             * If you include `tools` in your API request, the model may return `tool_use` content
-             * blocks that represent the model's use of those tools. You can then run those tools
-             * using the tool input generated by the model and then optionally return results back
-             * to the model using `tool_result` content blocks.
-             *
-             * Each tool definition includes:
-             * - `name`: Name of the tool.
-             * - `description`: Optional, but strongly-recommended description of the tool.
-             * - `input_schema`: [JSON schema](https://json-schema.org/draft/2020-12) for the tool
-             *   `input` shape that the model will produce in `tool_use` output content blocks.
-             *
-             * For example, if you defined `tools` as:
-             * ```json
-             * [
-             *   {
-             *     "name": "get_stock_price",
-             *     "description": "Get the current stock price for a given ticker symbol.",
-             *     "input_schema": {
-             *       "type": "object",
-             *       "properties": {
-             *         "ticker": {
-             *           "type": "string",
-             *           "description": "The stock ticker symbol, e.g. AAPL for Apple Inc."
-             *         }
-             *       },
-             *       "required": ["ticker"]
-             *     }
-             *   }
-             * ]
-             * ```
-             *
-             * And then asked the model "What's the S&P 500 at today?", the model might produce
-             * `tool_use` content blocks in the response like this:
-             * ```json
-             * [
-             *   {
-             *     "type": "tool_use",
-             *     "id": "toolu_01D7FLrfh4GYq7yT1ULFeyMV",
-             *     "name": "get_stock_price",
-             *     "input": { "ticker": "^GSPC" }
-             *   }
-             * ]
-             * ```
-             *
-             * You might then run your `get_stock_price` tool with `{"ticker": "^GSPC"}` as an
-             * input, and return the following back to the model in a subsequent `user` message:
-             * ```json
-             * [
-             *   {
-             *     "type": "tool_result",
-             *     "tool_use_id": "toolu_01D7FLrfh4GYq7yT1ULFeyMV",
-             *     "content": "259.75 USD"
-             *   }
-             * ]
-             * ```
-             *
-             * Tools can be used for workflows that include running client-side tools and functions,
-             * or more generally whenever you want the model to produce a particular JSON structure
-             * of output.
-             *
-             * See our [guide](https://docs.anthropic.com/en/docs/tool-use) for more details.
-             */
+            /** Alias for calling [addTool] with `Tool.ofBashTool20250124(bashTool20250124)`. */
             fun addTool(bashTool20250124: Tool.BashTool20250124) =
                 addTool(Tool.ofBashTool20250124(bashTool20250124))
 
-            /**
-             * Definitions of tools that the model may use.
-             *
-             * If you include `tools` in your API request, the model may return `tool_use` content
-             * blocks that represent the model's use of those tools. You can then run those tools
-             * using the tool input generated by the model and then optionally return results back
-             * to the model using `tool_result` content blocks.
-             *
-             * Each tool definition includes:
-             * - `name`: Name of the tool.
-             * - `description`: Optional, but strongly-recommended description of the tool.
-             * - `input_schema`: [JSON schema](https://json-schema.org/draft/2020-12) for the tool
-             *   `input` shape that the model will produce in `tool_use` output content blocks.
-             *
-             * For example, if you defined `tools` as:
-             * ```json
-             * [
-             *   {
-             *     "name": "get_stock_price",
-             *     "description": "Get the current stock price for a given ticker symbol.",
-             *     "input_schema": {
-             *       "type": "object",
-             *       "properties": {
-             *         "ticker": {
-             *           "type": "string",
-             *           "description": "The stock ticker symbol, e.g. AAPL for Apple Inc."
-             *         }
-             *       },
-             *       "required": ["ticker"]
-             *     }
-             *   }
-             * ]
-             * ```
-             *
-             * And then asked the model "What's the S&P 500 at today?", the model might produce
-             * `tool_use` content blocks in the response like this:
-             * ```json
-             * [
-             *   {
-             *     "type": "tool_use",
-             *     "id": "toolu_01D7FLrfh4GYq7yT1ULFeyMV",
-             *     "name": "get_stock_price",
-             *     "input": { "ticker": "^GSPC" }
-             *   }
-             * ]
-             * ```
-             *
-             * You might then run your `get_stock_price` tool with `{"ticker": "^GSPC"}` as an
-             * input, and return the following back to the model in a subsequent `user` message:
-             * ```json
-             * [
-             *   {
-             *     "type": "tool_result",
-             *     "tool_use_id": "toolu_01D7FLrfh4GYq7yT1ULFeyMV",
-             *     "content": "259.75 USD"
-             *   }
-             * ]
-             * ```
-             *
-             * Tools can be used for workflows that include running client-side tools and functions,
-             * or more generally whenever you want the model to produce a particular JSON structure
-             * of output.
-             *
-             * See our [guide](https://docs.anthropic.com/en/docs/tool-use) for more details.
-             */
+            /** Alias for calling [addTool] with `Tool.ofTextEditor20250124(textEditor20250124)`. */
             fun addTool(textEditor20250124: Tool.TextEditor20250124) =
                 addTool(Tool.ofTextEditor20250124(textEditor20250124))
 
@@ -2187,12 +1458,11 @@ private constructor(
             fun topK(topK: Long) = topK(JsonField.of(topK))
 
             /**
-             * Only sample from the top K options for each subsequent token.
+             * Sets [Builder.topK] to an arbitrary JSON value.
              *
-             * Used to remove "long tail" low probability responses.
-             * [Learn more technical details here](https://towardsdatascience.com/how-to-sample-from-language-models-682bceb97277).
-             *
-             * Recommended for advanced use cases only. You usually only need to use `temperature`.
+             * You should usually call [Builder.topK] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun topK(topK: JsonField<Long>) = apply { this.topK = topK }
 
@@ -2209,14 +1479,11 @@ private constructor(
             fun topP(topP: Double) = topP(JsonField.of(topP))
 
             /**
-             * Use nucleus sampling.
+             * Sets [Builder.topP] to an arbitrary JSON value.
              *
-             * In nucleus sampling, we compute the cumulative distribution over all the options for
-             * each subsequent token in decreasing probability order and cut it off once it reaches
-             * a particular probability specified by `top_p`. You should either alter `temperature`
-             * or `top_p`, but not both.
-             *
-             * Recommended for advanced use cases only. You usually only need to use `temperature`.
+             * You should usually call [Builder.topP] with a well-typed [Double] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun topP(topP: JsonField<Double>) = apply { this.topP = topP }
 
@@ -2324,20 +1591,14 @@ private constructor(
             this.anthropicBeta = anthropicBeta?.toMutableList()
         }
 
-        /**
-         * Optional header to specify the beta version(s) you want to use.
-         *
-         * To use multiple betas, use a comma separated list like `beta1,beta2` or specify the
-         * header multiple times for each beta.
-         */
+        /** Alias for calling [Builder.anthropicBeta] with `anthropicBeta.orElse(null)`. */
         fun anthropicBeta(anthropicBeta: Optional<List<String>>) =
             anthropicBeta(anthropicBeta.getOrNull())
 
         /**
-         * Optional header to specify the beta version(s) you want to use.
+         * Adds a single [String] to [Builder.anthropicBeta].
          *
-         * To use multiple betas, use a comma separated list like `beta1,beta2` or specify the
-         * header multiple times for each beta.
+         * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addAnthropicBeta(anthropicBeta: String) = apply {
             this.anthropicBeta =
@@ -2354,12 +1615,7 @@ private constructor(
             this.anthropicVersion = anthropicVersion
         }
 
-        /**
-         * The version of the Anthropic API you want to use.
-         *
-         * Read more about versioning and our version history
-         * [here](https://docs.anthropic.com/en/api/versioning).
-         */
+        /** Alias for calling [Builder.anthropicVersion] with `anthropicVersion.orElse(null)`. */
         fun anthropicVersion(anthropicVersion: Optional<String>) =
             anthropicVersion(anthropicVersion.getOrNull())
 
@@ -2373,14 +1629,7 @@ private constructor(
          */
         fun xApiKey(xApiKey: String?) = apply { this.xApiKey = xApiKey }
 
-        /**
-         * Your unique API key for authentication.
-         *
-         * This key is required in the header of all API requests, to authenticate your account and
-         * access Anthropic's services. Get your API key through the
-         * [Console](https://console.anthropic.com/settings/keys). Each key is scoped to a
-         * Workspace.
-         */
+        /** Alias for calling [Builder.xApiKey] with `xApiKey.orElse(null)`. */
         fun xApiKey(xApiKey: Optional<String>) = xApiKey(xApiKey.getOrNull())
 
         /**
@@ -2395,13 +1644,10 @@ private constructor(
         fun maxTokens(maxTokens: Long) = apply { body.maxTokens(maxTokens) }
 
         /**
-         * The maximum number of tokens to generate before stopping.
+         * Sets [Builder.maxTokens] to an arbitrary JSON value.
          *
-         * Note that our models may stop _before_ reaching this maximum. This parameter only
-         * specifies the absolute maximum number of tokens to generate.
-         *
-         * Different models have different maximum values for this parameter. See
-         * [models](https://docs.anthropic.com/en/docs/models-overview) for details.
+         * You should usually call [Builder.maxTokens] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun maxTokens(maxTokens: JsonField<Long>) = apply { body.maxTokens(maxTokens) }
 
@@ -2489,168 +1735,18 @@ private constructor(
         fun messages(messages: List<Message>) = apply { body.messages(messages) }
 
         /**
-         * Input messages.
+         * Sets [Builder.messages] to an arbitrary JSON value.
          *
-         * Our models are trained to operate on alternating `user` and `assistant` conversational
-         * turns. When creating a new `Message`, you specify the prior conversational turns with the
-         * `messages` parameter, and the model then generates the next `Message` in the
-         * conversation. Consecutive `user` or `assistant` turns in your request will be combined
-         * into a single turn.
-         *
-         * Each input message must be an object with a `role` and `content`. You can specify a
-         * single `user`-role message, or you can include multiple `user` and `assistant` messages.
-         *
-         * If the final message uses the `assistant` role, the response content will continue
-         * immediately from the content in that message. This can be used to constrain part of the
-         * model's response.
-         *
-         * Example with a single `user` message:
-         * ```json
-         * [{ "role": "user", "content": "Hello, Claude" }]
-         * ```
-         *
-         * Example with multiple conversational turns:
-         * ```json
-         * [
-         *   { "role": "user", "content": "Hello there." },
-         *   { "role": "assistant", "content": "Hi, I'm Claude. How can I help you?" },
-         *   { "role": "user", "content": "Can you explain LLMs in plain English?" }
-         * ]
-         * ```
-         *
-         * Example with a partially-filled response from Claude:
-         * ```json
-         * [
-         *   {
-         *     "role": "user",
-         *     "content": "What's the Greek name for Sun? (A) Sol (B) Helios (C) Sun"
-         *   },
-         *   { "role": "assistant", "content": "The best answer is (" }
-         * ]
-         * ```
-         *
-         * Each input message `content` may be either a single `string` or an array of content
-         * blocks, where each block has a specific `type`. Using a `string` for `content` is
-         * shorthand for an array of one content block of type `"text"`. The following input
-         * messages are equivalent:
-         * ```json
-         * { "role": "user", "content": "Hello, Claude" }
-         * ```
-         * ```json
-         * { "role": "user", "content": [{ "type": "text", "text": "Hello, Claude" }] }
-         * ```
-         *
-         * Starting with Claude 3 models, you can also send image content blocks:
-         * ```json
-         * {
-         *   "role": "user",
-         *   "content": [
-         *     {
-         *       "type": "image",
-         *       "source": {
-         *         "type": "base64",
-         *         "media_type": "image/jpeg",
-         *         "data": "/9j/4AAQSkZJRg..."
-         *       }
-         *     },
-         *     { "type": "text", "text": "What is in this image?" }
-         *   ]
-         * }
-         * ```
-         *
-         * We currently support the `base64` source type for images, and the `image/jpeg`,
-         * `image/png`, `image/gif`, and `image/webp` media types.
-         *
-         * See [examples](https://docs.anthropic.com/en/api/messages-examples#vision) for more input
-         * examples.
-         *
-         * Note that if you want to include a
-         * [system prompt](https://docs.anthropic.com/en/docs/system-prompts), you can use the
-         * top-level `system` parameter — there is no `"system"` role for input messages in the
-         * Messages API.
+         * You should usually call [Builder.messages] with a well-typed `List<Message>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun messages(messages: JsonField<List<Message>>) = apply { body.messages(messages) }
 
         /**
-         * Input messages.
+         * Adds a single [Message] to [messages].
          *
-         * Our models are trained to operate on alternating `user` and `assistant` conversational
-         * turns. When creating a new `Message`, you specify the prior conversational turns with the
-         * `messages` parameter, and the model then generates the next `Message` in the
-         * conversation. Consecutive `user` or `assistant` turns in your request will be combined
-         * into a single turn.
-         *
-         * Each input message must be an object with a `role` and `content`. You can specify a
-         * single `user`-role message, or you can include multiple `user` and `assistant` messages.
-         *
-         * If the final message uses the `assistant` role, the response content will continue
-         * immediately from the content in that message. This can be used to constrain part of the
-         * model's response.
-         *
-         * Example with a single `user` message:
-         * ```json
-         * [{ "role": "user", "content": "Hello, Claude" }]
-         * ```
-         *
-         * Example with multiple conversational turns:
-         * ```json
-         * [
-         *   { "role": "user", "content": "Hello there." },
-         *   { "role": "assistant", "content": "Hi, I'm Claude. How can I help you?" },
-         *   { "role": "user", "content": "Can you explain LLMs in plain English?" }
-         * ]
-         * ```
-         *
-         * Example with a partially-filled response from Claude:
-         * ```json
-         * [
-         *   {
-         *     "role": "user",
-         *     "content": "What's the Greek name for Sun? (A) Sol (B) Helios (C) Sun"
-         *   },
-         *   { "role": "assistant", "content": "The best answer is (" }
-         * ]
-         * ```
-         *
-         * Each input message `content` may be either a single `string` or an array of content
-         * blocks, where each block has a specific `type`. Using a `string` for `content` is
-         * shorthand for an array of one content block of type `"text"`. The following input
-         * messages are equivalent:
-         * ```json
-         * { "role": "user", "content": "Hello, Claude" }
-         * ```
-         * ```json
-         * { "role": "user", "content": [{ "type": "text", "text": "Hello, Claude" }] }
-         * ```
-         *
-         * Starting with Claude 3 models, you can also send image content blocks:
-         * ```json
-         * {
-         *   "role": "user",
-         *   "content": [
-         *     {
-         *       "type": "image",
-         *       "source": {
-         *         "type": "base64",
-         *         "media_type": "image/jpeg",
-         *         "data": "/9j/4AAQSkZJRg..."
-         *       }
-         *     },
-         *     { "type": "text", "text": "What is in this image?" }
-         *   ]
-         * }
-         * ```
-         *
-         * We currently support the `base64` source type for images, and the `image/jpeg`,
-         * `image/png`, `image/gif`, and `image/webp` media types.
-         *
-         * See [examples](https://docs.anthropic.com/en/api/messages-examples#vision) for more input
-         * examples.
-         *
-         * Note that if you want to include a
-         * [system prompt](https://docs.anthropic.com/en/docs/system-prompts), you can use the
-         * top-level `system` parameter — there is no `"system"` role for input messages in the
-         * Messages API.
+         * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addMessage(message: Message) = apply { body.addMessage(message) }
 
@@ -2663,17 +1759,23 @@ private constructor(
         fun model(model: String) = apply { body.model(model) }
 
         /**
-         * The model that will complete your prompt.
+         * Sets [Builder.model] to an arbitrary JSON value.
          *
-         * See [models](https://docs.anthropic.com/en/docs/models-overview) for additional details
-         * and options.
+         * You should usually call [Builder.model] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun model(model: JsonField<String>) = apply { body.model(model) }
 
         /** An object describing metadata about the request. */
         fun metadata(metadata: Metadata) = apply { body.metadata(metadata) }
 
-        /** An object describing metadata about the request. */
+        /**
+         * Sets [Builder.metadata] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.metadata] with a well-typed [Metadata] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
 
         /**
@@ -2690,30 +1792,20 @@ private constructor(
         fun stopSequences(stopSequences: List<String>) = apply { body.stopSequences(stopSequences) }
 
         /**
-         * Custom text sequences that will cause the model to stop generating.
+         * Sets [Builder.stopSequences] to an arbitrary JSON value.
          *
-         * Our models will normally stop when they have naturally completed their turn, which will
-         * result in a response `stop_reason` of `"end_turn"`.
-         *
-         * If you want the model to stop generating when it encounters custom strings of text, you
-         * can use the `stop_sequences` parameter. If the model encounters one of the custom
-         * sequences, the response `stop_reason` value will be `"stop_sequence"` and the response
-         * `stop_sequence` value will contain the matched stop sequence.
+         * You should usually call [Builder.stopSequences] with a well-typed `List<String>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun stopSequences(stopSequences: JsonField<List<String>>) = apply {
             body.stopSequences(stopSequences)
         }
 
         /**
-         * Custom text sequences that will cause the model to stop generating.
+         * Adds a single [String] to [stopSequences].
          *
-         * Our models will normally stop when they have naturally completed their turn, which will
-         * result in a response `stop_reason` of `"end_turn"`.
-         *
-         * If you want the model to stop generating when it encounters custom strings of text, you
-         * can use the `stop_sequences` parameter. If the model encounters one of the custom
-         * sequences, the response `stop_reason` value will be `"stop_sequence"` and the response
-         * `stop_sequence` value will contain the matched stop sequence.
+         * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addStopSequence(stopSequence: String) = apply { body.addStopSequence(stopSequence) }
 
@@ -2725,9 +1817,10 @@ private constructor(
         fun stream(stream: Boolean) = apply { body.stream(stream) }
 
         /**
-         * Whether to incrementally stream the response using server-sent events.
+         * Sets [Builder.stream] to an arbitrary JSON value.
          *
-         * See [streaming](https://docs.anthropic.com/en/api/messages-streaming) for details.
+         * You should usually call [Builder.stream] with a well-typed [Boolean] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun stream(stream: JsonField<Boolean>) = apply { body.stream(stream) }
 
@@ -2741,30 +1834,17 @@ private constructor(
         fun system(system: System) = apply { body.system(system) }
 
         /**
-         * System prompt.
+         * Sets [Builder.system] to an arbitrary JSON value.
          *
-         * A system prompt is a way of providing context and instructions to Claude, such as
-         * specifying a particular goal or role. See our
-         * [guide to system prompts](https://docs.anthropic.com/en/docs/system-prompts).
+         * You should usually call [Builder.system] with a well-typed [System] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun system(system: JsonField<System>) = apply { body.system(system) }
 
-        /**
-         * System prompt.
-         *
-         * A system prompt is a way of providing context and instructions to Claude, such as
-         * specifying a particular goal or role. See our
-         * [guide to system prompts](https://docs.anthropic.com/en/docs/system-prompts).
-         */
+        /** Alias for calling [system] with `System.ofString(string)`. */
         fun system(string: String) = apply { body.system(string) }
 
-        /**
-         * System prompt.
-         *
-         * A system prompt is a way of providing context and instructions to Claude, such as
-         * specifying a particular goal or role. See our
-         * [guide to system prompts](https://docs.anthropic.com/en/docs/system-prompts).
-         */
+        /** Alias for calling [system] with `System.ofRequestTextBlocks(requestTextBlocks)`. */
         fun systemOfRequestTextBlocks(requestTextBlocks: List<System.RequestTextBlock>) = apply {
             body.systemOfRequestTextBlocks(requestTextBlocks)
         }
@@ -2780,12 +1860,11 @@ private constructor(
         fun temperature(temperature: Double) = apply { body.temperature(temperature) }
 
         /**
-         * Amount of randomness injected into the response.
+         * Sets [Builder.temperature] to an arbitrary JSON value.
          *
-         * Defaults to `1.0`. Ranges from `0.0` to `1.0`. Use `temperature` closer to `0.0` for
-         * analytical / multiple choice, and closer to `1.0` for creative and generative tasks.
-         *
-         * Note that even with `temperature` of `0.0`, the results will not be fully deterministic.
+         * You should usually call [Builder.temperature] with a well-typed [Double] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun temperature(temperature: JsonField<Double>) = apply { body.temperature(temperature) }
 
@@ -2803,59 +1882,33 @@ private constructor(
         fun thinking(thinking: Thinking) = apply { body.thinking(thinking) }
 
         /**
-         * Configuration for enabling Claude's extended thinking.
+         * Sets [Builder.thinking] to an arbitrary JSON value.
          *
-         * When enabled, responses include `thinking` content blocks showing Claude's thinking
-         * process before the final answer. Requires a minimum budget of 1,024 tokens and counts
-         * towards your `max_tokens` limit.
-         *
-         * See
-         * [extended thinking](https://docs.anthropic.com/en/docs/build-with-claude/extended-thinking)
-         * for details.
+         * You should usually call [Builder.thinking] with a well-typed [Thinking] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun thinking(thinking: JsonField<Thinking>) = apply { body.thinking(thinking) }
 
-        /**
-         * Configuration for enabling Claude's extended thinking.
-         *
-         * When enabled, responses include `thinking` content blocks showing Claude's thinking
-         * process before the final answer. Requires a minimum budget of 1,024 tokens and counts
-         * towards your `max_tokens` limit.
-         *
-         * See
-         * [extended thinking](https://docs.anthropic.com/en/docs/build-with-claude/extended-thinking)
-         * for details.
-         */
+        /** Alias for calling [thinking] with `Thinking.ofConfigEnabled(configEnabled)`. */
         fun thinking(configEnabled: Thinking.ThinkingConfigEnabled) = apply {
             body.thinking(configEnabled)
         }
 
         /**
-         * Configuration for enabling Claude's extended thinking.
-         *
-         * When enabled, responses include `thinking` content blocks showing Claude's thinking
-         * process before the final answer. Requires a minimum budget of 1,024 tokens and counts
-         * towards your `max_tokens` limit.
-         *
-         * See
-         * [extended thinking](https://docs.anthropic.com/en/docs/build-with-claude/extended-thinking)
-         * for details.
+         * Alias for calling [thinking] with the following:
+         * ```java
+         * Thinking.ThinkingConfigEnabled.builder()
+         *     .type(MessageCreateParams.Thinking.ThinkingConfigEnabled.Type.ENABLED)
+         *     .budgetTokens(budgetTokens)
+         *     .build()
+         * ```
          */
         fun configEnabledThinking(budgetTokens: Long) = apply {
             body.configEnabledThinking(budgetTokens)
         }
 
-        /**
-         * Configuration for enabling Claude's extended thinking.
-         *
-         * When enabled, responses include `thinking` content blocks showing Claude's thinking
-         * process before the final answer. Requires a minimum budget of 1,024 tokens and counts
-         * towards your `max_tokens` limit.
-         *
-         * See
-         * [extended thinking](https://docs.anthropic.com/en/docs/build-with-claude/extended-thinking)
-         * for details.
-         */
+        /** Alias for calling [thinking] with `Thinking.ofConfigDisabled(configDisabled)`. */
         fun thinking(configDisabled: Thinking.ThinkingConfigDisabled) = apply {
             body.thinking(configDisabled)
         }
@@ -2867,24 +1920,35 @@ private constructor(
         fun toolChoice(toolChoice: ToolChoice) = apply { body.toolChoice(toolChoice) }
 
         /**
-         * How the model should use the provided tools. The model can use a specific tool, any
-         * available tool, decide by itself, or not use tools at all.
+         * Sets [Builder.toolChoice] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.toolChoice] with a well-typed [ToolChoice] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun toolChoice(toolChoice: JsonField<ToolChoice>) = apply { body.toolChoice(toolChoice) }
 
-        /** The model will automatically decide whether to use tools. */
+        /** Alias for calling [toolChoice] with `ToolChoice.ofAuto(auto)`. */
         fun toolChoice(auto: ToolChoice.ToolChoiceAuto) = apply { body.toolChoice(auto) }
 
-        /** The model will use any available tools. */
+        /** Alias for calling [toolChoice] with `ToolChoice.ofAny(any)`. */
         fun toolChoice(any: ToolChoice.ToolChoiceAny) = apply { body.toolChoice(any) }
 
-        /** The model will use the specified tool with `tool_choice.name`. */
+        /** Alias for calling [toolChoice] with `ToolChoice.ofTool(tool)`. */
         fun toolChoice(tool: ToolChoice.ToolChoiceTool) = apply { body.toolChoice(tool) }
 
-        /** The model will use the specified tool with `tool_choice.name`. */
+        /**
+         * Alias for calling [toolChoice] with the following:
+         * ```java
+         * ToolChoice.ToolChoiceTool.builder()
+         *     .type(MessageCreateParams.ToolChoice.ToolChoiceTool.Type.TOOL)
+         *     .name(name)
+         *     .build()
+         * ```
+         */
         fun toolToolChoice(name: String) = apply { body.toolToolChoice(name) }
 
-        /** The model will not be allowed to use tools. */
+        /** Alias for calling [toolChoice] with `ToolChoice.ofNone(none)`. */
         fun toolChoice(none: ToolChoice.ToolChoiceNone) = apply { body.toolChoice(none) }
 
         /**
@@ -2955,340 +2019,30 @@ private constructor(
         fun tools(tools: List<Tool>) = apply { body.tools(tools) }
 
         /**
-         * Definitions of tools that the model may use.
+         * Sets [Builder.tools] to an arbitrary JSON value.
          *
-         * If you include `tools` in your API request, the model may return `tool_use` content
-         * blocks that represent the model's use of those tools. You can then run those tools using
-         * the tool input generated by the model and then optionally return results back to the
-         * model using `tool_result` content blocks.
-         *
-         * Each tool definition includes:
-         * - `name`: Name of the tool.
-         * - `description`: Optional, but strongly-recommended description of the tool.
-         * - `input_schema`: [JSON schema](https://json-schema.org/draft/2020-12) for the tool
-         *   `input` shape that the model will produce in `tool_use` output content blocks.
-         *
-         * For example, if you defined `tools` as:
-         * ```json
-         * [
-         *   {
-         *     "name": "get_stock_price",
-         *     "description": "Get the current stock price for a given ticker symbol.",
-         *     "input_schema": {
-         *       "type": "object",
-         *       "properties": {
-         *         "ticker": {
-         *           "type": "string",
-         *           "description": "The stock ticker symbol, e.g. AAPL for Apple Inc."
-         *         }
-         *       },
-         *       "required": ["ticker"]
-         *     }
-         *   }
-         * ]
-         * ```
-         *
-         * And then asked the model "What's the S&P 500 at today?", the model might produce
-         * `tool_use` content blocks in the response like this:
-         * ```json
-         * [
-         *   {
-         *     "type": "tool_use",
-         *     "id": "toolu_01D7FLrfh4GYq7yT1ULFeyMV",
-         *     "name": "get_stock_price",
-         *     "input": { "ticker": "^GSPC" }
-         *   }
-         * ]
-         * ```
-         *
-         * You might then run your `get_stock_price` tool with `{"ticker": "^GSPC"}` as an input,
-         * and return the following back to the model in a subsequent `user` message:
-         * ```json
-         * [
-         *   {
-         *     "type": "tool_result",
-         *     "tool_use_id": "toolu_01D7FLrfh4GYq7yT1ULFeyMV",
-         *     "content": "259.75 USD"
-         *   }
-         * ]
-         * ```
-         *
-         * Tools can be used for workflows that include running client-side tools and functions, or
-         * more generally whenever you want the model to produce a particular JSON structure of
-         * output.
-         *
-         * See our [guide](https://docs.anthropic.com/en/docs/tool-use) for more details.
+         * You should usually call [Builder.tools] with a well-typed `List<Tool>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun tools(tools: JsonField<List<Tool>>) = apply { body.tools(tools) }
 
         /**
-         * Definitions of tools that the model may use.
+         * Adds a single [Tool] to [tools].
          *
-         * If you include `tools` in your API request, the model may return `tool_use` content
-         * blocks that represent the model's use of those tools. You can then run those tools using
-         * the tool input generated by the model and then optionally return results back to the
-         * model using `tool_result` content blocks.
-         *
-         * Each tool definition includes:
-         * - `name`: Name of the tool.
-         * - `description`: Optional, but strongly-recommended description of the tool.
-         * - `input_schema`: [JSON schema](https://json-schema.org/draft/2020-12) for the tool
-         *   `input` shape that the model will produce in `tool_use` output content blocks.
-         *
-         * For example, if you defined `tools` as:
-         * ```json
-         * [
-         *   {
-         *     "name": "get_stock_price",
-         *     "description": "Get the current stock price for a given ticker symbol.",
-         *     "input_schema": {
-         *       "type": "object",
-         *       "properties": {
-         *         "ticker": {
-         *           "type": "string",
-         *           "description": "The stock ticker symbol, e.g. AAPL for Apple Inc."
-         *         }
-         *       },
-         *       "required": ["ticker"]
-         *     }
-         *   }
-         * ]
-         * ```
-         *
-         * And then asked the model "What's the S&P 500 at today?", the model might produce
-         * `tool_use` content blocks in the response like this:
-         * ```json
-         * [
-         *   {
-         *     "type": "tool_use",
-         *     "id": "toolu_01D7FLrfh4GYq7yT1ULFeyMV",
-         *     "name": "get_stock_price",
-         *     "input": { "ticker": "^GSPC" }
-         *   }
-         * ]
-         * ```
-         *
-         * You might then run your `get_stock_price` tool with `{"ticker": "^GSPC"}` as an input,
-         * and return the following back to the model in a subsequent `user` message:
-         * ```json
-         * [
-         *   {
-         *     "type": "tool_result",
-         *     "tool_use_id": "toolu_01D7FLrfh4GYq7yT1ULFeyMV",
-         *     "content": "259.75 USD"
-         *   }
-         * ]
-         * ```
-         *
-         * Tools can be used for workflows that include running client-side tools and functions, or
-         * more generally whenever you want the model to produce a particular JSON structure of
-         * output.
-         *
-         * See our [guide](https://docs.anthropic.com/en/docs/tool-use) for more details.
+         * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addTool(tool: Tool) = apply { body.addTool(tool) }
 
-        /**
-         * Definitions of tools that the model may use.
-         *
-         * If you include `tools` in your API request, the model may return `tool_use` content
-         * blocks that represent the model's use of those tools. You can then run those tools using
-         * the tool input generated by the model and then optionally return results back to the
-         * model using `tool_result` content blocks.
-         *
-         * Each tool definition includes:
-         * - `name`: Name of the tool.
-         * - `description`: Optional, but strongly-recommended description of the tool.
-         * - `input_schema`: [JSON schema](https://json-schema.org/draft/2020-12) for the tool
-         *   `input` shape that the model will produce in `tool_use` output content blocks.
-         *
-         * For example, if you defined `tools` as:
-         * ```json
-         * [
-         *   {
-         *     "name": "get_stock_price",
-         *     "description": "Get the current stock price for a given ticker symbol.",
-         *     "input_schema": {
-         *       "type": "object",
-         *       "properties": {
-         *         "ticker": {
-         *           "type": "string",
-         *           "description": "The stock ticker symbol, e.g. AAPL for Apple Inc."
-         *         }
-         *       },
-         *       "required": ["ticker"]
-         *     }
-         *   }
-         * ]
-         * ```
-         *
-         * And then asked the model "What's the S&P 500 at today?", the model might produce
-         * `tool_use` content blocks in the response like this:
-         * ```json
-         * [
-         *   {
-         *     "type": "tool_use",
-         *     "id": "toolu_01D7FLrfh4GYq7yT1ULFeyMV",
-         *     "name": "get_stock_price",
-         *     "input": { "ticker": "^GSPC" }
-         *   }
-         * ]
-         * ```
-         *
-         * You might then run your `get_stock_price` tool with `{"ticker": "^GSPC"}` as an input,
-         * and return the following back to the model in a subsequent `user` message:
-         * ```json
-         * [
-         *   {
-         *     "type": "tool_result",
-         *     "tool_use_id": "toolu_01D7FLrfh4GYq7yT1ULFeyMV",
-         *     "content": "259.75 USD"
-         *   }
-         * ]
-         * ```
-         *
-         * Tools can be used for workflows that include running client-side tools and functions, or
-         * more generally whenever you want the model to produce a particular JSON structure of
-         * output.
-         *
-         * See our [guide](https://docs.anthropic.com/en/docs/tool-use) for more details.
-         */
+        /** Alias for calling [addTool] with `Tool.ofTool(tool)`. */
         fun addTool(tool: Tool.InnerTool) = apply { body.addTool(tool) }
 
-        /**
-         * Definitions of tools that the model may use.
-         *
-         * If you include `tools` in your API request, the model may return `tool_use` content
-         * blocks that represent the model's use of those tools. You can then run those tools using
-         * the tool input generated by the model and then optionally return results back to the
-         * model using `tool_result` content blocks.
-         *
-         * Each tool definition includes:
-         * - `name`: Name of the tool.
-         * - `description`: Optional, but strongly-recommended description of the tool.
-         * - `input_schema`: [JSON schema](https://json-schema.org/draft/2020-12) for the tool
-         *   `input` shape that the model will produce in `tool_use` output content blocks.
-         *
-         * For example, if you defined `tools` as:
-         * ```json
-         * [
-         *   {
-         *     "name": "get_stock_price",
-         *     "description": "Get the current stock price for a given ticker symbol.",
-         *     "input_schema": {
-         *       "type": "object",
-         *       "properties": {
-         *         "ticker": {
-         *           "type": "string",
-         *           "description": "The stock ticker symbol, e.g. AAPL for Apple Inc."
-         *         }
-         *       },
-         *       "required": ["ticker"]
-         *     }
-         *   }
-         * ]
-         * ```
-         *
-         * And then asked the model "What's the S&P 500 at today?", the model might produce
-         * `tool_use` content blocks in the response like this:
-         * ```json
-         * [
-         *   {
-         *     "type": "tool_use",
-         *     "id": "toolu_01D7FLrfh4GYq7yT1ULFeyMV",
-         *     "name": "get_stock_price",
-         *     "input": { "ticker": "^GSPC" }
-         *   }
-         * ]
-         * ```
-         *
-         * You might then run your `get_stock_price` tool with `{"ticker": "^GSPC"}` as an input,
-         * and return the following back to the model in a subsequent `user` message:
-         * ```json
-         * [
-         *   {
-         *     "type": "tool_result",
-         *     "tool_use_id": "toolu_01D7FLrfh4GYq7yT1ULFeyMV",
-         *     "content": "259.75 USD"
-         *   }
-         * ]
-         * ```
-         *
-         * Tools can be used for workflows that include running client-side tools and functions, or
-         * more generally whenever you want the model to produce a particular JSON structure of
-         * output.
-         *
-         * See our [guide](https://docs.anthropic.com/en/docs/tool-use) for more details.
-         */
+        /** Alias for calling [addTool] with `Tool.ofBashTool20250124(bashTool20250124)`. */
         fun addTool(bashTool20250124: Tool.BashTool20250124) = apply {
             body.addTool(bashTool20250124)
         }
 
-        /**
-         * Definitions of tools that the model may use.
-         *
-         * If you include `tools` in your API request, the model may return `tool_use` content
-         * blocks that represent the model's use of those tools. You can then run those tools using
-         * the tool input generated by the model and then optionally return results back to the
-         * model using `tool_result` content blocks.
-         *
-         * Each tool definition includes:
-         * - `name`: Name of the tool.
-         * - `description`: Optional, but strongly-recommended description of the tool.
-         * - `input_schema`: [JSON schema](https://json-schema.org/draft/2020-12) for the tool
-         *   `input` shape that the model will produce in `tool_use` output content blocks.
-         *
-         * For example, if you defined `tools` as:
-         * ```json
-         * [
-         *   {
-         *     "name": "get_stock_price",
-         *     "description": "Get the current stock price for a given ticker symbol.",
-         *     "input_schema": {
-         *       "type": "object",
-         *       "properties": {
-         *         "ticker": {
-         *           "type": "string",
-         *           "description": "The stock ticker symbol, e.g. AAPL for Apple Inc."
-         *         }
-         *       },
-         *       "required": ["ticker"]
-         *     }
-         *   }
-         * ]
-         * ```
-         *
-         * And then asked the model "What's the S&P 500 at today?", the model might produce
-         * `tool_use` content blocks in the response like this:
-         * ```json
-         * [
-         *   {
-         *     "type": "tool_use",
-         *     "id": "toolu_01D7FLrfh4GYq7yT1ULFeyMV",
-         *     "name": "get_stock_price",
-         *     "input": { "ticker": "^GSPC" }
-         *   }
-         * ]
-         * ```
-         *
-         * You might then run your `get_stock_price` tool with `{"ticker": "^GSPC"}` as an input,
-         * and return the following back to the model in a subsequent `user` message:
-         * ```json
-         * [
-         *   {
-         *     "type": "tool_result",
-         *     "tool_use_id": "toolu_01D7FLrfh4GYq7yT1ULFeyMV",
-         *     "content": "259.75 USD"
-         *   }
-         * ]
-         * ```
-         *
-         * Tools can be used for workflows that include running client-side tools and functions, or
-         * more generally whenever you want the model to produce a particular JSON structure of
-         * output.
-         *
-         * See our [guide](https://docs.anthropic.com/en/docs/tool-use) for more details.
-         */
+        /** Alias for calling [addTool] with `Tool.ofTextEditor20250124(textEditor20250124)`. */
         fun addTool(textEditor20250124: Tool.TextEditor20250124) = apply {
             body.addTool(textEditor20250124)
         }
@@ -3304,12 +2058,10 @@ private constructor(
         fun topK(topK: Long) = apply { body.topK(topK) }
 
         /**
-         * Only sample from the top K options for each subsequent token.
+         * Sets [Builder.topK] to an arbitrary JSON value.
          *
-         * Used to remove "long tail" low probability responses.
-         * [Learn more technical details here](https://towardsdatascience.com/how-to-sample-from-language-models-682bceb97277).
-         *
-         * Recommended for advanced use cases only. You usually only need to use `temperature`.
+         * You should usually call [Builder.topK] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun topK(topK: JsonField<Long>) = apply { body.topK(topK) }
 
@@ -3326,14 +2078,10 @@ private constructor(
         fun topP(topP: Double) = apply { body.topP(topP) }
 
         /**
-         * Use nucleus sampling.
+         * Sets [Builder.topP] to an arbitrary JSON value.
          *
-         * In nucleus sampling, we compute the cumulative distribution over all the options for each
-         * subsequent token in decreasing probability order and cut it off once it reaches a
-         * particular probability specified by `top_p`. You should either alter `temperature` or
-         * `top_p`, but not both.
-         *
-         * Recommended for advanced use cases only. You usually only need to use `temperature`.
+         * You should usually call [Builder.topP] with a well-typed [Double] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun topP(topP: JsonField<Double>) = apply { body.topP(topP) }
 
@@ -3477,12 +2225,30 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
+        /**
+         * @throws SamInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun content(): Content = content.getRequired("content")
 
+        /**
+         * @throws SamInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun role(): Role = role.getRequired("role")
 
+        /**
+         * Returns the raw JSON value of [content].
+         *
+         * Unlike [content], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("content") @ExcludeMissing fun _content(): JsonField<Content> = content
 
+        /**
+         * Returns the raw JSON value of [role].
+         *
+         * Unlike [role], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
 
         @JsonAnyGetter
@@ -3533,16 +2299,35 @@ private constructor(
 
             fun content(content: Content) = content(JsonField.of(content))
 
+            /**
+             * Sets [Builder.content] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.content] with a well-typed [Content] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun content(content: JsonField<Content>) = apply { this.content = content }
 
+            /** Alias for calling [content] with `Content.ofString(string)`. */
             fun content(string: String) = content(Content.ofString(string))
 
+            /**
+             * Alias for calling [content] with
+             * `Content.ofUnnamedSchemaWithArrayParent0s(unnamedSchemaWithArrayParent0s)`.
+             */
             fun contentOfUnnamedSchemaWithArrayParent0s(
                 unnamedSchemaWithArrayParent0s: List<Content.UnnamedSchemaWithArrayParent0>
             ) = content(Content.ofUnnamedSchemaWithArrayParent0s(unnamedSchemaWithArrayParent0s))
 
             fun role(role: Role) = role(JsonField.of(role))
 
+            /**
+             * Sets [Builder.role] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.role] with a well-typed [Role] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun role(role: JsonField<Role>) = apply { this.role = role }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -4122,24 +2907,66 @@ private constructor(
                     private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
                 ) {
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun text(): String = text.getRequired("text")
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun type(): Type = type.getRequired("type")
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
                     fun cacheControl(): Optional<CacheControl> =
                         Optional.ofNullable(cacheControl.getNullable("cache_control"))
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
                     fun citations(): Optional<List<Citation>> =
                         Optional.ofNullable(citations.getNullable("citations"))
 
+                    /**
+                     * Returns the raw JSON value of [text].
+                     *
+                     * Unlike [text], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
                     @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
+                    /**
+                     * Returns the raw JSON value of [type].
+                     *
+                     * Unlike [type], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
                     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+                    /**
+                     * Returns the raw JSON value of [cacheControl].
+                     *
+                     * Unlike [cacheControl], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("cache_control")
                     @ExcludeMissing
                     fun _cacheControl(): JsonField<CacheControl> = cacheControl
 
+                    /**
+                     * Returns the raw JSON value of [citations].
+                     *
+                     * Unlike [citations], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("citations")
                     @ExcludeMissing
                     fun _citations(): JsonField<List<Citation>> = citations
@@ -4201,18 +3028,43 @@ private constructor(
 
                         fun text(text: String) = text(JsonField.of(text))
 
+                        /**
+                         * Sets [Builder.text] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.text] with a well-typed [String] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun text(text: JsonField<String>) = apply { this.text = text }
 
                         fun type(type: Type) = type(JsonField.of(type))
 
+                        /**
+                         * Sets [Builder.type] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.type] with a well-typed [Type] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun type(type: JsonField<Type>) = apply { this.type = type }
 
                         fun cacheControl(cacheControl: CacheControl?) =
                             cacheControl(JsonField.ofNullable(cacheControl))
 
+                        /**
+                         * Alias for calling [Builder.cacheControl] with
+                         * `cacheControl.orElse(null)`.
+                         */
                         fun cacheControl(cacheControl: Optional<CacheControl>) =
                             cacheControl(cacheControl.getOrNull())
 
+                        /**
+                         * Sets [Builder.cacheControl] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.cacheControl] with a well-typed
+                         * [CacheControl] value instead. This method is primarily for setting the
+                         * field to an undocumented or not yet supported value.
+                         */
                         fun cacheControl(cacheControl: JsonField<CacheControl>) = apply {
                             this.cacheControl = cacheControl
                         }
@@ -4220,13 +3072,27 @@ private constructor(
                         fun citations(citations: List<Citation>?) =
                             citations(JsonField.ofNullable(citations))
 
+                        /** Alias for calling [Builder.citations] with `citations.orElse(null)`. */
                         fun citations(citations: Optional<List<Citation>>) =
                             citations(citations.getOrNull())
 
+                        /**
+                         * Sets [Builder.citations] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.citations] with a well-typed
+                         * `List<Citation>` value instead. This method is primarily for setting the
+                         * field to an undocumented or not yet supported value.
+                         */
                         fun citations(citations: JsonField<List<Citation>>) = apply {
                             this.citations = citations.map { it.toMutableList() }
                         }
 
+                        /**
+                         * Adds a single [Citation] to [citations].
+                         *
+                         * @throws IllegalStateException if the field was previously set to a
+                         *   non-list.
+                         */
                         fun addCitation(citation: Citation) = apply {
                             citations =
                                 (citations ?: JsonField.of(mutableListOf())).also {
@@ -4234,12 +3100,24 @@ private constructor(
                                 }
                         }
 
+                        /**
+                         * Alias for calling [addCitation] with
+                         * `Citation.ofRequestCharLocation(requestCharLocation)`.
+                         */
                         fun addCitation(requestCharLocation: Citation.RequestCharLocationCitation) =
                             addCitation(Citation.ofRequestCharLocation(requestCharLocation))
 
+                        /**
+                         * Alias for calling [addCitation] with
+                         * `Citation.ofRequestPageLocation(requestPageLocation)`.
+                         */
                         fun addCitation(requestPageLocation: Citation.RequestPageLocationCitation) =
                             addCitation(Citation.ofRequestPageLocation(requestPageLocation))
 
+                        /**
+                         * Alias for calling [addCitation] with
+                         * `Citation.ofRequestContentBlockLocation(requestContentBlockLocation)`.
+                         */
                         fun addCitation(
                             requestContentBlockLocation:
                                 Citation.RequestContentBlockLocationCitation
@@ -4393,8 +3271,19 @@ private constructor(
                             immutableEmptyMap(),
                     ) {
 
+                        /**
+                         * @throws SamInvalidDataException if the JSON field has an unexpected type
+                         *   or is unexpectedly missing or null (e.g. if the server responded with
+                         *   an unexpected value).
+                         */
                         fun type(): Type = type.getRequired("type")
 
+                        /**
+                         * Returns the raw JSON value of [type].
+                         *
+                         * Unlike [type], this method doesn't throw if the JSON field has an
+                         * unexpected type.
+                         */
                         @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                         @JsonAnyGetter
@@ -4444,6 +3333,13 @@ private constructor(
 
                             fun type(type: Type) = type(JsonField.of(type))
 
+                            /**
+                             * Sets [Builder.type] to an arbitrary JSON value.
+                             *
+                             * You should usually call [Builder.type] with a well-typed [Type] value
+                             * instead. This method is primarily for setting the field to an
+                             * undocumented or not yet supported value.
+                             */
                             fun type(type: JsonField<Type>) = apply { this.type = type }
 
                             fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
@@ -4865,40 +3761,105 @@ private constructor(
                                 immutableEmptyMap(),
                         ) {
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun citedText(): String = citedText.getRequired("cited_text")
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun documentIndex(): Long = documentIndex.getRequired("document_index")
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type (e.g. if the server responded with an unexpected value).
+                             */
                             fun documentTitle(): Optional<String> =
                                 Optional.ofNullable(documentTitle.getNullable("document_title"))
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun endCharIndex(): Long = endCharIndex.getRequired("end_char_index")
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun startCharIndex(): Long =
                                 startCharIndex.getRequired("start_char_index")
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun type(): Type = type.getRequired("type")
 
+                            /**
+                             * Returns the raw JSON value of [citedText].
+                             *
+                             * Unlike [citedText], this method doesn't throw if the JSON field has
+                             * an unexpected type.
+                             */
                             @JsonProperty("cited_text")
                             @ExcludeMissing
                             fun _citedText(): JsonField<String> = citedText
 
+                            /**
+                             * Returns the raw JSON value of [documentIndex].
+                             *
+                             * Unlike [documentIndex], this method doesn't throw if the JSON field
+                             * has an unexpected type.
+                             */
                             @JsonProperty("document_index")
                             @ExcludeMissing
                             fun _documentIndex(): JsonField<Long> = documentIndex
 
+                            /**
+                             * Returns the raw JSON value of [documentTitle].
+                             *
+                             * Unlike [documentTitle], this method doesn't throw if the JSON field
+                             * has an unexpected type.
+                             */
                             @JsonProperty("document_title")
                             @ExcludeMissing
                             fun _documentTitle(): JsonField<String> = documentTitle
 
+                            /**
+                             * Returns the raw JSON value of [endCharIndex].
+                             *
+                             * Unlike [endCharIndex], this method doesn't throw if the JSON field
+                             * has an unexpected type.
+                             */
                             @JsonProperty("end_char_index")
                             @ExcludeMissing
                             fun _endCharIndex(): JsonField<Long> = endCharIndex
 
+                            /**
+                             * Returns the raw JSON value of [startCharIndex].
+                             *
+                             * Unlike [startCharIndex], this method doesn't throw if the JSON field
+                             * has an unexpected type.
+                             */
                             @JsonProperty("start_char_index")
                             @ExcludeMissing
                             fun _startCharIndex(): JsonField<Long> = startCharIndex
 
+                            /**
+                             * Returns the raw JSON value of [type].
+                             *
+                             * Unlike [type], this method doesn't throw if the JSON field has an
+                             * unexpected type.
+                             */
                             @JsonProperty("type")
                             @ExcludeMissing
                             fun _type(): JsonField<Type> = type
@@ -4975,6 +3936,13 @@ private constructor(
                                 fun citedText(citedText: String) =
                                     citedText(JsonField.of(citedText))
 
+                                /**
+                                 * Sets [Builder.citedText] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.citedText] with a well-typed
+                                 * [String] value instead. This method is primarily for setting the
+                                 * field to an undocumented or not yet supported value.
+                                 */
                                 fun citedText(citedText: JsonField<String>) = apply {
                                     this.citedText = citedText
                                 }
@@ -4982,6 +3950,13 @@ private constructor(
                                 fun documentIndex(documentIndex: Long) =
                                     documentIndex(JsonField.of(documentIndex))
 
+                                /**
+                                 * Sets [Builder.documentIndex] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.documentIndex] with a well-typed
+                                 * [Long] value instead. This method is primarily for setting the
+                                 * field to an undocumented or not yet supported value.
+                                 */
                                 fun documentIndex(documentIndex: JsonField<Long>) = apply {
                                     this.documentIndex = documentIndex
                                 }
@@ -4989,9 +3964,20 @@ private constructor(
                                 fun documentTitle(documentTitle: String?) =
                                     documentTitle(JsonField.ofNullable(documentTitle))
 
+                                /**
+                                 * Alias for calling [Builder.documentTitle] with
+                                 * `documentTitle.orElse(null)`.
+                                 */
                                 fun documentTitle(documentTitle: Optional<String>) =
                                     documentTitle(documentTitle.getOrNull())
 
+                                /**
+                                 * Sets [Builder.documentTitle] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.documentTitle] with a well-typed
+                                 * [String] value instead. This method is primarily for setting the
+                                 * field to an undocumented or not yet supported value.
+                                 */
                                 fun documentTitle(documentTitle: JsonField<String>) = apply {
                                     this.documentTitle = documentTitle
                                 }
@@ -4999,6 +3985,13 @@ private constructor(
                                 fun endCharIndex(endCharIndex: Long) =
                                     endCharIndex(JsonField.of(endCharIndex))
 
+                                /**
+                                 * Sets [Builder.endCharIndex] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.endCharIndex] with a well-typed
+                                 * [Long] value instead. This method is primarily for setting the
+                                 * field to an undocumented or not yet supported value.
+                                 */
                                 fun endCharIndex(endCharIndex: JsonField<Long>) = apply {
                                     this.endCharIndex = endCharIndex
                                 }
@@ -5006,12 +3999,26 @@ private constructor(
                                 fun startCharIndex(startCharIndex: Long) =
                                     startCharIndex(JsonField.of(startCharIndex))
 
+                                /**
+                                 * Sets [Builder.startCharIndex] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.startCharIndex] with a
+                                 * well-typed [Long] value instead. This method is primarily for
+                                 * setting the field to an undocumented or not yet supported value.
+                                 */
                                 fun startCharIndex(startCharIndex: JsonField<Long>) = apply {
                                     this.startCharIndex = startCharIndex
                                 }
 
                                 fun type(type: Type) = type(JsonField.of(type))
 
+                                /**
+                                 * Sets [Builder.type] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.type] with a well-typed [Type]
+                                 * value instead. This method is primarily for setting the field to
+                                 * an undocumented or not yet supported value.
+                                 */
                                 fun type(type: JsonField<Type>) = apply { this.type = type }
 
                                 fun additionalProperties(
@@ -5202,40 +4209,105 @@ private constructor(
                                 immutableEmptyMap(),
                         ) {
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun citedText(): String = citedText.getRequired("cited_text")
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun documentIndex(): Long = documentIndex.getRequired("document_index")
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type (e.g. if the server responded with an unexpected value).
+                             */
                             fun documentTitle(): Optional<String> =
                                 Optional.ofNullable(documentTitle.getNullable("document_title"))
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun endPageNumber(): Long = endPageNumber.getRequired("end_page_number")
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun startPageNumber(): Long =
                                 startPageNumber.getRequired("start_page_number")
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun type(): Type = type.getRequired("type")
 
+                            /**
+                             * Returns the raw JSON value of [citedText].
+                             *
+                             * Unlike [citedText], this method doesn't throw if the JSON field has
+                             * an unexpected type.
+                             */
                             @JsonProperty("cited_text")
                             @ExcludeMissing
                             fun _citedText(): JsonField<String> = citedText
 
+                            /**
+                             * Returns the raw JSON value of [documentIndex].
+                             *
+                             * Unlike [documentIndex], this method doesn't throw if the JSON field
+                             * has an unexpected type.
+                             */
                             @JsonProperty("document_index")
                             @ExcludeMissing
                             fun _documentIndex(): JsonField<Long> = documentIndex
 
+                            /**
+                             * Returns the raw JSON value of [documentTitle].
+                             *
+                             * Unlike [documentTitle], this method doesn't throw if the JSON field
+                             * has an unexpected type.
+                             */
                             @JsonProperty("document_title")
                             @ExcludeMissing
                             fun _documentTitle(): JsonField<String> = documentTitle
 
+                            /**
+                             * Returns the raw JSON value of [endPageNumber].
+                             *
+                             * Unlike [endPageNumber], this method doesn't throw if the JSON field
+                             * has an unexpected type.
+                             */
                             @JsonProperty("end_page_number")
                             @ExcludeMissing
                             fun _endPageNumber(): JsonField<Long> = endPageNumber
 
+                            /**
+                             * Returns the raw JSON value of [startPageNumber].
+                             *
+                             * Unlike [startPageNumber], this method doesn't throw if the JSON field
+                             * has an unexpected type.
+                             */
                             @JsonProperty("start_page_number")
                             @ExcludeMissing
                             fun _startPageNumber(): JsonField<Long> = startPageNumber
 
+                            /**
+                             * Returns the raw JSON value of [type].
+                             *
+                             * Unlike [type], this method doesn't throw if the JSON field has an
+                             * unexpected type.
+                             */
                             @JsonProperty("type")
                             @ExcludeMissing
                             fun _type(): JsonField<Type> = type
@@ -5312,6 +4384,13 @@ private constructor(
                                 fun citedText(citedText: String) =
                                     citedText(JsonField.of(citedText))
 
+                                /**
+                                 * Sets [Builder.citedText] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.citedText] with a well-typed
+                                 * [String] value instead. This method is primarily for setting the
+                                 * field to an undocumented or not yet supported value.
+                                 */
                                 fun citedText(citedText: JsonField<String>) = apply {
                                     this.citedText = citedText
                                 }
@@ -5319,6 +4398,13 @@ private constructor(
                                 fun documentIndex(documentIndex: Long) =
                                     documentIndex(JsonField.of(documentIndex))
 
+                                /**
+                                 * Sets [Builder.documentIndex] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.documentIndex] with a well-typed
+                                 * [Long] value instead. This method is primarily for setting the
+                                 * field to an undocumented or not yet supported value.
+                                 */
                                 fun documentIndex(documentIndex: JsonField<Long>) = apply {
                                     this.documentIndex = documentIndex
                                 }
@@ -5326,9 +4412,20 @@ private constructor(
                                 fun documentTitle(documentTitle: String?) =
                                     documentTitle(JsonField.ofNullable(documentTitle))
 
+                                /**
+                                 * Alias for calling [Builder.documentTitle] with
+                                 * `documentTitle.orElse(null)`.
+                                 */
                                 fun documentTitle(documentTitle: Optional<String>) =
                                     documentTitle(documentTitle.getOrNull())
 
+                                /**
+                                 * Sets [Builder.documentTitle] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.documentTitle] with a well-typed
+                                 * [String] value instead. This method is primarily for setting the
+                                 * field to an undocumented or not yet supported value.
+                                 */
                                 fun documentTitle(documentTitle: JsonField<String>) = apply {
                                     this.documentTitle = documentTitle
                                 }
@@ -5336,6 +4433,13 @@ private constructor(
                                 fun endPageNumber(endPageNumber: Long) =
                                     endPageNumber(JsonField.of(endPageNumber))
 
+                                /**
+                                 * Sets [Builder.endPageNumber] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.endPageNumber] with a well-typed
+                                 * [Long] value instead. This method is primarily for setting the
+                                 * field to an undocumented or not yet supported value.
+                                 */
                                 fun endPageNumber(endPageNumber: JsonField<Long>) = apply {
                                     this.endPageNumber = endPageNumber
                                 }
@@ -5343,12 +4447,26 @@ private constructor(
                                 fun startPageNumber(startPageNumber: Long) =
                                     startPageNumber(JsonField.of(startPageNumber))
 
+                                /**
+                                 * Sets [Builder.startPageNumber] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.startPageNumber] with a
+                                 * well-typed [Long] value instead. This method is primarily for
+                                 * setting the field to an undocumented or not yet supported value.
+                                 */
                                 fun startPageNumber(startPageNumber: JsonField<Long>) = apply {
                                     this.startPageNumber = startPageNumber
                                 }
 
                                 fun type(type: Type) = type(JsonField.of(type))
 
+                                /**
+                                 * Sets [Builder.type] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.type] with a well-typed [Type]
+                                 * value instead. This method is primarily for setting the field to
+                                 * an undocumented or not yet supported value.
+                                 */
                                 fun type(type: JsonField<Type>) = apply { this.type = type }
 
                                 fun additionalProperties(
@@ -5539,40 +4657,105 @@ private constructor(
                                 immutableEmptyMap(),
                         ) {
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun citedText(): String = citedText.getRequired("cited_text")
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun documentIndex(): Long = documentIndex.getRequired("document_index")
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type (e.g. if the server responded with an unexpected value).
+                             */
                             fun documentTitle(): Optional<String> =
                                 Optional.ofNullable(documentTitle.getNullable("document_title"))
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun endBlockIndex(): Long = endBlockIndex.getRequired("end_block_index")
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun startBlockIndex(): Long =
                                 startBlockIndex.getRequired("start_block_index")
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun type(): Type = type.getRequired("type")
 
+                            /**
+                             * Returns the raw JSON value of [citedText].
+                             *
+                             * Unlike [citedText], this method doesn't throw if the JSON field has
+                             * an unexpected type.
+                             */
                             @JsonProperty("cited_text")
                             @ExcludeMissing
                             fun _citedText(): JsonField<String> = citedText
 
+                            /**
+                             * Returns the raw JSON value of [documentIndex].
+                             *
+                             * Unlike [documentIndex], this method doesn't throw if the JSON field
+                             * has an unexpected type.
+                             */
                             @JsonProperty("document_index")
                             @ExcludeMissing
                             fun _documentIndex(): JsonField<Long> = documentIndex
 
+                            /**
+                             * Returns the raw JSON value of [documentTitle].
+                             *
+                             * Unlike [documentTitle], this method doesn't throw if the JSON field
+                             * has an unexpected type.
+                             */
                             @JsonProperty("document_title")
                             @ExcludeMissing
                             fun _documentTitle(): JsonField<String> = documentTitle
 
+                            /**
+                             * Returns the raw JSON value of [endBlockIndex].
+                             *
+                             * Unlike [endBlockIndex], this method doesn't throw if the JSON field
+                             * has an unexpected type.
+                             */
                             @JsonProperty("end_block_index")
                             @ExcludeMissing
                             fun _endBlockIndex(): JsonField<Long> = endBlockIndex
 
+                            /**
+                             * Returns the raw JSON value of [startBlockIndex].
+                             *
+                             * Unlike [startBlockIndex], this method doesn't throw if the JSON field
+                             * has an unexpected type.
+                             */
                             @JsonProperty("start_block_index")
                             @ExcludeMissing
                             fun _startBlockIndex(): JsonField<Long> = startBlockIndex
 
+                            /**
+                             * Returns the raw JSON value of [type].
+                             *
+                             * Unlike [type], this method doesn't throw if the JSON field has an
+                             * unexpected type.
+                             */
                             @JsonProperty("type")
                             @ExcludeMissing
                             fun _type(): JsonField<Type> = type
@@ -5654,6 +4837,13 @@ private constructor(
                                 fun citedText(citedText: String) =
                                     citedText(JsonField.of(citedText))
 
+                                /**
+                                 * Sets [Builder.citedText] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.citedText] with a well-typed
+                                 * [String] value instead. This method is primarily for setting the
+                                 * field to an undocumented or not yet supported value.
+                                 */
                                 fun citedText(citedText: JsonField<String>) = apply {
                                     this.citedText = citedText
                                 }
@@ -5661,6 +4851,13 @@ private constructor(
                                 fun documentIndex(documentIndex: Long) =
                                     documentIndex(JsonField.of(documentIndex))
 
+                                /**
+                                 * Sets [Builder.documentIndex] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.documentIndex] with a well-typed
+                                 * [Long] value instead. This method is primarily for setting the
+                                 * field to an undocumented or not yet supported value.
+                                 */
                                 fun documentIndex(documentIndex: JsonField<Long>) = apply {
                                     this.documentIndex = documentIndex
                                 }
@@ -5668,9 +4865,20 @@ private constructor(
                                 fun documentTitle(documentTitle: String?) =
                                     documentTitle(JsonField.ofNullable(documentTitle))
 
+                                /**
+                                 * Alias for calling [Builder.documentTitle] with
+                                 * `documentTitle.orElse(null)`.
+                                 */
                                 fun documentTitle(documentTitle: Optional<String>) =
                                     documentTitle(documentTitle.getOrNull())
 
+                                /**
+                                 * Sets [Builder.documentTitle] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.documentTitle] with a well-typed
+                                 * [String] value instead. This method is primarily for setting the
+                                 * field to an undocumented or not yet supported value.
+                                 */
                                 fun documentTitle(documentTitle: JsonField<String>) = apply {
                                     this.documentTitle = documentTitle
                                 }
@@ -5678,6 +4886,13 @@ private constructor(
                                 fun endBlockIndex(endBlockIndex: Long) =
                                     endBlockIndex(JsonField.of(endBlockIndex))
 
+                                /**
+                                 * Sets [Builder.endBlockIndex] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.endBlockIndex] with a well-typed
+                                 * [Long] value instead. This method is primarily for setting the
+                                 * field to an undocumented or not yet supported value.
+                                 */
                                 fun endBlockIndex(endBlockIndex: JsonField<Long>) = apply {
                                     this.endBlockIndex = endBlockIndex
                                 }
@@ -5685,12 +4900,26 @@ private constructor(
                                 fun startBlockIndex(startBlockIndex: Long) =
                                     startBlockIndex(JsonField.of(startBlockIndex))
 
+                                /**
+                                 * Sets [Builder.startBlockIndex] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.startBlockIndex] with a
+                                 * well-typed [Long] value instead. This method is primarily for
+                                 * setting the field to an undocumented or not yet supported value.
+                                 */
                                 fun startBlockIndex(startBlockIndex: JsonField<Long>) = apply {
                                     this.startBlockIndex = startBlockIndex
                                 }
 
                                 fun type(type: Type) = type(JsonField.of(type))
 
+                                /**
+                                 * Sets [Builder.type] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.type] with a well-typed [Type]
+                                 * value instead. This method is primarily for setting the field to
+                                 * an undocumented or not yet supported value.
+                                 */
                                 fun type(type: JsonField<Type>) = apply { this.type = type }
 
                                 fun additionalProperties(
@@ -5891,19 +5120,51 @@ private constructor(
                     private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
                 ) {
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun source(): Source = source.getRequired("source")
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun type(): Type = type.getRequired("type")
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
                     fun cacheControl(): Optional<CacheControl> =
                         Optional.ofNullable(cacheControl.getNullable("cache_control"))
 
+                    /**
+                     * Returns the raw JSON value of [source].
+                     *
+                     * Unlike [source], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("source")
                     @ExcludeMissing
                     fun _source(): JsonField<Source> = source
 
+                    /**
+                     * Returns the raw JSON value of [type].
+                     *
+                     * Unlike [type], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
                     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+                    /**
+                     * Returns the raw JSON value of [cacheControl].
+                     *
+                     * Unlike [cacheControl], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("cache_control")
                     @ExcludeMissing
                     fun _cacheControl(): JsonField<CacheControl> = cacheControl
@@ -5962,14 +5223,32 @@ private constructor(
 
                         fun source(source: Source) = source(JsonField.of(source))
 
+                        /**
+                         * Sets [Builder.source] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.source] with a well-typed [Source] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun source(source: JsonField<Source>) = apply { this.source = source }
 
+                        /** Alias for calling [source] with `Source.ofBase64Image(base64Image)`. */
                         fun source(base64Image: Source.Base64ImageSource) =
                             source(Source.ofBase64Image(base64Image))
 
+                        /** Alias for calling [source] with `Source.ofUrlImage(urlImage)`. */
                         fun source(urlImage: Source.UrlImageSource) =
                             source(Source.ofUrlImage(urlImage))
 
+                        /**
+                         * Alias for calling [source] with the following:
+                         * ```java
+                         * Source.UrlImageSource.builder()
+                         *     .type(MessageCreateParams.Message.Content.UnnamedSchemaWithArrayParent0.RequestImageBlock.Source.UrlImageSource.Type.URL)
+                         *     .url(url)
+                         *     .build()
+                         * ```
+                         */
                         fun urlImageSource(url: String) =
                             source(
                                 Source.UrlImageSource.builder()
@@ -5988,14 +5267,32 @@ private constructor(
 
                         fun type(type: Type) = type(JsonField.of(type))
 
+                        /**
+                         * Sets [Builder.type] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.type] with a well-typed [Type] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun type(type: JsonField<Type>) = apply { this.type = type }
 
                         fun cacheControl(cacheControl: CacheControl?) =
                             cacheControl(JsonField.ofNullable(cacheControl))
 
+                        /**
+                         * Alias for calling [Builder.cacheControl] with
+                         * `cacheControl.orElse(null)`.
+                         */
                         fun cacheControl(cacheControl: Optional<CacheControl>) =
                             cacheControl(cacheControl.getOrNull())
 
+                        /**
+                         * Sets [Builder.cacheControl] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.cacheControl] with a well-typed
+                         * [CacheControl] value instead. This method is primarily for setting the
+                         * field to an undocumented or not yet supported value.
+                         */
                         fun cacheControl(cacheControl: JsonField<CacheControl>) = apply {
                             this.cacheControl = cacheControl
                         }
@@ -6208,20 +5505,53 @@ private constructor(
                                 immutableEmptyMap(),
                         ) {
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun data(): String = data.getRequired("data")
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun mediaType(): MediaType = mediaType.getRequired("media_type")
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun type(): Type = type.getRequired("type")
 
+                            /**
+                             * Returns the raw JSON value of [data].
+                             *
+                             * Unlike [data], this method doesn't throw if the JSON field has an
+                             * unexpected type.
+                             */
                             @JsonProperty("data")
                             @ExcludeMissing
                             fun _data(): JsonField<String> = data
 
+                            /**
+                             * Returns the raw JSON value of [mediaType].
+                             *
+                             * Unlike [mediaType], this method doesn't throw if the JSON field has
+                             * an unexpected type.
+                             */
                             @JsonProperty("media_type")
                             @ExcludeMissing
                             fun _mediaType(): JsonField<MediaType> = mediaType
 
+                            /**
+                             * Returns the raw JSON value of [type].
+                             *
+                             * Unlike [type], this method doesn't throw if the JSON field has an
+                             * unexpected type.
+                             */
                             @JsonProperty("type")
                             @ExcludeMissing
                             fun _type(): JsonField<Type> = type
@@ -6282,17 +5612,38 @@ private constructor(
 
                                 fun data(data: String) = data(JsonField.of(data))
 
+                                /**
+                                 * Sets [Builder.data] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.data] with a well-typed [String]
+                                 * value instead. This method is primarily for setting the field to
+                                 * an undocumented or not yet supported value.
+                                 */
                                 fun data(data: JsonField<String>) = apply { this.data = data }
 
                                 fun mediaType(mediaType: MediaType) =
                                     mediaType(JsonField.of(mediaType))
 
+                                /**
+                                 * Sets [Builder.mediaType] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.mediaType] with a well-typed
+                                 * [MediaType] value instead. This method is primarily for setting
+                                 * the field to an undocumented or not yet supported value.
+                                 */
                                 fun mediaType(mediaType: JsonField<MediaType>) = apply {
                                     this.mediaType = mediaType
                                 }
 
                                 fun type(type: Type) = type(JsonField.of(type))
 
+                                /**
+                                 * Sets [Builder.type] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.type] with a well-typed [Type]
+                                 * value instead. This method is primarily for setting the field to
+                                 * an undocumented or not yet supported value.
+                                 */
                                 fun type(type: JsonField<Type>) = apply { this.type = type }
 
                                 fun additionalProperties(
@@ -6597,14 +5948,36 @@ private constructor(
                                 immutableEmptyMap(),
                         ) {
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun type(): Type = type.getRequired("type")
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun url(): String = url.getRequired("url")
 
+                            /**
+                             * Returns the raw JSON value of [type].
+                             *
+                             * Unlike [type], this method doesn't throw if the JSON field has an
+                             * unexpected type.
+                             */
                             @JsonProperty("type")
                             @ExcludeMissing
                             fun _type(): JsonField<Type> = type
 
+                            /**
+                             * Returns the raw JSON value of [url].
+                             *
+                             * Unlike [url], this method doesn't throw if the JSON field has an
+                             * unexpected type.
+                             */
                             @JsonProperty("url") @ExcludeMissing fun _url(): JsonField<String> = url
 
                             @JsonAnyGetter
@@ -6659,10 +6032,24 @@ private constructor(
 
                                 fun type(type: Type) = type(JsonField.of(type))
 
+                                /**
+                                 * Sets [Builder.type] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.type] with a well-typed [Type]
+                                 * value instead. This method is primarily for setting the field to
+                                 * an undocumented or not yet supported value.
+                                 */
                                 fun type(type: JsonField<Type>) = apply { this.type = type }
 
                                 fun url(url: String) = url(JsonField.of(url))
 
+                                /**
+                                 * Sets [Builder.url] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.url] with a well-typed [String]
+                                 * value instead. This method is primarily for setting the field to
+                                 * an undocumented or not yet supported value.
+                                 */
                                 fun url(url: JsonField<String>) = apply { this.url = url }
 
                                 fun additionalProperties(
@@ -6936,8 +6323,19 @@ private constructor(
                             immutableEmptyMap(),
                     ) {
 
+                        /**
+                         * @throws SamInvalidDataException if the JSON field has an unexpected type
+                         *   or is unexpectedly missing or null (e.g. if the server responded with
+                         *   an unexpected value).
+                         */
                         fun type(): Type = type.getRequired("type")
 
+                        /**
+                         * Returns the raw JSON value of [type].
+                         *
+                         * Unlike [type], this method doesn't throw if the JSON field has an
+                         * unexpected type.
+                         */
                         @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                         @JsonAnyGetter
@@ -6987,6 +6385,13 @@ private constructor(
 
                             fun type(type: Type) = type(JsonField.of(type))
 
+                            /**
+                             * Sets [Builder.type] to an arbitrary JSON value.
+                             *
+                             * You should usually call [Builder.type] with a well-typed [Type] value
+                             * instead. This method is primarily for setting the field to an
+                             * undocumented or not yet supported value.
+                             */
                             fun type(type: JsonField<Type>) = apply { this.type = type }
 
                             fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
@@ -7180,23 +6585,66 @@ private constructor(
                     private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
                 ) {
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun id(): String = id.getRequired("id")
 
                     @JsonProperty("input") @ExcludeMissing fun _input(): JsonValue = input
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun name(): String = name.getRequired("name")
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun type(): Type = type.getRequired("type")
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
                     fun cacheControl(): Optional<CacheControl> =
                         Optional.ofNullable(cacheControl.getNullable("cache_control"))
 
+                    /**
+                     * Returns the raw JSON value of [id].
+                     *
+                     * Unlike [id], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
                     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
+                    /**
+                     * Returns the raw JSON value of [name].
+                     *
+                     * Unlike [name], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
                     @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
+                    /**
+                     * Returns the raw JSON value of [type].
+                     *
+                     * Unlike [type], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
                     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+                    /**
+                     * Returns the raw JSON value of [cacheControl].
+                     *
+                     * Unlike [cacheControl], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("cache_control")
                     @ExcludeMissing
                     fun _cacheControl(): JsonField<CacheControl> = cacheControl
@@ -7262,24 +6710,56 @@ private constructor(
 
                         fun id(id: String) = id(JsonField.of(id))
 
+                        /**
+                         * Sets [Builder.id] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.id] with a well-typed [String] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun id(id: JsonField<String>) = apply { this.id = id }
 
                         fun input(input: JsonValue) = apply { this.input = input }
 
                         fun name(name: String) = name(JsonField.of(name))
 
+                        /**
+                         * Sets [Builder.name] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.name] with a well-typed [String] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun name(name: JsonField<String>) = apply { this.name = name }
 
                         fun type(type: Type) = type(JsonField.of(type))
 
+                        /**
+                         * Sets [Builder.type] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.type] with a well-typed [Type] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun type(type: JsonField<Type>) = apply { this.type = type }
 
                         fun cacheControl(cacheControl: CacheControl?) =
                             cacheControl(JsonField.ofNullable(cacheControl))
 
+                        /**
+                         * Alias for calling [Builder.cacheControl] with
+                         * `cacheControl.orElse(null)`.
+                         */
                         fun cacheControl(cacheControl: Optional<CacheControl>) =
                             cacheControl(cacheControl.getOrNull())
 
+                        /**
+                         * Sets [Builder.cacheControl] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.cacheControl] with a well-typed
+                         * [CacheControl] value instead. This method is primarily for setting the
+                         * field to an undocumented or not yet supported value.
+                         */
                         fun cacheControl(cacheControl: JsonField<CacheControl>) = apply {
                             this.cacheControl = cacheControl
                         }
@@ -7430,8 +6910,19 @@ private constructor(
                             immutableEmptyMap(),
                     ) {
 
+                        /**
+                         * @throws SamInvalidDataException if the JSON field has an unexpected type
+                         *   or is unexpectedly missing or null (e.g. if the server responded with
+                         *   an unexpected value).
+                         */
                         fun type(): Type = type.getRequired("type")
 
+                        /**
+                         * Returns the raw JSON value of [type].
+                         *
+                         * Unlike [type], this method doesn't throw if the JSON field has an
+                         * unexpected type.
+                         */
                         @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                         @JsonAnyGetter
@@ -7481,6 +6972,13 @@ private constructor(
 
                             fun type(type: Type) = type(JsonField.of(type))
 
+                            /**
+                             * Sets [Builder.type] to an arbitrary JSON value.
+                             *
+                             * You should usually call [Builder.type] with a well-typed [Type] value
+                             * instead. This method is primarily for setting the field to an
+                             * undocumented or not yet supported value.
+                             */
                             fun type(type: JsonField<Type>) = apply { this.type = type }
 
                             fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
@@ -7674,33 +7172,85 @@ private constructor(
                     private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
                 ) {
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun toolUseId(): String = toolUseId.getRequired("tool_use_id")
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun type(): Type = type.getRequired("type")
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
                     fun cacheControl(): Optional<CacheControl> =
                         Optional.ofNullable(cacheControl.getNullable("cache_control"))
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
                     fun content(): Optional<InnerContent> =
                         Optional.ofNullable(content.getNullable("content"))
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
                     fun isError(): Optional<Boolean> =
                         Optional.ofNullable(isError.getNullable("is_error"))
 
+                    /**
+                     * Returns the raw JSON value of [toolUseId].
+                     *
+                     * Unlike [toolUseId], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("tool_use_id")
                     @ExcludeMissing
                     fun _toolUseId(): JsonField<String> = toolUseId
 
+                    /**
+                     * Returns the raw JSON value of [type].
+                     *
+                     * Unlike [type], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
                     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+                    /**
+                     * Returns the raw JSON value of [cacheControl].
+                     *
+                     * Unlike [cacheControl], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("cache_control")
                     @ExcludeMissing
                     fun _cacheControl(): JsonField<CacheControl> = cacheControl
 
+                    /**
+                     * Returns the raw JSON value of [content].
+                     *
+                     * Unlike [content], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("content")
                     @ExcludeMissing
                     fun _content(): JsonField<InnerContent> = content
 
+                    /**
+                     * Returns the raw JSON value of [isError].
+                     *
+                     * Unlike [isError], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("is_error")
                     @ExcludeMissing
                     fun _isError(): JsonField<Boolean> = isError
@@ -7765,32 +7315,69 @@ private constructor(
 
                         fun toolUseId(toolUseId: String) = toolUseId(JsonField.of(toolUseId))
 
+                        /**
+                         * Sets [Builder.toolUseId] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.toolUseId] with a well-typed [String]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun toolUseId(toolUseId: JsonField<String>) = apply {
                             this.toolUseId = toolUseId
                         }
 
                         fun type(type: Type) = type(JsonField.of(type))
 
+                        /**
+                         * Sets [Builder.type] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.type] with a well-typed [Type] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun type(type: JsonField<Type>) = apply { this.type = type }
 
                         fun cacheControl(cacheControl: CacheControl?) =
                             cacheControl(JsonField.ofNullable(cacheControl))
 
+                        /**
+                         * Alias for calling [Builder.cacheControl] with
+                         * `cacheControl.orElse(null)`.
+                         */
                         fun cacheControl(cacheControl: Optional<CacheControl>) =
                             cacheControl(cacheControl.getOrNull())
 
+                        /**
+                         * Sets [Builder.cacheControl] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.cacheControl] with a well-typed
+                         * [CacheControl] value instead. This method is primarily for setting the
+                         * field to an undocumented or not yet supported value.
+                         */
                         fun cacheControl(cacheControl: JsonField<CacheControl>) = apply {
                             this.cacheControl = cacheControl
                         }
 
                         fun content(content: InnerContent) = content(JsonField.of(content))
 
+                        /**
+                         * Sets [Builder.content] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.content] with a well-typed
+                         * [InnerContent] value instead. This method is primarily for setting the
+                         * field to an undocumented or not yet supported value.
+                         */
                         fun content(content: JsonField<InnerContent>) = apply {
                             this.content = content
                         }
 
+                        /** Alias for calling [content] with `InnerContent.ofString(string)`. */
                         fun content(string: String) = content(InnerContent.ofString(string))
 
+                        /**
+                         * Alias for calling [content] with
+                         * `InnerContent.ofUnnamedSchemaWithArrayParent1s(unnamedSchemaWithArrayParent1s)`.
+                         */
                         fun contentOfUnnamedSchemaWithArrayParent1s(
                             unnamedSchemaWithArrayParent1s:
                                 List<InnerContent.UnnamedSchemaWithArrayParent1>
@@ -7803,6 +7390,13 @@ private constructor(
 
                         fun isError(isError: Boolean) = isError(JsonField.of(isError))
 
+                        /**
+                         * Sets [Builder.isError] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.isError] with a well-typed [Boolean]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun isError(isError: JsonField<Boolean>) = apply { this.isError = isError }
 
                         fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
@@ -7951,8 +7545,19 @@ private constructor(
                             immutableEmptyMap(),
                     ) {
 
+                        /**
+                         * @throws SamInvalidDataException if the JSON field has an unexpected type
+                         *   or is unexpectedly missing or null (e.g. if the server responded with
+                         *   an unexpected value).
+                         */
                         fun type(): Type = type.getRequired("type")
 
+                        /**
+                         * Returns the raw JSON value of [type].
+                         *
+                         * Unlike [type], this method doesn't throw if the JSON field has an
+                         * unexpected type.
+                         */
                         @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                         @JsonAnyGetter
@@ -8002,6 +7607,13 @@ private constructor(
 
                             fun type(type: Type) = type(JsonField.of(type))
 
+                            /**
+                             * Sets [Builder.type] to an arbitrary JSON value.
+                             *
+                             * You should usually call [Builder.type] with a well-typed [Type] value
+                             * instead. This method is primarily for setting the field to an
+                             * undocumented or not yet supported value.
+                             */
                             fun type(type: JsonField<Type>) = apply { this.type = type }
 
                             fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
@@ -8550,28 +8162,72 @@ private constructor(
                                     immutableEmptyMap(),
                             ) {
 
+                                /**
+                                 * @throws SamInvalidDataException if the JSON field has an
+                                 *   unexpected type or is unexpectedly missing or null (e.g. if the
+                                 *   server responded with an unexpected value).
+                                 */
                                 fun text(): String = text.getRequired("text")
 
+                                /**
+                                 * @throws SamInvalidDataException if the JSON field has an
+                                 *   unexpected type or is unexpectedly missing or null (e.g. if the
+                                 *   server responded with an unexpected value).
+                                 */
                                 fun type(): Type = type.getRequired("type")
 
+                                /**
+                                 * @throws SamInvalidDataException if the JSON field has an
+                                 *   unexpected type (e.g. if the server responded with an
+                                 *   unexpected value).
+                                 */
                                 fun cacheControl(): Optional<CacheControl> =
                                     Optional.ofNullable(cacheControl.getNullable("cache_control"))
 
+                                /**
+                                 * @throws SamInvalidDataException if the JSON field has an
+                                 *   unexpected type (e.g. if the server responded with an
+                                 *   unexpected value).
+                                 */
                                 fun citations(): Optional<List<Citation>> =
                                     Optional.ofNullable(citations.getNullable("citations"))
 
+                                /**
+                                 * Returns the raw JSON value of [text].
+                                 *
+                                 * Unlike [text], this method doesn't throw if the JSON field has an
+                                 * unexpected type.
+                                 */
                                 @JsonProperty("text")
                                 @ExcludeMissing
                                 fun _text(): JsonField<String> = text
 
+                                /**
+                                 * Returns the raw JSON value of [type].
+                                 *
+                                 * Unlike [type], this method doesn't throw if the JSON field has an
+                                 * unexpected type.
+                                 */
                                 @JsonProperty("type")
                                 @ExcludeMissing
                                 fun _type(): JsonField<Type> = type
 
+                                /**
+                                 * Returns the raw JSON value of [cacheControl].
+                                 *
+                                 * Unlike [cacheControl], this method doesn't throw if the JSON
+                                 * field has an unexpected type.
+                                 */
                                 @JsonProperty("cache_control")
                                 @ExcludeMissing
                                 fun _cacheControl(): JsonField<CacheControl> = cacheControl
 
+                                /**
+                                 * Returns the raw JSON value of [citations].
+                                 *
+                                 * Unlike [citations], this method doesn't throw if the JSON field
+                                 * has an unexpected type.
+                                 */
                                 @JsonProperty("citations")
                                 @ExcludeMissing
                                 fun _citations(): JsonField<List<Citation>> = citations
@@ -8637,18 +8293,44 @@ private constructor(
 
                                     fun text(text: String) = text(JsonField.of(text))
 
+                                    /**
+                                     * Sets [Builder.text] to an arbitrary JSON value.
+                                     *
+                                     * You should usually call [Builder.text] with a well-typed
+                                     * [String] value instead. This method is primarily for setting
+                                     * the field to an undocumented or not yet supported value.
+                                     */
                                     fun text(text: JsonField<String>) = apply { this.text = text }
 
                                     fun type(type: Type) = type(JsonField.of(type))
 
+                                    /**
+                                     * Sets [Builder.type] to an arbitrary JSON value.
+                                     *
+                                     * You should usually call [Builder.type] with a well-typed
+                                     * [Type] value instead. This method is primarily for setting
+                                     * the field to an undocumented or not yet supported value.
+                                     */
                                     fun type(type: JsonField<Type>) = apply { this.type = type }
 
                                     fun cacheControl(cacheControl: CacheControl?) =
                                         cacheControl(JsonField.ofNullable(cacheControl))
 
+                                    /**
+                                     * Alias for calling [Builder.cacheControl] with
+                                     * `cacheControl.orElse(null)`.
+                                     */
                                     fun cacheControl(cacheControl: Optional<CacheControl>) =
                                         cacheControl(cacheControl.getOrNull())
 
+                                    /**
+                                     * Sets [Builder.cacheControl] to an arbitrary JSON value.
+                                     *
+                                     * You should usually call [Builder.cacheControl] with a
+                                     * well-typed [CacheControl] value instead. This method is
+                                     * primarily for setting the field to an undocumented or not yet
+                                     * supported value.
+                                     */
                                     fun cacheControl(cacheControl: JsonField<CacheControl>) =
                                         apply {
                                             this.cacheControl = cacheControl
@@ -8657,13 +8339,31 @@ private constructor(
                                     fun citations(citations: List<Citation>?) =
                                         citations(JsonField.ofNullable(citations))
 
+                                    /**
+                                     * Alias for calling [Builder.citations] with
+                                     * `citations.orElse(null)`.
+                                     */
                                     fun citations(citations: Optional<List<Citation>>) =
                                         citations(citations.getOrNull())
 
+                                    /**
+                                     * Sets [Builder.citations] to an arbitrary JSON value.
+                                     *
+                                     * You should usually call [Builder.citations] with a well-typed
+                                     * `List<Citation>` value instead. This method is primarily for
+                                     * setting the field to an undocumented or not yet supported
+                                     * value.
+                                     */
                                     fun citations(citations: JsonField<List<Citation>>) = apply {
                                         this.citations = citations.map { it.toMutableList() }
                                     }
 
+                                    /**
+                                     * Adds a single [Citation] to [citations].
+                                     *
+                                     * @throws IllegalStateException if the field was previously set
+                                     *   to a non-list.
+                                     */
                                     fun addCitation(citation: Citation) = apply {
                                         citations =
                                             (citations ?: JsonField.of(mutableListOf())).also {
@@ -8671,6 +8371,10 @@ private constructor(
                                             }
                                     }
 
+                                    /**
+                                     * Alias for calling [addCitation] with
+                                     * `Citation.ofRequestCharLocation(requestCharLocation)`.
+                                     */
                                     fun addCitation(
                                         requestCharLocation: Citation.RequestCharLocationCitation
                                     ) =
@@ -8678,6 +8382,10 @@ private constructor(
                                             Citation.ofRequestCharLocation(requestCharLocation)
                                         )
 
+                                    /**
+                                     * Alias for calling [addCitation] with
+                                     * `Citation.ofRequestPageLocation(requestPageLocation)`.
+                                     */
                                     fun addCitation(
                                         requestPageLocation: Citation.RequestPageLocationCitation
                                     ) =
@@ -8685,6 +8393,10 @@ private constructor(
                                             Citation.ofRequestPageLocation(requestPageLocation)
                                         )
 
+                                    /**
+                                     * Alias for calling [addCitation] with
+                                     * `Citation.ofRequestContentBlockLocation(requestContentBlockLocation)`.
+                                     */
                                     fun addCitation(
                                         requestContentBlockLocation:
                                             Citation.RequestContentBlockLocationCitation
@@ -8855,8 +8567,19 @@ private constructor(
                                         immutableEmptyMap(),
                                 ) {
 
+                                    /**
+                                     * @throws SamInvalidDataException if the JSON field has an
+                                     *   unexpected type or is unexpectedly missing or null (e.g. if
+                                     *   the server responded with an unexpected value).
+                                     */
                                     fun type(): Type = type.getRequired("type")
 
+                                    /**
+                                     * Returns the raw JSON value of [type].
+                                     *
+                                     * Unlike [type], this method doesn't throw if the JSON field
+                                     * has an unexpected type.
+                                     */
                                     @JsonProperty("type")
                                     @ExcludeMissing
                                     fun _type(): JsonField<Type> = type
@@ -8910,6 +8633,14 @@ private constructor(
 
                                         fun type(type: Type) = type(JsonField.of(type))
 
+                                        /**
+                                         * Sets [Builder.type] to an arbitrary JSON value.
+                                         *
+                                         * You should usually call [Builder.type] with a well-typed
+                                         * [Type] value instead. This method is primarily for
+                                         * setting the field to an undocumented or not yet supported
+                                         * value.
+                                         */
                                         fun type(type: JsonField<Type>) = apply { this.type = type }
 
                                         fun additionalProperties(
@@ -9387,45 +9118,116 @@ private constructor(
                                             immutableEmptyMap(),
                                     ) {
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type or is unexpectedly missing or null
+                                         *   (e.g. if the server responded with an unexpected
+                                         *   value).
+                                         */
                                         fun citedText(): String =
                                             citedText.getRequired("cited_text")
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type or is unexpectedly missing or null
+                                         *   (e.g. if the server responded with an unexpected
+                                         *   value).
+                                         */
                                         fun documentIndex(): Long =
                                             documentIndex.getRequired("document_index")
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type (e.g. if the server responded with an
+                                         *   unexpected value).
+                                         */
                                         fun documentTitle(): Optional<String> =
                                             Optional.ofNullable(
                                                 documentTitle.getNullable("document_title")
                                             )
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type or is unexpectedly missing or null
+                                         *   (e.g. if the server responded with an unexpected
+                                         *   value).
+                                         */
                                         fun endCharIndex(): Long =
                                             endCharIndex.getRequired("end_char_index")
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type or is unexpectedly missing or null
+                                         *   (e.g. if the server responded with an unexpected
+                                         *   value).
+                                         */
                                         fun startCharIndex(): Long =
                                             startCharIndex.getRequired("start_char_index")
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type or is unexpectedly missing or null
+                                         *   (e.g. if the server responded with an unexpected
+                                         *   value).
+                                         */
                                         fun type(): Type = type.getRequired("type")
 
+                                        /**
+                                         * Returns the raw JSON value of [citedText].
+                                         *
+                                         * Unlike [citedText], this method doesn't throw if the JSON
+                                         * field has an unexpected type.
+                                         */
                                         @JsonProperty("cited_text")
                                         @ExcludeMissing
                                         fun _citedText(): JsonField<String> = citedText
 
+                                        /**
+                                         * Returns the raw JSON value of [documentIndex].
+                                         *
+                                         * Unlike [documentIndex], this method doesn't throw if the
+                                         * JSON field has an unexpected type.
+                                         */
                                         @JsonProperty("document_index")
                                         @ExcludeMissing
                                         fun _documentIndex(): JsonField<Long> = documentIndex
 
+                                        /**
+                                         * Returns the raw JSON value of [documentTitle].
+                                         *
+                                         * Unlike [documentTitle], this method doesn't throw if the
+                                         * JSON field has an unexpected type.
+                                         */
                                         @JsonProperty("document_title")
                                         @ExcludeMissing
                                         fun _documentTitle(): JsonField<String> = documentTitle
 
+                                        /**
+                                         * Returns the raw JSON value of [endCharIndex].
+                                         *
+                                         * Unlike [endCharIndex], this method doesn't throw if the
+                                         * JSON field has an unexpected type.
+                                         */
                                         @JsonProperty("end_char_index")
                                         @ExcludeMissing
                                         fun _endCharIndex(): JsonField<Long> = endCharIndex
 
+                                        /**
+                                         * Returns the raw JSON value of [startCharIndex].
+                                         *
+                                         * Unlike [startCharIndex], this method doesn't throw if the
+                                         * JSON field has an unexpected type.
+                                         */
                                         @JsonProperty("start_char_index")
                                         @ExcludeMissing
                                         fun _startCharIndex(): JsonField<Long> = startCharIndex
 
+                                        /**
+                                         * Returns the raw JSON value of [type].
+                                         *
+                                         * Unlike [type], this method doesn't throw if the JSON
+                                         * field has an unexpected type.
+                                         */
                                         @JsonProperty("type")
                                         @ExcludeMissing
                                         fun _type(): JsonField<Type> = type
@@ -9508,6 +9310,14 @@ private constructor(
                                             fun citedText(citedText: String) =
                                                 citedText(JsonField.of(citedText))
 
+                                            /**
+                                             * Sets [Builder.citedText] to an arbitrary JSON value.
+                                             *
+                                             * You should usually call [Builder.citedText] with a
+                                             * well-typed [String] value instead. This method is
+                                             * primarily for setting the field to an undocumented or
+                                             * not yet supported value.
+                                             */
                                             fun citedText(citedText: JsonField<String>) = apply {
                                                 this.citedText = citedText
                                             }
@@ -9515,6 +9325,15 @@ private constructor(
                                             fun documentIndex(documentIndex: Long) =
                                                 documentIndex(JsonField.of(documentIndex))
 
+                                            /**
+                                             * Sets [Builder.documentIndex] to an arbitrary JSON
+                                             * value.
+                                             *
+                                             * You should usually call [Builder.documentIndex] with
+                                             * a well-typed [Long] value instead. This method is
+                                             * primarily for setting the field to an undocumented or
+                                             * not yet supported value.
+                                             */
                                             fun documentIndex(documentIndex: JsonField<Long>) =
                                                 apply {
                                                     this.documentIndex = documentIndex
@@ -9523,9 +9342,22 @@ private constructor(
                                             fun documentTitle(documentTitle: String?) =
                                                 documentTitle(JsonField.ofNullable(documentTitle))
 
+                                            /**
+                                             * Alias for calling [Builder.documentTitle] with
+                                             * `documentTitle.orElse(null)`.
+                                             */
                                             fun documentTitle(documentTitle: Optional<String>) =
                                                 documentTitle(documentTitle.getOrNull())
 
+                                            /**
+                                             * Sets [Builder.documentTitle] to an arbitrary JSON
+                                             * value.
+                                             *
+                                             * You should usually call [Builder.documentTitle] with
+                                             * a well-typed [String] value instead. This method is
+                                             * primarily for setting the field to an undocumented or
+                                             * not yet supported value.
+                                             */
                                             fun documentTitle(documentTitle: JsonField<String>) =
                                                 apply {
                                                     this.documentTitle = documentTitle
@@ -9534,6 +9366,15 @@ private constructor(
                                             fun endCharIndex(endCharIndex: Long) =
                                                 endCharIndex(JsonField.of(endCharIndex))
 
+                                            /**
+                                             * Sets [Builder.endCharIndex] to an arbitrary JSON
+                                             * value.
+                                             *
+                                             * You should usually call [Builder.endCharIndex] with a
+                                             * well-typed [Long] value instead. This method is
+                                             * primarily for setting the field to an undocumented or
+                                             * not yet supported value.
+                                             */
                                             fun endCharIndex(endCharIndex: JsonField<Long>) =
                                                 apply {
                                                     this.endCharIndex = endCharIndex
@@ -9542,6 +9383,15 @@ private constructor(
                                             fun startCharIndex(startCharIndex: Long) =
                                                 startCharIndex(JsonField.of(startCharIndex))
 
+                                            /**
+                                             * Sets [Builder.startCharIndex] to an arbitrary JSON
+                                             * value.
+                                             *
+                                             * You should usually call [Builder.startCharIndex] with
+                                             * a well-typed [Long] value instead. This method is
+                                             * primarily for setting the field to an undocumented or
+                                             * not yet supported value.
+                                             */
                                             fun startCharIndex(startCharIndex: JsonField<Long>) =
                                                 apply {
                                                     this.startCharIndex = startCharIndex
@@ -9549,6 +9399,14 @@ private constructor(
 
                                             fun type(type: Type) = type(JsonField.of(type))
 
+                                            /**
+                                             * Sets [Builder.type] to an arbitrary JSON value.
+                                             *
+                                             * You should usually call [Builder.type] with a
+                                             * well-typed [Type] value instead. This method is
+                                             * primarily for setting the field to an undocumented or
+                                             * not yet supported value.
+                                             */
                                             fun type(type: JsonField<Type>) = apply {
                                                 this.type = type
                                             }
@@ -9762,45 +9620,116 @@ private constructor(
                                             immutableEmptyMap(),
                                     ) {
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type or is unexpectedly missing or null
+                                         *   (e.g. if the server responded with an unexpected
+                                         *   value).
+                                         */
                                         fun citedText(): String =
                                             citedText.getRequired("cited_text")
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type or is unexpectedly missing or null
+                                         *   (e.g. if the server responded with an unexpected
+                                         *   value).
+                                         */
                                         fun documentIndex(): Long =
                                             documentIndex.getRequired("document_index")
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type (e.g. if the server responded with an
+                                         *   unexpected value).
+                                         */
                                         fun documentTitle(): Optional<String> =
                                             Optional.ofNullable(
                                                 documentTitle.getNullable("document_title")
                                             )
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type or is unexpectedly missing or null
+                                         *   (e.g. if the server responded with an unexpected
+                                         *   value).
+                                         */
                                         fun endPageNumber(): Long =
                                             endPageNumber.getRequired("end_page_number")
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type or is unexpectedly missing or null
+                                         *   (e.g. if the server responded with an unexpected
+                                         *   value).
+                                         */
                                         fun startPageNumber(): Long =
                                             startPageNumber.getRequired("start_page_number")
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type or is unexpectedly missing or null
+                                         *   (e.g. if the server responded with an unexpected
+                                         *   value).
+                                         */
                                         fun type(): Type = type.getRequired("type")
 
+                                        /**
+                                         * Returns the raw JSON value of [citedText].
+                                         *
+                                         * Unlike [citedText], this method doesn't throw if the JSON
+                                         * field has an unexpected type.
+                                         */
                                         @JsonProperty("cited_text")
                                         @ExcludeMissing
                                         fun _citedText(): JsonField<String> = citedText
 
+                                        /**
+                                         * Returns the raw JSON value of [documentIndex].
+                                         *
+                                         * Unlike [documentIndex], this method doesn't throw if the
+                                         * JSON field has an unexpected type.
+                                         */
                                         @JsonProperty("document_index")
                                         @ExcludeMissing
                                         fun _documentIndex(): JsonField<Long> = documentIndex
 
+                                        /**
+                                         * Returns the raw JSON value of [documentTitle].
+                                         *
+                                         * Unlike [documentTitle], this method doesn't throw if the
+                                         * JSON field has an unexpected type.
+                                         */
                                         @JsonProperty("document_title")
                                         @ExcludeMissing
                                         fun _documentTitle(): JsonField<String> = documentTitle
 
+                                        /**
+                                         * Returns the raw JSON value of [endPageNumber].
+                                         *
+                                         * Unlike [endPageNumber], this method doesn't throw if the
+                                         * JSON field has an unexpected type.
+                                         */
                                         @JsonProperty("end_page_number")
                                         @ExcludeMissing
                                         fun _endPageNumber(): JsonField<Long> = endPageNumber
 
+                                        /**
+                                         * Returns the raw JSON value of [startPageNumber].
+                                         *
+                                         * Unlike [startPageNumber], this method doesn't throw if
+                                         * the JSON field has an unexpected type.
+                                         */
                                         @JsonProperty("start_page_number")
                                         @ExcludeMissing
                                         fun _startPageNumber(): JsonField<Long> = startPageNumber
 
+                                        /**
+                                         * Returns the raw JSON value of [type].
+                                         *
+                                         * Unlike [type], this method doesn't throw if the JSON
+                                         * field has an unexpected type.
+                                         */
                                         @JsonProperty("type")
                                         @ExcludeMissing
                                         fun _type(): JsonField<Type> = type
@@ -9883,6 +9812,14 @@ private constructor(
                                             fun citedText(citedText: String) =
                                                 citedText(JsonField.of(citedText))
 
+                                            /**
+                                             * Sets [Builder.citedText] to an arbitrary JSON value.
+                                             *
+                                             * You should usually call [Builder.citedText] with a
+                                             * well-typed [String] value instead. This method is
+                                             * primarily for setting the field to an undocumented or
+                                             * not yet supported value.
+                                             */
                                             fun citedText(citedText: JsonField<String>) = apply {
                                                 this.citedText = citedText
                                             }
@@ -9890,6 +9827,15 @@ private constructor(
                                             fun documentIndex(documentIndex: Long) =
                                                 documentIndex(JsonField.of(documentIndex))
 
+                                            /**
+                                             * Sets [Builder.documentIndex] to an arbitrary JSON
+                                             * value.
+                                             *
+                                             * You should usually call [Builder.documentIndex] with
+                                             * a well-typed [Long] value instead. This method is
+                                             * primarily for setting the field to an undocumented or
+                                             * not yet supported value.
+                                             */
                                             fun documentIndex(documentIndex: JsonField<Long>) =
                                                 apply {
                                                     this.documentIndex = documentIndex
@@ -9898,9 +9844,22 @@ private constructor(
                                             fun documentTitle(documentTitle: String?) =
                                                 documentTitle(JsonField.ofNullable(documentTitle))
 
+                                            /**
+                                             * Alias for calling [Builder.documentTitle] with
+                                             * `documentTitle.orElse(null)`.
+                                             */
                                             fun documentTitle(documentTitle: Optional<String>) =
                                                 documentTitle(documentTitle.getOrNull())
 
+                                            /**
+                                             * Sets [Builder.documentTitle] to an arbitrary JSON
+                                             * value.
+                                             *
+                                             * You should usually call [Builder.documentTitle] with
+                                             * a well-typed [String] value instead. This method is
+                                             * primarily for setting the field to an undocumented or
+                                             * not yet supported value.
+                                             */
                                             fun documentTitle(documentTitle: JsonField<String>) =
                                                 apply {
                                                     this.documentTitle = documentTitle
@@ -9909,6 +9868,15 @@ private constructor(
                                             fun endPageNumber(endPageNumber: Long) =
                                                 endPageNumber(JsonField.of(endPageNumber))
 
+                                            /**
+                                             * Sets [Builder.endPageNumber] to an arbitrary JSON
+                                             * value.
+                                             *
+                                             * You should usually call [Builder.endPageNumber] with
+                                             * a well-typed [Long] value instead. This method is
+                                             * primarily for setting the field to an undocumented or
+                                             * not yet supported value.
+                                             */
                                             fun endPageNumber(endPageNumber: JsonField<Long>) =
                                                 apply {
                                                     this.endPageNumber = endPageNumber
@@ -9917,6 +9885,15 @@ private constructor(
                                             fun startPageNumber(startPageNumber: Long) =
                                                 startPageNumber(JsonField.of(startPageNumber))
 
+                                            /**
+                                             * Sets [Builder.startPageNumber] to an arbitrary JSON
+                                             * value.
+                                             *
+                                             * You should usually call [Builder.startPageNumber]
+                                             * with a well-typed [Long] value instead. This method
+                                             * is primarily for setting the field to an undocumented
+                                             * or not yet supported value.
+                                             */
                                             fun startPageNumber(startPageNumber: JsonField<Long>) =
                                                 apply {
                                                     this.startPageNumber = startPageNumber
@@ -9924,6 +9901,14 @@ private constructor(
 
                                             fun type(type: Type) = type(JsonField.of(type))
 
+                                            /**
+                                             * Sets [Builder.type] to an arbitrary JSON value.
+                                             *
+                                             * You should usually call [Builder.type] with a
+                                             * well-typed [Type] value instead. This method is
+                                             * primarily for setting the field to an undocumented or
+                                             * not yet supported value.
+                                             */
                                             fun type(type: JsonField<Type>) = apply {
                                                 this.type = type
                                             }
@@ -10140,45 +10125,116 @@ private constructor(
                                             immutableEmptyMap(),
                                     ) {
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type or is unexpectedly missing or null
+                                         *   (e.g. if the server responded with an unexpected
+                                         *   value).
+                                         */
                                         fun citedText(): String =
                                             citedText.getRequired("cited_text")
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type or is unexpectedly missing or null
+                                         *   (e.g. if the server responded with an unexpected
+                                         *   value).
+                                         */
                                         fun documentIndex(): Long =
                                             documentIndex.getRequired("document_index")
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type (e.g. if the server responded with an
+                                         *   unexpected value).
+                                         */
                                         fun documentTitle(): Optional<String> =
                                             Optional.ofNullable(
                                                 documentTitle.getNullable("document_title")
                                             )
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type or is unexpectedly missing or null
+                                         *   (e.g. if the server responded with an unexpected
+                                         *   value).
+                                         */
                                         fun endBlockIndex(): Long =
                                             endBlockIndex.getRequired("end_block_index")
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type or is unexpectedly missing or null
+                                         *   (e.g. if the server responded with an unexpected
+                                         *   value).
+                                         */
                                         fun startBlockIndex(): Long =
                                             startBlockIndex.getRequired("start_block_index")
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type or is unexpectedly missing or null
+                                         *   (e.g. if the server responded with an unexpected
+                                         *   value).
+                                         */
                                         fun type(): Type = type.getRequired("type")
 
+                                        /**
+                                         * Returns the raw JSON value of [citedText].
+                                         *
+                                         * Unlike [citedText], this method doesn't throw if the JSON
+                                         * field has an unexpected type.
+                                         */
                                         @JsonProperty("cited_text")
                                         @ExcludeMissing
                                         fun _citedText(): JsonField<String> = citedText
 
+                                        /**
+                                         * Returns the raw JSON value of [documentIndex].
+                                         *
+                                         * Unlike [documentIndex], this method doesn't throw if the
+                                         * JSON field has an unexpected type.
+                                         */
                                         @JsonProperty("document_index")
                                         @ExcludeMissing
                                         fun _documentIndex(): JsonField<Long> = documentIndex
 
+                                        /**
+                                         * Returns the raw JSON value of [documentTitle].
+                                         *
+                                         * Unlike [documentTitle], this method doesn't throw if the
+                                         * JSON field has an unexpected type.
+                                         */
                                         @JsonProperty("document_title")
                                         @ExcludeMissing
                                         fun _documentTitle(): JsonField<String> = documentTitle
 
+                                        /**
+                                         * Returns the raw JSON value of [endBlockIndex].
+                                         *
+                                         * Unlike [endBlockIndex], this method doesn't throw if the
+                                         * JSON field has an unexpected type.
+                                         */
                                         @JsonProperty("end_block_index")
                                         @ExcludeMissing
                                         fun _endBlockIndex(): JsonField<Long> = endBlockIndex
 
+                                        /**
+                                         * Returns the raw JSON value of [startBlockIndex].
+                                         *
+                                         * Unlike [startBlockIndex], this method doesn't throw if
+                                         * the JSON field has an unexpected type.
+                                         */
                                         @JsonProperty("start_block_index")
                                         @ExcludeMissing
                                         fun _startBlockIndex(): JsonField<Long> = startBlockIndex
 
+                                        /**
+                                         * Returns the raw JSON value of [type].
+                                         *
+                                         * Unlike [type], this method doesn't throw if the JSON
+                                         * field has an unexpected type.
+                                         */
                                         @JsonProperty("type")
                                         @ExcludeMissing
                                         fun _type(): JsonField<Type> = type
@@ -10268,6 +10324,14 @@ private constructor(
                                             fun citedText(citedText: String) =
                                                 citedText(JsonField.of(citedText))
 
+                                            /**
+                                             * Sets [Builder.citedText] to an arbitrary JSON value.
+                                             *
+                                             * You should usually call [Builder.citedText] with a
+                                             * well-typed [String] value instead. This method is
+                                             * primarily for setting the field to an undocumented or
+                                             * not yet supported value.
+                                             */
                                             fun citedText(citedText: JsonField<String>) = apply {
                                                 this.citedText = citedText
                                             }
@@ -10275,6 +10339,15 @@ private constructor(
                                             fun documentIndex(documentIndex: Long) =
                                                 documentIndex(JsonField.of(documentIndex))
 
+                                            /**
+                                             * Sets [Builder.documentIndex] to an arbitrary JSON
+                                             * value.
+                                             *
+                                             * You should usually call [Builder.documentIndex] with
+                                             * a well-typed [Long] value instead. This method is
+                                             * primarily for setting the field to an undocumented or
+                                             * not yet supported value.
+                                             */
                                             fun documentIndex(documentIndex: JsonField<Long>) =
                                                 apply {
                                                     this.documentIndex = documentIndex
@@ -10283,9 +10356,22 @@ private constructor(
                                             fun documentTitle(documentTitle: String?) =
                                                 documentTitle(JsonField.ofNullable(documentTitle))
 
+                                            /**
+                                             * Alias for calling [Builder.documentTitle] with
+                                             * `documentTitle.orElse(null)`.
+                                             */
                                             fun documentTitle(documentTitle: Optional<String>) =
                                                 documentTitle(documentTitle.getOrNull())
 
+                                            /**
+                                             * Sets [Builder.documentTitle] to an arbitrary JSON
+                                             * value.
+                                             *
+                                             * You should usually call [Builder.documentTitle] with
+                                             * a well-typed [String] value instead. This method is
+                                             * primarily for setting the field to an undocumented or
+                                             * not yet supported value.
+                                             */
                                             fun documentTitle(documentTitle: JsonField<String>) =
                                                 apply {
                                                     this.documentTitle = documentTitle
@@ -10294,6 +10380,15 @@ private constructor(
                                             fun endBlockIndex(endBlockIndex: Long) =
                                                 endBlockIndex(JsonField.of(endBlockIndex))
 
+                                            /**
+                                             * Sets [Builder.endBlockIndex] to an arbitrary JSON
+                                             * value.
+                                             *
+                                             * You should usually call [Builder.endBlockIndex] with
+                                             * a well-typed [Long] value instead. This method is
+                                             * primarily for setting the field to an undocumented or
+                                             * not yet supported value.
+                                             */
                                             fun endBlockIndex(endBlockIndex: JsonField<Long>) =
                                                 apply {
                                                     this.endBlockIndex = endBlockIndex
@@ -10302,6 +10397,15 @@ private constructor(
                                             fun startBlockIndex(startBlockIndex: Long) =
                                                 startBlockIndex(JsonField.of(startBlockIndex))
 
+                                            /**
+                                             * Sets [Builder.startBlockIndex] to an arbitrary JSON
+                                             * value.
+                                             *
+                                             * You should usually call [Builder.startBlockIndex]
+                                             * with a well-typed [Long] value instead. This method
+                                             * is primarily for setting the field to an undocumented
+                                             * or not yet supported value.
+                                             */
                                             fun startBlockIndex(startBlockIndex: JsonField<Long>) =
                                                 apply {
                                                     this.startBlockIndex = startBlockIndex
@@ -10309,6 +10413,14 @@ private constructor(
 
                                             fun type(type: Type) = type(JsonField.of(type))
 
+                                            /**
+                                             * Sets [Builder.type] to an arbitrary JSON value.
+                                             *
+                                             * You should usually call [Builder.type] with a
+                                             * well-typed [Type] value instead. This method is
+                                             * primarily for setting the field to an undocumented or
+                                             * not yet supported value.
+                                             */
                                             fun type(type: JsonField<Type>) = apply {
                                                 this.type = type
                                             }
@@ -10536,21 +10648,54 @@ private constructor(
                                     immutableEmptyMap(),
                             ) {
 
+                                /**
+                                 * @throws SamInvalidDataException if the JSON field has an
+                                 *   unexpected type or is unexpectedly missing or null (e.g. if the
+                                 *   server responded with an unexpected value).
+                                 */
                                 fun source(): Source = source.getRequired("source")
 
+                                /**
+                                 * @throws SamInvalidDataException if the JSON field has an
+                                 *   unexpected type or is unexpectedly missing or null (e.g. if the
+                                 *   server responded with an unexpected value).
+                                 */
                                 fun type(): Type = type.getRequired("type")
 
+                                /**
+                                 * @throws SamInvalidDataException if the JSON field has an
+                                 *   unexpected type (e.g. if the server responded with an
+                                 *   unexpected value).
+                                 */
                                 fun cacheControl(): Optional<CacheControl> =
                                     Optional.ofNullable(cacheControl.getNullable("cache_control"))
 
+                                /**
+                                 * Returns the raw JSON value of [source].
+                                 *
+                                 * Unlike [source], this method doesn't throw if the JSON field has
+                                 * an unexpected type.
+                                 */
                                 @JsonProperty("source")
                                 @ExcludeMissing
                                 fun _source(): JsonField<Source> = source
 
+                                /**
+                                 * Returns the raw JSON value of [type].
+                                 *
+                                 * Unlike [type], this method doesn't throw if the JSON field has an
+                                 * unexpected type.
+                                 */
                                 @JsonProperty("type")
                                 @ExcludeMissing
                                 fun _type(): JsonField<Type> = type
 
+                                /**
+                                 * Returns the raw JSON value of [cacheControl].
+                                 *
+                                 * Unlike [cacheControl], this method doesn't throw if the JSON
+                                 * field has an unexpected type.
+                                 */
                                 @JsonProperty("cache_control")
                                 @ExcludeMissing
                                 fun _cacheControl(): JsonField<CacheControl> = cacheControl
@@ -10614,16 +10759,40 @@ private constructor(
 
                                     fun source(source: Source) = source(JsonField.of(source))
 
+                                    /**
+                                     * Sets [Builder.source] to an arbitrary JSON value.
+                                     *
+                                     * You should usually call [Builder.source] with a well-typed
+                                     * [Source] value instead. This method is primarily for setting
+                                     * the field to an undocumented or not yet supported value.
+                                     */
                                     fun source(source: JsonField<Source>) = apply {
                                         this.source = source
                                     }
 
+                                    /**
+                                     * Alias for calling [source] with
+                                     * `Source.ofBase64Image(base64Image)`.
+                                     */
                                     fun source(base64Image: Source.Base64ImageSource) =
                                         source(Source.ofBase64Image(base64Image))
 
+                                    /**
+                                     * Alias for calling [source] with
+                                     * `Source.ofUrlImage(urlImage)`.
+                                     */
                                     fun source(urlImage: Source.UrlImageSource) =
                                         source(Source.ofUrlImage(urlImage))
 
+                                    /**
+                                     * Alias for calling [source] with the following:
+                                     * ```java
+                                     * Source.UrlImageSource.builder()
+                                     *     .type(MessageCreateParams.Message.Content.UnnamedSchemaWithArrayParent0.RequestToolResultBlock.InnerContent.UnnamedSchemaWithArrayParent1.RequestImageBlock.Source.UrlImageSource.Type.URL)
+                                     *     .url(url)
+                                     *     .build()
+                                     * ```
+                                     */
                                     fun urlImageSource(url: String) =
                                         source(
                                             Source.UrlImageSource.builder()
@@ -10645,14 +10814,33 @@ private constructor(
 
                                     fun type(type: Type) = type(JsonField.of(type))
 
+                                    /**
+                                     * Sets [Builder.type] to an arbitrary JSON value.
+                                     *
+                                     * You should usually call [Builder.type] with a well-typed
+                                     * [Type] value instead. This method is primarily for setting
+                                     * the field to an undocumented or not yet supported value.
+                                     */
                                     fun type(type: JsonField<Type>) = apply { this.type = type }
 
                                     fun cacheControl(cacheControl: CacheControl?) =
                                         cacheControl(JsonField.ofNullable(cacheControl))
 
+                                    /**
+                                     * Alias for calling [Builder.cacheControl] with
+                                     * `cacheControl.orElse(null)`.
+                                     */
                                     fun cacheControl(cacheControl: Optional<CacheControl>) =
                                         cacheControl(cacheControl.getOrNull())
 
+                                    /**
+                                     * Sets [Builder.cacheControl] to an arbitrary JSON value.
+                                     *
+                                     * You should usually call [Builder.cacheControl] with a
+                                     * well-typed [CacheControl] value instead. This method is
+                                     * primarily for setting the field to an undocumented or not yet
+                                     * supported value.
+                                     */
                                     fun cacheControl(cacheControl: JsonField<CacheControl>) =
                                         apply {
                                             this.cacheControl = cacheControl
@@ -10902,21 +11090,57 @@ private constructor(
                                             immutableEmptyMap(),
                                     ) {
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type or is unexpectedly missing or null
+                                         *   (e.g. if the server responded with an unexpected
+                                         *   value).
+                                         */
                                         fun data(): String = data.getRequired("data")
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type or is unexpectedly missing or null
+                                         *   (e.g. if the server responded with an unexpected
+                                         *   value).
+                                         */
                                         fun mediaType(): MediaType =
                                             mediaType.getRequired("media_type")
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type or is unexpectedly missing or null
+                                         *   (e.g. if the server responded with an unexpected
+                                         *   value).
+                                         */
                                         fun type(): Type = type.getRequired("type")
 
+                                        /**
+                                         * Returns the raw JSON value of [data].
+                                         *
+                                         * Unlike [data], this method doesn't throw if the JSON
+                                         * field has an unexpected type.
+                                         */
                                         @JsonProperty("data")
                                         @ExcludeMissing
                                         fun _data(): JsonField<String> = data
 
+                                        /**
+                                         * Returns the raw JSON value of [mediaType].
+                                         *
+                                         * Unlike [mediaType], this method doesn't throw if the JSON
+                                         * field has an unexpected type.
+                                         */
                                         @JsonProperty("media_type")
                                         @ExcludeMissing
                                         fun _mediaType(): JsonField<MediaType> = mediaType
 
+                                        /**
+                                         * Returns the raw JSON value of [type].
+                                         *
+                                         * Unlike [type], this method doesn't throw if the JSON
+                                         * field has an unexpected type.
+                                         */
                                         @JsonProperty("type")
                                         @ExcludeMissing
                                         fun _type(): JsonField<Type> = type
@@ -10981,6 +11205,14 @@ private constructor(
 
                                             fun data(data: String) = data(JsonField.of(data))
 
+                                            /**
+                                             * Sets [Builder.data] to an arbitrary JSON value.
+                                             *
+                                             * You should usually call [Builder.data] with a
+                                             * well-typed [String] value instead. This method is
+                                             * primarily for setting the field to an undocumented or
+                                             * not yet supported value.
+                                             */
                                             fun data(data: JsonField<String>) = apply {
                                                 this.data = data
                                             }
@@ -10988,12 +11220,28 @@ private constructor(
                                             fun mediaType(mediaType: MediaType) =
                                                 mediaType(JsonField.of(mediaType))
 
+                                            /**
+                                             * Sets [Builder.mediaType] to an arbitrary JSON value.
+                                             *
+                                             * You should usually call [Builder.mediaType] with a
+                                             * well-typed [MediaType] value instead. This method is
+                                             * primarily for setting the field to an undocumented or
+                                             * not yet supported value.
+                                             */
                                             fun mediaType(mediaType: JsonField<MediaType>) = apply {
                                                 this.mediaType = mediaType
                                             }
 
                                             fun type(type: Type) = type(JsonField.of(type))
 
+                                            /**
+                                             * Sets [Builder.type] to an arbitrary JSON value.
+                                             *
+                                             * You should usually call [Builder.type] with a
+                                             * well-typed [Type] value instead. This method is
+                                             * primarily for setting the field to an undocumented or
+                                             * not yet supported value.
+                                             */
                                             fun type(type: JsonField<Type>) = apply {
                                                 this.type = type
                                             }
@@ -11326,14 +11574,38 @@ private constructor(
                                             immutableEmptyMap(),
                                     ) {
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type or is unexpectedly missing or null
+                                         *   (e.g. if the server responded with an unexpected
+                                         *   value).
+                                         */
                                         fun type(): Type = type.getRequired("type")
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type or is unexpectedly missing or null
+                                         *   (e.g. if the server responded with an unexpected
+                                         *   value).
+                                         */
                                         fun url(): String = url.getRequired("url")
 
+                                        /**
+                                         * Returns the raw JSON value of [type].
+                                         *
+                                         * Unlike [type], this method doesn't throw if the JSON
+                                         * field has an unexpected type.
+                                         */
                                         @JsonProperty("type")
                                         @ExcludeMissing
                                         fun _type(): JsonField<Type> = type
 
+                                        /**
+                                         * Returns the raw JSON value of [url].
+                                         *
+                                         * Unlike [url], this method doesn't throw if the JSON field
+                                         * has an unexpected type.
+                                         */
                                         @JsonProperty("url")
                                         @ExcludeMissing
                                         fun _url(): JsonField<String> = url
@@ -11393,12 +11665,28 @@ private constructor(
 
                                             fun type(type: Type) = type(JsonField.of(type))
 
+                                            /**
+                                             * Sets [Builder.type] to an arbitrary JSON value.
+                                             *
+                                             * You should usually call [Builder.type] with a
+                                             * well-typed [Type] value instead. This method is
+                                             * primarily for setting the field to an undocumented or
+                                             * not yet supported value.
+                                             */
                                             fun type(type: JsonField<Type>) = apply {
                                                 this.type = type
                                             }
 
                                             fun url(url: String) = url(JsonField.of(url))
 
+                                            /**
+                                             * Sets [Builder.url] to an arbitrary JSON value.
+                                             *
+                                             * You should usually call [Builder.url] with a
+                                             * well-typed [String] value instead. This method is
+                                             * primarily for setting the field to an undocumented or
+                                             * not yet supported value.
+                                             */
                                             fun url(url: JsonField<String>) = apply {
                                                 this.url = url
                                             }
@@ -11700,8 +11988,19 @@ private constructor(
                                         immutableEmptyMap(),
                                 ) {
 
+                                    /**
+                                     * @throws SamInvalidDataException if the JSON field has an
+                                     *   unexpected type or is unexpectedly missing or null (e.g. if
+                                     *   the server responded with an unexpected value).
+                                     */
                                     fun type(): Type = type.getRequired("type")
 
+                                    /**
+                                     * Returns the raw JSON value of [type].
+                                     *
+                                     * Unlike [type], this method doesn't throw if the JSON field
+                                     * has an unexpected type.
+                                     */
                                     @JsonProperty("type")
                                     @ExcludeMissing
                                     fun _type(): JsonField<Type> = type
@@ -11755,6 +12054,14 @@ private constructor(
 
                                         fun type(type: Type) = type(JsonField.of(type))
 
+                                        /**
+                                         * Sets [Builder.type] to an arbitrary JSON value.
+                                         *
+                                         * You should usually call [Builder.type] with a well-typed
+                                         * [Type] value instead. This method is primarily for
+                                         * setting the field to an undocumented or not yet supported
+                                         * value.
+                                         */
                                         fun type(type: JsonField<Type>) = apply { this.type = type }
 
                                         fun additionalProperties(
@@ -11989,39 +12296,101 @@ private constructor(
                     private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
                 ) {
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun source(): Source = source.getRequired("source")
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun type(): Type = type.getRequired("type")
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
                     fun cacheControl(): Optional<CacheControl> =
                         Optional.ofNullable(cacheControl.getNullable("cache_control"))
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
                     fun citations(): Optional<Citations> =
                         Optional.ofNullable(citations.getNullable("citations"))
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
                     fun context(): Optional<String> =
                         Optional.ofNullable(context.getNullable("context"))
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
                     fun title(): Optional<String> = Optional.ofNullable(title.getNullable("title"))
 
+                    /**
+                     * Returns the raw JSON value of [source].
+                     *
+                     * Unlike [source], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("source")
                     @ExcludeMissing
                     fun _source(): JsonField<Source> = source
 
+                    /**
+                     * Returns the raw JSON value of [type].
+                     *
+                     * Unlike [type], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
                     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+                    /**
+                     * Returns the raw JSON value of [cacheControl].
+                     *
+                     * Unlike [cacheControl], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("cache_control")
                     @ExcludeMissing
                     fun _cacheControl(): JsonField<CacheControl> = cacheControl
 
+                    /**
+                     * Returns the raw JSON value of [citations].
+                     *
+                     * Unlike [citations], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("citations")
                     @ExcludeMissing
                     fun _citations(): JsonField<Citations> = citations
 
+                    /**
+                     * Returns the raw JSON value of [context].
+                     *
+                     * Unlike [context], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("context")
                     @ExcludeMissing
                     fun _context(): JsonField<String> = context
 
+                    /**
+                     * Returns the raw JSON value of [title].
+                     *
+                     * Unlike [title], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
                     @JsonProperty("title") @ExcludeMissing fun _title(): JsonField<String> = title
 
                     @JsonAnyGetter
@@ -12087,17 +12456,38 @@ private constructor(
 
                         fun source(source: Source) = source(JsonField.of(source))
 
+                        /**
+                         * Sets [Builder.source] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.source] with a well-typed [Source] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun source(source: JsonField<Source>) = apply { this.source = source }
 
+                        /** Alias for calling [source] with `Source.ofBase64Pdf(base64Pdf)`. */
                         fun source(base64Pdf: Source.Base64PdfSource) =
                             source(Source.ofBase64Pdf(base64Pdf))
 
+                        /** Alias for calling [source] with `Source.ofPlainText(plainText)`. */
                         fun source(plainText: Source.PlainTextSource) =
                             source(Source.ofPlainText(plainText))
 
+                        /**
+                         * Alias for calling [source] with `Source.ofContentBlock(contentBlock)`.
+                         */
                         fun source(contentBlock: Source.ContentBlockSource) =
                             source(Source.ofContentBlock(contentBlock))
 
+                        /**
+                         * Alias for calling [source] with the following:
+                         * ```java
+                         * Source.ContentBlockSource.builder()
+                         *     .type(MessageCreateParams.Message.Content.UnnamedSchemaWithArrayParent0.RequestDocumentBlock.Source.ContentBlockSource.Type.CONTENT)
+                         *     .content(content)
+                         *     .build()
+                         * ```
+                         */
                         fun contentBlockSource(content: Source.ContentBlockSource.InnerContent) =
                             source(
                                 Source.ContentBlockSource.builder()
@@ -12114,11 +12504,19 @@ private constructor(
                                     .build()
                             )
 
+                        /**
+                         * Alias for calling [contentBlockSource] with
+                         * `Source.ContentBlockSource.InnerContent.ofString(string)`.
+                         */
                         fun contentBlockSource(string: String) =
                             contentBlockSource(
                                 Source.ContentBlockSource.InnerContent.ofString(string)
                             )
 
+                        /**
+                         * Alias for calling [contentBlockSource] with
+                         * `Source.ContentBlockSource.InnerContent.ofUnnamedSchemaWithArrayParent2s(unnamedSchemaWithArrayParent2s)`.
+                         */
                         fun contentBlockSourceOfUnnamedSchemaWithArrayParent2s(
                             unnamedSchemaWithArrayParent2s:
                                 List<
@@ -12132,8 +12530,18 @@ private constructor(
                                     )
                             )
 
+                        /** Alias for calling [source] with `Source.ofUrlpdf(urlpdf)`. */
                         fun source(urlpdf: Source.UrlpdfSource) = source(Source.ofUrlpdf(urlpdf))
 
+                        /**
+                         * Alias for calling [source] with the following:
+                         * ```java
+                         * Source.UrlpdfSource.builder()
+                         *     .type(MessageCreateParams.Message.Content.UnnamedSchemaWithArrayParent0.RequestDocumentBlock.Source.UrlpdfSource.Type.URL)
+                         *     .url(url)
+                         *     .build()
+                         * ```
+                         */
                         fun urlpdfSource(url: String) =
                             source(
                                 Source.UrlpdfSource.builder()
@@ -12152,34 +12560,75 @@ private constructor(
 
                         fun type(type: Type) = type(JsonField.of(type))
 
+                        /**
+                         * Sets [Builder.type] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.type] with a well-typed [Type] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun type(type: JsonField<Type>) = apply { this.type = type }
 
                         fun cacheControl(cacheControl: CacheControl?) =
                             cacheControl(JsonField.ofNullable(cacheControl))
 
+                        /**
+                         * Alias for calling [Builder.cacheControl] with
+                         * `cacheControl.orElse(null)`.
+                         */
                         fun cacheControl(cacheControl: Optional<CacheControl>) =
                             cacheControl(cacheControl.getOrNull())
 
+                        /**
+                         * Sets [Builder.cacheControl] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.cacheControl] with a well-typed
+                         * [CacheControl] value instead. This method is primarily for setting the
+                         * field to an undocumented or not yet supported value.
+                         */
                         fun cacheControl(cacheControl: JsonField<CacheControl>) = apply {
                             this.cacheControl = cacheControl
                         }
 
                         fun citations(citations: Citations) = citations(JsonField.of(citations))
 
+                        /**
+                         * Sets [Builder.citations] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.citations] with a well-typed [Citations]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun citations(citations: JsonField<Citations>) = apply {
                             this.citations = citations
                         }
 
                         fun context(context: String?) = context(JsonField.ofNullable(context))
 
+                        /** Alias for calling [Builder.context] with `context.orElse(null)`. */
                         fun context(context: Optional<String>) = context(context.getOrNull())
 
+                        /**
+                         * Sets [Builder.context] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.context] with a well-typed [String]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun context(context: JsonField<String>) = apply { this.context = context }
 
                         fun title(title: String?) = title(JsonField.ofNullable(title))
 
+                        /** Alias for calling [Builder.title] with `title.orElse(null)`. */
                         fun title(title: Optional<String>) = title(title.getOrNull())
 
+                        /**
+                         * Sets [Builder.title] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.title] with a well-typed [String] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun title(title: JsonField<String>) = apply { this.title = title }
 
                         fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
@@ -12452,20 +12901,53 @@ private constructor(
                                 immutableEmptyMap(),
                         ) {
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun data(): String = data.getRequired("data")
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun mediaType(): MediaType = mediaType.getRequired("media_type")
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun type(): Type = type.getRequired("type")
 
+                            /**
+                             * Returns the raw JSON value of [data].
+                             *
+                             * Unlike [data], this method doesn't throw if the JSON field has an
+                             * unexpected type.
+                             */
                             @JsonProperty("data")
                             @ExcludeMissing
                             fun _data(): JsonField<String> = data
 
+                            /**
+                             * Returns the raw JSON value of [mediaType].
+                             *
+                             * Unlike [mediaType], this method doesn't throw if the JSON field has
+                             * an unexpected type.
+                             */
                             @JsonProperty("media_type")
                             @ExcludeMissing
                             fun _mediaType(): JsonField<MediaType> = mediaType
 
+                            /**
+                             * Returns the raw JSON value of [type].
+                             *
+                             * Unlike [type], this method doesn't throw if the JSON field has an
+                             * unexpected type.
+                             */
                             @JsonProperty("type")
                             @ExcludeMissing
                             fun _type(): JsonField<Type> = type
@@ -12526,17 +13008,38 @@ private constructor(
 
                                 fun data(data: String) = data(JsonField.of(data))
 
+                                /**
+                                 * Sets [Builder.data] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.data] with a well-typed [String]
+                                 * value instead. This method is primarily for setting the field to
+                                 * an undocumented or not yet supported value.
+                                 */
                                 fun data(data: JsonField<String>) = apply { this.data = data }
 
                                 fun mediaType(mediaType: MediaType) =
                                     mediaType(JsonField.of(mediaType))
 
+                                /**
+                                 * Sets [Builder.mediaType] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.mediaType] with a well-typed
+                                 * [MediaType] value instead. This method is primarily for setting
+                                 * the field to an undocumented or not yet supported value.
+                                 */
                                 fun mediaType(mediaType: JsonField<MediaType>) = apply {
                                     this.mediaType = mediaType
                                 }
 
                                 fun type(type: Type) = type(JsonField.of(type))
 
+                                /**
+                                 * Sets [Builder.type] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.type] with a well-typed [Type]
+                                 * value instead. This method is primarily for setting the field to
+                                 * an undocumented or not yet supported value.
+                                 */
                                 fun type(type: JsonField<Type>) = apply { this.type = type }
 
                                 fun additionalProperties(
@@ -12826,20 +13329,53 @@ private constructor(
                                 immutableEmptyMap(),
                         ) {
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun data(): String = data.getRequired("data")
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun mediaType(): MediaType = mediaType.getRequired("media_type")
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun type(): Type = type.getRequired("type")
 
+                            /**
+                             * Returns the raw JSON value of [data].
+                             *
+                             * Unlike [data], this method doesn't throw if the JSON field has an
+                             * unexpected type.
+                             */
                             @JsonProperty("data")
                             @ExcludeMissing
                             fun _data(): JsonField<String> = data
 
+                            /**
+                             * Returns the raw JSON value of [mediaType].
+                             *
+                             * Unlike [mediaType], this method doesn't throw if the JSON field has
+                             * an unexpected type.
+                             */
                             @JsonProperty("media_type")
                             @ExcludeMissing
                             fun _mediaType(): JsonField<MediaType> = mediaType
 
+                            /**
+                             * Returns the raw JSON value of [type].
+                             *
+                             * Unlike [type], this method doesn't throw if the JSON field has an
+                             * unexpected type.
+                             */
                             @JsonProperty("type")
                             @ExcludeMissing
                             fun _type(): JsonField<Type> = type
@@ -12900,17 +13436,38 @@ private constructor(
 
                                 fun data(data: String) = data(JsonField.of(data))
 
+                                /**
+                                 * Sets [Builder.data] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.data] with a well-typed [String]
+                                 * value instead. This method is primarily for setting the field to
+                                 * an undocumented or not yet supported value.
+                                 */
                                 fun data(data: JsonField<String>) = apply { this.data = data }
 
                                 fun mediaType(mediaType: MediaType) =
                                     mediaType(JsonField.of(mediaType))
 
+                                /**
+                                 * Sets [Builder.mediaType] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.mediaType] with a well-typed
+                                 * [MediaType] value instead. This method is primarily for setting
+                                 * the field to an undocumented or not yet supported value.
+                                 */
                                 fun mediaType(mediaType: JsonField<MediaType>) = apply {
                                     this.mediaType = mediaType
                                 }
 
                                 fun type(type: Type) = type(JsonField.of(type))
 
+                                /**
+                                 * Sets [Builder.type] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.type] with a well-typed [Type]
+                                 * value instead. This method is primarily for setting the field to
+                                 * an undocumented or not yet supported value.
+                                 */
                                 fun type(type: JsonField<Type>) = apply { this.type = type }
 
                                 fun additionalProperties(
@@ -13197,14 +13754,36 @@ private constructor(
                                 immutableEmptyMap(),
                         ) {
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun content(): InnerContent = content.getRequired("content")
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun type(): Type = type.getRequired("type")
 
+                            /**
+                             * Returns the raw JSON value of [content].
+                             *
+                             * Unlike [content], this method doesn't throw if the JSON field has an
+                             * unexpected type.
+                             */
                             @JsonProperty("content")
                             @ExcludeMissing
                             fun _content(): JsonField<InnerContent> = content
 
+                            /**
+                             * Returns the raw JSON value of [type].
+                             *
+                             * Unlike [type], this method doesn't throw if the JSON field has an
+                             * unexpected type.
+                             */
                             @JsonProperty("type")
                             @ExcludeMissing
                             fun _type(): JsonField<Type> = type
@@ -13261,12 +13840,26 @@ private constructor(
 
                                 fun content(content: InnerContent) = content(JsonField.of(content))
 
+                                /**
+                                 * Sets [Builder.content] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.content] with a well-typed
+                                 * [InnerContent] value instead. This method is primarily for
+                                 * setting the field to an undocumented or not yet supported value.
+                                 */
                                 fun content(content: JsonField<InnerContent>) = apply {
                                     this.content = content
                                 }
 
+                                /**
+                                 * Alias for calling [content] with `InnerContent.ofString(string)`.
+                                 */
                                 fun content(string: String) = content(InnerContent.ofString(string))
 
+                                /**
+                                 * Alias for calling [content] with
+                                 * `InnerContent.ofUnnamedSchemaWithArrayParent2s(unnamedSchemaWithArrayParent2s)`.
+                                 */
                                 fun contentOfUnnamedSchemaWithArrayParent2s(
                                     unnamedSchemaWithArrayParent2s:
                                         List<InnerContent.UnnamedSchemaWithArrayParent2>
@@ -13279,6 +13872,13 @@ private constructor(
 
                                 fun type(type: Type) = type(JsonField.of(type))
 
+                                /**
+                                 * Sets [Builder.type] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.type] with a well-typed [Type]
+                                 * value instead. This method is primarily for setting the field to
+                                 * an undocumented or not yet supported value.
+                                 */
                                 fun type(type: JsonField<Type>) = apply { this.type = type }
 
                                 fun additionalProperties(
@@ -13740,30 +14340,76 @@ private constructor(
                                             immutableEmptyMap(),
                                     ) {
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type or is unexpectedly missing or null
+                                         *   (e.g. if the server responded with an unexpected
+                                         *   value).
+                                         */
                                         fun text(): String = text.getRequired("text")
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type or is unexpectedly missing or null
+                                         *   (e.g. if the server responded with an unexpected
+                                         *   value).
+                                         */
                                         fun type(): Type = type.getRequired("type")
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type (e.g. if the server responded with an
+                                         *   unexpected value).
+                                         */
                                         fun cacheControl(): Optional<CacheControl> =
                                             Optional.ofNullable(
                                                 cacheControl.getNullable("cache_control")
                                             )
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type (e.g. if the server responded with an
+                                         *   unexpected value).
+                                         */
                                         fun citations(): Optional<List<Citation>> =
                                             Optional.ofNullable(citations.getNullable("citations"))
 
+                                        /**
+                                         * Returns the raw JSON value of [text].
+                                         *
+                                         * Unlike [text], this method doesn't throw if the JSON
+                                         * field has an unexpected type.
+                                         */
                                         @JsonProperty("text")
                                         @ExcludeMissing
                                         fun _text(): JsonField<String> = text
 
+                                        /**
+                                         * Returns the raw JSON value of [type].
+                                         *
+                                         * Unlike [type], this method doesn't throw if the JSON
+                                         * field has an unexpected type.
+                                         */
                                         @JsonProperty("type")
                                         @ExcludeMissing
                                         fun _type(): JsonField<Type> = type
 
+                                        /**
+                                         * Returns the raw JSON value of [cacheControl].
+                                         *
+                                         * Unlike [cacheControl], this method doesn't throw if the
+                                         * JSON field has an unexpected type.
+                                         */
                                         @JsonProperty("cache_control")
                                         @ExcludeMissing
                                         fun _cacheControl(): JsonField<CacheControl> = cacheControl
 
+                                        /**
+                                         * Returns the raw JSON value of [citations].
+                                         *
+                                         * Unlike [citations], this method doesn't throw if the JSON
+                                         * field has an unexpected type.
+                                         */
                                         @JsonProperty("citations")
                                         @ExcludeMissing
                                         fun _citations(): JsonField<List<Citation>> = citations
@@ -13835,12 +14481,28 @@ private constructor(
 
                                             fun text(text: String) = text(JsonField.of(text))
 
+                                            /**
+                                             * Sets [Builder.text] to an arbitrary JSON value.
+                                             *
+                                             * You should usually call [Builder.text] with a
+                                             * well-typed [String] value instead. This method is
+                                             * primarily for setting the field to an undocumented or
+                                             * not yet supported value.
+                                             */
                                             fun text(text: JsonField<String>) = apply {
                                                 this.text = text
                                             }
 
                                             fun type(type: Type) = type(JsonField.of(type))
 
+                                            /**
+                                             * Sets [Builder.type] to an arbitrary JSON value.
+                                             *
+                                             * You should usually call [Builder.type] with a
+                                             * well-typed [Type] value instead. This method is
+                                             * primarily for setting the field to an undocumented or
+                                             * not yet supported value.
+                                             */
                                             fun type(type: JsonField<Type>) = apply {
                                                 this.type = type
                                             }
@@ -13848,9 +14510,22 @@ private constructor(
                                             fun cacheControl(cacheControl: CacheControl?) =
                                                 cacheControl(JsonField.ofNullable(cacheControl))
 
+                                            /**
+                                             * Alias for calling [Builder.cacheControl] with
+                                             * `cacheControl.orElse(null)`.
+                                             */
                                             fun cacheControl(cacheControl: Optional<CacheControl>) =
                                                 cacheControl(cacheControl.getOrNull())
 
+                                            /**
+                                             * Sets [Builder.cacheControl] to an arbitrary JSON
+                                             * value.
+                                             *
+                                             * You should usually call [Builder.cacheControl] with a
+                                             * well-typed [CacheControl] value instead. This method
+                                             * is primarily for setting the field to an undocumented
+                                             * or not yet supported value.
+                                             */
                                             fun cacheControl(
                                                 cacheControl: JsonField<CacheControl>
                                             ) = apply { this.cacheControl = cacheControl }
@@ -13858,15 +14533,33 @@ private constructor(
                                             fun citations(citations: List<Citation>?) =
                                                 citations(JsonField.ofNullable(citations))
 
+                                            /**
+                                             * Alias for calling [Builder.citations] with
+                                             * `citations.orElse(null)`.
+                                             */
                                             fun citations(citations: Optional<List<Citation>>) =
                                                 citations(citations.getOrNull())
 
+                                            /**
+                                             * Sets [Builder.citations] to an arbitrary JSON value.
+                                             *
+                                             * You should usually call [Builder.citations] with a
+                                             * well-typed `List<Citation>` value instead. This
+                                             * method is primarily for setting the field to an
+                                             * undocumented or not yet supported value.
+                                             */
                                             fun citations(citations: JsonField<List<Citation>>) =
                                                 apply {
                                                     this.citations =
                                                         citations.map { it.toMutableList() }
                                                 }
 
+                                            /**
+                                             * Adds a single [Citation] to [citations].
+                                             *
+                                             * @throws IllegalStateException if the field was
+                                             *   previously set to a non-list.
+                                             */
                                             fun addCitation(citation: Citation) = apply {
                                                 citations =
                                                     (citations ?: JsonField.of(mutableListOf()))
@@ -13876,6 +14569,10 @@ private constructor(
                                                         }
                                             }
 
+                                            /**
+                                             * Alias for calling [addCitation] with
+                                             * `Citation.ofRequestCharLocation(requestCharLocation)`.
+                                             */
                                             fun addCitation(
                                                 requestCharLocation:
                                                     Citation.RequestCharLocationCitation
@@ -13886,6 +14583,10 @@ private constructor(
                                                     )
                                                 )
 
+                                            /**
+                                             * Alias for calling [addCitation] with
+                                             * `Citation.ofRequestPageLocation(requestPageLocation)`.
+                                             */
                                             fun addCitation(
                                                 requestPageLocation:
                                                     Citation.RequestPageLocationCitation
@@ -13896,6 +14597,10 @@ private constructor(
                                                     )
                                                 )
 
+                                            /**
+                                             * Alias for calling [addCitation] with
+                                             * `Citation.ofRequestContentBlockLocation(requestContentBlockLocation)`.
+                                             */
                                             fun addCitation(
                                                 requestContentBlockLocation:
                                                     Citation.RequestContentBlockLocationCitation
@@ -14079,8 +14784,20 @@ private constructor(
                                                 immutableEmptyMap(),
                                         ) {
 
+                                            /**
+                                             * @throws SamInvalidDataException if the JSON field has
+                                             *   an unexpected type or is unexpectedly missing or
+                                             *   null (e.g. if the server responded with an
+                                             *   unexpected value).
+                                             */
                                             fun type(): Type = type.getRequired("type")
 
+                                            /**
+                                             * Returns the raw JSON value of [type].
+                                             *
+                                             * Unlike [type], this method doesn't throw if the JSON
+                                             * field has an unexpected type.
+                                             */
                                             @JsonProperty("type")
                                             @ExcludeMissing
                                             fun _type(): JsonField<Type> = type
@@ -14136,6 +14853,14 @@ private constructor(
 
                                                 fun type(type: Type) = type(JsonField.of(type))
 
+                                                /**
+                                                 * Sets [Builder.type] to an arbitrary JSON value.
+                                                 *
+                                                 * You should usually call [Builder.type] with a
+                                                 * well-typed [Type] value instead. This method is
+                                                 * primarily for setting the field to an
+                                                 * undocumented or not yet supported value.
+                                                 */
                                                 fun type(type: JsonField<Type>) = apply {
                                                     this.type = type
                                                 }
@@ -14658,48 +15383,119 @@ private constructor(
                                                     immutableEmptyMap(),
                                             ) {
 
+                                                /**
+                                                 * @throws SamInvalidDataException if the JSON field
+                                                 *   has an unexpected type or is unexpectedly
+                                                 *   missing or null (e.g. if the server responded
+                                                 *   with an unexpected value).
+                                                 */
                                                 fun citedText(): String =
                                                     citedText.getRequired("cited_text")
 
+                                                /**
+                                                 * @throws SamInvalidDataException if the JSON field
+                                                 *   has an unexpected type or is unexpectedly
+                                                 *   missing or null (e.g. if the server responded
+                                                 *   with an unexpected value).
+                                                 */
                                                 fun documentIndex(): Long =
                                                     documentIndex.getRequired("document_index")
 
+                                                /**
+                                                 * @throws SamInvalidDataException if the JSON field
+                                                 *   has an unexpected type (e.g. if the server
+                                                 *   responded with an unexpected value).
+                                                 */
                                                 fun documentTitle(): Optional<String> =
                                                     Optional.ofNullable(
                                                         documentTitle.getNullable("document_title")
                                                     )
 
+                                                /**
+                                                 * @throws SamInvalidDataException if the JSON field
+                                                 *   has an unexpected type or is unexpectedly
+                                                 *   missing or null (e.g. if the server responded
+                                                 *   with an unexpected value).
+                                                 */
                                                 fun endCharIndex(): Long =
                                                     endCharIndex.getRequired("end_char_index")
 
+                                                /**
+                                                 * @throws SamInvalidDataException if the JSON field
+                                                 *   has an unexpected type or is unexpectedly
+                                                 *   missing or null (e.g. if the server responded
+                                                 *   with an unexpected value).
+                                                 */
                                                 fun startCharIndex(): Long =
                                                     startCharIndex.getRequired("start_char_index")
 
+                                                /**
+                                                 * @throws SamInvalidDataException if the JSON field
+                                                 *   has an unexpected type or is unexpectedly
+                                                 *   missing or null (e.g. if the server responded
+                                                 *   with an unexpected value).
+                                                 */
                                                 fun type(): Type = type.getRequired("type")
 
+                                                /**
+                                                 * Returns the raw JSON value of [citedText].
+                                                 *
+                                                 * Unlike [citedText], this method doesn't throw if
+                                                 * the JSON field has an unexpected type.
+                                                 */
                                                 @JsonProperty("cited_text")
                                                 @ExcludeMissing
                                                 fun _citedText(): JsonField<String> = citedText
 
+                                                /**
+                                                 * Returns the raw JSON value of [documentIndex].
+                                                 *
+                                                 * Unlike [documentIndex], this method doesn't throw
+                                                 * if the JSON field has an unexpected type.
+                                                 */
                                                 @JsonProperty("document_index")
                                                 @ExcludeMissing
                                                 fun _documentIndex(): JsonField<Long> =
                                                     documentIndex
 
+                                                /**
+                                                 * Returns the raw JSON value of [documentTitle].
+                                                 *
+                                                 * Unlike [documentTitle], this method doesn't throw
+                                                 * if the JSON field has an unexpected type.
+                                                 */
                                                 @JsonProperty("document_title")
                                                 @ExcludeMissing
                                                 fun _documentTitle(): JsonField<String> =
                                                     documentTitle
 
+                                                /**
+                                                 * Returns the raw JSON value of [endCharIndex].
+                                                 *
+                                                 * Unlike [endCharIndex], this method doesn't throw
+                                                 * if the JSON field has an unexpected type.
+                                                 */
                                                 @JsonProperty("end_char_index")
                                                 @ExcludeMissing
                                                 fun _endCharIndex(): JsonField<Long> = endCharIndex
 
+                                                /**
+                                                 * Returns the raw JSON value of [startCharIndex].
+                                                 *
+                                                 * Unlike [startCharIndex], this method doesn't
+                                                 * throw if the JSON field has an unexpected type.
+                                                 */
                                                 @JsonProperty("start_char_index")
                                                 @ExcludeMissing
                                                 fun _startCharIndex(): JsonField<Long> =
                                                     startCharIndex
 
+                                                /**
+                                                 * Returns the raw JSON value of [type].
+                                                 *
+                                                 * Unlike [type], this method doesn't throw if the
+                                                 * JSON field has an unexpected type.
+                                                 */
                                                 @JsonProperty("type")
                                                 @ExcludeMissing
                                                 fun _type(): JsonField<Type> = type
@@ -14792,6 +15588,16 @@ private constructor(
                                                     fun citedText(citedText: String) =
                                                         citedText(JsonField.of(citedText))
 
+                                                    /**
+                                                     * Sets [Builder.citedText] to an arbitrary JSON
+                                                     * value.
+                                                     *
+                                                     * You should usually call [Builder.citedText]
+                                                     * with a well-typed [String] value instead.
+                                                     * This method is primarily for setting the
+                                                     * field to an undocumented or not yet supported
+                                                     * value.
+                                                     */
                                                     fun citedText(citedText: JsonField<String>) =
                                                         apply {
                                                             this.citedText = citedText
@@ -14800,6 +15606,16 @@ private constructor(
                                                     fun documentIndex(documentIndex: Long) =
                                                         documentIndex(JsonField.of(documentIndex))
 
+                                                    /**
+                                                     * Sets [Builder.documentIndex] to an arbitrary
+                                                     * JSON value.
+                                                     *
+                                                     * You should usually call
+                                                     * [Builder.documentIndex] with a well-typed
+                                                     * [Long] value instead. This method is
+                                                     * primarily for setting the field to an
+                                                     * undocumented or not yet supported value.
+                                                     */
                                                     fun documentIndex(
                                                         documentIndex: JsonField<Long>
                                                     ) = apply { this.documentIndex = documentIndex }
@@ -14809,10 +15625,24 @@ private constructor(
                                                             JsonField.ofNullable(documentTitle)
                                                         )
 
+                                                    /**
+                                                     * Alias for calling [Builder.documentTitle]
+                                                     * with `documentTitle.orElse(null)`.
+                                                     */
                                                     fun documentTitle(
                                                         documentTitle: Optional<String>
                                                     ) = documentTitle(documentTitle.getOrNull())
 
+                                                    /**
+                                                     * Sets [Builder.documentTitle] to an arbitrary
+                                                     * JSON value.
+                                                     *
+                                                     * You should usually call
+                                                     * [Builder.documentTitle] with a well-typed
+                                                     * [String] value instead. This method is
+                                                     * primarily for setting the field to an
+                                                     * undocumented or not yet supported value.
+                                                     */
                                                     fun documentTitle(
                                                         documentTitle: JsonField<String>
                                                     ) = apply { this.documentTitle = documentTitle }
@@ -14820,6 +15650,16 @@ private constructor(
                                                     fun endCharIndex(endCharIndex: Long) =
                                                         endCharIndex(JsonField.of(endCharIndex))
 
+                                                    /**
+                                                     * Sets [Builder.endCharIndex] to an arbitrary
+                                                     * JSON value.
+                                                     *
+                                                     * You should usually call
+                                                     * [Builder.endCharIndex] with a well-typed
+                                                     * [Long] value instead. This method is
+                                                     * primarily for setting the field to an
+                                                     * undocumented or not yet supported value.
+                                                     */
                                                     fun endCharIndex(
                                                         endCharIndex: JsonField<Long>
                                                     ) = apply { this.endCharIndex = endCharIndex }
@@ -14827,6 +15667,16 @@ private constructor(
                                                     fun startCharIndex(startCharIndex: Long) =
                                                         startCharIndex(JsonField.of(startCharIndex))
 
+                                                    /**
+                                                     * Sets [Builder.startCharIndex] to an arbitrary
+                                                     * JSON value.
+                                                     *
+                                                     * You should usually call
+                                                     * [Builder.startCharIndex] with a well-typed
+                                                     * [Long] value instead. This method is
+                                                     * primarily for setting the field to an
+                                                     * undocumented or not yet supported value.
+                                                     */
                                                     fun startCharIndex(
                                                         startCharIndex: JsonField<Long>
                                                     ) = apply {
@@ -14835,6 +15685,15 @@ private constructor(
 
                                                     fun type(type: Type) = type(JsonField.of(type))
 
+                                                    /**
+                                                     * Sets [Builder.type] to an arbitrary JSON
+                                                     * value.
+                                                     *
+                                                     * You should usually call [Builder.type] with a
+                                                     * well-typed [Type] value instead. This method
+                                                     * is primarily for setting the field to an
+                                                     * undocumented or not yet supported value.
+                                                     */
                                                     fun type(type: JsonField<Type>) = apply {
                                                         this.type = type
                                                     }
@@ -15076,49 +15935,120 @@ private constructor(
                                                     immutableEmptyMap(),
                                             ) {
 
+                                                /**
+                                                 * @throws SamInvalidDataException if the JSON field
+                                                 *   has an unexpected type or is unexpectedly
+                                                 *   missing or null (e.g. if the server responded
+                                                 *   with an unexpected value).
+                                                 */
                                                 fun citedText(): String =
                                                     citedText.getRequired("cited_text")
 
+                                                /**
+                                                 * @throws SamInvalidDataException if the JSON field
+                                                 *   has an unexpected type or is unexpectedly
+                                                 *   missing or null (e.g. if the server responded
+                                                 *   with an unexpected value).
+                                                 */
                                                 fun documentIndex(): Long =
                                                     documentIndex.getRequired("document_index")
 
+                                                /**
+                                                 * @throws SamInvalidDataException if the JSON field
+                                                 *   has an unexpected type (e.g. if the server
+                                                 *   responded with an unexpected value).
+                                                 */
                                                 fun documentTitle(): Optional<String> =
                                                     Optional.ofNullable(
                                                         documentTitle.getNullable("document_title")
                                                     )
 
+                                                /**
+                                                 * @throws SamInvalidDataException if the JSON field
+                                                 *   has an unexpected type or is unexpectedly
+                                                 *   missing or null (e.g. if the server responded
+                                                 *   with an unexpected value).
+                                                 */
                                                 fun endPageNumber(): Long =
                                                     endPageNumber.getRequired("end_page_number")
 
+                                                /**
+                                                 * @throws SamInvalidDataException if the JSON field
+                                                 *   has an unexpected type or is unexpectedly
+                                                 *   missing or null (e.g. if the server responded
+                                                 *   with an unexpected value).
+                                                 */
                                                 fun startPageNumber(): Long =
                                                     startPageNumber.getRequired("start_page_number")
 
+                                                /**
+                                                 * @throws SamInvalidDataException if the JSON field
+                                                 *   has an unexpected type or is unexpectedly
+                                                 *   missing or null (e.g. if the server responded
+                                                 *   with an unexpected value).
+                                                 */
                                                 fun type(): Type = type.getRequired("type")
 
+                                                /**
+                                                 * Returns the raw JSON value of [citedText].
+                                                 *
+                                                 * Unlike [citedText], this method doesn't throw if
+                                                 * the JSON field has an unexpected type.
+                                                 */
                                                 @JsonProperty("cited_text")
                                                 @ExcludeMissing
                                                 fun _citedText(): JsonField<String> = citedText
 
+                                                /**
+                                                 * Returns the raw JSON value of [documentIndex].
+                                                 *
+                                                 * Unlike [documentIndex], this method doesn't throw
+                                                 * if the JSON field has an unexpected type.
+                                                 */
                                                 @JsonProperty("document_index")
                                                 @ExcludeMissing
                                                 fun _documentIndex(): JsonField<Long> =
                                                     documentIndex
 
+                                                /**
+                                                 * Returns the raw JSON value of [documentTitle].
+                                                 *
+                                                 * Unlike [documentTitle], this method doesn't throw
+                                                 * if the JSON field has an unexpected type.
+                                                 */
                                                 @JsonProperty("document_title")
                                                 @ExcludeMissing
                                                 fun _documentTitle(): JsonField<String> =
                                                     documentTitle
 
+                                                /**
+                                                 * Returns the raw JSON value of [endPageNumber].
+                                                 *
+                                                 * Unlike [endPageNumber], this method doesn't throw
+                                                 * if the JSON field has an unexpected type.
+                                                 */
                                                 @JsonProperty("end_page_number")
                                                 @ExcludeMissing
                                                 fun _endPageNumber(): JsonField<Long> =
                                                     endPageNumber
 
+                                                /**
+                                                 * Returns the raw JSON value of [startPageNumber].
+                                                 *
+                                                 * Unlike [startPageNumber], this method doesn't
+                                                 * throw if the JSON field has an unexpected type.
+                                                 */
                                                 @JsonProperty("start_page_number")
                                                 @ExcludeMissing
                                                 fun _startPageNumber(): JsonField<Long> =
                                                     startPageNumber
 
+                                                /**
+                                                 * Returns the raw JSON value of [type].
+                                                 *
+                                                 * Unlike [type], this method doesn't throw if the
+                                                 * JSON field has an unexpected type.
+                                                 */
                                                 @JsonProperty("type")
                                                 @ExcludeMissing
                                                 fun _type(): JsonField<Type> = type
@@ -15212,6 +16142,16 @@ private constructor(
                                                     fun citedText(citedText: String) =
                                                         citedText(JsonField.of(citedText))
 
+                                                    /**
+                                                     * Sets [Builder.citedText] to an arbitrary JSON
+                                                     * value.
+                                                     *
+                                                     * You should usually call [Builder.citedText]
+                                                     * with a well-typed [String] value instead.
+                                                     * This method is primarily for setting the
+                                                     * field to an undocumented or not yet supported
+                                                     * value.
+                                                     */
                                                     fun citedText(citedText: JsonField<String>) =
                                                         apply {
                                                             this.citedText = citedText
@@ -15220,6 +16160,16 @@ private constructor(
                                                     fun documentIndex(documentIndex: Long) =
                                                         documentIndex(JsonField.of(documentIndex))
 
+                                                    /**
+                                                     * Sets [Builder.documentIndex] to an arbitrary
+                                                     * JSON value.
+                                                     *
+                                                     * You should usually call
+                                                     * [Builder.documentIndex] with a well-typed
+                                                     * [Long] value instead. This method is
+                                                     * primarily for setting the field to an
+                                                     * undocumented or not yet supported value.
+                                                     */
                                                     fun documentIndex(
                                                         documentIndex: JsonField<Long>
                                                     ) = apply { this.documentIndex = documentIndex }
@@ -15229,10 +16179,24 @@ private constructor(
                                                             JsonField.ofNullable(documentTitle)
                                                         )
 
+                                                    /**
+                                                     * Alias for calling [Builder.documentTitle]
+                                                     * with `documentTitle.orElse(null)`.
+                                                     */
                                                     fun documentTitle(
                                                         documentTitle: Optional<String>
                                                     ) = documentTitle(documentTitle.getOrNull())
 
+                                                    /**
+                                                     * Sets [Builder.documentTitle] to an arbitrary
+                                                     * JSON value.
+                                                     *
+                                                     * You should usually call
+                                                     * [Builder.documentTitle] with a well-typed
+                                                     * [String] value instead. This method is
+                                                     * primarily for setting the field to an
+                                                     * undocumented or not yet supported value.
+                                                     */
                                                     fun documentTitle(
                                                         documentTitle: JsonField<String>
                                                     ) = apply { this.documentTitle = documentTitle }
@@ -15240,6 +16204,16 @@ private constructor(
                                                     fun endPageNumber(endPageNumber: Long) =
                                                         endPageNumber(JsonField.of(endPageNumber))
 
+                                                    /**
+                                                     * Sets [Builder.endPageNumber] to an arbitrary
+                                                     * JSON value.
+                                                     *
+                                                     * You should usually call
+                                                     * [Builder.endPageNumber] with a well-typed
+                                                     * [Long] value instead. This method is
+                                                     * primarily for setting the field to an
+                                                     * undocumented or not yet supported value.
+                                                     */
                                                     fun endPageNumber(
                                                         endPageNumber: JsonField<Long>
                                                     ) = apply { this.endPageNumber = endPageNumber }
@@ -15249,6 +16223,16 @@ private constructor(
                                                             JsonField.of(startPageNumber)
                                                         )
 
+                                                    /**
+                                                     * Sets [Builder.startPageNumber] to an
+                                                     * arbitrary JSON value.
+                                                     *
+                                                     * You should usually call
+                                                     * [Builder.startPageNumber] with a well-typed
+                                                     * [Long] value instead. This method is
+                                                     * primarily for setting the field to an
+                                                     * undocumented or not yet supported value.
+                                                     */
                                                     fun startPageNumber(
                                                         startPageNumber: JsonField<Long>
                                                     ) = apply {
@@ -15257,6 +16241,15 @@ private constructor(
 
                                                     fun type(type: Type) = type(JsonField.of(type))
 
+                                                    /**
+                                                     * Sets [Builder.type] to an arbitrary JSON
+                                                     * value.
+                                                     *
+                                                     * You should usually call [Builder.type] with a
+                                                     * well-typed [Type] value instead. This method
+                                                     * is primarily for setting the field to an
+                                                     * undocumented or not yet supported value.
+                                                     */
                                                     fun type(type: JsonField<Type>) = apply {
                                                         this.type = type
                                                     }
@@ -15498,49 +16491,120 @@ private constructor(
                                                     immutableEmptyMap(),
                                             ) {
 
+                                                /**
+                                                 * @throws SamInvalidDataException if the JSON field
+                                                 *   has an unexpected type or is unexpectedly
+                                                 *   missing or null (e.g. if the server responded
+                                                 *   with an unexpected value).
+                                                 */
                                                 fun citedText(): String =
                                                     citedText.getRequired("cited_text")
 
+                                                /**
+                                                 * @throws SamInvalidDataException if the JSON field
+                                                 *   has an unexpected type or is unexpectedly
+                                                 *   missing or null (e.g. if the server responded
+                                                 *   with an unexpected value).
+                                                 */
                                                 fun documentIndex(): Long =
                                                     documentIndex.getRequired("document_index")
 
+                                                /**
+                                                 * @throws SamInvalidDataException if the JSON field
+                                                 *   has an unexpected type (e.g. if the server
+                                                 *   responded with an unexpected value).
+                                                 */
                                                 fun documentTitle(): Optional<String> =
                                                     Optional.ofNullable(
                                                         documentTitle.getNullable("document_title")
                                                     )
 
+                                                /**
+                                                 * @throws SamInvalidDataException if the JSON field
+                                                 *   has an unexpected type or is unexpectedly
+                                                 *   missing or null (e.g. if the server responded
+                                                 *   with an unexpected value).
+                                                 */
                                                 fun endBlockIndex(): Long =
                                                     endBlockIndex.getRequired("end_block_index")
 
+                                                /**
+                                                 * @throws SamInvalidDataException if the JSON field
+                                                 *   has an unexpected type or is unexpectedly
+                                                 *   missing or null (e.g. if the server responded
+                                                 *   with an unexpected value).
+                                                 */
                                                 fun startBlockIndex(): Long =
                                                     startBlockIndex.getRequired("start_block_index")
 
+                                                /**
+                                                 * @throws SamInvalidDataException if the JSON field
+                                                 *   has an unexpected type or is unexpectedly
+                                                 *   missing or null (e.g. if the server responded
+                                                 *   with an unexpected value).
+                                                 */
                                                 fun type(): Type = type.getRequired("type")
 
+                                                /**
+                                                 * Returns the raw JSON value of [citedText].
+                                                 *
+                                                 * Unlike [citedText], this method doesn't throw if
+                                                 * the JSON field has an unexpected type.
+                                                 */
                                                 @JsonProperty("cited_text")
                                                 @ExcludeMissing
                                                 fun _citedText(): JsonField<String> = citedText
 
+                                                /**
+                                                 * Returns the raw JSON value of [documentIndex].
+                                                 *
+                                                 * Unlike [documentIndex], this method doesn't throw
+                                                 * if the JSON field has an unexpected type.
+                                                 */
                                                 @JsonProperty("document_index")
                                                 @ExcludeMissing
                                                 fun _documentIndex(): JsonField<Long> =
                                                     documentIndex
 
+                                                /**
+                                                 * Returns the raw JSON value of [documentTitle].
+                                                 *
+                                                 * Unlike [documentTitle], this method doesn't throw
+                                                 * if the JSON field has an unexpected type.
+                                                 */
                                                 @JsonProperty("document_title")
                                                 @ExcludeMissing
                                                 fun _documentTitle(): JsonField<String> =
                                                     documentTitle
 
+                                                /**
+                                                 * Returns the raw JSON value of [endBlockIndex].
+                                                 *
+                                                 * Unlike [endBlockIndex], this method doesn't throw
+                                                 * if the JSON field has an unexpected type.
+                                                 */
                                                 @JsonProperty("end_block_index")
                                                 @ExcludeMissing
                                                 fun _endBlockIndex(): JsonField<Long> =
                                                     endBlockIndex
 
+                                                /**
+                                                 * Returns the raw JSON value of [startBlockIndex].
+                                                 *
+                                                 * Unlike [startBlockIndex], this method doesn't
+                                                 * throw if the JSON field has an unexpected type.
+                                                 */
                                                 @JsonProperty("start_block_index")
                                                 @ExcludeMissing
                                                 fun _startBlockIndex(): JsonField<Long> =
                                                     startBlockIndex
 
+                                                /**
+                                                 * Returns the raw JSON value of [type].
+                                                 *
+                                                 * Unlike [type], this method doesn't throw if the
+                                                 * JSON field has an unexpected type.
+                                                 */
                                                 @JsonProperty("type")
                                                 @ExcludeMissing
                                                 fun _type(): JsonField<Type> = type
@@ -15640,6 +16704,16 @@ private constructor(
                                                     fun citedText(citedText: String) =
                                                         citedText(JsonField.of(citedText))
 
+                                                    /**
+                                                     * Sets [Builder.citedText] to an arbitrary JSON
+                                                     * value.
+                                                     *
+                                                     * You should usually call [Builder.citedText]
+                                                     * with a well-typed [String] value instead.
+                                                     * This method is primarily for setting the
+                                                     * field to an undocumented or not yet supported
+                                                     * value.
+                                                     */
                                                     fun citedText(citedText: JsonField<String>) =
                                                         apply {
                                                             this.citedText = citedText
@@ -15648,6 +16722,16 @@ private constructor(
                                                     fun documentIndex(documentIndex: Long) =
                                                         documentIndex(JsonField.of(documentIndex))
 
+                                                    /**
+                                                     * Sets [Builder.documentIndex] to an arbitrary
+                                                     * JSON value.
+                                                     *
+                                                     * You should usually call
+                                                     * [Builder.documentIndex] with a well-typed
+                                                     * [Long] value instead. This method is
+                                                     * primarily for setting the field to an
+                                                     * undocumented or not yet supported value.
+                                                     */
                                                     fun documentIndex(
                                                         documentIndex: JsonField<Long>
                                                     ) = apply { this.documentIndex = documentIndex }
@@ -15657,10 +16741,24 @@ private constructor(
                                                             JsonField.ofNullable(documentTitle)
                                                         )
 
+                                                    /**
+                                                     * Alias for calling [Builder.documentTitle]
+                                                     * with `documentTitle.orElse(null)`.
+                                                     */
                                                     fun documentTitle(
                                                         documentTitle: Optional<String>
                                                     ) = documentTitle(documentTitle.getOrNull())
 
+                                                    /**
+                                                     * Sets [Builder.documentTitle] to an arbitrary
+                                                     * JSON value.
+                                                     *
+                                                     * You should usually call
+                                                     * [Builder.documentTitle] with a well-typed
+                                                     * [String] value instead. This method is
+                                                     * primarily for setting the field to an
+                                                     * undocumented or not yet supported value.
+                                                     */
                                                     fun documentTitle(
                                                         documentTitle: JsonField<String>
                                                     ) = apply { this.documentTitle = documentTitle }
@@ -15668,6 +16766,16 @@ private constructor(
                                                     fun endBlockIndex(endBlockIndex: Long) =
                                                         endBlockIndex(JsonField.of(endBlockIndex))
 
+                                                    /**
+                                                     * Sets [Builder.endBlockIndex] to an arbitrary
+                                                     * JSON value.
+                                                     *
+                                                     * You should usually call
+                                                     * [Builder.endBlockIndex] with a well-typed
+                                                     * [Long] value instead. This method is
+                                                     * primarily for setting the field to an
+                                                     * undocumented or not yet supported value.
+                                                     */
                                                     fun endBlockIndex(
                                                         endBlockIndex: JsonField<Long>
                                                     ) = apply { this.endBlockIndex = endBlockIndex }
@@ -15677,6 +16785,16 @@ private constructor(
                                                             JsonField.of(startBlockIndex)
                                                         )
 
+                                                    /**
+                                                     * Sets [Builder.startBlockIndex] to an
+                                                     * arbitrary JSON value.
+                                                     *
+                                                     * You should usually call
+                                                     * [Builder.startBlockIndex] with a well-typed
+                                                     * [Long] value instead. This method is
+                                                     * primarily for setting the field to an
+                                                     * undocumented or not yet supported value.
+                                                     */
                                                     fun startBlockIndex(
                                                         startBlockIndex: JsonField<Long>
                                                     ) = apply {
@@ -15685,6 +16803,15 @@ private constructor(
 
                                                     fun type(type: Type) = type(JsonField.of(type))
 
+                                                    /**
+                                                     * Sets [Builder.type] to an arbitrary JSON
+                                                     * value.
+                                                     *
+                                                     * You should usually call [Builder.type] with a
+                                                     * well-typed [Type] value instead. This method
+                                                     * is primarily for setting the field to an
+                                                     * undocumented or not yet supported value.
+                                                     */
                                                     fun type(type: JsonField<Type>) = apply {
                                                         this.type = type
                                                     }
@@ -15935,23 +17062,58 @@ private constructor(
                                             immutableEmptyMap(),
                                     ) {
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type or is unexpectedly missing or null
+                                         *   (e.g. if the server responded with an unexpected
+                                         *   value).
+                                         */
                                         fun source(): InnerSource = source.getRequired("source")
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type or is unexpectedly missing or null
+                                         *   (e.g. if the server responded with an unexpected
+                                         *   value).
+                                         */
                                         fun type(): Type = type.getRequired("type")
 
+                                        /**
+                                         * @throws SamInvalidDataException if the JSON field has an
+                                         *   unexpected type (e.g. if the server responded with an
+                                         *   unexpected value).
+                                         */
                                         fun cacheControl(): Optional<CacheControl> =
                                             Optional.ofNullable(
                                                 cacheControl.getNullable("cache_control")
                                             )
 
+                                        /**
+                                         * Returns the raw JSON value of [source].
+                                         *
+                                         * Unlike [source], this method doesn't throw if the JSON
+                                         * field has an unexpected type.
+                                         */
                                         @JsonProperty("source")
                                         @ExcludeMissing
                                         fun _source(): JsonField<InnerSource> = source
 
+                                        /**
+                                         * Returns the raw JSON value of [type].
+                                         *
+                                         * Unlike [type], this method doesn't throw if the JSON
+                                         * field has an unexpected type.
+                                         */
                                         @JsonProperty("type")
                                         @ExcludeMissing
                                         fun _type(): JsonField<Type> = type
 
+                                        /**
+                                         * Returns the raw JSON value of [cacheControl].
+                                         *
+                                         * Unlike [cacheControl], this method doesn't throw if the
+                                         * JSON field has an unexpected type.
+                                         */
                                         @JsonProperty("cache_control")
                                         @ExcludeMissing
                                         fun _cacheControl(): JsonField<CacheControl> = cacheControl
@@ -16017,16 +17179,41 @@ private constructor(
                                             fun source(source: InnerSource) =
                                                 source(JsonField.of(source))
 
+                                            /**
+                                             * Sets [Builder.source] to an arbitrary JSON value.
+                                             *
+                                             * You should usually call [Builder.source] with a
+                                             * well-typed [InnerSource] value instead. This method
+                                             * is primarily for setting the field to an undocumented
+                                             * or not yet supported value.
+                                             */
                                             fun source(source: JsonField<InnerSource>) = apply {
                                                 this.source = source
                                             }
 
+                                            /**
+                                             * Alias for calling [source] with
+                                             * `InnerSource.ofBase64Image(base64Image)`.
+                                             */
                                             fun source(base64Image: InnerSource.Base64ImageSource) =
                                                 source(InnerSource.ofBase64Image(base64Image))
 
+                                            /**
+                                             * Alias for calling [source] with
+                                             * `InnerSource.ofUrlImage(urlImage)`.
+                                             */
                                             fun source(urlImage: InnerSource.UrlImageSource) =
                                                 source(InnerSource.ofUrlImage(urlImage))
 
+                                            /**
+                                             * Alias for calling [source] with the following:
+                                             * ```java
+                                             * InnerSource.UrlImageSource.builder()
+                                             *     .type(MessageCreateParams.Message.Content.UnnamedSchemaWithArrayParent0.RequestDocumentBlock.Source.ContentBlockSource.InnerContent.UnnamedSchemaWithArrayParent2.RequestImageBlock.InnerSource.UrlImageSource.Type.URL)
+                                             *     .url(url)
+                                             *     .build()
+                                             * ```
+                                             */
                                             fun urlImageSource(url: String) =
                                                 source(
                                                     InnerSource.UrlImageSource.builder()
@@ -16050,6 +17237,14 @@ private constructor(
 
                                             fun type(type: Type) = type(JsonField.of(type))
 
+                                            /**
+                                             * Sets [Builder.type] to an arbitrary JSON value.
+                                             *
+                                             * You should usually call [Builder.type] with a
+                                             * well-typed [Type] value instead. This method is
+                                             * primarily for setting the field to an undocumented or
+                                             * not yet supported value.
+                                             */
                                             fun type(type: JsonField<Type>) = apply {
                                                 this.type = type
                                             }
@@ -16057,9 +17252,22 @@ private constructor(
                                             fun cacheControl(cacheControl: CacheControl?) =
                                                 cacheControl(JsonField.ofNullable(cacheControl))
 
+                                            /**
+                                             * Alias for calling [Builder.cacheControl] with
+                                             * `cacheControl.orElse(null)`.
+                                             */
                                             fun cacheControl(cacheControl: Optional<CacheControl>) =
                                                 cacheControl(cacheControl.getOrNull())
 
+                                            /**
+                                             * Sets [Builder.cacheControl] to an arbitrary JSON
+                                             * value.
+                                             *
+                                             * You should usually call [Builder.cacheControl] with a
+                                             * well-typed [CacheControl] value instead. This method
+                                             * is primarily for setting the field to an undocumented
+                                             * or not yet supported value.
+                                             */
                                             fun cacheControl(
                                                 cacheControl: JsonField<CacheControl>
                                             ) = apply { this.cacheControl = cacheControl }
@@ -16329,21 +17537,57 @@ private constructor(
                                                     immutableEmptyMap(),
                                             ) {
 
+                                                /**
+                                                 * @throws SamInvalidDataException if the JSON field
+                                                 *   has an unexpected type or is unexpectedly
+                                                 *   missing or null (e.g. if the server responded
+                                                 *   with an unexpected value).
+                                                 */
                                                 fun data(): String = data.getRequired("data")
 
+                                                /**
+                                                 * @throws SamInvalidDataException if the JSON field
+                                                 *   has an unexpected type or is unexpectedly
+                                                 *   missing or null (e.g. if the server responded
+                                                 *   with an unexpected value).
+                                                 */
                                                 fun mediaType(): MediaType =
                                                     mediaType.getRequired("media_type")
 
+                                                /**
+                                                 * @throws SamInvalidDataException if the JSON field
+                                                 *   has an unexpected type or is unexpectedly
+                                                 *   missing or null (e.g. if the server responded
+                                                 *   with an unexpected value).
+                                                 */
                                                 fun type(): Type = type.getRequired("type")
 
+                                                /**
+                                                 * Returns the raw JSON value of [data].
+                                                 *
+                                                 * Unlike [data], this method doesn't throw if the
+                                                 * JSON field has an unexpected type.
+                                                 */
                                                 @JsonProperty("data")
                                                 @ExcludeMissing
                                                 fun _data(): JsonField<String> = data
 
+                                                /**
+                                                 * Returns the raw JSON value of [mediaType].
+                                                 *
+                                                 * Unlike [mediaType], this method doesn't throw if
+                                                 * the JSON field has an unexpected type.
+                                                 */
                                                 @JsonProperty("media_type")
                                                 @ExcludeMissing
                                                 fun _mediaType(): JsonField<MediaType> = mediaType
 
+                                                /**
+                                                 * Returns the raw JSON value of [type].
+                                                 *
+                                                 * Unlike [type], this method doesn't throw if the
+                                                 * JSON field has an unexpected type.
+                                                 */
                                                 @JsonProperty("type")
                                                 @ExcludeMissing
                                                 fun _type(): JsonField<Type> = type
@@ -16410,6 +17654,15 @@ private constructor(
                                                     fun data(data: String) =
                                                         data(JsonField.of(data))
 
+                                                    /**
+                                                     * Sets [Builder.data] to an arbitrary JSON
+                                                     * value.
+                                                     *
+                                                     * You should usually call [Builder.data] with a
+                                                     * well-typed [String] value instead. This
+                                                     * method is primarily for setting the field to
+                                                     * an undocumented or not yet supported value.
+                                                     */
                                                     fun data(data: JsonField<String>) = apply {
                                                         this.data = data
                                                     }
@@ -16417,6 +17670,16 @@ private constructor(
                                                     fun mediaType(mediaType: MediaType) =
                                                         mediaType(JsonField.of(mediaType))
 
+                                                    /**
+                                                     * Sets [Builder.mediaType] to an arbitrary JSON
+                                                     * value.
+                                                     *
+                                                     * You should usually call [Builder.mediaType]
+                                                     * with a well-typed [MediaType] value instead.
+                                                     * This method is primarily for setting the
+                                                     * field to an undocumented or not yet supported
+                                                     * value.
+                                                     */
                                                     fun mediaType(mediaType: JsonField<MediaType>) =
                                                         apply {
                                                             this.mediaType = mediaType
@@ -16424,6 +17687,15 @@ private constructor(
 
                                                     fun type(type: Type) = type(JsonField.of(type))
 
+                                                    /**
+                                                     * Sets [Builder.type] to an arbitrary JSON
+                                                     * value.
+                                                     *
+                                                     * You should usually call [Builder.type] with a
+                                                     * well-typed [Type] value instead. This method
+                                                     * is primarily for setting the field to an
+                                                     * undocumented or not yet supported value.
+                                                     */
                                                     fun type(type: JsonField<Type>) = apply {
                                                         this.type = type
                                                     }
@@ -16780,14 +18052,38 @@ private constructor(
                                                     immutableEmptyMap(),
                                             ) {
 
+                                                /**
+                                                 * @throws SamInvalidDataException if the JSON field
+                                                 *   has an unexpected type or is unexpectedly
+                                                 *   missing or null (e.g. if the server responded
+                                                 *   with an unexpected value).
+                                                 */
                                                 fun type(): Type = type.getRequired("type")
 
+                                                /**
+                                                 * @throws SamInvalidDataException if the JSON field
+                                                 *   has an unexpected type or is unexpectedly
+                                                 *   missing or null (e.g. if the server responded
+                                                 *   with an unexpected value).
+                                                 */
                                                 fun url(): String = url.getRequired("url")
 
+                                                /**
+                                                 * Returns the raw JSON value of [type].
+                                                 *
+                                                 * Unlike [type], this method doesn't throw if the
+                                                 * JSON field has an unexpected type.
+                                                 */
                                                 @JsonProperty("type")
                                                 @ExcludeMissing
                                                 fun _type(): JsonField<Type> = type
 
+                                                /**
+                                                 * Returns the raw JSON value of [url].
+                                                 *
+                                                 * Unlike [url], this method doesn't throw if the
+                                                 * JSON field has an unexpected type.
+                                                 */
                                                 @JsonProperty("url")
                                                 @ExcludeMissing
                                                 fun _url(): JsonField<String> = url
@@ -16848,12 +18144,30 @@ private constructor(
 
                                                     fun type(type: Type) = type(JsonField.of(type))
 
+                                                    /**
+                                                     * Sets [Builder.type] to an arbitrary JSON
+                                                     * value.
+                                                     *
+                                                     * You should usually call [Builder.type] with a
+                                                     * well-typed [Type] value instead. This method
+                                                     * is primarily for setting the field to an
+                                                     * undocumented or not yet supported value.
+                                                     */
                                                     fun type(type: JsonField<Type>) = apply {
                                                         this.type = type
                                                     }
 
                                                     fun url(url: String) = url(JsonField.of(url))
 
+                                                    /**
+                                                     * Sets [Builder.url] to an arbitrary JSON
+                                                     * value.
+                                                     *
+                                                     * You should usually call [Builder.url] with a
+                                                     * well-typed [String] value instead. This
+                                                     * method is primarily for setting the field to
+                                                     * an undocumented or not yet supported value.
+                                                     */
                                                     fun url(url: JsonField<String>) = apply {
                                                         this.url = url
                                                     }
@@ -17177,8 +18491,20 @@ private constructor(
                                                 immutableEmptyMap(),
                                         ) {
 
+                                            /**
+                                             * @throws SamInvalidDataException if the JSON field has
+                                             *   an unexpected type or is unexpectedly missing or
+                                             *   null (e.g. if the server responded with an
+                                             *   unexpected value).
+                                             */
                                             fun type(): Type = type.getRequired("type")
 
+                                            /**
+                                             * Returns the raw JSON value of [type].
+                                             *
+                                             * Unlike [type], this method doesn't throw if the JSON
+                                             * field has an unexpected type.
+                                             */
                                             @JsonProperty("type")
                                             @ExcludeMissing
                                             fun _type(): JsonField<Type> = type
@@ -17234,6 +18560,14 @@ private constructor(
 
                                                 fun type(type: Type) = type(JsonField.of(type))
 
+                                                /**
+                                                 * Sets [Builder.type] to an arbitrary JSON value.
+                                                 *
+                                                 * You should usually call [Builder.type] with a
+                                                 * well-typed [Type] value instead. This method is
+                                                 * primarily for setting the field to an
+                                                 * undocumented or not yet supported value.
+                                                 */
                                                 fun type(type: JsonField<Type>) = apply {
                                                     this.type = type
                                                 }
@@ -17577,14 +18911,36 @@ private constructor(
                                 immutableEmptyMap(),
                         ) {
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun type(): Type = type.getRequired("type")
 
+                            /**
+                             * @throws SamInvalidDataException if the JSON field has an unexpected
+                             *   type or is unexpectedly missing or null (e.g. if the server
+                             *   responded with an unexpected value).
+                             */
                             fun url(): String = url.getRequired("url")
 
+                            /**
+                             * Returns the raw JSON value of [type].
+                             *
+                             * Unlike [type], this method doesn't throw if the JSON field has an
+                             * unexpected type.
+                             */
                             @JsonProperty("type")
                             @ExcludeMissing
                             fun _type(): JsonField<Type> = type
 
+                            /**
+                             * Returns the raw JSON value of [url].
+                             *
+                             * Unlike [url], this method doesn't throw if the JSON field has an
+                             * unexpected type.
+                             */
                             @JsonProperty("url") @ExcludeMissing fun _url(): JsonField<String> = url
 
                             @JsonAnyGetter
@@ -17639,10 +18995,24 @@ private constructor(
 
                                 fun type(type: Type) = type(JsonField.of(type))
 
+                                /**
+                                 * Sets [Builder.type] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.type] with a well-typed [Type]
+                                 * value instead. This method is primarily for setting the field to
+                                 * an undocumented or not yet supported value.
+                                 */
                                 fun type(type: JsonField<Type>) = apply { this.type = type }
 
                                 fun url(url: String) = url(JsonField.of(url))
 
+                                /**
+                                 * Sets [Builder.url] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.url] with a well-typed [String]
+                                 * value instead. This method is primarily for setting the field to
+                                 * an undocumented or not yet supported value.
+                                 */
                                 fun url(url: JsonField<String>) = apply { this.url = url }
 
                                 fun additionalProperties(
@@ -17916,8 +19286,19 @@ private constructor(
                             immutableEmptyMap(),
                     ) {
 
+                        /**
+                         * @throws SamInvalidDataException if the JSON field has an unexpected type
+                         *   or is unexpectedly missing or null (e.g. if the server responded with
+                         *   an unexpected value).
+                         */
                         fun type(): Type = type.getRequired("type")
 
+                        /**
+                         * Returns the raw JSON value of [type].
+                         *
+                         * Unlike [type], this method doesn't throw if the JSON field has an
+                         * unexpected type.
+                         */
                         @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                         @JsonAnyGetter
@@ -17967,6 +19348,13 @@ private constructor(
 
                             fun type(type: Type) = type(JsonField.of(type))
 
+                            /**
+                             * Sets [Builder.type] to an arbitrary JSON value.
+                             *
+                             * You should usually call [Builder.type] with a well-typed [Type] value
+                             * instead. This method is primarily for setting the field to an
+                             * undocumented or not yet supported value.
+                             */
                             fun type(type: JsonField<Type>) = apply { this.type = type }
 
                             fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
@@ -18131,9 +19519,19 @@ private constructor(
                             immutableEmptyMap(),
                     ) {
 
+                        /**
+                         * @throws SamInvalidDataException if the JSON field has an unexpected type
+                         *   (e.g. if the server responded with an unexpected value).
+                         */
                         fun enabled(): Optional<Boolean> =
                             Optional.ofNullable(enabled.getNullable("enabled"))
 
+                        /**
+                         * Returns the raw JSON value of [enabled].
+                         *
+                         * Unlike [enabled], this method doesn't throw if the JSON field has an
+                         * unexpected type.
+                         */
                         @JsonProperty("enabled")
                         @ExcludeMissing
                         fun _enabled(): JsonField<Boolean> = enabled
@@ -18179,6 +19577,13 @@ private constructor(
 
                             fun enabled(enabled: Boolean) = enabled(JsonField.of(enabled))
 
+                            /**
+                             * Sets [Builder.enabled] to an arbitrary JSON value.
+                             *
+                             * You should usually call [Builder.enabled] with a well-typed [Boolean]
+                             * value instead. This method is primarily for setting the field to an
+                             * undocumented or not yet supported value.
+                             */
                             fun enabled(enabled: JsonField<Boolean>) = apply {
                                 this.enabled = enabled
                             }
@@ -18262,20 +19667,53 @@ private constructor(
                     private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
                 ) {
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun signature(): String = signature.getRequired("signature")
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun thinking(): String = thinking.getRequired("thinking")
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun type(): Type = type.getRequired("type")
 
+                    /**
+                     * Returns the raw JSON value of [signature].
+                     *
+                     * Unlike [signature], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("signature")
                     @ExcludeMissing
                     fun _signature(): JsonField<String> = signature
 
+                    /**
+                     * Returns the raw JSON value of [thinking].
+                     *
+                     * Unlike [thinking], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("thinking")
                     @ExcludeMissing
                     fun _thinking(): JsonField<String> = thinking
 
+                    /**
+                     * Returns the raw JSON value of [type].
+                     *
+                     * Unlike [type], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
                     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                     @JsonAnyGetter
@@ -18333,18 +19771,39 @@ private constructor(
 
                         fun signature(signature: String) = signature(JsonField.of(signature))
 
+                        /**
+                         * Sets [Builder.signature] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.signature] with a well-typed [String]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun signature(signature: JsonField<String>) = apply {
                             this.signature = signature
                         }
 
                         fun thinking(thinking: String) = thinking(JsonField.of(thinking))
 
+                        /**
+                         * Sets [Builder.thinking] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.thinking] with a well-typed [String]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun thinking(thinking: JsonField<String>) = apply {
                             this.thinking = thinking
                         }
 
                         fun type(type: Type) = type(JsonField.of(type))
 
+                        /**
+                         * Sets [Builder.type] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.type] with a well-typed [Type] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun type(type: JsonField<Type>) = apply { this.type = type }
 
                         fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
@@ -18511,12 +19970,34 @@ private constructor(
                     private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
                 ) {
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun data(): String = data.getRequired("data")
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun type(): Type = type.getRequired("type")
 
+                    /**
+                     * Returns the raw JSON value of [data].
+                     *
+                     * Unlike [data], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
                     @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<String> = data
 
+                    /**
+                     * Returns the raw JSON value of [type].
+                     *
+                     * Unlike [type], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
                     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                     @JsonAnyGetter
@@ -18572,10 +20053,24 @@ private constructor(
 
                         fun data(data: String) = data(JsonField.of(data))
 
+                        /**
+                         * Sets [Builder.data] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.data] with a well-typed [String] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun data(data: JsonField<String>) = apply { this.data = data }
 
                         fun type(type: Type) = type(JsonField.of(type))
 
+                        /**
+                         * Sets [Builder.type] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.type] with a well-typed [Type] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun type(type: JsonField<Type>) = apply { this.type = type }
 
                         fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
@@ -18863,15 +20358,16 @@ private constructor(
          * This should be a uuid, hash value, or other opaque identifier. Anthropic may use this id
          * to help detect abuse. Do not include any identifying information such as name, email
          * address, or phone number.
+         *
+         * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun userId(): Optional<String> = Optional.ofNullable(userId.getNullable("user_id"))
 
         /**
-         * An external identifier for the user who is associated with the request.
+         * Returns the raw JSON value of [userId].
          *
-         * This should be a uuid, hash value, or other opaque identifier. Anthropic may use this id
-         * to help detect abuse. Do not include any identifying information such as name, email
-         * address, or phone number.
+         * Unlike [userId], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("user_id") @ExcludeMissing fun _userId(): JsonField<String> = userId
 
@@ -18919,21 +20415,15 @@ private constructor(
              */
             fun userId(userId: String?) = userId(JsonField.ofNullable(userId))
 
-            /**
-             * An external identifier for the user who is associated with the request.
-             *
-             * This should be a uuid, hash value, or other opaque identifier. Anthropic may use this
-             * id to help detect abuse. Do not include any identifying information such as name,
-             * email address, or phone number.
-             */
+            /** Alias for calling [Builder.userId] with `userId.orElse(null)`. */
             fun userId(userId: Optional<String>) = userId(userId.getOrNull())
 
             /**
-             * An external identifier for the user who is associated with the request.
+             * Sets [Builder.userId] to an arbitrary JSON value.
              *
-             * This should be a uuid, hash value, or other opaque identifier. Anthropic may use this
-             * id to help detect abuse. Do not include any identifying information such as name,
-             * email address, or phone number.
+             * You should usually call [Builder.userId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun userId(userId: JsonField<String>) = apply { this.userId = userId }
 
@@ -19141,24 +20631,64 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
+            /**
+             * @throws SamInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun text(): String = text.getRequired("text")
 
+            /**
+             * @throws SamInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun type(): Type = type.getRequired("type")
 
+            /**
+             * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
+             *   server responded with an unexpected value).
+             */
             fun cacheControl(): Optional<CacheControl> =
                 Optional.ofNullable(cacheControl.getNullable("cache_control"))
 
+            /**
+             * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
+             *   server responded with an unexpected value).
+             */
             fun citations(): Optional<List<Citation>> =
                 Optional.ofNullable(citations.getNullable("citations"))
 
+            /**
+             * Returns the raw JSON value of [text].
+             *
+             * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
+            /**
+             * Returns the raw JSON value of [type].
+             *
+             * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+            /**
+             * Returns the raw JSON value of [cacheControl].
+             *
+             * Unlike [cacheControl], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
             @JsonProperty("cache_control")
             @ExcludeMissing
             fun _cacheControl(): JsonField<CacheControl> = cacheControl
 
+            /**
+             * Returns the raw JSON value of [citations].
+             *
+             * Unlike [citations], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
             @JsonProperty("citations")
             @ExcludeMissing
             fun _citations(): JsonField<List<Citation>> = citations
@@ -19217,18 +20747,40 @@ private constructor(
 
                 fun text(text: String) = text(JsonField.of(text))
 
+                /**
+                 * Sets [Builder.text] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.text] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun text(text: JsonField<String>) = apply { this.text = text }
 
                 fun type(type: Type) = type(JsonField.of(type))
 
+                /**
+                 * Sets [Builder.type] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.type] with a well-typed [Type] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun type(type: JsonField<Type>) = apply { this.type = type }
 
                 fun cacheControl(cacheControl: CacheControl?) =
                     cacheControl(JsonField.ofNullable(cacheControl))
 
+                /** Alias for calling [Builder.cacheControl] with `cacheControl.orElse(null)`. */
                 fun cacheControl(cacheControl: Optional<CacheControl>) =
                     cacheControl(cacheControl.getOrNull())
 
+                /**
+                 * Sets [Builder.cacheControl] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.cacheControl] with a well-typed [CacheControl]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
                 fun cacheControl(cacheControl: JsonField<CacheControl>) = apply {
                     this.cacheControl = cacheControl
                 }
@@ -19236,13 +20788,26 @@ private constructor(
                 fun citations(citations: List<Citation>?) =
                     citations(JsonField.ofNullable(citations))
 
+                /** Alias for calling [Builder.citations] with `citations.orElse(null)`. */
                 fun citations(citations: Optional<List<Citation>>) =
                     citations(citations.getOrNull())
 
+                /**
+                 * Sets [Builder.citations] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.citations] with a well-typed `List<Citation>`
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
                 fun citations(citations: JsonField<List<Citation>>) = apply {
                     this.citations = citations.map { it.toMutableList() }
                 }
 
+                /**
+                 * Adds a single [Citation] to [citations].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
+                 */
                 fun addCitation(citation: Citation) = apply {
                     citations =
                         (citations ?: JsonField.of(mutableListOf())).also {
@@ -19250,12 +20815,24 @@ private constructor(
                         }
                 }
 
+                /**
+                 * Alias for calling [addCitation] with
+                 * `Citation.ofRequestCharLocation(requestCharLocation)`.
+                 */
                 fun addCitation(requestCharLocation: Citation.RequestCharLocationCitation) =
                     addCitation(Citation.ofRequestCharLocation(requestCharLocation))
 
+                /**
+                 * Alias for calling [addCitation] with
+                 * `Citation.ofRequestPageLocation(requestPageLocation)`.
+                 */
                 fun addCitation(requestPageLocation: Citation.RequestPageLocationCitation) =
                     addCitation(Citation.ofRequestPageLocation(requestPageLocation))
 
+                /**
+                 * Alias for calling [addCitation] with
+                 * `Citation.ofRequestContentBlockLocation(requestContentBlockLocation)`.
+                 */
                 fun addCitation(
                     requestContentBlockLocation: Citation.RequestContentBlockLocationCitation
                 ) = addCitation(Citation.ofRequestContentBlockLocation(requestContentBlockLocation))
@@ -19400,8 +20977,19 @@ private constructor(
                 private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
             ) {
 
+                /**
+                 * @throws SamInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
                 fun type(): Type = type.getRequired("type")
 
+                /**
+                 * Returns the raw JSON value of [type].
+                 *
+                 * Unlike [type], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
                 @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                 @JsonAnyGetter
@@ -19448,6 +21036,13 @@ private constructor(
 
                     fun type(type: Type) = type(JsonField.of(type))
 
+                    /**
+                     * Sets [Builder.type] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.type] with a well-typed [Type] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
                     fun type(type: JsonField<Type>) = apply { this.type = type }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -19842,39 +21437,104 @@ private constructor(
                     private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
                 ) {
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun citedText(): String = citedText.getRequired("cited_text")
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun documentIndex(): Long = documentIndex.getRequired("document_index")
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
                     fun documentTitle(): Optional<String> =
                         Optional.ofNullable(documentTitle.getNullable("document_title"))
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun endCharIndex(): Long = endCharIndex.getRequired("end_char_index")
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun startCharIndex(): Long = startCharIndex.getRequired("start_char_index")
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun type(): Type = type.getRequired("type")
 
+                    /**
+                     * Returns the raw JSON value of [citedText].
+                     *
+                     * Unlike [citedText], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("cited_text")
                     @ExcludeMissing
                     fun _citedText(): JsonField<String> = citedText
 
+                    /**
+                     * Returns the raw JSON value of [documentIndex].
+                     *
+                     * Unlike [documentIndex], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("document_index")
                     @ExcludeMissing
                     fun _documentIndex(): JsonField<Long> = documentIndex
 
+                    /**
+                     * Returns the raw JSON value of [documentTitle].
+                     *
+                     * Unlike [documentTitle], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("document_title")
                     @ExcludeMissing
                     fun _documentTitle(): JsonField<String> = documentTitle
 
+                    /**
+                     * Returns the raw JSON value of [endCharIndex].
+                     *
+                     * Unlike [endCharIndex], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("end_char_index")
                     @ExcludeMissing
                     fun _endCharIndex(): JsonField<Long> = endCharIndex
 
+                    /**
+                     * Returns the raw JSON value of [startCharIndex].
+                     *
+                     * Unlike [startCharIndex], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("start_char_index")
                     @ExcludeMissing
                     fun _startCharIndex(): JsonField<Long> = startCharIndex
 
+                    /**
+                     * Returns the raw JSON value of [type].
+                     *
+                     * Unlike [type], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
                     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                     @JsonAnyGetter
@@ -19946,6 +21606,13 @@ private constructor(
 
                         fun citedText(citedText: String) = citedText(JsonField.of(citedText))
 
+                        /**
+                         * Sets [Builder.citedText] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.citedText] with a well-typed [String]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun citedText(citedText: JsonField<String>) = apply {
                             this.citedText = citedText
                         }
@@ -19953,6 +21620,13 @@ private constructor(
                         fun documentIndex(documentIndex: Long) =
                             documentIndex(JsonField.of(documentIndex))
 
+                        /**
+                         * Sets [Builder.documentIndex] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.documentIndex] with a well-typed [Long]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun documentIndex(documentIndex: JsonField<Long>) = apply {
                             this.documentIndex = documentIndex
                         }
@@ -19960,9 +21634,20 @@ private constructor(
                         fun documentTitle(documentTitle: String?) =
                             documentTitle(JsonField.ofNullable(documentTitle))
 
+                        /**
+                         * Alias for calling [Builder.documentTitle] with
+                         * `documentTitle.orElse(null)`.
+                         */
                         fun documentTitle(documentTitle: Optional<String>) =
                             documentTitle(documentTitle.getOrNull())
 
+                        /**
+                         * Sets [Builder.documentTitle] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.documentTitle] with a well-typed
+                         * [String] value instead. This method is primarily for setting the field to
+                         * an undocumented or not yet supported value.
+                         */
                         fun documentTitle(documentTitle: JsonField<String>) = apply {
                             this.documentTitle = documentTitle
                         }
@@ -19970,6 +21655,13 @@ private constructor(
                         fun endCharIndex(endCharIndex: Long) =
                             endCharIndex(JsonField.of(endCharIndex))
 
+                        /**
+                         * Sets [Builder.endCharIndex] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.endCharIndex] with a well-typed [Long]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun endCharIndex(endCharIndex: JsonField<Long>) = apply {
                             this.endCharIndex = endCharIndex
                         }
@@ -19977,12 +21669,26 @@ private constructor(
                         fun startCharIndex(startCharIndex: Long) =
                             startCharIndex(JsonField.of(startCharIndex))
 
+                        /**
+                         * Sets [Builder.startCharIndex] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.startCharIndex] with a well-typed [Long]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun startCharIndex(startCharIndex: JsonField<Long>) = apply {
                             this.startCharIndex = startCharIndex
                         }
 
                         fun type(type: Type) = type(JsonField.of(type))
 
+                        /**
+                         * Sets [Builder.type] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.type] with a well-typed [Type] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun type(type: JsonField<Type>) = apply { this.type = type }
 
                         fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
@@ -20164,39 +21870,104 @@ private constructor(
                     private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
                 ) {
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun citedText(): String = citedText.getRequired("cited_text")
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun documentIndex(): Long = documentIndex.getRequired("document_index")
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
                     fun documentTitle(): Optional<String> =
                         Optional.ofNullable(documentTitle.getNullable("document_title"))
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun endPageNumber(): Long = endPageNumber.getRequired("end_page_number")
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun startPageNumber(): Long = startPageNumber.getRequired("start_page_number")
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun type(): Type = type.getRequired("type")
 
+                    /**
+                     * Returns the raw JSON value of [citedText].
+                     *
+                     * Unlike [citedText], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("cited_text")
                     @ExcludeMissing
                     fun _citedText(): JsonField<String> = citedText
 
+                    /**
+                     * Returns the raw JSON value of [documentIndex].
+                     *
+                     * Unlike [documentIndex], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("document_index")
                     @ExcludeMissing
                     fun _documentIndex(): JsonField<Long> = documentIndex
 
+                    /**
+                     * Returns the raw JSON value of [documentTitle].
+                     *
+                     * Unlike [documentTitle], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("document_title")
                     @ExcludeMissing
                     fun _documentTitle(): JsonField<String> = documentTitle
 
+                    /**
+                     * Returns the raw JSON value of [endPageNumber].
+                     *
+                     * Unlike [endPageNumber], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("end_page_number")
                     @ExcludeMissing
                     fun _endPageNumber(): JsonField<Long> = endPageNumber
 
+                    /**
+                     * Returns the raw JSON value of [startPageNumber].
+                     *
+                     * Unlike [startPageNumber], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("start_page_number")
                     @ExcludeMissing
                     fun _startPageNumber(): JsonField<Long> = startPageNumber
 
+                    /**
+                     * Returns the raw JSON value of [type].
+                     *
+                     * Unlike [type], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
                     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                     @JsonAnyGetter
@@ -20268,6 +22039,13 @@ private constructor(
 
                         fun citedText(citedText: String) = citedText(JsonField.of(citedText))
 
+                        /**
+                         * Sets [Builder.citedText] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.citedText] with a well-typed [String]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun citedText(citedText: JsonField<String>) = apply {
                             this.citedText = citedText
                         }
@@ -20275,6 +22053,13 @@ private constructor(
                         fun documentIndex(documentIndex: Long) =
                             documentIndex(JsonField.of(documentIndex))
 
+                        /**
+                         * Sets [Builder.documentIndex] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.documentIndex] with a well-typed [Long]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun documentIndex(documentIndex: JsonField<Long>) = apply {
                             this.documentIndex = documentIndex
                         }
@@ -20282,9 +22067,20 @@ private constructor(
                         fun documentTitle(documentTitle: String?) =
                             documentTitle(JsonField.ofNullable(documentTitle))
 
+                        /**
+                         * Alias for calling [Builder.documentTitle] with
+                         * `documentTitle.orElse(null)`.
+                         */
                         fun documentTitle(documentTitle: Optional<String>) =
                             documentTitle(documentTitle.getOrNull())
 
+                        /**
+                         * Sets [Builder.documentTitle] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.documentTitle] with a well-typed
+                         * [String] value instead. This method is primarily for setting the field to
+                         * an undocumented or not yet supported value.
+                         */
                         fun documentTitle(documentTitle: JsonField<String>) = apply {
                             this.documentTitle = documentTitle
                         }
@@ -20292,6 +22088,13 @@ private constructor(
                         fun endPageNumber(endPageNumber: Long) =
                             endPageNumber(JsonField.of(endPageNumber))
 
+                        /**
+                         * Sets [Builder.endPageNumber] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.endPageNumber] with a well-typed [Long]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun endPageNumber(endPageNumber: JsonField<Long>) = apply {
                             this.endPageNumber = endPageNumber
                         }
@@ -20299,12 +22102,26 @@ private constructor(
                         fun startPageNumber(startPageNumber: Long) =
                             startPageNumber(JsonField.of(startPageNumber))
 
+                        /**
+                         * Sets [Builder.startPageNumber] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.startPageNumber] with a well-typed
+                         * [Long] value instead. This method is primarily for setting the field to
+                         * an undocumented or not yet supported value.
+                         */
                         fun startPageNumber(startPageNumber: JsonField<Long>) = apply {
                             this.startPageNumber = startPageNumber
                         }
 
                         fun type(type: Type) = type(JsonField.of(type))
 
+                        /**
+                         * Sets [Builder.type] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.type] with a well-typed [Type] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun type(type: JsonField<Type>) = apply { this.type = type }
 
                         fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
@@ -20486,39 +22303,104 @@ private constructor(
                     private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
                 ) {
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun citedText(): String = citedText.getRequired("cited_text")
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun documentIndex(): Long = documentIndex.getRequired("document_index")
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
                     fun documentTitle(): Optional<String> =
                         Optional.ofNullable(documentTitle.getNullable("document_title"))
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun endBlockIndex(): Long = endBlockIndex.getRequired("end_block_index")
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun startBlockIndex(): Long = startBlockIndex.getRequired("start_block_index")
 
+                    /**
+                     * @throws SamInvalidDataException if the JSON field has an unexpected type or
+                     *   is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
                     fun type(): Type = type.getRequired("type")
 
+                    /**
+                     * Returns the raw JSON value of [citedText].
+                     *
+                     * Unlike [citedText], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("cited_text")
                     @ExcludeMissing
                     fun _citedText(): JsonField<String> = citedText
 
+                    /**
+                     * Returns the raw JSON value of [documentIndex].
+                     *
+                     * Unlike [documentIndex], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("document_index")
                     @ExcludeMissing
                     fun _documentIndex(): JsonField<Long> = documentIndex
 
+                    /**
+                     * Returns the raw JSON value of [documentTitle].
+                     *
+                     * Unlike [documentTitle], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("document_title")
                     @ExcludeMissing
                     fun _documentTitle(): JsonField<String> = documentTitle
 
+                    /**
+                     * Returns the raw JSON value of [endBlockIndex].
+                     *
+                     * Unlike [endBlockIndex], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("end_block_index")
                     @ExcludeMissing
                     fun _endBlockIndex(): JsonField<Long> = endBlockIndex
 
+                    /**
+                     * Returns the raw JSON value of [startBlockIndex].
+                     *
+                     * Unlike [startBlockIndex], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
                     @JsonProperty("start_block_index")
                     @ExcludeMissing
                     fun _startBlockIndex(): JsonField<Long> = startBlockIndex
 
+                    /**
+                     * Returns the raw JSON value of [type].
+                     *
+                     * Unlike [type], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
                     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                     @JsonAnyGetter
@@ -20591,6 +22473,13 @@ private constructor(
 
                         fun citedText(citedText: String) = citedText(JsonField.of(citedText))
 
+                        /**
+                         * Sets [Builder.citedText] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.citedText] with a well-typed [String]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun citedText(citedText: JsonField<String>) = apply {
                             this.citedText = citedText
                         }
@@ -20598,6 +22487,13 @@ private constructor(
                         fun documentIndex(documentIndex: Long) =
                             documentIndex(JsonField.of(documentIndex))
 
+                        /**
+                         * Sets [Builder.documentIndex] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.documentIndex] with a well-typed [Long]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun documentIndex(documentIndex: JsonField<Long>) = apply {
                             this.documentIndex = documentIndex
                         }
@@ -20605,9 +22501,20 @@ private constructor(
                         fun documentTitle(documentTitle: String?) =
                             documentTitle(JsonField.ofNullable(documentTitle))
 
+                        /**
+                         * Alias for calling [Builder.documentTitle] with
+                         * `documentTitle.orElse(null)`.
+                         */
                         fun documentTitle(documentTitle: Optional<String>) =
                             documentTitle(documentTitle.getOrNull())
 
+                        /**
+                         * Sets [Builder.documentTitle] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.documentTitle] with a well-typed
+                         * [String] value instead. This method is primarily for setting the field to
+                         * an undocumented or not yet supported value.
+                         */
                         fun documentTitle(documentTitle: JsonField<String>) = apply {
                             this.documentTitle = documentTitle
                         }
@@ -20615,6 +22522,13 @@ private constructor(
                         fun endBlockIndex(endBlockIndex: Long) =
                             endBlockIndex(JsonField.of(endBlockIndex))
 
+                        /**
+                         * Sets [Builder.endBlockIndex] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.endBlockIndex] with a well-typed [Long]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun endBlockIndex(endBlockIndex: JsonField<Long>) = apply {
                             this.endBlockIndex = endBlockIndex
                         }
@@ -20622,12 +22536,26 @@ private constructor(
                         fun startBlockIndex(startBlockIndex: Long) =
                             startBlockIndex(JsonField.of(startBlockIndex))
 
+                        /**
+                         * Sets [Builder.startBlockIndex] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.startBlockIndex] with a well-typed
+                         * [Long] value instead. This method is primarily for setting the field to
+                         * an undocumented or not yet supported value.
+                         */
                         fun startBlockIndex(startBlockIndex: JsonField<Long>) = apply {
                             this.startBlockIndex = startBlockIndex
                         }
 
                         fun type(type: Type) = type(JsonField.of(type))
 
+                        /**
+                         * Sets [Builder.type] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.type] with a well-typed [Type] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun type(type: JsonField<Type>) = apply { this.type = type }
 
                         fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
@@ -20988,26 +22916,35 @@ private constructor(
              * See
              * [extended thinking](https://docs.anthropic.com/en/docs/build-with-claude/extended-thinking)
              * for details.
+             *
+             * @throws SamInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
              */
             fun budgetTokens(): Long = budgetTokens.getRequired("budget_tokens")
 
+            /**
+             * @throws SamInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun type(): Type = type.getRequired("type")
 
             /**
-             * Determines how many tokens Claude can use for its internal reasoning process. Larger
-             * budgets can enable more thorough analysis for complex problems, improving response
-             * quality.
+             * Returns the raw JSON value of [budgetTokens].
              *
-             * Must be ≥1024 and less than `max_tokens`.
-             *
-             * See
-             * [extended thinking](https://docs.anthropic.com/en/docs/build-with-claude/extended-thinking)
-             * for details.
+             * Unlike [budgetTokens], this method doesn't throw if the JSON field has an unexpected
+             * type.
              */
             @JsonProperty("budget_tokens")
             @ExcludeMissing
             fun _budgetTokens(): JsonField<Long> = budgetTokens
 
+            /**
+             * Returns the raw JSON value of [type].
+             *
+             * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
             @JsonAnyGetter
@@ -21071,15 +23008,11 @@ private constructor(
                 fun budgetTokens(budgetTokens: Long) = budgetTokens(JsonField.of(budgetTokens))
 
                 /**
-                 * Determines how many tokens Claude can use for its internal reasoning process.
-                 * Larger budgets can enable more thorough analysis for complex problems, improving
-                 * response quality.
+                 * Sets [Builder.budgetTokens] to an arbitrary JSON value.
                  *
-                 * Must be ≥1024 and less than `max_tokens`.
-                 *
-                 * See
-                 * [extended thinking](https://docs.anthropic.com/en/docs/build-with-claude/extended-thinking)
-                 * for details.
+                 * You should usually call [Builder.budgetTokens] with a well-typed [Long] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
                  */
                 fun budgetTokens(budgetTokens: JsonField<Long>) = apply {
                     this.budgetTokens = budgetTokens
@@ -21087,6 +23020,13 @@ private constructor(
 
                 fun type(type: Type) = type(JsonField.of(type))
 
+                /**
+                 * Sets [Builder.type] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.type] with a well-typed [Type] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun type(type: JsonField<Type>) = apply { this.type = type }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -21245,8 +23185,18 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
+            /**
+             * @throws SamInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun type(): Type = type.getRequired("type")
 
+            /**
+             * Returns the raw JSON value of [type].
+             *
+             * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
             @JsonAnyGetter
@@ -21295,6 +23245,13 @@ private constructor(
 
                 fun type(type: Type) = type(JsonField.of(type))
 
+                /**
+                 * Sets [Builder.type] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.type] with a well-typed [Type] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun type(type: JsonField<Type>) = apply { this.type = type }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -21667,22 +23624,36 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
+            /**
+             * @throws SamInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun type(): Type = type.getRequired("type")
 
             /**
              * Whether to disable parallel tool use.
              *
              * Defaults to `false`. If set to `true`, the model will output at most one tool use.
+             *
+             * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
+             *   server responded with an unexpected value).
              */
             fun disableParallelToolUse(): Optional<Boolean> =
                 Optional.ofNullable(disableParallelToolUse.getNullable("disable_parallel_tool_use"))
 
+            /**
+             * Returns the raw JSON value of [type].
+             *
+             * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
             /**
-             * Whether to disable parallel tool use.
+             * Returns the raw JSON value of [disableParallelToolUse].
              *
-             * Defaults to `false`. If set to `true`, the model will output at most one tool use.
+             * Unlike [disableParallelToolUse], this method doesn't throw if the JSON field has an
+             * unexpected type.
              */
             @JsonProperty("disable_parallel_tool_use")
             @ExcludeMissing
@@ -21735,6 +23706,13 @@ private constructor(
 
                 fun type(type: Type) = type(JsonField.of(type))
 
+                /**
+                 * Sets [Builder.type] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.type] with a well-typed [Type] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun type(type: JsonField<Type>) = apply { this.type = type }
 
                 /**
@@ -21747,10 +23725,11 @@ private constructor(
                     disableParallelToolUse(JsonField.of(disableParallelToolUse))
 
                 /**
-                 * Whether to disable parallel tool use.
+                 * Sets [Builder.disableParallelToolUse] to an arbitrary JSON value.
                  *
-                 * Defaults to `false`. If set to `true`, the model will output at most one tool
-                 * use.
+                 * You should usually call [Builder.disableParallelToolUse] with a well-typed
+                 * [Boolean] value instead. This method is primarily for setting the field to an
+                 * undocumented or not yet supported value.
                  */
                 fun disableParallelToolUse(disableParallelToolUse: JsonField<Boolean>) = apply {
                     this.disableParallelToolUse = disableParallelToolUse
@@ -21916,22 +23895,36 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
+            /**
+             * @throws SamInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun type(): Type = type.getRequired("type")
 
             /**
              * Whether to disable parallel tool use.
              *
              * Defaults to `false`. If set to `true`, the model will output exactly one tool use.
+             *
+             * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
+             *   server responded with an unexpected value).
              */
             fun disableParallelToolUse(): Optional<Boolean> =
                 Optional.ofNullable(disableParallelToolUse.getNullable("disable_parallel_tool_use"))
 
+            /**
+             * Returns the raw JSON value of [type].
+             *
+             * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
             /**
-             * Whether to disable parallel tool use.
+             * Returns the raw JSON value of [disableParallelToolUse].
              *
-             * Defaults to `false`. If set to `true`, the model will output exactly one tool use.
+             * Unlike [disableParallelToolUse], this method doesn't throw if the JSON field has an
+             * unexpected type.
              */
             @JsonProperty("disable_parallel_tool_use")
             @ExcludeMissing
@@ -21984,6 +23977,13 @@ private constructor(
 
                 fun type(type: Type) = type(JsonField.of(type))
 
+                /**
+                 * Sets [Builder.type] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.type] with a well-typed [Type] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun type(type: JsonField<Type>) = apply { this.type = type }
 
                 /**
@@ -21996,10 +23996,11 @@ private constructor(
                     disableParallelToolUse(JsonField.of(disableParallelToolUse))
 
                 /**
-                 * Whether to disable parallel tool use.
+                 * Sets [Builder.disableParallelToolUse] to an arbitrary JSON value.
                  *
-                 * Defaults to `false`. If set to `true`, the model will output exactly one tool
-                 * use.
+                 * You should usually call [Builder.disableParallelToolUse] with a well-typed
+                 * [Boolean] value instead. This method is primarily for setting the field to an
+                 * undocumented or not yet supported value.
                  */
                 fun disableParallelToolUse(disableParallelToolUse: JsonField<Boolean>) = apply {
                     this.disableParallelToolUse = disableParallelToolUse
@@ -22168,28 +24169,52 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
-            /** The name of the tool to use. */
+            /**
+             * The name of the tool to use.
+             *
+             * @throws SamInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun name(): String = name.getRequired("name")
 
+            /**
+             * @throws SamInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun type(): Type = type.getRequired("type")
 
             /**
              * Whether to disable parallel tool use.
              *
              * Defaults to `false`. If set to `true`, the model will output exactly one tool use.
+             *
+             * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
+             *   server responded with an unexpected value).
              */
             fun disableParallelToolUse(): Optional<Boolean> =
                 Optional.ofNullable(disableParallelToolUse.getNullable("disable_parallel_tool_use"))
 
-            /** The name of the tool to use. */
+            /**
+             * Returns the raw JSON value of [name].
+             *
+             * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
+            /**
+             * Returns the raw JSON value of [type].
+             *
+             * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
             /**
-             * Whether to disable parallel tool use.
+             * Returns the raw JSON value of [disableParallelToolUse].
              *
-             * Defaults to `false`. If set to `true`, the model will output exactly one tool use.
+             * Unlike [disableParallelToolUse], this method doesn't throw if the JSON field has an
+             * unexpected type.
              */
             @JsonProperty("disable_parallel_tool_use")
             @ExcludeMissing
@@ -22247,11 +24272,24 @@ private constructor(
                 /** The name of the tool to use. */
                 fun name(name: String) = name(JsonField.of(name))
 
-                /** The name of the tool to use. */
+                /**
+                 * Sets [Builder.name] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.name] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun name(name: JsonField<String>) = apply { this.name = name }
 
                 fun type(type: Type) = type(JsonField.of(type))
 
+                /**
+                 * Sets [Builder.type] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.type] with a well-typed [Type] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun type(type: JsonField<Type>) = apply { this.type = type }
 
                 /**
@@ -22264,10 +24302,11 @@ private constructor(
                     disableParallelToolUse(JsonField.of(disableParallelToolUse))
 
                 /**
-                 * Whether to disable parallel tool use.
+                 * Sets [Builder.disableParallelToolUse] to an arbitrary JSON value.
                  *
-                 * Defaults to `false`. If set to `true`, the model will output exactly one tool
-                 * use.
+                 * You should usually call [Builder.disableParallelToolUse] with a well-typed
+                 * [Boolean] value instead. This method is primarily for setting the field to an
+                 * undocumented or not yet supported value.
                  */
                 fun disableParallelToolUse(disableParallelToolUse: JsonField<Boolean>) = apply {
                     this.disableParallelToolUse = disableParallelToolUse
@@ -22431,8 +24470,18 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
+            /**
+             * @throws SamInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun type(): Type = type.getRequired("type")
 
+            /**
+             * Returns the raw JSON value of [type].
+             *
+             * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
             @JsonAnyGetter
@@ -22479,6 +24528,13 @@ private constructor(
 
                 fun type(type: Type) = type(JsonField.of(type))
 
+                /**
+                 * Sets [Builder.type] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.type] with a well-typed [Type] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun type(type: JsonField<Type>) = apply { this.type = type }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -22809,6 +24865,10 @@ private constructor(
              *
              * This defines the shape of the `input` that your tool accepts and that the model will
              * produce.
+             *
+             * @throws SamInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
              */
             fun inputSchema(): InputSchema = inputSchema.getRequired("input_schema")
 
@@ -22816,9 +24876,17 @@ private constructor(
              * Name of the tool.
              *
              * This is how the tool will be called by the model and in tool_use blocks.
+             *
+             * @throws SamInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
              */
             fun name(): String = name.getRequired("name")
 
+            /**
+             * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
+             *   server responded with an unexpected value).
+             */
             fun cacheControl(): Optional<CacheControl> =
                 Optional.ofNullable(cacheControl.getNullable("cache_control"))
 
@@ -22829,38 +24897,45 @@ private constructor(
              * model has about what the tool is and how to use it, the better it will perform. You
              * can use natural language descriptions to reinforce important aspects of the tool
              * input JSON schema.
+             *
+             * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
+             *   server responded with an unexpected value).
              */
             fun description(): Optional<String> =
                 Optional.ofNullable(description.getNullable("description"))
 
             /**
-             * [JSON schema](https://json-schema.org/draft/2020-12) for this tool's input.
+             * Returns the raw JSON value of [inputSchema].
              *
-             * This defines the shape of the `input` that your tool accepts and that the model will
-             * produce.
+             * Unlike [inputSchema], this method doesn't throw if the JSON field has an unexpected
+             * type.
              */
             @JsonProperty("input_schema")
             @ExcludeMissing
             fun _inputSchema(): JsonField<InputSchema> = inputSchema
 
             /**
-             * Name of the tool.
+             * Returns the raw JSON value of [name].
              *
-             * This is how the tool will be called by the model and in tool_use blocks.
+             * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
+            /**
+             * Returns the raw JSON value of [cacheControl].
+             *
+             * Unlike [cacheControl], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
             @JsonProperty("cache_control")
             @ExcludeMissing
             fun _cacheControl(): JsonField<CacheControl> = cacheControl
 
             /**
-             * Description of what this tool does.
+             * Returns the raw JSON value of [description].
              *
-             * Tool descriptions should be as detailed as possible. The more information that the
-             * model has about what the tool is and how to use it, the better it will perform. You
-             * can use natural language descriptions to reinforce important aspects of the tool
-             * input JSON schema.
+             * Unlike [description], this method doesn't throw if the JSON field has an unexpected
+             * type.
              */
             @JsonProperty("description")
             @ExcludeMissing
@@ -22927,10 +25002,11 @@ private constructor(
                 fun inputSchema(inputSchema: InputSchema) = inputSchema(JsonField.of(inputSchema))
 
                 /**
-                 * [JSON schema](https://json-schema.org/draft/2020-12) for this tool's input.
+                 * Sets [Builder.inputSchema] to an arbitrary JSON value.
                  *
-                 * This defines the shape of the `input` that your tool accepts and that the model
-                 * will produce.
+                 * You should usually call [Builder.inputSchema] with a well-typed [InputSchema]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
                  */
                 fun inputSchema(inputSchema: JsonField<InputSchema>) = apply {
                     this.inputSchema = inputSchema
@@ -22944,18 +25020,28 @@ private constructor(
                 fun name(name: String) = name(JsonField.of(name))
 
                 /**
-                 * Name of the tool.
+                 * Sets [Builder.name] to an arbitrary JSON value.
                  *
-                 * This is how the tool will be called by the model and in tool_use blocks.
+                 * You should usually call [Builder.name] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
                  */
                 fun name(name: JsonField<String>) = apply { this.name = name }
 
                 fun cacheControl(cacheControl: CacheControl?) =
                     cacheControl(JsonField.ofNullable(cacheControl))
 
+                /** Alias for calling [Builder.cacheControl] with `cacheControl.orElse(null)`. */
                 fun cacheControl(cacheControl: Optional<CacheControl>) =
                     cacheControl(cacheControl.getOrNull())
 
+                /**
+                 * Sets [Builder.cacheControl] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.cacheControl] with a well-typed [CacheControl]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
                 fun cacheControl(cacheControl: JsonField<CacheControl>) = apply {
                     this.cacheControl = cacheControl
                 }
@@ -22971,12 +25057,11 @@ private constructor(
                 fun description(description: String) = description(JsonField.of(description))
 
                 /**
-                 * Description of what this tool does.
+                 * Sets [Builder.description] to an arbitrary JSON value.
                  *
-                 * Tool descriptions should be as detailed as possible. The more information that
-                 * the model has about what the tool is and how to use it, the better it will
-                 * perform. You can use natural language descriptions to reinforce important aspects
-                 * of the tool input JSON schema.
+                 * You should usually call [Builder.description] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
                  */
                 fun description(description: JsonField<String>) = apply {
                     this.description = description
@@ -23034,12 +25119,23 @@ private constructor(
                 private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
             ) {
 
+                /**
+                 * @throws SamInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
                 fun type(): Type = type.getRequired("type")
 
                 @JsonProperty("properties")
                 @ExcludeMissing
                 fun _properties(): JsonValue = properties
 
+                /**
+                 * Returns the raw JSON value of [type].
+                 *
+                 * Unlike [type], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
                 @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                 @JsonAnyGetter
@@ -23088,6 +25184,13 @@ private constructor(
 
                     fun type(type: Type) = type(JsonField.of(type))
 
+                    /**
+                     * Sets [Builder.type] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.type] with a well-typed [Type] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
                     fun type(type: JsonField<Type>) = apply { this.type = type }
 
                     fun properties(properties: JsonValue) = apply { this.properties = properties }
@@ -23250,8 +25353,19 @@ private constructor(
                 private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
             ) {
 
+                /**
+                 * @throws SamInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
                 fun type(): Type = type.getRequired("type")
 
+                /**
+                 * Returns the raw JSON value of [type].
+                 *
+                 * Unlike [type], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
                 @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                 @JsonAnyGetter
@@ -23298,6 +25412,13 @@ private constructor(
 
                     fun type(type: Type) = type(JsonField.of(type))
 
+                    /**
+                     * Sets [Builder.type] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.type] with a well-typed [Type] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
                     fun type(type: JsonField<Type>) = apply { this.type = type }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -23485,23 +25606,47 @@ private constructor(
              * Name of the tool.
              *
              * This is how the tool will be called by the model and in tool_use blocks.
+             *
+             * @throws SamInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
              */
             fun name(): Name = name.getRequired("name")
 
+            /**
+             * @throws SamInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun type(): Type = type.getRequired("type")
 
+            /**
+             * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
+             *   server responded with an unexpected value).
+             */
             fun cacheControl(): Optional<CacheControl> =
                 Optional.ofNullable(cacheControl.getNullable("cache_control"))
 
             /**
-             * Name of the tool.
+             * Returns the raw JSON value of [name].
              *
-             * This is how the tool will be called by the model and in tool_use blocks.
+             * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<Name> = name
 
+            /**
+             * Returns the raw JSON value of [type].
+             *
+             * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+            /**
+             * Returns the raw JSON value of [cacheControl].
+             *
+             * Unlike [cacheControl], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
             @JsonProperty("cache_control")
             @ExcludeMissing
             fun _cacheControl(): JsonField<CacheControl> = cacheControl
@@ -23563,22 +25708,39 @@ private constructor(
                 fun name(name: Name) = name(JsonField.of(name))
 
                 /**
-                 * Name of the tool.
+                 * Sets [Builder.name] to an arbitrary JSON value.
                  *
-                 * This is how the tool will be called by the model and in tool_use blocks.
+                 * You should usually call [Builder.name] with a well-typed [Name] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
                  */
                 fun name(name: JsonField<Name>) = apply { this.name = name }
 
                 fun type(type: Type) = type(JsonField.of(type))
 
+                /**
+                 * Sets [Builder.type] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.type] with a well-typed [Type] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun type(type: JsonField<Type>) = apply { this.type = type }
 
                 fun cacheControl(cacheControl: CacheControl?) =
                     cacheControl(JsonField.ofNullable(cacheControl))
 
+                /** Alias for calling [Builder.cacheControl] with `cacheControl.orElse(null)`. */
                 fun cacheControl(cacheControl: Optional<CacheControl>) =
                     cacheControl(cacheControl.getOrNull())
 
+                /**
+                 * Sets [Builder.cacheControl] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.cacheControl] with a well-typed [CacheControl]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
                 fun cacheControl(cacheControl: JsonField<CacheControl>) = apply {
                     this.cacheControl = cacheControl
                 }
@@ -23824,8 +25986,19 @@ private constructor(
                 private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
             ) {
 
+                /**
+                 * @throws SamInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
                 fun type(): Type = type.getRequired("type")
 
+                /**
+                 * Returns the raw JSON value of [type].
+                 *
+                 * Unlike [type], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
                 @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                 @JsonAnyGetter
@@ -23872,6 +26045,13 @@ private constructor(
 
                     fun type(type: Type) = type(JsonField.of(type))
 
+                    /**
+                     * Sets [Builder.type] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.type] with a well-typed [Type] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
                     fun type(type: JsonField<Type>) = apply { this.type = type }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -24059,23 +26239,47 @@ private constructor(
              * Name of the tool.
              *
              * This is how the tool will be called by the model and in tool_use blocks.
+             *
+             * @throws SamInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
              */
             fun name(): Name = name.getRequired("name")
 
+            /**
+             * @throws SamInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun type(): Type = type.getRequired("type")
 
+            /**
+             * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
+             *   server responded with an unexpected value).
+             */
             fun cacheControl(): Optional<CacheControl> =
                 Optional.ofNullable(cacheControl.getNullable("cache_control"))
 
             /**
-             * Name of the tool.
+             * Returns the raw JSON value of [name].
              *
-             * This is how the tool will be called by the model and in tool_use blocks.
+             * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<Name> = name
 
+            /**
+             * Returns the raw JSON value of [type].
+             *
+             * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+            /**
+             * Returns the raw JSON value of [cacheControl].
+             *
+             * Unlike [cacheControl], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
             @JsonProperty("cache_control")
             @ExcludeMissing
             fun _cacheControl(): JsonField<CacheControl> = cacheControl
@@ -24137,22 +26341,39 @@ private constructor(
                 fun name(name: Name) = name(JsonField.of(name))
 
                 /**
-                 * Name of the tool.
+                 * Sets [Builder.name] to an arbitrary JSON value.
                  *
-                 * This is how the tool will be called by the model and in tool_use blocks.
+                 * You should usually call [Builder.name] with a well-typed [Name] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
                  */
                 fun name(name: JsonField<Name>) = apply { this.name = name }
 
                 fun type(type: Type) = type(JsonField.of(type))
 
+                /**
+                 * Sets [Builder.type] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.type] with a well-typed [Type] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun type(type: JsonField<Type>) = apply { this.type = type }
 
                 fun cacheControl(cacheControl: CacheControl?) =
                     cacheControl(JsonField.ofNullable(cacheControl))
 
+                /** Alias for calling [Builder.cacheControl] with `cacheControl.orElse(null)`. */
                 fun cacheControl(cacheControl: Optional<CacheControl>) =
                     cacheControl(cacheControl.getOrNull())
 
+                /**
+                 * Sets [Builder.cacheControl] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.cacheControl] with a well-typed [CacheControl]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
                 fun cacheControl(cacheControl: JsonField<CacheControl>) = apply {
                     this.cacheControl = cacheControl
                 }
@@ -24398,8 +26619,19 @@ private constructor(
                 private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
             ) {
 
+                /**
+                 * @throws SamInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
                 fun type(): Type = type.getRequired("type")
 
+                /**
+                 * Returns the raw JSON value of [type].
+                 *
+                 * Unlike [type], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
                 @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                 @JsonAnyGetter
@@ -24446,6 +26678,13 @@ private constructor(
 
                     fun type(type: Type) = type(JsonField.of(type))
 
+                    /**
+                     * Sets [Builder.type] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.type] with a well-typed [Type] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
                     fun type(type: JsonField<Type>) = apply { this.type = type }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
