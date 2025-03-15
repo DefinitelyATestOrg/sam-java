@@ -131,20 +131,14 @@ private constructor(
             this.anthropicBeta = anthropicBeta?.toMutableList()
         }
 
-        /**
-         * Optional header to specify the beta version(s) you want to use.
-         *
-         * To use multiple betas, use a comma separated list like `beta1,beta2` or specify the
-         * header multiple times for each beta.
-         */
+        /** Alias for calling [Builder.anthropicBeta] with `anthropicBeta.orElse(null)`. */
         fun anthropicBeta(anthropicBeta: Optional<List<String>>) =
             anthropicBeta(anthropicBeta.getOrNull())
 
         /**
-         * Optional header to specify the beta version(s) you want to use.
+         * Adds a single [String] to [Builder.anthropicBeta].
          *
-         * To use multiple betas, use a comma separated list like `beta1,beta2` or specify the
-         * header multiple times for each beta.
+         * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addAnthropicBeta(anthropicBeta: String) = apply {
             this.anthropicBeta =
@@ -161,12 +155,7 @@ private constructor(
             this.anthropicVersion = anthropicVersion
         }
 
-        /**
-         * The version of the Anthropic API you want to use.
-         *
-         * Read more about versioning and our version history
-         * [here](https://docs.anthropic.com/en/api/versioning).
-         */
+        /** Alias for calling [Builder.anthropicVersion] with `anthropicVersion.orElse(null)`. */
         fun anthropicVersion(anthropicVersion: Optional<String>) =
             anthropicVersion(anthropicVersion.getOrNull())
 
@@ -180,14 +169,7 @@ private constructor(
          */
         fun xApiKey(xApiKey: String?) = apply { this.xApiKey = xApiKey }
 
-        /**
-         * Your unique API key for authentication.
-         *
-         * This key is required in the header of all API requests, to authenticate your account and
-         * access Anthropic's services. Get your API key through the
-         * [Console](https://console.anthropic.com/settings/keys). Each key is scoped to a
-         * Workspace.
-         */
+        /** Alias for calling [Builder.xApiKey] with `xApiKey.orElse(null)`. */
         fun xApiKey(xApiKey: Optional<String>) = xApiKey(xApiKey.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
