@@ -232,6 +232,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .requests()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Body =
                 Body(
                     checkRequired("requests", requests).map { it.toImmutable() },
@@ -483,6 +495,18 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [BatchCreateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .requests()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): BatchCreateParams =
             BatchCreateParams(
                 anthropicBeta?.toImmutable(),
@@ -643,6 +667,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Request].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .customId()
+             * .params()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Request =
                 Request(
                     checkRequired("customId", customId),
@@ -1730,6 +1767,20 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Params].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .maxTokens()
+                 * .messages()
+                 * .model()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): Params =
                     Params(
                         checkRequired("maxTokens", maxTokens),
@@ -1899,6 +1950,19 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [Message].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .content()
+                     * .role()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
                     fun build(): Message =
                         Message(
                             checkRequired("content", content),
@@ -2771,6 +2835,20 @@ private constructor(
                                     keys.forEach(::removeAdditionalProperty)
                                 }
 
+                                /**
+                                 * Returns an immutable instance of [RequestTextBlock].
+                                 *
+                                 * Further updates to this [Builder] will not mutate the returned
+                                 * instance.
+                                 *
+                                 * The following fields are required:
+                                 * ```java
+                                 * .text()
+                                 * .type()
+                                 * ```
+                                 *
+                                 * @throws IllegalStateException if any required field is unset.
+                                 */
                                 fun build(): RequestTextBlock =
                                     RequestTextBlock(
                                         checkRequired("text", text),
@@ -3002,6 +3080,19 @@ private constructor(
                                         keys.forEach(::removeAdditionalProperty)
                                     }
 
+                                    /**
+                                     * Returns an immutable instance of [CacheControl].
+                                     *
+                                     * Further updates to this [Builder] will not mutate the
+                                     * returned instance.
+                                     *
+                                     * The following fields are required:
+                                     * ```java
+                                     * .type()
+                                     * ```
+                                     *
+                                     * @throws IllegalStateException if any required field is unset.
+                                     */
                                     fun build(): CacheControl =
                                         CacheControl(
                                             checkRequired("type", type),
@@ -3732,6 +3823,26 @@ private constructor(
                                                 keys.forEach(::removeAdditionalProperty)
                                             }
 
+                                        /**
+                                         * Returns an immutable instance of
+                                         * [RequestCharLocationCitation].
+                                         *
+                                         * Further updates to this [Builder] will not mutate the
+                                         * returned instance.
+                                         *
+                                         * The following fields are required:
+                                         * ```java
+                                         * .citedText()
+                                         * .documentIndex()
+                                         * .documentTitle()
+                                         * .endCharIndex()
+                                         * .startCharIndex()
+                                         * .type()
+                                         * ```
+                                         *
+                                         * @throws IllegalStateException if any required field is
+                                         *   unset.
+                                         */
                                         fun build(): RequestCharLocationCitation =
                                             RequestCharLocationCitation(
                                                 checkRequired("citedText", citedText),
@@ -4211,6 +4322,26 @@ private constructor(
                                                 keys.forEach(::removeAdditionalProperty)
                                             }
 
+                                        /**
+                                         * Returns an immutable instance of
+                                         * [RequestPageLocationCitation].
+                                         *
+                                         * Further updates to this [Builder] will not mutate the
+                                         * returned instance.
+                                         *
+                                         * The following fields are required:
+                                         * ```java
+                                         * .citedText()
+                                         * .documentIndex()
+                                         * .documentTitle()
+                                         * .endPageNumber()
+                                         * .startPageNumber()
+                                         * .type()
+                                         * ```
+                                         *
+                                         * @throws IllegalStateException if any required field is
+                                         *   unset.
+                                         */
                                         fun build(): RequestPageLocationCitation =
                                             RequestPageLocationCitation(
                                                 checkRequired("citedText", citedText),
@@ -4693,6 +4824,26 @@ private constructor(
                                                 keys.forEach(::removeAdditionalProperty)
                                             }
 
+                                        /**
+                                         * Returns an immutable instance of
+                                         * [RequestContentBlockLocationCitation].
+                                         *
+                                         * Further updates to this [Builder] will not mutate the
+                                         * returned instance.
+                                         *
+                                         * The following fields are required:
+                                         * ```java
+                                         * .citedText()
+                                         * .documentIndex()
+                                         * .documentTitle()
+                                         * .endBlockIndex()
+                                         * .startBlockIndex()
+                                         * .type()
+                                         * ```
+                                         *
+                                         * @throws IllegalStateException if any required field is
+                                         *   unset.
+                                         */
                                         fun build(): RequestContentBlockLocationCitation =
                                             RequestContentBlockLocationCitation(
                                                 checkRequired("citedText", citedText),
@@ -5090,6 +5241,20 @@ private constructor(
                                     keys.forEach(::removeAdditionalProperty)
                                 }
 
+                                /**
+                                 * Returns an immutable instance of [RequestImageBlock].
+                                 *
+                                 * Further updates to this [Builder] will not mutate the returned
+                                 * instance.
+                                 *
+                                 * The following fields are required:
+                                 * ```java
+                                 * .source()
+                                 * .type()
+                                 * ```
+                                 *
+                                 * @throws IllegalStateException if any required field is unset.
+                                 */
                                 fun build(): RequestImageBlock =
                                     RequestImageBlock(
                                         checkRequired("source", source),
@@ -5470,6 +5635,22 @@ private constructor(
                                                 keys.forEach(::removeAdditionalProperty)
                                             }
 
+                                        /**
+                                         * Returns an immutable instance of [Base64ImageSource].
+                                         *
+                                         * Further updates to this [Builder] will not mutate the
+                                         * returned instance.
+                                         *
+                                         * The following fields are required:
+                                         * ```java
+                                         * .data()
+                                         * .mediaType()
+                                         * .type()
+                                         * ```
+                                         *
+                                         * @throws IllegalStateException if any required field is
+                                         *   unset.
+                                         */
                                         fun build(): Base64ImageSource =
                                             Base64ImageSource(
                                                 checkRequired("data", data),
@@ -5898,6 +6079,21 @@ private constructor(
                                                 keys.forEach(::removeAdditionalProperty)
                                             }
 
+                                        /**
+                                         * Returns an immutable instance of [UrlImageSource].
+                                         *
+                                         * Further updates to this [Builder] will not mutate the
+                                         * returned instance.
+                                         *
+                                         * The following fields are required:
+                                         * ```java
+                                         * .type()
+                                         * .url()
+                                         * ```
+                                         *
+                                         * @throws IllegalStateException if any required field is
+                                         *   unset.
+                                         */
                                         fun build(): UrlImageSource =
                                             UrlImageSource(
                                                 checkRequired("type", type),
@@ -6262,6 +6458,19 @@ private constructor(
                                         keys.forEach(::removeAdditionalProperty)
                                     }
 
+                                    /**
+                                     * Returns an immutable instance of [CacheControl].
+                                     *
+                                     * Further updates to this [Builder] will not mutate the
+                                     * returned instance.
+                                     *
+                                     * The following fields are required:
+                                     * ```java
+                                     * .type()
+                                     * ```
+                                     *
+                                     * @throws IllegalStateException if any required field is unset.
+                                     */
                                     fun build(): CacheControl =
                                         CacheControl(
                                             checkRequired("type", type),
@@ -6647,6 +6856,22 @@ private constructor(
                                     keys.forEach(::removeAdditionalProperty)
                                 }
 
+                                /**
+                                 * Returns an immutable instance of [RequestToolUseBlock].
+                                 *
+                                 * Further updates to this [Builder] will not mutate the returned
+                                 * instance.
+                                 *
+                                 * The following fields are required:
+                                 * ```java
+                                 * .id()
+                                 * .input()
+                                 * .name()
+                                 * .type()
+                                 * ```
+                                 *
+                                 * @throws IllegalStateException if any required field is unset.
+                                 */
                                 fun build(): RequestToolUseBlock =
                                     RequestToolUseBlock(
                                         checkRequired("id", id),
@@ -6879,6 +7104,19 @@ private constructor(
                                         keys.forEach(::removeAdditionalProperty)
                                     }
 
+                                    /**
+                                     * Returns an immutable instance of [CacheControl].
+                                     *
+                                     * Further updates to this [Builder] will not mutate the
+                                     * returned instance.
+                                     *
+                                     * The following fields are required:
+                                     * ```java
+                                     * .type()
+                                     * ```
+                                     *
+                                     * @throws IllegalStateException if any required field is unset.
+                                     */
                                     fun build(): CacheControl =
                                         CacheControl(
                                             checkRequired("type", type),
@@ -7316,6 +7554,20 @@ private constructor(
                                     keys.forEach(::removeAdditionalProperty)
                                 }
 
+                                /**
+                                 * Returns an immutable instance of [RequestToolResultBlock].
+                                 *
+                                 * Further updates to this [Builder] will not mutate the returned
+                                 * instance.
+                                 *
+                                 * The following fields are required:
+                                 * ```java
+                                 * .toolUseId()
+                                 * .type()
+                                 * ```
+                                 *
+                                 * @throws IllegalStateException if any required field is unset.
+                                 */
                                 fun build(): RequestToolResultBlock =
                                     RequestToolResultBlock(
                                         checkRequired("toolUseId", toolUseId),
@@ -7548,6 +7800,19 @@ private constructor(
                                         keys.forEach(::removeAdditionalProperty)
                                     }
 
+                                    /**
+                                     * Returns an immutable instance of [CacheControl].
+                                     *
+                                     * Further updates to this [Builder] will not mutate the
+                                     * returned instance.
+                                     *
+                                     * The following fields are required:
+                                     * ```java
+                                     * .type()
+                                     * ```
+                                     *
+                                     * @throws IllegalStateException if any required field is unset.
+                                     */
                                     fun build(): CacheControl =
                                         CacheControl(
                                             checkRequired("type", type),
@@ -8411,6 +8676,21 @@ private constructor(
                                                     keys.forEach(::removeAdditionalProperty)
                                                 }
 
+                                            /**
+                                             * Returns an immutable instance of [RequestTextBlock].
+                                             *
+                                             * Further updates to this [Builder] will not mutate the
+                                             * returned instance.
+                                             *
+                                             * The following fields are required:
+                                             * ```java
+                                             * .text()
+                                             * .type()
+                                             * ```
+                                             *
+                                             * @throws IllegalStateException if any required field
+                                             *   is unset.
+                                             */
                                             fun build(): RequestTextBlock =
                                                 RequestTextBlock(
                                                     checkRequired("text", text),
@@ -8666,6 +8946,20 @@ private constructor(
                                                     keys.forEach(::removeAdditionalProperty)
                                                 }
 
+                                                /**
+                                                 * Returns an immutable instance of [CacheControl].
+                                                 *
+                                                 * Further updates to this [Builder] will not mutate
+                                                 * the returned instance.
+                                                 *
+                                                 * The following fields are required:
+                                                 * ```java
+                                                 * .type()
+                                                 * ```
+                                                 *
+                                                 * @throws IllegalStateException if any required
+                                                 *   field is unset.
+                                                 */
                                                 fun build(): CacheControl =
                                                     CacheControl(
                                                         checkRequired("type", type),
@@ -9504,6 +9798,26 @@ private constructor(
                                                         keys.forEach(::removeAdditionalProperty)
                                                     }
 
+                                                    /**
+                                                     * Returns an immutable instance of
+                                                     * [RequestCharLocationCitation].
+                                                     *
+                                                     * Further updates to this [Builder] will not
+                                                     * mutate the returned instance.
+                                                     *
+                                                     * The following fields are required:
+                                                     * ```java
+                                                     * .citedText()
+                                                     * .documentIndex()
+                                                     * .documentTitle()
+                                                     * .endCharIndex()
+                                                     * .startCharIndex()
+                                                     * .type()
+                                                     * ```
+                                                     *
+                                                     * @throws IllegalStateException if any required
+                                                     *   field is unset.
+                                                     */
                                                     fun build(): RequestCharLocationCitation =
                                                         RequestCharLocationCitation(
                                                             checkRequired("citedText", citedText),
@@ -10060,6 +10374,26 @@ private constructor(
                                                         keys.forEach(::removeAdditionalProperty)
                                                     }
 
+                                                    /**
+                                                     * Returns an immutable instance of
+                                                     * [RequestPageLocationCitation].
+                                                     *
+                                                     * Further updates to this [Builder] will not
+                                                     * mutate the returned instance.
+                                                     *
+                                                     * The following fields are required:
+                                                     * ```java
+                                                     * .citedText()
+                                                     * .documentIndex()
+                                                     * .documentTitle()
+                                                     * .endPageNumber()
+                                                     * .startPageNumber()
+                                                     * .type()
+                                                     * ```
+                                                     *
+                                                     * @throws IllegalStateException if any required
+                                                     *   field is unset.
+                                                     */
                                                     fun build(): RequestPageLocationCitation =
                                                         RequestPageLocationCitation(
                                                             checkRequired("citedText", citedText),
@@ -10622,6 +10956,26 @@ private constructor(
                                                         keys.forEach(::removeAdditionalProperty)
                                                     }
 
+                                                    /**
+                                                     * Returns an immutable instance of
+                                                     * [RequestContentBlockLocationCitation].
+                                                     *
+                                                     * Further updates to this [Builder] will not
+                                                     * mutate the returned instance.
+                                                     *
+                                                     * The following fields are required:
+                                                     * ```java
+                                                     * .citedText()
+                                                     * .documentIndex()
+                                                     * .documentTitle()
+                                                     * .endBlockIndex()
+                                                     * .startBlockIndex()
+                                                     * .type()
+                                                     * ```
+                                                     *
+                                                     * @throws IllegalStateException if any required
+                                                     *   field is unset.
+                                                     */
                                                     fun build():
                                                         RequestContentBlockLocationCitation =
                                                         RequestContentBlockLocationCitation(
@@ -11070,6 +11424,21 @@ private constructor(
                                                     keys.forEach(::removeAdditionalProperty)
                                                 }
 
+                                            /**
+                                             * Returns an immutable instance of [RequestImageBlock].
+                                             *
+                                             * Further updates to this [Builder] will not mutate the
+                                             * returned instance.
+                                             *
+                                             * The following fields are required:
+                                             * ```java
+                                             * .source()
+                                             * .type()
+                                             * ```
+                                             *
+                                             * @throws IllegalStateException if any required field
+                                             *   is unset.
+                                             */
                                             fun build(): RequestImageBlock =
                                                 RequestImageBlock(
                                                     checkRequired("source", source),
@@ -11503,6 +11872,23 @@ private constructor(
                                                         keys.forEach(::removeAdditionalProperty)
                                                     }
 
+                                                    /**
+                                                     * Returns an immutable instance of
+                                                     * [Base64ImageSource].
+                                                     *
+                                                     * Further updates to this [Builder] will not
+                                                     * mutate the returned instance.
+                                                     *
+                                                     * The following fields are required:
+                                                     * ```java
+                                                     * .data()
+                                                     * .mediaType()
+                                                     * .type()
+                                                     * ```
+                                                     *
+                                                     * @throws IllegalStateException if any required
+                                                     *   field is unset.
+                                                     */
                                                     fun build(): Base64ImageSource =
                                                         Base64ImageSource(
                                                             checkRequired("data", data),
@@ -11975,6 +12361,22 @@ private constructor(
                                                         keys.forEach(::removeAdditionalProperty)
                                                     }
 
+                                                    /**
+                                                     * Returns an immutable instance of
+                                                     * [UrlImageSource].
+                                                     *
+                                                     * Further updates to this [Builder] will not
+                                                     * mutate the returned instance.
+                                                     *
+                                                     * The following fields are required:
+                                                     * ```java
+                                                     * .type()
+                                                     * .url()
+                                                     * ```
+                                                     *
+                                                     * @throws IllegalStateException if any required
+                                                     *   field is unset.
+                                                     */
                                                     fun build(): UrlImageSource =
                                                         UrlImageSource(
                                                             checkRequired("type", type),
@@ -12370,6 +12772,20 @@ private constructor(
                                                     keys.forEach(::removeAdditionalProperty)
                                                 }
 
+                                                /**
+                                                 * Returns an immutable instance of [CacheControl].
+                                                 *
+                                                 * Further updates to this [Builder] will not mutate
+                                                 * the returned instance.
+                                                 *
+                                                 * The following fields are required:
+                                                 * ```java
+                                                 * .type()
+                                                 * ```
+                                                 *
+                                                 * @throws IllegalStateException if any required
+                                                 *   field is unset.
+                                                 */
                                                 fun build(): CacheControl =
                                                     CacheControl(
                                                         checkRequired("type", type),
@@ -12965,6 +13381,20 @@ private constructor(
                                     keys.forEach(::removeAdditionalProperty)
                                 }
 
+                                /**
+                                 * Returns an immutable instance of [RequestDocumentBlock].
+                                 *
+                                 * Further updates to this [Builder] will not mutate the returned
+                                 * instance.
+                                 *
+                                 * The following fields are required:
+                                 * ```java
+                                 * .source()
+                                 * .type()
+                                 * ```
+                                 *
+                                 * @throws IllegalStateException if any required field is unset.
+                                 */
                                 fun build(): RequestDocumentBlock =
                                     RequestDocumentBlock(
                                         checkRequired("source", source),
@@ -13419,6 +13849,22 @@ private constructor(
                                                 keys.forEach(::removeAdditionalProperty)
                                             }
 
+                                        /**
+                                         * Returns an immutable instance of [Base64PdfSource].
+                                         *
+                                         * Further updates to this [Builder] will not mutate the
+                                         * returned instance.
+                                         *
+                                         * The following fields are required:
+                                         * ```java
+                                         * .data()
+                                         * .mediaType()
+                                         * .type()
+                                         * ```
+                                         *
+                                         * @throws IllegalStateException if any required field is
+                                         *   unset.
+                                         */
                                         fun build(): Base64PdfSource =
                                             Base64PdfSource(
                                                 checkRequired("data", data),
@@ -13872,6 +14318,22 @@ private constructor(
                                                 keys.forEach(::removeAdditionalProperty)
                                             }
 
+                                        /**
+                                         * Returns an immutable instance of [PlainTextSource].
+                                         *
+                                         * Further updates to this [Builder] will not mutate the
+                                         * returned instance.
+                                         *
+                                         * The following fields are required:
+                                         * ```java
+                                         * .data()
+                                         * .mediaType()
+                                         * .type()
+                                         * ```
+                                         *
+                                         * @throws IllegalStateException if any required field is
+                                         *   unset.
+                                         */
                                         fun build(): PlainTextSource =
                                             PlainTextSource(
                                                 checkRequired("data", data),
@@ -14308,6 +14770,21 @@ private constructor(
                                                 keys.forEach(::removeAdditionalProperty)
                                             }
 
+                                        /**
+                                         * Returns an immutable instance of [ContentBlockSource].
+                                         *
+                                         * Further updates to this [Builder] will not mutate the
+                                         * returned instance.
+                                         *
+                                         * The following fields are required:
+                                         * ```java
+                                         * .content()
+                                         * .type()
+                                         * ```
+                                         *
+                                         * @throws IllegalStateException if any required field is
+                                         *   unset.
+                                         */
                                         fun build(): ContentBlockSource =
                                             ContentBlockSource(
                                                 checkRequired("content", content),
@@ -15112,6 +15589,22 @@ private constructor(
                                                         keys.forEach(::removeAdditionalProperty)
                                                     }
 
+                                                    /**
+                                                     * Returns an immutable instance of
+                                                     * [RequestTextBlock].
+                                                     *
+                                                     * Further updates to this [Builder] will not
+                                                     * mutate the returned instance.
+                                                     *
+                                                     * The following fields are required:
+                                                     * ```java
+                                                     * .text()
+                                                     * .type()
+                                                     * ```
+                                                     *
+                                                     * @throws IllegalStateException if any required
+                                                     *   field is unset.
+                                                     */
                                                     fun build(): RequestTextBlock =
                                                         RequestTextBlock(
                                                             checkRequired("text", text),
@@ -15387,6 +15880,21 @@ private constructor(
                                                             keys.forEach(::removeAdditionalProperty)
                                                         }
 
+                                                        /**
+                                                         * Returns an immutable instance of
+                                                         * [CacheControl].
+                                                         *
+                                                         * Further updates to this [Builder] will
+                                                         * not mutate the returned instance.
+                                                         *
+                                                         * The following fields are required:
+                                                         * ```java
+                                                         * .type()
+                                                         * ```
+                                                         *
+                                                         * @throws IllegalStateException if any
+                                                         *   required field is unset.
+                                                         */
                                                         fun build(): CacheControl =
                                                             CacheControl(
                                                                 checkRequired("type", type),
@@ -16336,6 +16844,27 @@ private constructor(
                                                                 )
                                                             }
 
+                                                            /**
+                                                             * Returns an immutable instance of
+                                                             * [RequestCharLocationCitation].
+                                                             *
+                                                             * Further updates to this [Builder]
+                                                             * will not mutate the returned
+                                                             * instance.
+                                                             *
+                                                             * The following fields are required:
+                                                             * ```java
+                                                             * .citedText()
+                                                             * .documentIndex()
+                                                             * .documentTitle()
+                                                             * .endCharIndex()
+                                                             * .startCharIndex()
+                                                             * .type()
+                                                             * ```
+                                                             *
+                                                             * @throws IllegalStateException if any
+                                                             *   required field is unset.
+                                                             */
                                                             fun build():
                                                                 RequestCharLocationCitation =
                                                                 RequestCharLocationCitation(
@@ -16993,6 +17522,27 @@ private constructor(
                                                                 )
                                                             }
 
+                                                            /**
+                                                             * Returns an immutable instance of
+                                                             * [RequestPageLocationCitation].
+                                                             *
+                                                             * Further updates to this [Builder]
+                                                             * will not mutate the returned
+                                                             * instance.
+                                                             *
+                                                             * The following fields are required:
+                                                             * ```java
+                                                             * .citedText()
+                                                             * .documentIndex()
+                                                             * .documentTitle()
+                                                             * .endPageNumber()
+                                                             * .startPageNumber()
+                                                             * .type()
+                                                             * ```
+                                                             *
+                                                             * @throws IllegalStateException if any
+                                                             *   required field is unset.
+                                                             */
                                                             fun build():
                                                                 RequestPageLocationCitation =
                                                                 RequestPageLocationCitation(
@@ -17652,6 +18202,27 @@ private constructor(
                                                                 )
                                                             }
 
+                                                            /**
+                                                             * Returns an immutable instance of
+                                                             * [RequestContentBlockLocationCitation].
+                                                             *
+                                                             * Further updates to this [Builder]
+                                                             * will not mutate the returned
+                                                             * instance.
+                                                             *
+                                                             * The following fields are required:
+                                                             * ```java
+                                                             * .citedText()
+                                                             * .documentIndex()
+                                                             * .documentTitle()
+                                                             * .endBlockIndex()
+                                                             * .startBlockIndex()
+                                                             * .type()
+                                                             * ```
+                                                             *
+                                                             * @throws IllegalStateException if any
+                                                             *   required field is unset.
+                                                             */
                                                             fun build():
                                                                 RequestContentBlockLocationCitation =
                                                                 RequestContentBlockLocationCitation(
@@ -18153,6 +18724,22 @@ private constructor(
                                                         keys.forEach(::removeAdditionalProperty)
                                                     }
 
+                                                    /**
+                                                     * Returns an immutable instance of
+                                                     * [RequestImageBlock].
+                                                     *
+                                                     * Further updates to this [Builder] will not
+                                                     * mutate the returned instance.
+                                                     *
+                                                     * The following fields are required:
+                                                     * ```java
+                                                     * .source()
+                                                     * .type()
+                                                     * ```
+                                                     *
+                                                     * @throws IllegalStateException if any required
+                                                     *   field is unset.
+                                                     */
                                                     fun build(): RequestImageBlock =
                                                         RequestImageBlock(
                                                             checkRequired("source", source),
@@ -18641,6 +19228,24 @@ private constructor(
                                                                 )
                                                             }
 
+                                                            /**
+                                                             * Returns an immutable instance of
+                                                             * [Base64ImageSource].
+                                                             *
+                                                             * Further updates to this [Builder]
+                                                             * will not mutate the returned
+                                                             * instance.
+                                                             *
+                                                             * The following fields are required:
+                                                             * ```java
+                                                             * .data()
+                                                             * .mediaType()
+                                                             * .type()
+                                                             * ```
+                                                             *
+                                                             * @throws IllegalStateException if any
+                                                             *   required field is unset.
+                                                             */
                                                             fun build(): Base64ImageSource =
                                                                 Base64ImageSource(
                                                                     checkRequired("data", data),
@@ -19173,6 +19778,23 @@ private constructor(
                                                                 )
                                                             }
 
+                                                            /**
+                                                             * Returns an immutable instance of
+                                                             * [UrlImageSource].
+                                                             *
+                                                             * Further updates to this [Builder]
+                                                             * will not mutate the returned
+                                                             * instance.
+                                                             *
+                                                             * The following fields are required:
+                                                             * ```java
+                                                             * .type()
+                                                             * .url()
+                                                             * ```
+                                                             *
+                                                             * @throws IllegalStateException if any
+                                                             *   required field is unset.
+                                                             */
                                                             fun build(): UrlImageSource =
                                                                 UrlImageSource(
                                                                     checkRequired("type", type),
@@ -19607,6 +20229,21 @@ private constructor(
                                                             keys.forEach(::removeAdditionalProperty)
                                                         }
 
+                                                        /**
+                                                         * Returns an immutable instance of
+                                                         * [CacheControl].
+                                                         *
+                                                         * Further updates to this [Builder] will
+                                                         * not mutate the returned instance.
+                                                         *
+                                                         * The following fields are required:
+                                                         * ```java
+                                                         * .type()
+                                                         * ```
+                                                         *
+                                                         * @throws IllegalStateException if any
+                                                         *   required field is unset.
+                                                         */
                                                         fun build(): CacheControl =
                                                             CacheControl(
                                                                 checkRequired("type", type),
@@ -20068,6 +20705,21 @@ private constructor(
                                                 keys.forEach(::removeAdditionalProperty)
                                             }
 
+                                        /**
+                                         * Returns an immutable instance of [UrlpdfSource].
+                                         *
+                                         * Further updates to this [Builder] will not mutate the
+                                         * returned instance.
+                                         *
+                                         * The following fields are required:
+                                         * ```java
+                                         * .type()
+                                         * .url()
+                                         * ```
+                                         *
+                                         * @throws IllegalStateException if any required field is
+                                         *   unset.
+                                         */
                                         fun build(): UrlpdfSource =
                                             UrlpdfSource(
                                                 checkRequired("type", type),
@@ -20432,6 +21084,19 @@ private constructor(
                                         keys.forEach(::removeAdditionalProperty)
                                     }
 
+                                    /**
+                                     * Returns an immutable instance of [CacheControl].
+                                     *
+                                     * Further updates to this [Builder] will not mutate the
+                                     * returned instance.
+                                     *
+                                     * The following fields are required:
+                                     * ```java
+                                     * .type()
+                                     * ```
+                                     *
+                                     * @throws IllegalStateException if any required field is unset.
+                                     */
                                     fun build(): CacheControl =
                                         CacheControl(
                                             checkRequired("type", type),
@@ -20678,6 +21343,12 @@ private constructor(
                                         keys.forEach(::removeAdditionalProperty)
                                     }
 
+                                    /**
+                                     * Returns an immutable instance of [Citations].
+                                     *
+                                     * Further updates to this [Builder] will not mutate the
+                                     * returned instance.
+                                     */
                                     fun build(): Citations =
                                         Citations(enabled, additionalProperties.toImmutable())
                                 }
@@ -20903,6 +21574,21 @@ private constructor(
                                     keys.forEach(::removeAdditionalProperty)
                                 }
 
+                                /**
+                                 * Returns an immutable instance of [RequestThinkingBlock].
+                                 *
+                                 * Further updates to this [Builder] will not mutate the returned
+                                 * instance.
+                                 *
+                                 * The following fields are required:
+                                 * ```java
+                                 * .signature()
+                                 * .thinking()
+                                 * .type()
+                                 * ```
+                                 *
+                                 * @throws IllegalStateException if any required field is unset.
+                                 */
                                 fun build(): RequestThinkingBlock =
                                     RequestThinkingBlock(
                                         checkRequired("signature", signature),
@@ -21185,6 +21871,20 @@ private constructor(
                                     keys.forEach(::removeAdditionalProperty)
                                 }
 
+                                /**
+                                 * Returns an immutable instance of [RequestRedactedThinkingBlock].
+                                 *
+                                 * Further updates to this [Builder] will not mutate the returned
+                                 * instance.
+                                 *
+                                 * The following fields are required:
+                                 * ```java
+                                 * .data()
+                                 * .type()
+                                 * ```
+                                 *
+                                 * @throws IllegalStateException if any required field is unset.
+                                 */
                                 fun build(): RequestRedactedThinkingBlock =
                                     RequestRedactedThinkingBlock(
                                         checkRequired("data", data),
@@ -21554,6 +22254,11 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [Metadata].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     */
                     fun build(): Metadata = Metadata(userId, additionalProperties.toImmutable())
                 }
 
@@ -21986,6 +22691,19 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [RequestTextBlock].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .text()
+                         * .type()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): RequestTextBlock =
                             RequestTextBlock(
                                 checkRequired("text", text),
@@ -22202,6 +22920,19 @@ private constructor(
                                 keys.forEach(::removeAdditionalProperty)
                             }
 
+                            /**
+                             * Returns an immutable instance of [CacheControl].
+                             *
+                             * Further updates to this [Builder] will not mutate the returned
+                             * instance.
+                             *
+                             * The following fields are required:
+                             * ```java
+                             * .type()
+                             * ```
+                             *
+                             * @throws IllegalStateException if any required field is unset.
+                             */
                             fun build(): CacheControl =
                                 CacheControl(
                                     checkRequired("type", type),
@@ -22882,6 +23613,24 @@ private constructor(
                                     keys.forEach(::removeAdditionalProperty)
                                 }
 
+                                /**
+                                 * Returns an immutable instance of [RequestCharLocationCitation].
+                                 *
+                                 * Further updates to this [Builder] will not mutate the returned
+                                 * instance.
+                                 *
+                                 * The following fields are required:
+                                 * ```java
+                                 * .citedText()
+                                 * .documentIndex()
+                                 * .documentTitle()
+                                 * .endCharIndex()
+                                 * .startCharIndex()
+                                 * .type()
+                                 * ```
+                                 *
+                                 * @throws IllegalStateException if any required field is unset.
+                                 */
                                 fun build(): RequestCharLocationCitation =
                                     RequestCharLocationCitation(
                                         checkRequired("citedText", citedText),
@@ -23330,6 +24079,24 @@ private constructor(
                                     keys.forEach(::removeAdditionalProperty)
                                 }
 
+                                /**
+                                 * Returns an immutable instance of [RequestPageLocationCitation].
+                                 *
+                                 * Further updates to this [Builder] will not mutate the returned
+                                 * instance.
+                                 *
+                                 * The following fields are required:
+                                 * ```java
+                                 * .citedText()
+                                 * .documentIndex()
+                                 * .documentTitle()
+                                 * .endPageNumber()
+                                 * .startPageNumber()
+                                 * .type()
+                                 * ```
+                                 *
+                                 * @throws IllegalStateException if any required field is unset.
+                                 */
                                 fun build(): RequestPageLocationCitation =
                                     RequestPageLocationCitation(
                                         checkRequired("citedText", citedText),
@@ -23783,6 +24550,25 @@ private constructor(
                                     keys.forEach(::removeAdditionalProperty)
                                 }
 
+                                /**
+                                 * Returns an immutable instance of
+                                 * [RequestContentBlockLocationCitation].
+                                 *
+                                 * Further updates to this [Builder] will not mutate the returned
+                                 * instance.
+                                 *
+                                 * The following fields are required:
+                                 * ```java
+                                 * .citedText()
+                                 * .documentIndex()
+                                 * .documentTitle()
+                                 * .endBlockIndex()
+                                 * .startBlockIndex()
+                                 * .type()
+                                 * ```
+                                 *
+                                 * @throws IllegalStateException if any required field is unset.
+                                 */
                                 fun build(): RequestContentBlockLocationCitation =
                                     RequestContentBlockLocationCitation(
                                         checkRequired("citedText", citedText),
@@ -24275,6 +25061,19 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [ThinkingConfigEnabled].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .budgetTokens()
+                         * .type()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): ThinkingConfigEnabled =
                             ThinkingConfigEnabled(
                                 checkRequired("budgetTokens", budgetTokens),
@@ -24506,6 +25305,18 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [ThinkingConfigDisabled].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .type()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): ThinkingConfigDisabled =
                             ThinkingConfigDisabled(
                                 checkRequired("type", type),
@@ -25008,6 +25819,18 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [ToolChoiceAuto].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .type()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): ToolChoiceAuto =
                             ToolChoiceAuto(
                                 checkRequired("type", type),
@@ -25290,6 +26113,18 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [ToolChoiceAny].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .type()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): ToolChoiceAny =
                             ToolChoiceAny(
                                 checkRequired("type", type),
@@ -25609,6 +26444,19 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [ToolChoiceTool].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .name()
+                         * .type()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): ToolChoiceTool =
                             ToolChoiceTool(
                                 checkRequired("name", name),
@@ -25842,6 +26690,18 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [ToolChoiceNone].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .type()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): ToolChoiceNone =
                             ToolChoiceNone(
                                 checkRequired("type", type),
@@ -26397,6 +27257,19 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [InnerTool].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .inputSchema()
+                         * .name()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): InnerTool =
                             InnerTool(
                                 checkRequired("inputSchema", inputSchema),
@@ -26531,6 +27404,19 @@ private constructor(
                                 keys.forEach(::removeAdditionalProperty)
                             }
 
+                            /**
+                             * Returns an immutable instance of [InputSchema].
+                             *
+                             * Further updates to this [Builder] will not mutate the returned
+                             * instance.
+                             *
+                             * The following fields are required:
+                             * ```java
+                             * .type()
+                             * ```
+                             *
+                             * @throws IllegalStateException if any required field is unset.
+                             */
                             fun build(): InputSchema =
                                 InputSchema(
                                     checkRequired("type", type),
@@ -26765,6 +27651,19 @@ private constructor(
                                 keys.forEach(::removeAdditionalProperty)
                             }
 
+                            /**
+                             * Returns an immutable instance of [CacheControl].
+                             *
+                             * Further updates to this [Builder] will not mutate the returned
+                             * instance.
+                             *
+                             * The following fields are required:
+                             * ```java
+                             * .type()
+                             * ```
+                             *
+                             * @throws IllegalStateException if any required field is unset.
+                             */
                             fun build(): CacheControl =
                                 CacheControl(
                                     checkRequired("type", type),
@@ -27101,6 +28000,19 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [BashTool20250124].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .name()
+                         * .type()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): BashTool20250124 =
                             BashTool20250124(
                                 checkRequired("name", name),
@@ -27422,6 +28334,19 @@ private constructor(
                                 keys.forEach(::removeAdditionalProperty)
                             }
 
+                            /**
+                             * Returns an immutable instance of [CacheControl].
+                             *
+                             * Further updates to this [Builder] will not mutate the returned
+                             * instance.
+                             *
+                             * The following fields are required:
+                             * ```java
+                             * .type()
+                             * ```
+                             *
+                             * @throws IllegalStateException if any required field is unset.
+                             */
                             fun build(): CacheControl =
                                 CacheControl(
                                     checkRequired("type", type),
@@ -27758,6 +28683,19 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [TextEditor20250124].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .name()
+                         * .type()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): TextEditor20250124 =
                             TextEditor20250124(
                                 checkRequired("name", name),
@@ -28079,6 +29017,19 @@ private constructor(
                                 keys.forEach(::removeAdditionalProperty)
                             }
 
+                            /**
+                             * Returns an immutable instance of [CacheControl].
+                             *
+                             * Further updates to this [Builder] will not mutate the returned
+                             * instance.
+                             *
+                             * The following fields are required:
+                             * ```java
+                             * .type()
+                             * ```
+                             *
+                             * @throws IllegalStateException if any required field is unset.
+                             */
                             fun build(): CacheControl =
                                 CacheControl(
                                     checkRequired("type", type),

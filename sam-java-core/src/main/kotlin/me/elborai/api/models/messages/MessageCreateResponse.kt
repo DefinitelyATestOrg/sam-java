@@ -553,6 +553,25 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [MessageCreateResponse].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .content()
+         * .model()
+         * .role()
+         * .stopReason()
+         * .stopSequence()
+         * .type()
+         * .usage()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): MessageCreateResponse =
             MessageCreateResponse(
                 checkRequired("id", id),
@@ -1022,6 +1041,20 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [ResponseTextBlock].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .citations()
+                 * .text()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): ResponseTextBlock =
                     ResponseTextBlock(
                         checkRequired("citations", citations).map { it.toImmutable() },
@@ -1553,6 +1586,23 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [ResponseCharLocationCitation].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .citedText()
+                         * .documentIndex()
+                         * .documentTitle()
+                         * .endCharIndex()
+                         * .startCharIndex()
+                         * .type()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): ResponseCharLocationCitation =
                             ResponseCharLocationCitation(
                                 checkRequired("citedText", citedText),
@@ -1986,6 +2036,23 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [ResponsePageLocationCitation].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .citedText()
+                         * .documentIndex()
+                         * .documentTitle()
+                         * .endPageNumber()
+                         * .startPageNumber()
+                         * .type()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): ResponsePageLocationCitation =
                             ResponsePageLocationCitation(
                                 checkRequired("citedText", citedText),
@@ -2421,6 +2488,23 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [ResponseContentBlockLocationCitation].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .citedText()
+                         * .documentIndex()
+                         * .documentTitle()
+                         * .endBlockIndex()
+                         * .startBlockIndex()
+                         * .type()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): ResponseContentBlockLocationCitation =
                             ResponseContentBlockLocationCitation(
                                 checkRequired("citedText", citedText),
@@ -2840,6 +2924,21 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [ResponseToolUseBlock].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .id()
+                 * .input()
+                 * .name()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): ResponseToolUseBlock =
                     ResponseToolUseBlock(
                         checkRequired("id", id),
@@ -3134,6 +3233,20 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [ResponseThinkingBlock].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .signature()
+                 * .thinking()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): ResponseThinkingBlock =
                     ResponseThinkingBlock(
                         checkRequired("signature", signature),
@@ -3393,6 +3506,19 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [ResponseRedactedThinkingBlock].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .data()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): ResponseRedactedThinkingBlock =
                     ResponseRedactedThinkingBlock(
                         checkRequired("data", data),
@@ -4100,6 +4226,21 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Usage].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .cacheCreationInputTokens()
+             * .cacheReadInputTokens()
+             * .inputTokens()
+             * .outputTokens()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Usage =
                 Usage(
                     checkRequired("cacheCreationInputTokens", cacheCreationInputTokens),
