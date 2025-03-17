@@ -563,6 +563,25 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [MessagesBetaTrueCreateResponse].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .content()
+         * .model()
+         * .role()
+         * .stopReason()
+         * .stopSequence()
+         * .type()
+         * .usage()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): MessagesBetaTrueCreateResponse =
             MessagesBetaTrueCreateResponse(
                 checkRequired("id", id),
@@ -1049,6 +1068,20 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [BetaResponseTextBlock].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .citations()
+                 * .text()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): BetaResponseTextBlock =
                     BetaResponseTextBlock(
                         checkRequired("citations", citations).map { it.toImmutable() },
@@ -1591,6 +1624,23 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [BetaResponseCharLocationCitation].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .citedText()
+                         * .documentIndex()
+                         * .documentTitle()
+                         * .endCharIndex()
+                         * .startCharIndex()
+                         * .type()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): BetaResponseCharLocationCitation =
                             BetaResponseCharLocationCitation(
                                 checkRequired("citedText", citedText),
@@ -2024,6 +2074,23 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [BetaResponsePageLocationCitation].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .citedText()
+                         * .documentIndex()
+                         * .documentTitle()
+                         * .endPageNumber()
+                         * .startPageNumber()
+                         * .type()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): BetaResponsePageLocationCitation =
                             BetaResponsePageLocationCitation(
                                 checkRequired("citedText", citedText),
@@ -2460,6 +2527,24 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of
+                         * [BetaResponseContentBlockLocationCitation].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .citedText()
+                         * .documentIndex()
+                         * .documentTitle()
+                         * .endBlockIndex()
+                         * .startBlockIndex()
+                         * .type()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): BetaResponseContentBlockLocationCitation =
                             BetaResponseContentBlockLocationCitation(
                                 checkRequired("citedText", citedText),
@@ -2881,6 +2966,21 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [BetaResponseToolUseBlock].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .id()
+                 * .input()
+                 * .name()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): BetaResponseToolUseBlock =
                     BetaResponseToolUseBlock(
                         checkRequired("id", id),
@@ -3176,6 +3276,20 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [BetaResponseThinkingBlock].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .signature()
+                 * .thinking()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): BetaResponseThinkingBlock =
                     BetaResponseThinkingBlock(
                         checkRequired("signature", signature),
@@ -3436,6 +3550,19 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [BetaResponseRedactedThinkingBlock].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .data()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): BetaResponseRedactedThinkingBlock =
                     BetaResponseRedactedThinkingBlock(
                         checkRequired("data", data),
@@ -4143,6 +4270,21 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Usage].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .cacheCreationInputTokens()
+             * .cacheReadInputTokens()
+             * .inputTokens()
+             * .outputTokens()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Usage =
                 Usage(
                     checkRequired("cacheCreationInputTokens", cacheCreationInputTokens),

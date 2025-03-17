@@ -514,6 +514,27 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [BatchCancelBetaResponse].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .archivedAt()
+         * .cancelInitiatedAt()
+         * .createdAt()
+         * .endedAt()
+         * .expiresAt()
+         * .processingStatus()
+         * .requestCounts()
+         * .resultsUrl()
+         * .type()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): BatchCancelBetaResponse =
             BatchCancelBetaResponse(
                 checkRequired("id", id),
@@ -904,6 +925,22 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [RequestCounts].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .canceled()
+             * .errored()
+             * .expired()
+             * .processing()
+             * .succeeded()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): RequestCounts =
                 RequestCounts(
                     checkRequired("canceled", canceled),
