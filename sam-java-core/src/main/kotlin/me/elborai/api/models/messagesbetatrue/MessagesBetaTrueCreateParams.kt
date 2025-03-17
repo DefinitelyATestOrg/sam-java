@@ -1567,6 +1567,20 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .maxTokens()
+             * .messages()
+             * .model()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Body =
                 Body(
                     checkRequired("maxTokens", maxTokens),
@@ -2322,6 +2336,20 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [MessagesBetaTrueCreateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .maxTokens()
+         * .messages()
+         * .model()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): MessagesBetaTrueCreateParams =
             MessagesBetaTrueCreateParams(
                 anthropicBeta?.toImmutable(),
@@ -2469,6 +2497,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Message].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .content()
+             * .role()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Message =
                 Message(
                     checkRequired("content", content),
@@ -3308,6 +3349,19 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [BetaRequestTextBlock].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .text()
+                         * .type()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): BetaRequestTextBlock =
                             BetaRequestTextBlock(
                                 checkRequired("text", text),
@@ -3524,6 +3578,19 @@ private constructor(
                                 keys.forEach(::removeAdditionalProperty)
                             }
 
+                            /**
+                             * Returns an immutable instance of [CacheControl].
+                             *
+                             * Further updates to this [Builder] will not mutate the returned
+                             * instance.
+                             *
+                             * The following fields are required:
+                             * ```java
+                             * .type()
+                             * ```
+                             *
+                             * @throws IllegalStateException if any required field is unset.
+                             */
                             fun build(): CacheControl =
                                 CacheControl(
                                     checkRequired("type", type),
@@ -4215,6 +4282,25 @@ private constructor(
                                     keys.forEach(::removeAdditionalProperty)
                                 }
 
+                                /**
+                                 * Returns an immutable instance of
+                                 * [BetaRequestCharLocationCitation].
+                                 *
+                                 * Further updates to this [Builder] will not mutate the returned
+                                 * instance.
+                                 *
+                                 * The following fields are required:
+                                 * ```java
+                                 * .citedText()
+                                 * .documentIndex()
+                                 * .documentTitle()
+                                 * .endCharIndex()
+                                 * .startCharIndex()
+                                 * .type()
+                                 * ```
+                                 *
+                                 * @throws IllegalStateException if any required field is unset.
+                                 */
                                 fun build(): BetaRequestCharLocationCitation =
                                     BetaRequestCharLocationCitation(
                                         checkRequired("citedText", citedText),
@@ -4664,6 +4750,25 @@ private constructor(
                                     keys.forEach(::removeAdditionalProperty)
                                 }
 
+                                /**
+                                 * Returns an immutable instance of
+                                 * [BetaRequestPageLocationCitation].
+                                 *
+                                 * Further updates to this [Builder] will not mutate the returned
+                                 * instance.
+                                 *
+                                 * The following fields are required:
+                                 * ```java
+                                 * .citedText()
+                                 * .documentIndex()
+                                 * .documentTitle()
+                                 * .endPageNumber()
+                                 * .startPageNumber()
+                                 * .type()
+                                 * ```
+                                 *
+                                 * @throws IllegalStateException if any required field is unset.
+                                 */
                                 fun build(): BetaRequestPageLocationCitation =
                                     BetaRequestPageLocationCitation(
                                         checkRequired("citedText", citedText),
@@ -5117,6 +5222,25 @@ private constructor(
                                     keys.forEach(::removeAdditionalProperty)
                                 }
 
+                                /**
+                                 * Returns an immutable instance of
+                                 * [BetaRequestContentBlockLocationCitation].
+                                 *
+                                 * Further updates to this [Builder] will not mutate the returned
+                                 * instance.
+                                 *
+                                 * The following fields are required:
+                                 * ```java
+                                 * .citedText()
+                                 * .documentIndex()
+                                 * .documentTitle()
+                                 * .endBlockIndex()
+                                 * .startBlockIndex()
+                                 * .type()
+                                 * ```
+                                 *
+                                 * @throws IllegalStateException if any required field is unset.
+                                 */
                                 fun build(): BetaRequestContentBlockLocationCitation =
                                     BetaRequestContentBlockLocationCitation(
                                         checkRequired("citedText", citedText),
@@ -5496,6 +5620,19 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [BetaRequestImageBlock].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .source()
+                         * .type()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): BetaRequestImageBlock =
                             BetaRequestImageBlock(
                                 checkRequired("source", source),
@@ -5861,6 +5998,21 @@ private constructor(
                                     keys.forEach(::removeAdditionalProperty)
                                 }
 
+                                /**
+                                 * Returns an immutable instance of [BetaBase64ImageSource].
+                                 *
+                                 * Further updates to this [Builder] will not mutate the returned
+                                 * instance.
+                                 *
+                                 * The following fields are required:
+                                 * ```java
+                                 * .data()
+                                 * .mediaType()
+                                 * .type()
+                                 * ```
+                                 *
+                                 * @throws IllegalStateException if any required field is unset.
+                                 */
                                 fun build(): BetaBase64ImageSource =
                                     BetaBase64ImageSource(
                                         checkRequired("data", data),
@@ -6267,6 +6419,20 @@ private constructor(
                                     keys.forEach(::removeAdditionalProperty)
                                 }
 
+                                /**
+                                 * Returns an immutable instance of [BetaUrlImageSource].
+                                 *
+                                 * Further updates to this [Builder] will not mutate the returned
+                                 * instance.
+                                 *
+                                 * The following fields are required:
+                                 * ```java
+                                 * .type()
+                                 * .url()
+                                 * ```
+                                 *
+                                 * @throws IllegalStateException if any required field is unset.
+                                 */
                                 fun build(): BetaUrlImageSource =
                                     BetaUrlImageSource(
                                         checkRequired("type", type),
@@ -6608,6 +6774,19 @@ private constructor(
                                 keys.forEach(::removeAdditionalProperty)
                             }
 
+                            /**
+                             * Returns an immutable instance of [CacheControl].
+                             *
+                             * Further updates to this [Builder] will not mutate the returned
+                             * instance.
+                             *
+                             * The following fields are required:
+                             * ```java
+                             * .type()
+                             * ```
+                             *
+                             * @throws IllegalStateException if any required field is unset.
+                             */
                             fun build(): CacheControl =
                                 CacheControl(
                                     checkRequired("type", type),
@@ -6979,6 +7158,21 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [BetaRequestToolUseBlock].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .id()
+                         * .input()
+                         * .name()
+                         * .type()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): BetaRequestToolUseBlock =
                             BetaRequestToolUseBlock(
                                 checkRequired("id", id),
@@ -7196,6 +7390,19 @@ private constructor(
                                 keys.forEach(::removeAdditionalProperty)
                             }
 
+                            /**
+                             * Returns an immutable instance of [CacheControl].
+                             *
+                             * Further updates to this [Builder] will not mutate the returned
+                             * instance.
+                             *
+                             * The following fields are required:
+                             * ```java
+                             * .type()
+                             * ```
+                             *
+                             * @throws IllegalStateException if any required field is unset.
+                             */
                             fun build(): CacheControl =
                                 CacheControl(
                                     checkRequired("type", type),
@@ -7615,6 +7822,19 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [BetaRequestToolResultBlock].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .toolUseId()
+                         * .type()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): BetaRequestToolResultBlock =
                             BetaRequestToolResultBlock(
                                 checkRequired("toolUseId", toolUseId),
@@ -7832,6 +8052,19 @@ private constructor(
                                 keys.forEach(::removeAdditionalProperty)
                             }
 
+                            /**
+                             * Returns an immutable instance of [CacheControl].
+                             *
+                             * Further updates to this [Builder] will not mutate the returned
+                             * instance.
+                             *
+                             * The following fields are required:
+                             * ```java
+                             * .type()
+                             * ```
+                             *
+                             * @throws IllegalStateException if any required field is unset.
+                             */
                             fun build(): CacheControl =
                                 CacheControl(
                                     checkRequired("type", type),
@@ -8648,6 +8881,20 @@ private constructor(
                                         keys.forEach(::removeAdditionalProperty)
                                     }
 
+                                    /**
+                                     * Returns an immutable instance of [BetaRequestTextBlock].
+                                     *
+                                     * Further updates to this [Builder] will not mutate the
+                                     * returned instance.
+                                     *
+                                     * The following fields are required:
+                                     * ```java
+                                     * .text()
+                                     * .type()
+                                     * ```
+                                     *
+                                     * @throws IllegalStateException if any required field is unset.
+                                     */
                                     fun build(): BetaRequestTextBlock =
                                         BetaRequestTextBlock(
                                             checkRequired("text", text),
@@ -8885,6 +9132,20 @@ private constructor(
                                                 keys.forEach(::removeAdditionalProperty)
                                             }
 
+                                        /**
+                                         * Returns an immutable instance of [CacheControl].
+                                         *
+                                         * Further updates to this [Builder] will not mutate the
+                                         * returned instance.
+                                         *
+                                         * The following fields are required:
+                                         * ```java
+                                         * .type()
+                                         * ```
+                                         *
+                                         * @throws IllegalStateException if any required field is
+                                         *   unset.
+                                         */
                                         fun build(): CacheControl =
                                             CacheControl(
                                                 checkRequired("type", type),
@@ -9678,6 +9939,26 @@ private constructor(
                                                     keys.forEach(::removeAdditionalProperty)
                                                 }
 
+                                            /**
+                                             * Returns an immutable instance of
+                                             * [BetaRequestCharLocationCitation].
+                                             *
+                                             * Further updates to this [Builder] will not mutate the
+                                             * returned instance.
+                                             *
+                                             * The following fields are required:
+                                             * ```java
+                                             * .citedText()
+                                             * .documentIndex()
+                                             * .documentTitle()
+                                             * .endCharIndex()
+                                             * .startCharIndex()
+                                             * .type()
+                                             * ```
+                                             *
+                                             * @throws IllegalStateException if any required field
+                                             *   is unset.
+                                             */
                                             fun build(): BetaRequestCharLocationCitation =
                                                 BetaRequestCharLocationCitation(
                                                     checkRequired("citedText", citedText),
@@ -10182,6 +10463,26 @@ private constructor(
                                                     keys.forEach(::removeAdditionalProperty)
                                                 }
 
+                                            /**
+                                             * Returns an immutable instance of
+                                             * [BetaRequestPageLocationCitation].
+                                             *
+                                             * Further updates to this [Builder] will not mutate the
+                                             * returned instance.
+                                             *
+                                             * The following fields are required:
+                                             * ```java
+                                             * .citedText()
+                                             * .documentIndex()
+                                             * .documentTitle()
+                                             * .endPageNumber()
+                                             * .startPageNumber()
+                                             * .type()
+                                             * ```
+                                             *
+                                             * @throws IllegalStateException if any required field
+                                             *   is unset.
+                                             */
                                             fun build(): BetaRequestPageLocationCitation =
                                                 BetaRequestPageLocationCitation(
                                                     checkRequired("citedText", citedText),
@@ -10698,6 +10999,26 @@ private constructor(
                                                     keys.forEach(::removeAdditionalProperty)
                                                 }
 
+                                            /**
+                                             * Returns an immutable instance of
+                                             * [BetaRequestContentBlockLocationCitation].
+                                             *
+                                             * Further updates to this [Builder] will not mutate the
+                                             * returned instance.
+                                             *
+                                             * The following fields are required:
+                                             * ```java
+                                             * .citedText()
+                                             * .documentIndex()
+                                             * .documentTitle()
+                                             * .endBlockIndex()
+                                             * .startBlockIndex()
+                                             * .type()
+                                             * ```
+                                             *
+                                             * @throws IllegalStateException if any required field
+                                             *   is unset.
+                                             */
                                             fun build(): BetaRequestContentBlockLocationCitation =
                                                 BetaRequestContentBlockLocationCitation(
                                                     checkRequired("citedText", citedText),
@@ -11117,6 +11438,20 @@ private constructor(
                                         keys.forEach(::removeAdditionalProperty)
                                     }
 
+                                    /**
+                                     * Returns an immutable instance of [BetaRequestImageBlock].
+                                     *
+                                     * Further updates to this [Builder] will not mutate the
+                                     * returned instance.
+                                     *
+                                     * The following fields are required:
+                                     * ```java
+                                     * .source()
+                                     * .type()
+                                     * ```
+                                     *
+                                     * @throws IllegalStateException if any required field is unset.
+                                     */
                                     fun build(): BetaRequestImageBlock =
                                         BetaRequestImageBlock(
                                             checkRequired("source", source),
@@ -11525,6 +11860,23 @@ private constructor(
                                                     keys.forEach(::removeAdditionalProperty)
                                                 }
 
+                                            /**
+                                             * Returns an immutable instance of
+                                             * [BetaBase64ImageSource].
+                                             *
+                                             * Further updates to this [Builder] will not mutate the
+                                             * returned instance.
+                                             *
+                                             * The following fields are required:
+                                             * ```java
+                                             * .data()
+                                             * .mediaType()
+                                             * .type()
+                                             * ```
+                                             *
+                                             * @throws IllegalStateException if any required field
+                                             *   is unset.
+                                             */
                                             fun build(): BetaBase64ImageSource =
                                                 BetaBase64ImageSource(
                                                     checkRequired("data", data),
@@ -11971,6 +12323,22 @@ private constructor(
                                                     keys.forEach(::removeAdditionalProperty)
                                                 }
 
+                                            /**
+                                             * Returns an immutable instance of
+                                             * [BetaUrlImageSource].
+                                             *
+                                             * Further updates to this [Builder] will not mutate the
+                                             * returned instance.
+                                             *
+                                             * The following fields are required:
+                                             * ```java
+                                             * .type()
+                                             * .url()
+                                             * ```
+                                             *
+                                             * @throws IllegalStateException if any required field
+                                             *   is unset.
+                                             */
                                             fun build(): BetaUrlImageSource =
                                                 BetaUrlImageSource(
                                                     checkRequired("type", type),
@@ -12342,6 +12710,20 @@ private constructor(
                                                 keys.forEach(::removeAdditionalProperty)
                                             }
 
+                                        /**
+                                         * Returns an immutable instance of [CacheControl].
+                                         *
+                                         * Further updates to this [Builder] will not mutate the
+                                         * returned instance.
+                                         *
+                                         * The following fields are required:
+                                         * ```java
+                                         * .type()
+                                         * ```
+                                         *
+                                         * @throws IllegalStateException if any required field is
+                                         *   unset.
+                                         */
                                         fun build(): CacheControl =
                                             CacheControl(
                                                 checkRequired("type", type),
@@ -12913,6 +13295,19 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [BetaRequestDocumentBlock].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .source()
+                         * .type()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): BetaRequestDocumentBlock =
                             BetaRequestDocumentBlock(
                                 checkRequired("source", source),
@@ -13349,6 +13744,21 @@ private constructor(
                                     keys.forEach(::removeAdditionalProperty)
                                 }
 
+                                /**
+                                 * Returns an immutable instance of [BetaBase64PdfSource].
+                                 *
+                                 * Further updates to this [Builder] will not mutate the returned
+                                 * instance.
+                                 *
+                                 * The following fields are required:
+                                 * ```java
+                                 * .data()
+                                 * .mediaType()
+                                 * .type()
+                                 * ```
+                                 *
+                                 * @throws IllegalStateException if any required field is unset.
+                                 */
                                 fun build(): BetaBase64PdfSource =
                                     BetaBase64PdfSource(
                                         checkRequired("data", data),
@@ -13778,6 +14188,21 @@ private constructor(
                                     keys.forEach(::removeAdditionalProperty)
                                 }
 
+                                /**
+                                 * Returns an immutable instance of [BetaPlainTextSource].
+                                 *
+                                 * Further updates to this [Builder] will not mutate the returned
+                                 * instance.
+                                 *
+                                 * The following fields are required:
+                                 * ```java
+                                 * .data()
+                                 * .mediaType()
+                                 * .type()
+                                 * ```
+                                 *
+                                 * @throws IllegalStateException if any required field is unset.
+                                 */
                                 fun build(): BetaPlainTextSource =
                                     BetaPlainTextSource(
                                         checkRequired("data", data),
@@ -14191,6 +14616,20 @@ private constructor(
                                     keys.forEach(::removeAdditionalProperty)
                                 }
 
+                                /**
+                                 * Returns an immutable instance of [BetaContentBlockSource].
+                                 *
+                                 * Further updates to this [Builder] will not mutate the returned
+                                 * instance.
+                                 *
+                                 * The following fields are required:
+                                 * ```java
+                                 * .content()
+                                 * .type()
+                                 * ```
+                                 *
+                                 * @throws IllegalStateException if any required field is unset.
+                                 */
                                 fun build(): BetaContentBlockSource =
                                     BetaContentBlockSource(
                                         checkRequired("content", content),
@@ -14941,6 +15380,22 @@ private constructor(
                                                     keys.forEach(::removeAdditionalProperty)
                                                 }
 
+                                            /**
+                                             * Returns an immutable instance of
+                                             * [BetaRequestTextBlock].
+                                             *
+                                             * Further updates to this [Builder] will not mutate the
+                                             * returned instance.
+                                             *
+                                             * The following fields are required:
+                                             * ```java
+                                             * .text()
+                                             * .type()
+                                             * ```
+                                             *
+                                             * @throws IllegalStateException if any required field
+                                             *   is unset.
+                                             */
                                             fun build(): BetaRequestTextBlock =
                                                 BetaRequestTextBlock(
                                                     checkRequired("text", text),
@@ -15196,6 +15651,20 @@ private constructor(
                                                     keys.forEach(::removeAdditionalProperty)
                                                 }
 
+                                                /**
+                                                 * Returns an immutable instance of [CacheControl].
+                                                 *
+                                                 * Further updates to this [Builder] will not mutate
+                                                 * the returned instance.
+                                                 *
+                                                 * The following fields are required:
+                                                 * ```java
+                                                 * .type()
+                                                 * ```
+                                                 *
+                                                 * @throws IllegalStateException if any required
+                                                 *   field is unset.
+                                                 */
                                                 fun build(): CacheControl =
                                                     CacheControl(
                                                         checkRequired("type", type),
@@ -16051,6 +16520,26 @@ private constructor(
                                                         keys.forEach(::removeAdditionalProperty)
                                                     }
 
+                                                    /**
+                                                     * Returns an immutable instance of
+                                                     * [BetaRequestCharLocationCitation].
+                                                     *
+                                                     * Further updates to this [Builder] will not
+                                                     * mutate the returned instance.
+                                                     *
+                                                     * The following fields are required:
+                                                     * ```java
+                                                     * .citedText()
+                                                     * .documentIndex()
+                                                     * .documentTitle()
+                                                     * .endCharIndex()
+                                                     * .startCharIndex()
+                                                     * .type()
+                                                     * ```
+                                                     *
+                                                     * @throws IllegalStateException if any required
+                                                     *   field is unset.
+                                                     */
                                                     fun build(): BetaRequestCharLocationCitation =
                                                         BetaRequestCharLocationCitation(
                                                             checkRequired("citedText", citedText),
@@ -16611,6 +17100,26 @@ private constructor(
                                                         keys.forEach(::removeAdditionalProperty)
                                                     }
 
+                                                    /**
+                                                     * Returns an immutable instance of
+                                                     * [BetaRequestPageLocationCitation].
+                                                     *
+                                                     * Further updates to this [Builder] will not
+                                                     * mutate the returned instance.
+                                                     *
+                                                     * The following fields are required:
+                                                     * ```java
+                                                     * .citedText()
+                                                     * .documentIndex()
+                                                     * .documentTitle()
+                                                     * .endPageNumber()
+                                                     * .startPageNumber()
+                                                     * .type()
+                                                     * ```
+                                                     *
+                                                     * @throws IllegalStateException if any required
+                                                     *   field is unset.
+                                                     */
                                                     fun build(): BetaRequestPageLocationCitation =
                                                         BetaRequestPageLocationCitation(
                                                             checkRequired("citedText", citedText),
@@ -17175,6 +17684,26 @@ private constructor(
                                                         keys.forEach(::removeAdditionalProperty)
                                                     }
 
+                                                    /**
+                                                     * Returns an immutable instance of
+                                                     * [BetaRequestContentBlockLocationCitation].
+                                                     *
+                                                     * Further updates to this [Builder] will not
+                                                     * mutate the returned instance.
+                                                     *
+                                                     * The following fields are required:
+                                                     * ```java
+                                                     * .citedText()
+                                                     * .documentIndex()
+                                                     * .documentTitle()
+                                                     * .endBlockIndex()
+                                                     * .startBlockIndex()
+                                                     * .type()
+                                                     * ```
+                                                     *
+                                                     * @throws IllegalStateException if any required
+                                                     *   field is unset.
+                                                     */
                                                     fun build():
                                                         BetaRequestContentBlockLocationCitation =
                                                         BetaRequestContentBlockLocationCitation(
@@ -17631,6 +18160,22 @@ private constructor(
                                                     keys.forEach(::removeAdditionalProperty)
                                                 }
 
+                                            /**
+                                             * Returns an immutable instance of
+                                             * [BetaRequestImageBlock].
+                                             *
+                                             * Further updates to this [Builder] will not mutate the
+                                             * returned instance.
+                                             *
+                                             * The following fields are required:
+                                             * ```java
+                                             * .source()
+                                             * .type()
+                                             * ```
+                                             *
+                                             * @throws IllegalStateException if any required field
+                                             *   is unset.
+                                             */
                                             fun build(): BetaRequestImageBlock =
                                                 BetaRequestImageBlock(
                                                     checkRequired("source", source),
@@ -18080,6 +18625,23 @@ private constructor(
                                                         keys.forEach(::removeAdditionalProperty)
                                                     }
 
+                                                    /**
+                                                     * Returns an immutable instance of
+                                                     * [BetaBase64ImageSource].
+                                                     *
+                                                     * Further updates to this [Builder] will not
+                                                     * mutate the returned instance.
+                                                     *
+                                                     * The following fields are required:
+                                                     * ```java
+                                                     * .data()
+                                                     * .mediaType()
+                                                     * .type()
+                                                     * ```
+                                                     *
+                                                     * @throws IllegalStateException if any required
+                                                     *   field is unset.
+                                                     */
                                                     fun build(): BetaBase64ImageSource =
                                                         BetaBase64ImageSource(
                                                             checkRequired("data", data),
@@ -18552,6 +19114,22 @@ private constructor(
                                                         keys.forEach(::removeAdditionalProperty)
                                                     }
 
+                                                    /**
+                                                     * Returns an immutable instance of
+                                                     * [BetaUrlImageSource].
+                                                     *
+                                                     * Further updates to this [Builder] will not
+                                                     * mutate the returned instance.
+                                                     *
+                                                     * The following fields are required:
+                                                     * ```java
+                                                     * .type()
+                                                     * .url()
+                                                     * ```
+                                                     *
+                                                     * @throws IllegalStateException if any required
+                                                     *   field is unset.
+                                                     */
                                                     fun build(): BetaUrlImageSource =
                                                         BetaUrlImageSource(
                                                             checkRequired("type", type),
@@ -18947,6 +19525,20 @@ private constructor(
                                                     keys.forEach(::removeAdditionalProperty)
                                                 }
 
+                                                /**
+                                                 * Returns an immutable instance of [CacheControl].
+                                                 *
+                                                 * Further updates to this [Builder] will not mutate
+                                                 * the returned instance.
+                                                 *
+                                                 * The following fields are required:
+                                                 * ```java
+                                                 * .type()
+                                                 * ```
+                                                 *
+                                                 * @throws IllegalStateException if any required
+                                                 *   field is unset.
+                                                 */
                                                 fun build(): CacheControl =
                                                     CacheControl(
                                                         checkRequired("type", type),
@@ -19383,6 +19975,20 @@ private constructor(
                                     keys.forEach(::removeAdditionalProperty)
                                 }
 
+                                /**
+                                 * Returns an immutable instance of [BetaUrlpdfSource].
+                                 *
+                                 * Further updates to this [Builder] will not mutate the returned
+                                 * instance.
+                                 *
+                                 * The following fields are required:
+                                 * ```java
+                                 * .type()
+                                 * .url()
+                                 * ```
+                                 *
+                                 * @throws IllegalStateException if any required field is unset.
+                                 */
                                 fun build(): BetaUrlpdfSource =
                                     BetaUrlpdfSource(
                                         checkRequired("type", type),
@@ -19724,6 +20330,19 @@ private constructor(
                                 keys.forEach(::removeAdditionalProperty)
                             }
 
+                            /**
+                             * Returns an immutable instance of [CacheControl].
+                             *
+                             * Further updates to this [Builder] will not mutate the returned
+                             * instance.
+                             *
+                             * The following fields are required:
+                             * ```java
+                             * .type()
+                             * ```
+                             *
+                             * @throws IllegalStateException if any required field is unset.
+                             */
                             fun build(): CacheControl =
                                 CacheControl(
                                     checkRequired("type", type),
@@ -19955,6 +20574,12 @@ private constructor(
                                 keys.forEach(::removeAdditionalProperty)
                             }
 
+                            /**
+                             * Returns an immutable instance of [Citations].
+                             *
+                             * Further updates to this [Builder] will not mutate the returned
+                             * instance.
+                             */
                             fun build(): Citations =
                                 Citations(enabled, additionalProperties.toImmutable())
                         }
@@ -20174,6 +20799,20 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [BetaRequestThinkingBlock].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .signature()
+                         * .thinking()
+                         * .type()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): BetaRequestThinkingBlock =
                             BetaRequestThinkingBlock(
                                 checkRequired("signature", signature),
@@ -20441,6 +21080,19 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [BetaRequestRedactedThinkingBlock].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .data()
+                         * .type()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): BetaRequestRedactedThinkingBlock =
                             BetaRequestRedactedThinkingBlock(
                                 checkRequired("data", data),
@@ -20792,6 +21444,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Metadata].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Metadata = Metadata(userId, additionalProperties.toImmutable())
         }
 
@@ -21213,6 +21870,19 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [BetaRequestTextBlock].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .text()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): BetaRequestTextBlock =
                     BetaRequestTextBlock(
                         checkRequired("text", text),
@@ -21421,6 +22091,18 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [CacheControl].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .type()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
                     fun build(): CacheControl =
                         CacheControl(
                             checkRequired("type", type),
@@ -22075,6 +22757,23 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [BetaRequestCharLocationCitation].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .citedText()
+                         * .documentIndex()
+                         * .documentTitle()
+                         * .endCharIndex()
+                         * .startCharIndex()
+                         * .type()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): BetaRequestCharLocationCitation =
                             BetaRequestCharLocationCitation(
                                 checkRequired("citedText", citedText),
@@ -22508,6 +23207,23 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [BetaRequestPageLocationCitation].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .citedText()
+                         * .documentIndex()
+                         * .documentTitle()
+                         * .endPageNumber()
+                         * .startPageNumber()
+                         * .type()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): BetaRequestPageLocationCitation =
                             BetaRequestPageLocationCitation(
                                 checkRequired("citedText", citedText),
@@ -22944,6 +23660,24 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of
+                         * [BetaRequestContentBlockLocationCitation].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .citedText()
+                         * .documentIndex()
+                         * .documentTitle()
+                         * .endBlockIndex()
+                         * .startBlockIndex()
+                         * .type()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): BetaRequestContentBlockLocationCitation =
                             BetaRequestContentBlockLocationCitation(
                                 checkRequired("citedText", citedText),
@@ -23435,6 +24169,19 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [BetaThinkingConfigEnabled].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .budgetTokens()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): BetaThinkingConfigEnabled =
                     BetaThinkingConfigEnabled(
                         checkRequired("budgetTokens", budgetTokens),
@@ -23660,6 +24407,18 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [BetaThinkingConfigDisabled].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): BetaThinkingConfigDisabled =
                     BetaThinkingConfigDisabled(
                         checkRequired("type", type),
@@ -24161,6 +24920,18 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [BetaToolChoiceAuto].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): BetaToolChoiceAuto =
                     BetaToolChoiceAuto(
                         checkRequired("type", type),
@@ -24432,6 +25203,18 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [BetaToolChoiceAny].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): BetaToolChoiceAny =
                     BetaToolChoiceAny(
                         checkRequired("type", type),
@@ -24738,6 +25521,19 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [BetaToolChoiceTool].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .name()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): BetaToolChoiceTool =
                     BetaToolChoiceTool(
                         checkRequired("name", name),
@@ -24963,6 +25759,18 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [BetaToolChoiceNone].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): BetaToolChoiceNone =
                     BetaToolChoiceNone(
                         checkRequired("type", type),
@@ -25672,6 +26480,19 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [BetaTool].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .inputSchema()
+                 * .name()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): BetaTool =
                     BetaTool(
                         checkRequired("inputSchema", inputSchema),
@@ -25801,6 +26622,18 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [InputSchema].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .type()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
                     fun build(): InputSchema =
                         InputSchema(
                             checkRequired("type", type),
@@ -26027,6 +26860,18 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [CacheControl].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .type()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
                     fun build(): CacheControl =
                         CacheControl(
                             checkRequired("type", type),
@@ -26584,6 +27429,21 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [BetaComputerUseTool20241022].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .displayHeightPx()
+                 * .displayWidthPx()
+                 * .name()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): BetaComputerUseTool20241022 =
                     BetaComputerUseTool20241022(
                         checkRequired("displayHeightPx", displayHeightPx),
@@ -26896,6 +27756,18 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [CacheControl].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .type()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
                     fun build(): CacheControl =
                         CacheControl(
                             checkRequired("type", type),
@@ -27220,6 +28092,19 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [BetaBashTool20241022].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .name()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): BetaBashTool20241022 =
                     BetaBashTool20241022(
                         checkRequired("name", name),
@@ -27529,6 +28414,18 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [CacheControl].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .type()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
                     fun build(): CacheControl =
                         CacheControl(
                             checkRequired("type", type),
@@ -27855,6 +28752,19 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [BetaTextEditor20241022].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .name()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): BetaTextEditor20241022 =
                     BetaTextEditor20241022(
                         checkRequired("name", name),
@@ -28164,6 +29074,18 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [CacheControl].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .type()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
                     fun build(): CacheControl =
                         CacheControl(
                             checkRequired("type", type),
@@ -28624,6 +29546,21 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [BetaComputerUseTool20250124].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .displayHeightPx()
+                 * .displayWidthPx()
+                 * .name()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): BetaComputerUseTool20250124 =
                     BetaComputerUseTool20250124(
                         checkRequired("displayHeightPx", displayHeightPx),
@@ -28936,6 +29873,18 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [CacheControl].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .type()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
                     fun build(): CacheControl =
                         CacheControl(
                             checkRequired("type", type),
@@ -29260,6 +30209,19 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [BetaBashTool20250124].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .name()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): BetaBashTool20250124 =
                     BetaBashTool20250124(
                         checkRequired("name", name),
@@ -29569,6 +30531,18 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [CacheControl].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .type()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
                     fun build(): CacheControl =
                         CacheControl(
                             checkRequired("type", type),
@@ -29895,6 +30869,19 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [BetaTextEditor20250124].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .name()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): BetaTextEditor20250124 =
                     BetaTextEditor20250124(
                         checkRequired("name", name),
@@ -30204,6 +31191,18 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [CacheControl].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .type()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
                     fun build(): CacheControl =
                         CacheControl(
                             checkRequired("type", type),

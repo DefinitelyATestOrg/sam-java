@@ -60,6 +60,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [SamError].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): SamError = SamError(additionalProperties.toImmutable())
     }
 
