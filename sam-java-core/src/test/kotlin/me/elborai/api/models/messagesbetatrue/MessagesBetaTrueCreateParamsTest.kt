@@ -2,6 +2,7 @@
 
 package me.elborai.api.models.messagesbetatrue
 
+import kotlin.jvm.optionals.getOrNull
 import kotlin.test.assertNotNull
 import me.elborai.api.core.JsonValue
 import org.assertj.core.api.Assertions.assertThat
@@ -240,13 +241,11 @@ internal class MessagesBetaTrueCreateParamsTest {
         assertNotNull(body)
         assertThat(body.maxTokens()).isEqualTo(1024L)
         assertThat(body.messages())
-            .isEqualTo(
-                listOf(
-                    MessagesBetaTrueCreateParams.Message.builder()
-                        .content("Hello, world")
-                        .role(MessagesBetaTrueCreateParams.Message.Role.USER)
-                        .build()
-                )
+            .containsExactly(
+                MessagesBetaTrueCreateParams.Message.builder()
+                    .content("Hello, world")
+                    .role(MessagesBetaTrueCreateParams.Message.Role.USER)
+                    .build()
             )
         assertThat(body.model()).isEqualTo("claude-3-7-sonnet-20250219")
         assertThat(body.metadata())
@@ -255,7 +254,7 @@ internal class MessagesBetaTrueCreateParamsTest {
                     .userId("13803d75-b4b5-4c3e-b2a2-6f21399b021b")
                     .build()
             )
-        assertThat(body.stopSequences()).contains(listOf("string"))
+        assertThat(body.stopSequences().getOrNull()).containsExactly("string")
         assertThat(body.stream()).contains(true)
         assertThat(body.system())
             .contains(
@@ -322,50 +321,48 @@ internal class MessagesBetaTrueCreateParamsTest {
                         .build()
                 )
             )
-        assertThat(body.tools())
-            .contains(
-                listOf(
-                    MessagesBetaTrueCreateParams.Tool.ofBeta(
-                        MessagesBetaTrueCreateParams.Tool.BetaTool.builder()
-                            .inputSchema(
-                                MessagesBetaTrueCreateParams.Tool.BetaTool.InputSchema.builder()
-                                    .type(
-                                        MessagesBetaTrueCreateParams.Tool.BetaTool.InputSchema.Type
-                                            .OBJECT
-                                    )
-                                    .properties(
-                                        JsonValue.from(
-                                            mapOf(
-                                                "location" to
-                                                    mapOf(
-                                                        "description" to
-                                                            "The city and state, e.g. San Francisco, CA",
-                                                        "type" to "string",
-                                                    ),
-                                                "unit" to
-                                                    mapOf(
-                                                        "description" to
-                                                            "Unit for the output - one of (celsius, fahrenheit)",
-                                                        "type" to "string",
-                                                    ),
-                                            )
+        assertThat(body.tools().getOrNull())
+            .containsExactly(
+                MessagesBetaTrueCreateParams.Tool.ofBeta(
+                    MessagesBetaTrueCreateParams.Tool.BetaTool.builder()
+                        .inputSchema(
+                            MessagesBetaTrueCreateParams.Tool.BetaTool.InputSchema.builder()
+                                .type(
+                                    MessagesBetaTrueCreateParams.Tool.BetaTool.InputSchema.Type
+                                        .OBJECT
+                                )
+                                .properties(
+                                    JsonValue.from(
+                                        mapOf(
+                                            "location" to
+                                                mapOf(
+                                                    "description" to
+                                                        "The city and state, e.g. San Francisco, CA",
+                                                    "type" to "string",
+                                                ),
+                                            "unit" to
+                                                mapOf(
+                                                    "description" to
+                                                        "Unit for the output - one of (celsius, fahrenheit)",
+                                                    "type" to "string",
+                                                ),
                                         )
                                     )
-                                    .build()
-                            )
-                            .name("name")
-                            .cacheControl(
-                                MessagesBetaTrueCreateParams.Tool.BetaTool.CacheControl.builder()
-                                    .type(
-                                        MessagesBetaTrueCreateParams.Tool.BetaTool.CacheControl.Type
-                                            .EPHEMERAL
-                                    )
-                                    .build()
-                            )
-                            .description("Get the current weather in a given location")
-                            .type(MessagesBetaTrueCreateParams.Tool.BetaTool.Type.CUSTOM)
-                            .build()
-                    )
+                                )
+                                .build()
+                        )
+                        .name("name")
+                        .cacheControl(
+                            MessagesBetaTrueCreateParams.Tool.BetaTool.CacheControl.builder()
+                                .type(
+                                    MessagesBetaTrueCreateParams.Tool.BetaTool.CacheControl.Type
+                                        .EPHEMERAL
+                                )
+                                .build()
+                        )
+                        .description("Get the current weather in a given location")
+                        .type(MessagesBetaTrueCreateParams.Tool.BetaTool.Type.CUSTOM)
+                        .build()
                 )
             )
         assertThat(body.topK()).contains(5L)
@@ -391,13 +388,11 @@ internal class MessagesBetaTrueCreateParamsTest {
         assertNotNull(body)
         assertThat(body.maxTokens()).isEqualTo(1024L)
         assertThat(body.messages())
-            .isEqualTo(
-                listOf(
-                    MessagesBetaTrueCreateParams.Message.builder()
-                        .content("Hello, world")
-                        .role(MessagesBetaTrueCreateParams.Message.Role.USER)
-                        .build()
-                )
+            .containsExactly(
+                MessagesBetaTrueCreateParams.Message.builder()
+                    .content("Hello, world")
+                    .role(MessagesBetaTrueCreateParams.Message.Role.USER)
+                    .build()
             )
         assertThat(body.model()).isEqualTo("claude-3-7-sonnet-20250219")
     }
