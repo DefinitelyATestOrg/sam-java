@@ -2,6 +2,7 @@
 
 package me.elborai.api.models.messages
 
+import kotlin.jvm.optionals.getOrNull
 import kotlin.test.assertNotNull
 import me.elborai.api.core.JsonValue
 import org.assertj.core.api.Assertions.assertThat
@@ -217,13 +218,11 @@ internal class MessageCountTokensBetaParamsTest {
 
         assertNotNull(body)
         assertThat(body.messages())
-            .isEqualTo(
-                listOf(
-                    MessageCountTokensBetaParams.Message.builder()
-                        .content("Hello, world")
-                        .role(MessageCountTokensBetaParams.Message.Role.USER)
-                        .build()
-                )
+            .containsExactly(
+                MessageCountTokensBetaParams.Message.builder()
+                    .content("Hello, world")
+                    .role(MessageCountTokensBetaParams.Message.Role.USER)
+                    .build()
             )
         assertThat(body.model()).isEqualTo("claude-3-7-sonnet-20250219")
         assertThat(body.system())
@@ -290,50 +289,48 @@ internal class MessageCountTokensBetaParamsTest {
                         .build()
                 )
             )
-        assertThat(body.tools())
-            .contains(
-                listOf(
-                    MessageCountTokensBetaParams.Tool.ofBeta(
-                        MessageCountTokensBetaParams.Tool.BetaTool.builder()
-                            .inputSchema(
-                                MessageCountTokensBetaParams.Tool.BetaTool.InputSchema.builder()
-                                    .type(
-                                        MessageCountTokensBetaParams.Tool.BetaTool.InputSchema.Type
-                                            .OBJECT
-                                    )
-                                    .properties(
-                                        JsonValue.from(
-                                            mapOf(
-                                                "location" to
-                                                    mapOf(
-                                                        "description" to
-                                                            "The city and state, e.g. San Francisco, CA",
-                                                        "type" to "string",
-                                                    ),
-                                                "unit" to
-                                                    mapOf(
-                                                        "description" to
-                                                            "Unit for the output - one of (celsius, fahrenheit)",
-                                                        "type" to "string",
-                                                    ),
-                                            )
+        assertThat(body.tools().getOrNull())
+            .containsExactly(
+                MessageCountTokensBetaParams.Tool.ofBeta(
+                    MessageCountTokensBetaParams.Tool.BetaTool.builder()
+                        .inputSchema(
+                            MessageCountTokensBetaParams.Tool.BetaTool.InputSchema.builder()
+                                .type(
+                                    MessageCountTokensBetaParams.Tool.BetaTool.InputSchema.Type
+                                        .OBJECT
+                                )
+                                .properties(
+                                    JsonValue.from(
+                                        mapOf(
+                                            "location" to
+                                                mapOf(
+                                                    "description" to
+                                                        "The city and state, e.g. San Francisco, CA",
+                                                    "type" to "string",
+                                                ),
+                                            "unit" to
+                                                mapOf(
+                                                    "description" to
+                                                        "Unit for the output - one of (celsius, fahrenheit)",
+                                                    "type" to "string",
+                                                ),
                                         )
                                     )
-                                    .build()
-                            )
-                            .name("name")
-                            .cacheControl(
-                                MessageCountTokensBetaParams.Tool.BetaTool.CacheControl.builder()
-                                    .type(
-                                        MessageCountTokensBetaParams.Tool.BetaTool.CacheControl.Type
-                                            .EPHEMERAL
-                                    )
-                                    .build()
-                            )
-                            .description("Get the current weather in a given location")
-                            .type(MessageCountTokensBetaParams.Tool.BetaTool.Type.CUSTOM)
-                            .build()
-                    )
+                                )
+                                .build()
+                        )
+                        .name("name")
+                        .cacheControl(
+                            MessageCountTokensBetaParams.Tool.BetaTool.CacheControl.builder()
+                                .type(
+                                    MessageCountTokensBetaParams.Tool.BetaTool.CacheControl.Type
+                                        .EPHEMERAL
+                                )
+                                .build()
+                        )
+                        .description("Get the current weather in a given location")
+                        .type(MessageCountTokensBetaParams.Tool.BetaTool.Type.CUSTOM)
+                        .build()
                 )
             )
     }
@@ -355,13 +352,11 @@ internal class MessageCountTokensBetaParamsTest {
 
         assertNotNull(body)
         assertThat(body.messages())
-            .isEqualTo(
-                listOf(
-                    MessageCountTokensBetaParams.Message.builder()
-                        .content("Hello, world")
-                        .role(MessageCountTokensBetaParams.Message.Role.USER)
-                        .build()
-                )
+            .containsExactly(
+                MessageCountTokensBetaParams.Message.builder()
+                    .content("Hello, world")
+                    .role(MessageCountTokensBetaParams.Message.Role.USER)
+                    .build()
             )
         assertThat(body.model()).isEqualTo("claude-3-7-sonnet-20250219")
     }

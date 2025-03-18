@@ -2,6 +2,7 @@
 
 package me.elborai.api.models.complete
 
+import kotlin.jvm.optionals.getOrNull
 import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -62,7 +63,7 @@ internal class CompleteCreateParamsTest {
                     .userId("13803d75-b4b5-4c3e-b2a2-6f21399b021b")
                     .build()
             )
-        assertThat(body.stopSequences()).contains(listOf("string"))
+        assertThat(body.stopSequences().getOrNull()).containsExactly("string")
         assertThat(body.stream()).contains(true)
         assertThat(body.temperature()).contains(1.0)
         assertThat(body.topK()).contains(5L)
