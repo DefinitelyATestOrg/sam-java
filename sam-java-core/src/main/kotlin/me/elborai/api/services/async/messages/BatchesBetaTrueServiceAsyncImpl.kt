@@ -4,6 +4,7 @@ package me.elborai.api.services.async.messages
 
 import java.util.concurrent.CompletableFuture
 import me.elborai.api.core.ClientOptions
+import me.elborai.api.core.JsonValue
 import me.elborai.api.core.RequestOptions
 import me.elborai.api.core.handlers.errorHandler
 import me.elborai.api.core.handlers.jsonHandler
@@ -15,7 +16,6 @@ import me.elborai.api.core.http.HttpResponseFor
 import me.elborai.api.core.http.json
 import me.elborai.api.core.http.parseable
 import me.elborai.api.core.prepareAsync
-import me.elborai.api.errors.SamError
 import me.elborai.api.models.messages.batchesbetatrue.BatchesBetaTrueCreateParams
 import me.elborai.api.models.messages.batchesbetatrue.BatchesBetaTrueCreateResponse
 import me.elborai.api.models.messages.batchesbetatrue.BatchesBetaTrueListParams
@@ -47,7 +47,7 @@ internal constructor(private val clientOptions: ClientOptions) : BatchesBetaTrue
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         BatchesBetaTrueServiceAsync.WithRawResponse {
 
-        private val errorHandler: Handler<SamError> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
 
         private val createHandler: Handler<BatchesBetaTrueCreateResponse> =
             jsonHandler<BatchesBetaTrueCreateResponse>(clientOptions.jsonMapper)
