@@ -3,7 +3,6 @@
 package me.elborai.api.models.messages
 
 import kotlin.jvm.optionals.getOrNull
-import kotlin.test.assertNotNull
 import me.elborai.api.core.JsonValue
 import me.elborai.api.core.http.Headers
 import org.assertj.core.api.Assertions.assertThat
@@ -353,7 +352,6 @@ internal class MessageCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.maxTokens()).isEqualTo(1024L)
         assertThat(body.messages())
             .containsExactly(
@@ -486,7 +484,6 @@ internal class MessageCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.maxTokens()).isEqualTo(1024L)
         assertThat(body.messages())
             .containsExactly(
