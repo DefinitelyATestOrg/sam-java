@@ -7,7 +7,7 @@
 
 <!-- x-release-please-end -->
 
-The Sam Java SDK provides convenient access to the Sam REST API from applications written in Java.
+The Sam Java SDK provides convenient access to the [Sam REST API](https://docs.sam.com) from applications written in Java.
 
 It is generated with [Stainless](https://www.stainless.com/).
 
@@ -31,9 +31,9 @@ implementation("me.elborai.api:sam-java:0.1.0-alpha.1")
 
 ```xml
 <dependency>
-    <groupId>me.elborai.api</groupId>
-    <artifactId>sam-java</artifactId>
-    <version>0.1.0-alpha.1</version>
+  <groupId>me.elborai.api</groupId>
+  <artifactId>sam-java</artifactId>
+  <version>0.1.0-alpha.1</version>
 </dependency>
 ```
 
