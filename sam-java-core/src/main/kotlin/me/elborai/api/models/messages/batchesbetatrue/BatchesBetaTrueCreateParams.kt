@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -23,14 +24,12 @@ import me.elborai.api.core.ExcludeMissing
 import me.elborai.api.core.JsonField
 import me.elborai.api.core.JsonMissing
 import me.elborai.api.core.JsonValue
-import me.elborai.api.core.NoAutoDetect
 import me.elborai.api.core.Params
 import me.elborai.api.core.checkKnown
 import me.elborai.api.core.checkRequired
 import me.elborai.api.core.getOrThrow
 import me.elborai.api.core.http.Headers
 import me.elborai.api.core.http.QueryParams
-import me.elborai.api.core.immutableEmptyMap
 import me.elborai.api.core.toImmutable
 import me.elborai.api.errors.SamInvalidDataException
 
@@ -100,176 +99,6 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): Body = body
-
-    override fun _headers(): Headers =
-        Headers.builder()
-            .apply {
-                anthropicBeta?.forEach { put("anthropic-beta", it) }
-                anthropicVersion?.let { put("anthropic-version", it) }
-                xApiKey?.let { put("x-api-key", it) }
-                putAll(additionalHeaders)
-            }
-            .build()
-
-    override fun _queryParams(): QueryParams = additionalQueryParams
-
-    @NoAutoDetect
-    class Body
-    @JsonCreator
-    private constructor(
-        @JsonProperty("requests")
-        @ExcludeMissing
-        private val requests: JsonField<List<Request>> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
-    ) {
-
-        /**
-         * List of requests for prompt completion. Each is an individual request to create a
-         * Message.
-         *
-         * @throws SamInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun requests(): List<Request> = requests.getRequired("requests")
-
-        /**
-         * Returns the raw JSON value of [requests].
-         *
-         * Unlike [requests], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("requests")
-        @ExcludeMissing
-        fun _requests(): JsonField<List<Request>> = requests
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Body = apply {
-            if (validated) {
-                return@apply
-            }
-
-            requests().forEach { it.validate() }
-            validated = true
-        }
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /**
-             * Returns a mutable builder for constructing an instance of [Body].
-             *
-             * The following fields are required:
-             * ```java
-             * .requests()
-             * ```
-             */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Body]. */
-        class Builder internal constructor() {
-
-            private var requests: JsonField<MutableList<Request>>? = null
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(body: Body) = apply {
-                requests = body.requests.map { it.toMutableList() }
-                additionalProperties = body.additionalProperties.toMutableMap()
-            }
-
-            /**
-             * List of requests for prompt completion. Each is an individual request to create a
-             * Message.
-             */
-            fun requests(requests: List<Request>) = requests(JsonField.of(requests))
-
-            /**
-             * Sets [Builder.requests] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.requests] with a well-typed `List<Request>` value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun requests(requests: JsonField<List<Request>>) = apply {
-                this.requests = requests.map { it.toMutableList() }
-            }
-
-            /**
-             * Adds a single [Request] to [requests].
-             *
-             * @throws IllegalStateException if the field was previously set to a non-list.
-             */
-            fun addRequest(request: Request) = apply {
-                requests =
-                    (requests ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("requests", it).add(request)
-                    }
-            }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [Body].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .requests()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
-             */
-            fun build(): Body =
-                Body(
-                    checkRequired("requests", requests).map { it.toImmutable() },
-                    additionalProperties.toImmutable(),
-                )
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Body && requests == other.requests && additionalProperties == other.additionalProperties /* spotless:on */
-        }
-
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(requests, additionalProperties) }
-        /* spotless:on */
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Body{requests=$requests, additionalProperties=$additionalProperties}"
-    }
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -286,7 +115,6 @@ private constructor(
     }
 
     /** A builder for [BatchesBetaTrueCreateParams]. */
-    @NoAutoDetect
     class Builder internal constructor() {
 
         private var anthropicBeta: MutableList<String>? = null
@@ -519,19 +347,198 @@ private constructor(
             )
     }
 
-    @NoAutoDetect
-    class Request
-    @JsonCreator
+    @JvmSynthetic internal fun _body(): Body = body
+
+    override fun _headers(): Headers =
+        Headers.builder()
+            .apply {
+                anthropicBeta?.forEach { put("anthropic-beta", it) }
+                anthropicVersion?.let { put("anthropic-version", it) }
+                xApiKey?.let { put("x-api-key", it) }
+                putAll(additionalHeaders)
+            }
+            .build()
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
+
+    class Body
     private constructor(
-        @JsonProperty("custom_id")
-        @ExcludeMissing
-        private val customId: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("params")
-        @ExcludeMissing
-        private val params: JsonField<Params> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val requests: JsonField<List<Request>>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("requests")
+            @ExcludeMissing
+            requests: JsonField<List<Request>> = JsonMissing.of()
+        ) : this(requests, mutableMapOf())
+
+        /**
+         * List of requests for prompt completion. Each is an individual request to create a
+         * Message.
+         *
+         * @throws SamInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun requests(): List<Request> = requests.getRequired("requests")
+
+        /**
+         * Returns the raw JSON value of [requests].
+         *
+         * Unlike [requests], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("requests")
+        @ExcludeMissing
+        fun _requests(): JsonField<List<Request>> = requests
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```java
+             * .requests()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Body]. */
+        class Builder internal constructor() {
+
+            private var requests: JsonField<MutableList<Request>>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(body: Body) = apply {
+                requests = body.requests.map { it.toMutableList() }
+                additionalProperties = body.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * List of requests for prompt completion. Each is an individual request to create a
+             * Message.
+             */
+            fun requests(requests: List<Request>) = requests(JsonField.of(requests))
+
+            /**
+             * Sets [Builder.requests] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.requests] with a well-typed `List<Request>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun requests(requests: JsonField<List<Request>>) = apply {
+                this.requests = requests.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [Request] to [requests].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addRequest(request: Request) = apply {
+                requests =
+                    (requests ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("requests", it).add(request)
+                    }
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .requests()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Body =
+                Body(
+                    checkRequired("requests", requests).map { it.toImmutable() },
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
+            }
+
+            requests().forEach { it.validate() }
+            validated = true
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Body && requests == other.requests && additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(requests, additionalProperties) }
+        /* spotless:on */
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Body{requests=$requests, additionalProperties=$additionalProperties}"
+    }
+
+    class Request
+    private constructor(
+        private val customId: JsonField<String>,
+        private val params: JsonField<Params>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("custom_id")
+            @ExcludeMissing
+            customId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("params") @ExcludeMissing params: JsonField<Params> = JsonMissing.of(),
+        ) : this(customId, params, mutableMapOf())
 
         /**
          * Developer-provided ID created for each request in a Message Batch. Useful for matching
@@ -569,21 +576,15 @@ private constructor(
          */
         @JsonProperty("params") @ExcludeMissing fun _params(): JsonField<Params> = params
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Request = apply {
-            if (validated) {
-                return@apply
-            }
-
-            customId()
-            params().validate()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -685,8 +686,20 @@ private constructor(
                 Request(
                     checkRequired("customId", customId),
                     checkRequired("params", params),
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Request = apply {
+            if (validated) {
+                return@apply
+            }
+
+            customId()
+            params().validate()
+            validated = true
         }
 
         /**
@@ -695,52 +708,75 @@ private constructor(
          * See the [Messages API reference](/en/api/messages) for full documentation on available
          * parameters.
          */
-        @NoAutoDetect
         class Params
-        @JsonCreator
         private constructor(
-            @JsonProperty("max_tokens")
-            @ExcludeMissing
-            private val maxTokens: JsonField<Long> = JsonMissing.of(),
-            @JsonProperty("messages")
-            @ExcludeMissing
-            private val messages: JsonField<List<Message>> = JsonMissing.of(),
-            @JsonProperty("model")
-            @ExcludeMissing
-            private val model: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("metadata")
-            @ExcludeMissing
-            private val metadata: JsonField<Metadata> = JsonMissing.of(),
-            @JsonProperty("stop_sequences")
-            @ExcludeMissing
-            private val stopSequences: JsonField<List<String>> = JsonMissing.of(),
-            @JsonProperty("stream")
-            @ExcludeMissing
-            private val stream: JsonField<Boolean> = JsonMissing.of(),
-            @JsonProperty("system")
-            @ExcludeMissing
-            private val system: JsonField<System> = JsonMissing.of(),
-            @JsonProperty("temperature")
-            @ExcludeMissing
-            private val temperature: JsonField<Double> = JsonMissing.of(),
-            @JsonProperty("thinking")
-            @ExcludeMissing
-            private val thinking: JsonField<Thinking> = JsonMissing.of(),
-            @JsonProperty("tool_choice")
-            @ExcludeMissing
-            private val toolChoice: JsonField<ToolChoice> = JsonMissing.of(),
-            @JsonProperty("tools")
-            @ExcludeMissing
-            private val tools: JsonField<List<Tool>> = JsonMissing.of(),
-            @JsonProperty("top_k")
-            @ExcludeMissing
-            private val topK: JsonField<Long> = JsonMissing.of(),
-            @JsonProperty("top_p")
-            @ExcludeMissing
-            private val topP: JsonField<Double> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val maxTokens: JsonField<Long>,
+            private val messages: JsonField<List<Message>>,
+            private val model: JsonField<String>,
+            private val metadata: JsonField<Metadata>,
+            private val stopSequences: JsonField<List<String>>,
+            private val stream: JsonField<Boolean>,
+            private val system: JsonField<System>,
+            private val temperature: JsonField<Double>,
+            private val thinking: JsonField<Thinking>,
+            private val toolChoice: JsonField<ToolChoice>,
+            private val tools: JsonField<List<Tool>>,
+            private val topK: JsonField<Long>,
+            private val topP: JsonField<Double>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("max_tokens")
+                @ExcludeMissing
+                maxTokens: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("messages")
+                @ExcludeMissing
+                messages: JsonField<List<Message>> = JsonMissing.of(),
+                @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("metadata")
+                @ExcludeMissing
+                metadata: JsonField<Metadata> = JsonMissing.of(),
+                @JsonProperty("stop_sequences")
+                @ExcludeMissing
+                stopSequences: JsonField<List<String>> = JsonMissing.of(),
+                @JsonProperty("stream")
+                @ExcludeMissing
+                stream: JsonField<Boolean> = JsonMissing.of(),
+                @JsonProperty("system")
+                @ExcludeMissing
+                system: JsonField<System> = JsonMissing.of(),
+                @JsonProperty("temperature")
+                @ExcludeMissing
+                temperature: JsonField<Double> = JsonMissing.of(),
+                @JsonProperty("thinking")
+                @ExcludeMissing
+                thinking: JsonField<Thinking> = JsonMissing.of(),
+                @JsonProperty("tool_choice")
+                @ExcludeMissing
+                toolChoice: JsonField<ToolChoice> = JsonMissing.of(),
+                @JsonProperty("tools")
+                @ExcludeMissing
+                tools: JsonField<List<Tool>> = JsonMissing.of(),
+                @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("top_p") @ExcludeMissing topP: JsonField<Double> = JsonMissing.of(),
+            ) : this(
+                maxTokens,
+                messages,
+                model,
+                metadata,
+                stopSequences,
+                stream,
+                system,
+                temperature,
+                thinking,
+                toolChoice,
+                tools,
+                topK,
+                topP,
+                mutableMapOf(),
+            )
 
             /**
              * The maximum number of tokens to generate before stopping.
@@ -1157,32 +1193,15 @@ private constructor(
              */
             @JsonProperty("top_p") @ExcludeMissing fun _topP(): JsonField<Double> = topP
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): Params = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                maxTokens()
-                messages().forEach { it.validate() }
-                model()
-                metadata().ifPresent { it.validate() }
-                stopSequences()
-                stream()
-                system().ifPresent { it.validate() }
-                temperature()
-                thinking().ifPresent { it.validate() }
-                toolChoice().ifPresent { it.validate() }
-                tools().ifPresent { it.forEach { it.validate() } }
-                topK()
-                topP()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -1853,23 +1872,47 @@ private constructor(
                         (tools ?: JsonMissing.of()).map { it.toImmutable() },
                         topK,
                         topP,
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
             }
 
-            @NoAutoDetect
+            private var validated: Boolean = false
+
+            fun validate(): Params = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                maxTokens()
+                messages().forEach { it.validate() }
+                model()
+                metadata().ifPresent { it.validate() }
+                stopSequences()
+                stream()
+                system().ifPresent { it.validate() }
+                temperature()
+                thinking().ifPresent { it.validate() }
+                toolChoice().ifPresent { it.validate() }
+                tools().ifPresent { it.forEach { it.validate() } }
+                topK()
+                topP()
+                validated = true
+            }
+
             class Message
-            @JsonCreator
             private constructor(
-                @JsonProperty("content")
-                @ExcludeMissing
-                private val content: JsonField<Content> = JsonMissing.of(),
-                @JsonProperty("role")
-                @ExcludeMissing
-                private val role: JsonField<Role> = JsonMissing.of(),
-                @JsonAnySetter
-                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                private val content: JsonField<Content>,
+                private val role: JsonField<Role>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("content")
+                    @ExcludeMissing
+                    content: JsonField<Content> = JsonMissing.of(),
+                    @JsonProperty("role") @ExcludeMissing role: JsonField<Role> = JsonMissing.of(),
+                ) : this(content, role, mutableMapOf())
 
                 /**
                  * @throws SamInvalidDataException if the JSON field has an unexpected type or is
@@ -1903,21 +1946,15 @@ private constructor(
                  */
                 @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
 
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
                 @JsonAnyGetter
                 @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                private var validated: Boolean = false
-
-                fun validate(): Message = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    content().validate()
-                    role()
-                    validated = true
-                }
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
 
                 fun toBuilder() = Builder().from(this)
 
@@ -2027,8 +2064,20 @@ private constructor(
                         Message(
                             checkRequired("content", content),
                             checkRequired("role", role),
-                            additionalProperties.toImmutable(),
+                            additionalProperties.toMutableMap(),
                         )
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): Message = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    content().validate()
+                    role()
+                    validated = true
                 }
 
                 @JsonDeserialize(using = Content.Deserializer::class)
@@ -2657,26 +2706,30 @@ private constructor(
                             }
                         }
 
-                        @NoAutoDetect
                         class BetaRequestTextBlock
-                        @JsonCreator
                         private constructor(
-                            @JsonProperty("text")
-                            @ExcludeMissing
-                            private val text: JsonField<String> = JsonMissing.of(),
-                            @JsonProperty("type")
-                            @ExcludeMissing
-                            private val type: JsonField<Type> = JsonMissing.of(),
-                            @JsonProperty("cache_control")
-                            @ExcludeMissing
-                            private val cacheControl: JsonField<CacheControl> = JsonMissing.of(),
-                            @JsonProperty("citations")
-                            @ExcludeMissing
-                            private val citations: JsonField<List<Citation>> = JsonMissing.of(),
-                            @JsonAnySetter
-                            private val additionalProperties: Map<String, JsonValue> =
-                                immutableEmptyMap(),
+                            private val text: JsonField<String>,
+                            private val type: JsonField<Type>,
+                            private val cacheControl: JsonField<CacheControl>,
+                            private val citations: JsonField<List<Citation>>,
+                            private val additionalProperties: MutableMap<String, JsonValue>,
                         ) {
+
+                            @JsonCreator
+                            private constructor(
+                                @JsonProperty("text")
+                                @ExcludeMissing
+                                text: JsonField<String> = JsonMissing.of(),
+                                @JsonProperty("type")
+                                @ExcludeMissing
+                                type: JsonField<Type> = JsonMissing.of(),
+                                @JsonProperty("cache_control")
+                                @ExcludeMissing
+                                cacheControl: JsonField<CacheControl> = JsonMissing.of(),
+                                @JsonProperty("citations")
+                                @ExcludeMissing
+                                citations: JsonField<List<Citation>> = JsonMissing.of(),
+                            ) : this(text, type, cacheControl, citations, mutableMapOf())
 
                             /**
                              * @throws SamInvalidDataException if the JSON field has an unexpected
@@ -2746,24 +2799,15 @@ private constructor(
                             @ExcludeMissing
                             fun _citations(): JsonField<List<Citation>> = citations
 
+                            @JsonAnySetter
+                            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                                additionalProperties.put(key, value)
+                            }
+
                             @JsonAnyGetter
                             @ExcludeMissing
                             fun _additionalProperties(): Map<String, JsonValue> =
-                                additionalProperties
-
-                            private var validated: Boolean = false
-
-                            fun validate(): BetaRequestTextBlock = apply {
-                                if (validated) {
-                                    return@apply
-                                }
-
-                                text()
-                                type()
-                                cacheControl().ifPresent { it.validate() }
-                                citations().ifPresent { it.forEach { it.validate() } }
-                                validated = true
-                            }
+                                Collections.unmodifiableMap(additionalProperties)
 
                             fun toBuilder() = Builder().from(this)
 
@@ -2964,8 +3008,22 @@ private constructor(
                                         checkRequired("type", type),
                                         cacheControl,
                                         (citations ?: JsonMissing.of()).map { it.toImmutable() },
-                                        additionalProperties.toImmutable(),
+                                        additionalProperties.toMutableMap(),
                                     )
+                            }
+
+                            private var validated: Boolean = false
+
+                            fun validate(): BetaRequestTextBlock = apply {
+                                if (validated) {
+                                    return@apply
+                                }
+
+                                text()
+                                type()
+                                cacheControl().ifPresent { it.validate() }
+                                citations().ifPresent { it.forEach { it.validate() } }
+                                validated = true
                             }
 
                             class Type
@@ -3076,17 +3134,18 @@ private constructor(
                                 override fun toString() = value.toString()
                             }
 
-                            @NoAutoDetect
                             class CacheControl
-                            @JsonCreator
                             private constructor(
-                                @JsonProperty("type")
-                                @ExcludeMissing
-                                private val type: JsonField<Type> = JsonMissing.of(),
-                                @JsonAnySetter
-                                private val additionalProperties: Map<String, JsonValue> =
-                                    immutableEmptyMap(),
+                                private val type: JsonField<Type>,
+                                private val additionalProperties: MutableMap<String, JsonValue>,
                             ) {
+
+                                @JsonCreator
+                                private constructor(
+                                    @JsonProperty("type")
+                                    @ExcludeMissing
+                                    type: JsonField<Type> = JsonMissing.of()
+                                ) : this(type, mutableMapOf())
 
                                 /**
                                  * @throws SamInvalidDataException if the JSON field has an
@@ -3105,21 +3164,15 @@ private constructor(
                                 @ExcludeMissing
                                 fun _type(): JsonField<Type> = type
 
+                                @JsonAnySetter
+                                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                                    additionalProperties.put(key, value)
+                                }
+
                                 @JsonAnyGetter
                                 @ExcludeMissing
                                 fun _additionalProperties(): Map<String, JsonValue> =
-                                    additionalProperties
-
-                                private var validated: Boolean = false
-
-                                fun validate(): CacheControl = apply {
-                                    if (validated) {
-                                        return@apply
-                                    }
-
-                                    type()
-                                    validated = true
-                                }
+                                    Collections.unmodifiableMap(additionalProperties)
 
                                 fun toBuilder() = Builder().from(this)
 
@@ -3205,8 +3258,19 @@ private constructor(
                                     fun build(): CacheControl =
                                         CacheControl(
                                             checkRequired("type", type),
-                                            additionalProperties.toImmutable(),
+                                            additionalProperties.toMutableMap(),
                                         )
+                                }
+
+                                private var validated: Boolean = false
+
+                                fun validate(): CacheControl = apply {
+                                    if (validated) {
+                                        return@apply
+                                    }
+
+                                    type()
+                                    validated = true
                                 }
 
                                 class Type
@@ -3613,32 +3677,46 @@ private constructor(
                                     }
                                 }
 
-                                @NoAutoDetect
                                 class BetaRequestCharLocationCitation
-                                @JsonCreator
                                 private constructor(
-                                    @JsonProperty("cited_text")
-                                    @ExcludeMissing
-                                    private val citedText: JsonField<String> = JsonMissing.of(),
-                                    @JsonProperty("document_index")
-                                    @ExcludeMissing
-                                    private val documentIndex: JsonField<Long> = JsonMissing.of(),
-                                    @JsonProperty("document_title")
-                                    @ExcludeMissing
-                                    private val documentTitle: JsonField<String> = JsonMissing.of(),
-                                    @JsonProperty("end_char_index")
-                                    @ExcludeMissing
-                                    private val endCharIndex: JsonField<Long> = JsonMissing.of(),
-                                    @JsonProperty("start_char_index")
-                                    @ExcludeMissing
-                                    private val startCharIndex: JsonField<Long> = JsonMissing.of(),
-                                    @JsonProperty("type")
-                                    @ExcludeMissing
-                                    private val type: JsonField<Type> = JsonMissing.of(),
-                                    @JsonAnySetter
-                                    private val additionalProperties: Map<String, JsonValue> =
-                                        immutableEmptyMap(),
+                                    private val citedText: JsonField<String>,
+                                    private val documentIndex: JsonField<Long>,
+                                    private val documentTitle: JsonField<String>,
+                                    private val endCharIndex: JsonField<Long>,
+                                    private val startCharIndex: JsonField<Long>,
+                                    private val type: JsonField<Type>,
+                                    private val additionalProperties: MutableMap<String, JsonValue>,
                                 ) {
+
+                                    @JsonCreator
+                                    private constructor(
+                                        @JsonProperty("cited_text")
+                                        @ExcludeMissing
+                                        citedText: JsonField<String> = JsonMissing.of(),
+                                        @JsonProperty("document_index")
+                                        @ExcludeMissing
+                                        documentIndex: JsonField<Long> = JsonMissing.of(),
+                                        @JsonProperty("document_title")
+                                        @ExcludeMissing
+                                        documentTitle: JsonField<String> = JsonMissing.of(),
+                                        @JsonProperty("end_char_index")
+                                        @ExcludeMissing
+                                        endCharIndex: JsonField<Long> = JsonMissing.of(),
+                                        @JsonProperty("start_char_index")
+                                        @ExcludeMissing
+                                        startCharIndex: JsonField<Long> = JsonMissing.of(),
+                                        @JsonProperty("type")
+                                        @ExcludeMissing
+                                        type: JsonField<Type> = JsonMissing.of(),
+                                    ) : this(
+                                        citedText,
+                                        documentIndex,
+                                        documentTitle,
+                                        endCharIndex,
+                                        startCharIndex,
+                                        type,
+                                        mutableMapOf(),
+                                    )
 
                                     /**
                                      * @throws SamInvalidDataException if the JSON field has an
@@ -3748,26 +3826,18 @@ private constructor(
                                     @ExcludeMissing
                                     fun _type(): JsonField<Type> = type
 
+                                    @JsonAnySetter
+                                    private fun putAdditionalProperty(
+                                        key: String,
+                                        value: JsonValue,
+                                    ) {
+                                        additionalProperties.put(key, value)
+                                    }
+
                                     @JsonAnyGetter
                                     @ExcludeMissing
                                     fun _additionalProperties(): Map<String, JsonValue> =
-                                        additionalProperties
-
-                                    private var validated: Boolean = false
-
-                                    fun validate(): BetaRequestCharLocationCitation = apply {
-                                        if (validated) {
-                                            return@apply
-                                        }
-
-                                        citedText()
-                                        documentIndex()
-                                        documentTitle()
-                                        endCharIndex()
-                                        startCharIndex()
-                                        type()
-                                        validated = true
-                                    }
+                                        Collections.unmodifiableMap(additionalProperties)
 
                                     fun toBuilder() = Builder().from(this)
 
@@ -3974,8 +4044,24 @@ private constructor(
                                                 checkRequired("endCharIndex", endCharIndex),
                                                 checkRequired("startCharIndex", startCharIndex),
                                                 checkRequired("type", type),
-                                                additionalProperties.toImmutable(),
+                                                additionalProperties.toMutableMap(),
                                             )
+                                    }
+
+                                    private var validated: Boolean = false
+
+                                    fun validate(): BetaRequestCharLocationCitation = apply {
+                                        if (validated) {
+                                            return@apply
+                                        }
+
+                                        citedText()
+                                        documentIndex()
+                                        documentTitle()
+                                        endCharIndex()
+                                        startCharIndex()
+                                        type()
+                                        validated = true
                                     }
 
                                     class Type
@@ -4112,32 +4198,46 @@ private constructor(
                                         "BetaRequestCharLocationCitation{citedText=$citedText, documentIndex=$documentIndex, documentTitle=$documentTitle, endCharIndex=$endCharIndex, startCharIndex=$startCharIndex, type=$type, additionalProperties=$additionalProperties}"
                                 }
 
-                                @NoAutoDetect
                                 class BetaRequestPageLocationCitation
-                                @JsonCreator
                                 private constructor(
-                                    @JsonProperty("cited_text")
-                                    @ExcludeMissing
-                                    private val citedText: JsonField<String> = JsonMissing.of(),
-                                    @JsonProperty("document_index")
-                                    @ExcludeMissing
-                                    private val documentIndex: JsonField<Long> = JsonMissing.of(),
-                                    @JsonProperty("document_title")
-                                    @ExcludeMissing
-                                    private val documentTitle: JsonField<String> = JsonMissing.of(),
-                                    @JsonProperty("end_page_number")
-                                    @ExcludeMissing
-                                    private val endPageNumber: JsonField<Long> = JsonMissing.of(),
-                                    @JsonProperty("start_page_number")
-                                    @ExcludeMissing
-                                    private val startPageNumber: JsonField<Long> = JsonMissing.of(),
-                                    @JsonProperty("type")
-                                    @ExcludeMissing
-                                    private val type: JsonField<Type> = JsonMissing.of(),
-                                    @JsonAnySetter
-                                    private val additionalProperties: Map<String, JsonValue> =
-                                        immutableEmptyMap(),
+                                    private val citedText: JsonField<String>,
+                                    private val documentIndex: JsonField<Long>,
+                                    private val documentTitle: JsonField<String>,
+                                    private val endPageNumber: JsonField<Long>,
+                                    private val startPageNumber: JsonField<Long>,
+                                    private val type: JsonField<Type>,
+                                    private val additionalProperties: MutableMap<String, JsonValue>,
                                 ) {
+
+                                    @JsonCreator
+                                    private constructor(
+                                        @JsonProperty("cited_text")
+                                        @ExcludeMissing
+                                        citedText: JsonField<String> = JsonMissing.of(),
+                                        @JsonProperty("document_index")
+                                        @ExcludeMissing
+                                        documentIndex: JsonField<Long> = JsonMissing.of(),
+                                        @JsonProperty("document_title")
+                                        @ExcludeMissing
+                                        documentTitle: JsonField<String> = JsonMissing.of(),
+                                        @JsonProperty("end_page_number")
+                                        @ExcludeMissing
+                                        endPageNumber: JsonField<Long> = JsonMissing.of(),
+                                        @JsonProperty("start_page_number")
+                                        @ExcludeMissing
+                                        startPageNumber: JsonField<Long> = JsonMissing.of(),
+                                        @JsonProperty("type")
+                                        @ExcludeMissing
+                                        type: JsonField<Type> = JsonMissing.of(),
+                                    ) : this(
+                                        citedText,
+                                        documentIndex,
+                                        documentTitle,
+                                        endPageNumber,
+                                        startPageNumber,
+                                        type,
+                                        mutableMapOf(),
+                                    )
 
                                     /**
                                      * @throws SamInvalidDataException if the JSON field has an
@@ -4247,26 +4347,18 @@ private constructor(
                                     @ExcludeMissing
                                     fun _type(): JsonField<Type> = type
 
+                                    @JsonAnySetter
+                                    private fun putAdditionalProperty(
+                                        key: String,
+                                        value: JsonValue,
+                                    ) {
+                                        additionalProperties.put(key, value)
+                                    }
+
                                     @JsonAnyGetter
                                     @ExcludeMissing
                                     fun _additionalProperties(): Map<String, JsonValue> =
-                                        additionalProperties
-
-                                    private var validated: Boolean = false
-
-                                    fun validate(): BetaRequestPageLocationCitation = apply {
-                                        if (validated) {
-                                            return@apply
-                                        }
-
-                                        citedText()
-                                        documentIndex()
-                                        documentTitle()
-                                        endPageNumber()
-                                        startPageNumber()
-                                        type()
-                                        validated = true
-                                    }
+                                        Collections.unmodifiableMap(additionalProperties)
 
                                     fun toBuilder() = Builder().from(this)
 
@@ -4474,8 +4566,24 @@ private constructor(
                                                 checkRequired("endPageNumber", endPageNumber),
                                                 checkRequired("startPageNumber", startPageNumber),
                                                 checkRequired("type", type),
-                                                additionalProperties.toImmutable(),
+                                                additionalProperties.toMutableMap(),
                                             )
+                                    }
+
+                                    private var validated: Boolean = false
+
+                                    fun validate(): BetaRequestPageLocationCitation = apply {
+                                        if (validated) {
+                                            return@apply
+                                        }
+
+                                        citedText()
+                                        documentIndex()
+                                        documentTitle()
+                                        endPageNumber()
+                                        startPageNumber()
+                                        type()
+                                        validated = true
                                     }
 
                                     class Type
@@ -4612,32 +4720,46 @@ private constructor(
                                         "BetaRequestPageLocationCitation{citedText=$citedText, documentIndex=$documentIndex, documentTitle=$documentTitle, endPageNumber=$endPageNumber, startPageNumber=$startPageNumber, type=$type, additionalProperties=$additionalProperties}"
                                 }
 
-                                @NoAutoDetect
                                 class BetaRequestContentBlockLocationCitation
-                                @JsonCreator
                                 private constructor(
-                                    @JsonProperty("cited_text")
-                                    @ExcludeMissing
-                                    private val citedText: JsonField<String> = JsonMissing.of(),
-                                    @JsonProperty("document_index")
-                                    @ExcludeMissing
-                                    private val documentIndex: JsonField<Long> = JsonMissing.of(),
-                                    @JsonProperty("document_title")
-                                    @ExcludeMissing
-                                    private val documentTitle: JsonField<String> = JsonMissing.of(),
-                                    @JsonProperty("end_block_index")
-                                    @ExcludeMissing
-                                    private val endBlockIndex: JsonField<Long> = JsonMissing.of(),
-                                    @JsonProperty("start_block_index")
-                                    @ExcludeMissing
-                                    private val startBlockIndex: JsonField<Long> = JsonMissing.of(),
-                                    @JsonProperty("type")
-                                    @ExcludeMissing
-                                    private val type: JsonField<Type> = JsonMissing.of(),
-                                    @JsonAnySetter
-                                    private val additionalProperties: Map<String, JsonValue> =
-                                        immutableEmptyMap(),
+                                    private val citedText: JsonField<String>,
+                                    private val documentIndex: JsonField<Long>,
+                                    private val documentTitle: JsonField<String>,
+                                    private val endBlockIndex: JsonField<Long>,
+                                    private val startBlockIndex: JsonField<Long>,
+                                    private val type: JsonField<Type>,
+                                    private val additionalProperties: MutableMap<String, JsonValue>,
                                 ) {
+
+                                    @JsonCreator
+                                    private constructor(
+                                        @JsonProperty("cited_text")
+                                        @ExcludeMissing
+                                        citedText: JsonField<String> = JsonMissing.of(),
+                                        @JsonProperty("document_index")
+                                        @ExcludeMissing
+                                        documentIndex: JsonField<Long> = JsonMissing.of(),
+                                        @JsonProperty("document_title")
+                                        @ExcludeMissing
+                                        documentTitle: JsonField<String> = JsonMissing.of(),
+                                        @JsonProperty("end_block_index")
+                                        @ExcludeMissing
+                                        endBlockIndex: JsonField<Long> = JsonMissing.of(),
+                                        @JsonProperty("start_block_index")
+                                        @ExcludeMissing
+                                        startBlockIndex: JsonField<Long> = JsonMissing.of(),
+                                        @JsonProperty("type")
+                                        @ExcludeMissing
+                                        type: JsonField<Type> = JsonMissing.of(),
+                                    ) : this(
+                                        citedText,
+                                        documentIndex,
+                                        documentTitle,
+                                        endBlockIndex,
+                                        startBlockIndex,
+                                        type,
+                                        mutableMapOf(),
+                                    )
 
                                     /**
                                      * @throws SamInvalidDataException if the JSON field has an
@@ -4747,27 +4869,18 @@ private constructor(
                                     @ExcludeMissing
                                     fun _type(): JsonField<Type> = type
 
+                                    @JsonAnySetter
+                                    private fun putAdditionalProperty(
+                                        key: String,
+                                        value: JsonValue,
+                                    ) {
+                                        additionalProperties.put(key, value)
+                                    }
+
                                     @JsonAnyGetter
                                     @ExcludeMissing
                                     fun _additionalProperties(): Map<String, JsonValue> =
-                                        additionalProperties
-
-                                    private var validated: Boolean = false
-
-                                    fun validate(): BetaRequestContentBlockLocationCitation =
-                                        apply {
-                                            if (validated) {
-                                                return@apply
-                                            }
-
-                                            citedText()
-                                            documentIndex()
-                                            documentTitle()
-                                            endBlockIndex()
-                                            startBlockIndex()
-                                            type()
-                                            validated = true
-                                        }
+                                        Collections.unmodifiableMap(additionalProperties)
 
                                     fun toBuilder() = Builder().from(this)
 
@@ -4981,9 +5094,26 @@ private constructor(
                                                 checkRequired("endBlockIndex", endBlockIndex),
                                                 checkRequired("startBlockIndex", startBlockIndex),
                                                 checkRequired("type", type),
-                                                additionalProperties.toImmutable(),
+                                                additionalProperties.toMutableMap(),
                                             )
                                     }
+
+                                    private var validated: Boolean = false
+
+                                    fun validate(): BetaRequestContentBlockLocationCitation =
+                                        apply {
+                                            if (validated) {
+                                                return@apply
+                                            }
+
+                                            citedText()
+                                            documentIndex()
+                                            documentTitle()
+                                            endBlockIndex()
+                                            startBlockIndex()
+                                            type()
+                                            validated = true
+                                        }
 
                                     class Type
                                     @JsonCreator
@@ -5142,23 +5272,26 @@ private constructor(
                                 "BetaRequestTextBlock{text=$text, type=$type, cacheControl=$cacheControl, citations=$citations, additionalProperties=$additionalProperties}"
                         }
 
-                        @NoAutoDetect
                         class BetaRequestImageBlock
-                        @JsonCreator
                         private constructor(
-                            @JsonProperty("source")
-                            @ExcludeMissing
-                            private val source: JsonField<Source> = JsonMissing.of(),
-                            @JsonProperty("type")
-                            @ExcludeMissing
-                            private val type: JsonField<Type> = JsonMissing.of(),
-                            @JsonProperty("cache_control")
-                            @ExcludeMissing
-                            private val cacheControl: JsonField<CacheControl> = JsonMissing.of(),
-                            @JsonAnySetter
-                            private val additionalProperties: Map<String, JsonValue> =
-                                immutableEmptyMap(),
+                            private val source: JsonField<Source>,
+                            private val type: JsonField<Type>,
+                            private val cacheControl: JsonField<CacheControl>,
+                            private val additionalProperties: MutableMap<String, JsonValue>,
                         ) {
+
+                            @JsonCreator
+                            private constructor(
+                                @JsonProperty("source")
+                                @ExcludeMissing
+                                source: JsonField<Source> = JsonMissing.of(),
+                                @JsonProperty("type")
+                                @ExcludeMissing
+                                type: JsonField<Type> = JsonMissing.of(),
+                                @JsonProperty("cache_control")
+                                @ExcludeMissing
+                                cacheControl: JsonField<CacheControl> = JsonMissing.of(),
+                            ) : this(source, type, cacheControl, mutableMapOf())
 
                             /**
                              * @throws SamInvalidDataException if the JSON field has an unexpected
@@ -5211,23 +5344,15 @@ private constructor(
                             @ExcludeMissing
                             fun _cacheControl(): JsonField<CacheControl> = cacheControl
 
+                            @JsonAnySetter
+                            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                                additionalProperties.put(key, value)
+                            }
+
                             @JsonAnyGetter
                             @ExcludeMissing
                             fun _additionalProperties(): Map<String, JsonValue> =
-                                additionalProperties
-
-                            private var validated: Boolean = false
-
-                            fun validate(): BetaRequestImageBlock = apply {
-                                if (validated) {
-                                    return@apply
-                                }
-
-                                source().validate()
-                                type()
-                                cacheControl().ifPresent { it.validate() }
-                                validated = true
-                            }
+                                Collections.unmodifiableMap(additionalProperties)
 
                             fun toBuilder() = Builder().from(this)
 
@@ -5393,8 +5518,21 @@ private constructor(
                                         checkRequired("source", source),
                                         checkRequired("type", type),
                                         cacheControl,
-                                        additionalProperties.toImmutable(),
+                                        additionalProperties.toMutableMap(),
                                     )
+                            }
+
+                            private var validated: Boolean = false
+
+                            fun validate(): BetaRequestImageBlock = apply {
+                                if (validated) {
+                                    return@apply
+                                }
+
+                                source().validate()
+                                type()
+                                cacheControl().ifPresent { it.validate() }
+                                validated = true
                             }
 
                             @JsonDeserialize(using = Source.Deserializer::class)
@@ -5585,23 +5723,26 @@ private constructor(
                                     }
                                 }
 
-                                @NoAutoDetect
                                 class BetaBase64ImageSource
-                                @JsonCreator
                                 private constructor(
-                                    @JsonProperty("data")
-                                    @ExcludeMissing
-                                    private val data: JsonField<String> = JsonMissing.of(),
-                                    @JsonProperty("media_type")
-                                    @ExcludeMissing
-                                    private val mediaType: JsonField<MediaType> = JsonMissing.of(),
-                                    @JsonProperty("type")
-                                    @ExcludeMissing
-                                    private val type: JsonField<Type> = JsonMissing.of(),
-                                    @JsonAnySetter
-                                    private val additionalProperties: Map<String, JsonValue> =
-                                        immutableEmptyMap(),
+                                    private val data: JsonField<String>,
+                                    private val mediaType: JsonField<MediaType>,
+                                    private val type: JsonField<Type>,
+                                    private val additionalProperties: MutableMap<String, JsonValue>,
                                 ) {
+
+                                    @JsonCreator
+                                    private constructor(
+                                        @JsonProperty("data")
+                                        @ExcludeMissing
+                                        data: JsonField<String> = JsonMissing.of(),
+                                        @JsonProperty("media_type")
+                                        @ExcludeMissing
+                                        mediaType: JsonField<MediaType> = JsonMissing.of(),
+                                        @JsonProperty("type")
+                                        @ExcludeMissing
+                                        type: JsonField<Type> = JsonMissing.of(),
+                                    ) : this(data, mediaType, type, mutableMapOf())
 
                                     /**
                                      * @throws SamInvalidDataException if the JSON field has an
@@ -5654,23 +5795,18 @@ private constructor(
                                     @ExcludeMissing
                                     fun _type(): JsonField<Type> = type
 
+                                    @JsonAnySetter
+                                    private fun putAdditionalProperty(
+                                        key: String,
+                                        value: JsonValue,
+                                    ) {
+                                        additionalProperties.put(key, value)
+                                    }
+
                                     @JsonAnyGetter
                                     @ExcludeMissing
                                     fun _additionalProperties(): Map<String, JsonValue> =
-                                        additionalProperties
-
-                                    private var validated: Boolean = false
-
-                                    fun validate(): BetaBase64ImageSource = apply {
-                                        if (validated) {
-                                            return@apply
-                                        }
-
-                                        data()
-                                        mediaType()
-                                        type()
-                                        validated = true
-                                    }
+                                        Collections.unmodifiableMap(additionalProperties)
 
                                     fun toBuilder() = Builder().from(this)
 
@@ -5801,8 +5937,21 @@ private constructor(
                                                 checkRequired("data", data),
                                                 checkRequired("mediaType", mediaType),
                                                 checkRequired("type", type),
-                                                additionalProperties.toImmutable(),
+                                                additionalProperties.toMutableMap(),
                                             )
+                                    }
+
+                                    private var validated: Boolean = false
+
+                                    fun validate(): BetaBase64ImageSource = apply {
+                                        if (validated) {
+                                            return@apply
+                                        }
+
+                                        data()
+                                        mediaType()
+                                        type()
+                                        validated = true
                                     }
 
                                     class MediaType
@@ -6073,20 +6222,22 @@ private constructor(
                                         "BetaBase64ImageSource{data=$data, mediaType=$mediaType, type=$type, additionalProperties=$additionalProperties}"
                                 }
 
-                                @NoAutoDetect
                                 class BetaUrlImageSource
-                                @JsonCreator
                                 private constructor(
-                                    @JsonProperty("type")
-                                    @ExcludeMissing
-                                    private val type: JsonField<Type> = JsonMissing.of(),
-                                    @JsonProperty("url")
-                                    @ExcludeMissing
-                                    private val url: JsonField<String> = JsonMissing.of(),
-                                    @JsonAnySetter
-                                    private val additionalProperties: Map<String, JsonValue> =
-                                        immutableEmptyMap(),
+                                    private val type: JsonField<Type>,
+                                    private val url: JsonField<String>,
+                                    private val additionalProperties: MutableMap<String, JsonValue>,
                                 ) {
+
+                                    @JsonCreator
+                                    private constructor(
+                                        @JsonProperty("type")
+                                        @ExcludeMissing
+                                        type: JsonField<Type> = JsonMissing.of(),
+                                        @JsonProperty("url")
+                                        @ExcludeMissing
+                                        url: JsonField<String> = JsonMissing.of(),
+                                    ) : this(type, url, mutableMapOf())
 
                                     /**
                                      * @throws SamInvalidDataException if the JSON field has an
@@ -6122,22 +6273,18 @@ private constructor(
                                     @ExcludeMissing
                                     fun _url(): JsonField<String> = url
 
+                                    @JsonAnySetter
+                                    private fun putAdditionalProperty(
+                                        key: String,
+                                        value: JsonValue,
+                                    ) {
+                                        additionalProperties.put(key, value)
+                                    }
+
                                     @JsonAnyGetter
                                     @ExcludeMissing
                                     fun _additionalProperties(): Map<String, JsonValue> =
-                                        additionalProperties
-
-                                    private var validated: Boolean = false
-
-                                    fun validate(): BetaUrlImageSource = apply {
-                                        if (validated) {
-                                            return@apply
-                                        }
-
-                                        type()
-                                        url()
-                                        validated = true
-                                    }
+                                        Collections.unmodifiableMap(additionalProperties)
 
                                     fun toBuilder() = Builder().from(this)
 
@@ -6245,8 +6392,20 @@ private constructor(
                                             BetaUrlImageSource(
                                                 checkRequired("type", type),
                                                 checkRequired("url", url),
-                                                additionalProperties.toImmutable(),
+                                                additionalProperties.toMutableMap(),
                                             )
+                                    }
+
+                                    private var validated: Boolean = false
+
+                                    fun validate(): BetaUrlImageSource = apply {
+                                        if (validated) {
+                                            return@apply
+                                        }
+
+                                        type()
+                                        url()
+                                        validated = true
                                     }
 
                                     class Type
@@ -6492,17 +6651,18 @@ private constructor(
                                 override fun toString() = value.toString()
                             }
 
-                            @NoAutoDetect
                             class CacheControl
-                            @JsonCreator
                             private constructor(
-                                @JsonProperty("type")
-                                @ExcludeMissing
-                                private val type: JsonField<Type> = JsonMissing.of(),
-                                @JsonAnySetter
-                                private val additionalProperties: Map<String, JsonValue> =
-                                    immutableEmptyMap(),
+                                private val type: JsonField<Type>,
+                                private val additionalProperties: MutableMap<String, JsonValue>,
                             ) {
+
+                                @JsonCreator
+                                private constructor(
+                                    @JsonProperty("type")
+                                    @ExcludeMissing
+                                    type: JsonField<Type> = JsonMissing.of()
+                                ) : this(type, mutableMapOf())
 
                                 /**
                                  * @throws SamInvalidDataException if the JSON field has an
@@ -6521,21 +6681,15 @@ private constructor(
                                 @ExcludeMissing
                                 fun _type(): JsonField<Type> = type
 
+                                @JsonAnySetter
+                                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                                    additionalProperties.put(key, value)
+                                }
+
                                 @JsonAnyGetter
                                 @ExcludeMissing
                                 fun _additionalProperties(): Map<String, JsonValue> =
-                                    additionalProperties
-
-                                private var validated: Boolean = false
-
-                                fun validate(): CacheControl = apply {
-                                    if (validated) {
-                                        return@apply
-                                    }
-
-                                    type()
-                                    validated = true
-                                }
+                                    Collections.unmodifiableMap(additionalProperties)
 
                                 fun toBuilder() = Builder().from(this)
 
@@ -6621,8 +6775,19 @@ private constructor(
                                     fun build(): CacheControl =
                                         CacheControl(
                                             checkRequired("type", type),
-                                            additionalProperties.toImmutable(),
+                                            additionalProperties.toMutableMap(),
                                         )
+                                }
+
+                                private var validated: Boolean = false
+
+                                fun validate(): CacheControl = apply {
+                                    if (validated) {
+                                        return@apply
+                                    }
+
+                                    type()
+                                    validated = true
                                 }
 
                                 class Type
@@ -6771,29 +6936,34 @@ private constructor(
                                 "BetaRequestImageBlock{source=$source, type=$type, cacheControl=$cacheControl, additionalProperties=$additionalProperties}"
                         }
 
-                        @NoAutoDetect
                         class BetaRequestToolUseBlock
-                        @JsonCreator
                         private constructor(
-                            @JsonProperty("id")
-                            @ExcludeMissing
-                            private val id: JsonField<String> = JsonMissing.of(),
-                            @JsonProperty("input")
-                            @ExcludeMissing
-                            private val input: JsonValue = JsonMissing.of(),
-                            @JsonProperty("name")
-                            @ExcludeMissing
-                            private val name: JsonField<String> = JsonMissing.of(),
-                            @JsonProperty("type")
-                            @ExcludeMissing
-                            private val type: JsonField<Type> = JsonMissing.of(),
-                            @JsonProperty("cache_control")
-                            @ExcludeMissing
-                            private val cacheControl: JsonField<CacheControl> = JsonMissing.of(),
-                            @JsonAnySetter
-                            private val additionalProperties: Map<String, JsonValue> =
-                                immutableEmptyMap(),
+                            private val id: JsonField<String>,
+                            private val input: JsonValue,
+                            private val name: JsonField<String>,
+                            private val type: JsonField<Type>,
+                            private val cacheControl: JsonField<CacheControl>,
+                            private val additionalProperties: MutableMap<String, JsonValue>,
                         ) {
+
+                            @JsonCreator
+                            private constructor(
+                                @JsonProperty("id")
+                                @ExcludeMissing
+                                id: JsonField<String> = JsonMissing.of(),
+                                @JsonProperty("input")
+                                @ExcludeMissing
+                                input: JsonValue = JsonMissing.of(),
+                                @JsonProperty("name")
+                                @ExcludeMissing
+                                name: JsonField<String> = JsonMissing.of(),
+                                @JsonProperty("type")
+                                @ExcludeMissing
+                                type: JsonField<Type> = JsonMissing.of(),
+                                @JsonProperty("cache_control")
+                                @ExcludeMissing
+                                cacheControl: JsonField<CacheControl> = JsonMissing.of(),
+                            ) : this(id, input, name, type, cacheControl, mutableMapOf())
 
                             /**
                              * @throws SamInvalidDataException if the JSON field has an unexpected
@@ -6863,24 +7033,15 @@ private constructor(
                             @ExcludeMissing
                             fun _cacheControl(): JsonField<CacheControl> = cacheControl
 
+                            @JsonAnySetter
+                            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                                additionalProperties.put(key, value)
+                            }
+
                             @JsonAnyGetter
                             @ExcludeMissing
                             fun _additionalProperties(): Map<String, JsonValue> =
-                                additionalProperties
-
-                            private var validated: Boolean = false
-
-                            fun validate(): BetaRequestToolUseBlock = apply {
-                                if (validated) {
-                                    return@apply
-                                }
-
-                                id()
-                                name()
-                                type()
-                                cacheControl().ifPresent { it.validate() }
-                                validated = true
-                            }
+                                Collections.unmodifiableMap(additionalProperties)
 
                             fun toBuilder() = Builder().from(this)
 
@@ -7027,8 +7188,22 @@ private constructor(
                                         checkRequired("name", name),
                                         checkRequired("type", type),
                                         cacheControl,
-                                        additionalProperties.toImmutable(),
+                                        additionalProperties.toMutableMap(),
                                     )
+                            }
+
+                            private var validated: Boolean = false
+
+                            fun validate(): BetaRequestToolUseBlock = apply {
+                                if (validated) {
+                                    return@apply
+                                }
+
+                                id()
+                                name()
+                                type()
+                                cacheControl().ifPresent { it.validate() }
+                                validated = true
                             }
 
                             class Type
@@ -7139,17 +7314,18 @@ private constructor(
                                 override fun toString() = value.toString()
                             }
 
-                            @NoAutoDetect
                             class CacheControl
-                            @JsonCreator
                             private constructor(
-                                @JsonProperty("type")
-                                @ExcludeMissing
-                                private val type: JsonField<Type> = JsonMissing.of(),
-                                @JsonAnySetter
-                                private val additionalProperties: Map<String, JsonValue> =
-                                    immutableEmptyMap(),
+                                private val type: JsonField<Type>,
+                                private val additionalProperties: MutableMap<String, JsonValue>,
                             ) {
+
+                                @JsonCreator
+                                private constructor(
+                                    @JsonProperty("type")
+                                    @ExcludeMissing
+                                    type: JsonField<Type> = JsonMissing.of()
+                                ) : this(type, mutableMapOf())
 
                                 /**
                                  * @throws SamInvalidDataException if the JSON field has an
@@ -7168,21 +7344,15 @@ private constructor(
                                 @ExcludeMissing
                                 fun _type(): JsonField<Type> = type
 
+                                @JsonAnySetter
+                                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                                    additionalProperties.put(key, value)
+                                }
+
                                 @JsonAnyGetter
                                 @ExcludeMissing
                                 fun _additionalProperties(): Map<String, JsonValue> =
-                                    additionalProperties
-
-                                private var validated: Boolean = false
-
-                                fun validate(): CacheControl = apply {
-                                    if (validated) {
-                                        return@apply
-                                    }
-
-                                    type()
-                                    validated = true
-                                }
+                                    Collections.unmodifiableMap(additionalProperties)
 
                                 fun toBuilder() = Builder().from(this)
 
@@ -7268,8 +7438,19 @@ private constructor(
                                     fun build(): CacheControl =
                                         CacheControl(
                                             checkRequired("type", type),
-                                            additionalProperties.toImmutable(),
+                                            additionalProperties.toMutableMap(),
                                         )
+                                }
+
+                                private var validated: Boolean = false
+
+                                fun validate(): CacheControl = apply {
+                                    if (validated) {
+                                        return@apply
+                                    }
+
+                                    type()
+                                    validated = true
                                 }
 
                                 class Type
@@ -7418,29 +7599,41 @@ private constructor(
                                 "BetaRequestToolUseBlock{id=$id, input=$input, name=$name, type=$type, cacheControl=$cacheControl, additionalProperties=$additionalProperties}"
                         }
 
-                        @NoAutoDetect
                         class BetaRequestToolResultBlock
-                        @JsonCreator
                         private constructor(
-                            @JsonProperty("tool_use_id")
-                            @ExcludeMissing
-                            private val toolUseId: JsonField<String> = JsonMissing.of(),
-                            @JsonProperty("type")
-                            @ExcludeMissing
-                            private val type: JsonField<Type> = JsonMissing.of(),
-                            @JsonProperty("cache_control")
-                            @ExcludeMissing
-                            private val cacheControl: JsonField<CacheControl> = JsonMissing.of(),
-                            @JsonProperty("content")
-                            @ExcludeMissing
-                            private val content: JsonField<InnerContent> = JsonMissing.of(),
-                            @JsonProperty("is_error")
-                            @ExcludeMissing
-                            private val isError: JsonField<Boolean> = JsonMissing.of(),
-                            @JsonAnySetter
-                            private val additionalProperties: Map<String, JsonValue> =
-                                immutableEmptyMap(),
+                            private val toolUseId: JsonField<String>,
+                            private val type: JsonField<Type>,
+                            private val cacheControl: JsonField<CacheControl>,
+                            private val content: JsonField<InnerContent>,
+                            private val isError: JsonField<Boolean>,
+                            private val additionalProperties: MutableMap<String, JsonValue>,
                         ) {
+
+                            @JsonCreator
+                            private constructor(
+                                @JsonProperty("tool_use_id")
+                                @ExcludeMissing
+                                toolUseId: JsonField<String> = JsonMissing.of(),
+                                @JsonProperty("type")
+                                @ExcludeMissing
+                                type: JsonField<Type> = JsonMissing.of(),
+                                @JsonProperty("cache_control")
+                                @ExcludeMissing
+                                cacheControl: JsonField<CacheControl> = JsonMissing.of(),
+                                @JsonProperty("content")
+                                @ExcludeMissing
+                                content: JsonField<InnerContent> = JsonMissing.of(),
+                                @JsonProperty("is_error")
+                                @ExcludeMissing
+                                isError: JsonField<Boolean> = JsonMissing.of(),
+                            ) : this(
+                                toolUseId,
+                                type,
+                                cacheControl,
+                                content,
+                                isError,
+                                mutableMapOf(),
+                            )
 
                             /**
                              * @throws SamInvalidDataException if the JSON field has an unexpected
@@ -7527,25 +7720,15 @@ private constructor(
                             @ExcludeMissing
                             fun _isError(): JsonField<Boolean> = isError
 
+                            @JsonAnySetter
+                            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                                additionalProperties.put(key, value)
+                            }
+
                             @JsonAnyGetter
                             @ExcludeMissing
                             fun _additionalProperties(): Map<String, JsonValue> =
-                                additionalProperties
-
-                            private var validated: Boolean = false
-
-                            fun validate(): BetaRequestToolResultBlock = apply {
-                                if (validated) {
-                                    return@apply
-                                }
-
-                                toolUseId()
-                                type()
-                                cacheControl().ifPresent { it.validate() }
-                                content().ifPresent { it.validate() }
-                                isError()
-                                validated = true
-                            }
+                                Collections.unmodifiableMap(additionalProperties)
 
                             fun toBuilder() = Builder().from(this)
 
@@ -7724,8 +7907,23 @@ private constructor(
                                         cacheControl,
                                         content,
                                         isError,
-                                        additionalProperties.toImmutable(),
+                                        additionalProperties.toMutableMap(),
                                     )
+                            }
+
+                            private var validated: Boolean = false
+
+                            fun validate(): BetaRequestToolResultBlock = apply {
+                                if (validated) {
+                                    return@apply
+                                }
+
+                                toolUseId()
+                                type()
+                                cacheControl().ifPresent { it.validate() }
+                                content().ifPresent { it.validate() }
+                                isError()
+                                validated = true
                             }
 
                             class Type
@@ -7836,17 +8034,18 @@ private constructor(
                                 override fun toString() = value.toString()
                             }
 
-                            @NoAutoDetect
                             class CacheControl
-                            @JsonCreator
                             private constructor(
-                                @JsonProperty("type")
-                                @ExcludeMissing
-                                private val type: JsonField<Type> = JsonMissing.of(),
-                                @JsonAnySetter
-                                private val additionalProperties: Map<String, JsonValue> =
-                                    immutableEmptyMap(),
+                                private val type: JsonField<Type>,
+                                private val additionalProperties: MutableMap<String, JsonValue>,
                             ) {
+
+                                @JsonCreator
+                                private constructor(
+                                    @JsonProperty("type")
+                                    @ExcludeMissing
+                                    type: JsonField<Type> = JsonMissing.of()
+                                ) : this(type, mutableMapOf())
 
                                 /**
                                  * @throws SamInvalidDataException if the JSON field has an
@@ -7865,21 +8064,15 @@ private constructor(
                                 @ExcludeMissing
                                 fun _type(): JsonField<Type> = type
 
+                                @JsonAnySetter
+                                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                                    additionalProperties.put(key, value)
+                                }
+
                                 @JsonAnyGetter
                                 @ExcludeMissing
                                 fun _additionalProperties(): Map<String, JsonValue> =
-                                    additionalProperties
-
-                                private var validated: Boolean = false
-
-                                fun validate(): CacheControl = apply {
-                                    if (validated) {
-                                        return@apply
-                                    }
-
-                                    type()
-                                    validated = true
-                                }
+                                    Collections.unmodifiableMap(additionalProperties)
 
                                 fun toBuilder() = Builder().from(this)
 
@@ -7965,8 +8158,19 @@ private constructor(
                                     fun build(): CacheControl =
                                         CacheControl(
                                             checkRequired("type", type),
-                                            additionalProperties.toImmutable(),
+                                            additionalProperties.toMutableMap(),
                                         )
+                                }
+
+                                private var validated: Boolean = false
+
+                                fun validate(): CacheControl = apply {
+                                    if (validated) {
+                                        return@apply
+                                    }
+
+                                    type()
+                                    validated = true
                                 }
 
                                 class Type
@@ -8515,28 +8719,38 @@ private constructor(
                                         }
                                     }
 
-                                    @NoAutoDetect
                                     class BetaRequestTextBlock
-                                    @JsonCreator
                                     private constructor(
-                                        @JsonProperty("text")
-                                        @ExcludeMissing
-                                        private val text: JsonField<String> = JsonMissing.of(),
-                                        @JsonProperty("type")
-                                        @ExcludeMissing
-                                        private val type: JsonField<Type> = JsonMissing.of(),
-                                        @JsonProperty("cache_control")
-                                        @ExcludeMissing
-                                        private val cacheControl: JsonField<CacheControl> =
-                                            JsonMissing.of(),
-                                        @JsonProperty("citations")
-                                        @ExcludeMissing
-                                        private val citations: JsonField<List<Citation>> =
-                                            JsonMissing.of(),
-                                        @JsonAnySetter
-                                        private val additionalProperties: Map<String, JsonValue> =
-                                            immutableEmptyMap(),
+                                        private val text: JsonField<String>,
+                                        private val type: JsonField<Type>,
+                                        private val cacheControl: JsonField<CacheControl>,
+                                        private val citations: JsonField<List<Citation>>,
+                                        private val additionalProperties:
+                                            MutableMap<String, JsonValue>,
                                     ) {
+
+                                        @JsonCreator
+                                        private constructor(
+                                            @JsonProperty("text")
+                                            @ExcludeMissing
+                                            text: JsonField<String> = JsonMissing.of(),
+                                            @JsonProperty("type")
+                                            @ExcludeMissing
+                                            type: JsonField<Type> = JsonMissing.of(),
+                                            @JsonProperty("cache_control")
+                                            @ExcludeMissing
+                                            cacheControl: JsonField<CacheControl> =
+                                                JsonMissing.of(),
+                                            @JsonProperty("citations")
+                                            @ExcludeMissing
+                                            citations: JsonField<List<Citation>> = JsonMissing.of(),
+                                        ) : this(
+                                            text,
+                                            type,
+                                            cacheControl,
+                                            citations,
+                                            mutableMapOf(),
+                                        )
 
                                         /**
                                          * @throws SamInvalidDataException if the JSON field has an
@@ -8612,24 +8826,18 @@ private constructor(
                                         @ExcludeMissing
                                         fun _citations(): JsonField<List<Citation>> = citations
 
+                                        @JsonAnySetter
+                                        private fun putAdditionalProperty(
+                                            key: String,
+                                            value: JsonValue,
+                                        ) {
+                                            additionalProperties.put(key, value)
+                                        }
+
                                         @JsonAnyGetter
                                         @ExcludeMissing
                                         fun _additionalProperties(): Map<String, JsonValue> =
-                                            additionalProperties
-
-                                        private var validated: Boolean = false
-
-                                        fun validate(): BetaRequestTextBlock = apply {
-                                            if (validated) {
-                                                return@apply
-                                            }
-
-                                            text()
-                                            type()
-                                            cacheControl().ifPresent { it.validate() }
-                                            citations().ifPresent { it.forEach { it.validate() } }
-                                            validated = true
-                                        }
+                                            Collections.unmodifiableMap(additionalProperties)
 
                                         fun toBuilder() = Builder().from(this)
 
@@ -8863,8 +9071,22 @@ private constructor(
                                                     (citations ?: JsonMissing.of()).map {
                                                         it.toImmutable()
                                                     },
-                                                    additionalProperties.toImmutable(),
+                                                    additionalProperties.toMutableMap(),
                                                 )
+                                        }
+
+                                        private var validated: Boolean = false
+
+                                        fun validate(): BetaRequestTextBlock = apply {
+                                            if (validated) {
+                                                return@apply
+                                            }
+
+                                            text()
+                                            type()
+                                            cacheControl().ifPresent { it.validate() }
+                                            citations().ifPresent { it.forEach { it.validate() } }
+                                            validated = true
                                         }
 
                                         class Type
@@ -8986,18 +9208,19 @@ private constructor(
                                             override fun toString() = value.toString()
                                         }
 
-                                        @NoAutoDetect
                                         class CacheControl
-                                        @JsonCreator
                                         private constructor(
-                                            @JsonProperty("type")
-                                            @ExcludeMissing
-                                            private val type: JsonField<Type> = JsonMissing.of(),
-                                            @JsonAnySetter
+                                            private val type: JsonField<Type>,
                                             private val additionalProperties:
-                                                Map<String, JsonValue> =
-                                                immutableEmptyMap(),
+                                                MutableMap<String, JsonValue>,
                                         ) {
+
+                                            @JsonCreator
+                                            private constructor(
+                                                @JsonProperty("type")
+                                                @ExcludeMissing
+                                                type: JsonField<Type> = JsonMissing.of()
+                                            ) : this(type, mutableMapOf())
 
                                             /**
                                              * @throws SamInvalidDataException if the JSON field has
@@ -9017,21 +9240,18 @@ private constructor(
                                             @ExcludeMissing
                                             fun _type(): JsonField<Type> = type
 
+                                            @JsonAnySetter
+                                            private fun putAdditionalProperty(
+                                                key: String,
+                                                value: JsonValue,
+                                            ) {
+                                                additionalProperties.put(key, value)
+                                            }
+
                                             @JsonAnyGetter
                                             @ExcludeMissing
                                             fun _additionalProperties(): Map<String, JsonValue> =
-                                                additionalProperties
-
-                                            private var validated: Boolean = false
-
-                                            fun validate(): CacheControl = apply {
-                                                if (validated) {
-                                                    return@apply
-                                                }
-
-                                                type()
-                                                validated = true
-                                            }
+                                                Collections.unmodifiableMap(additionalProperties)
 
                                             fun toBuilder() = Builder().from(this)
 
@@ -9127,8 +9347,19 @@ private constructor(
                                                 fun build(): CacheControl =
                                                     CacheControl(
                                                         checkRequired("type", type),
-                                                        additionalProperties.toImmutable(),
+                                                        additionalProperties.toMutableMap(),
                                                     )
+                                            }
+
+                                            private var validated: Boolean = false
+
+                                            fun validate(): CacheControl = apply {
+                                                if (validated) {
+                                                    return@apply
+                                                }
+
+                                                type()
+                                                validated = true
                                             }
 
                                             class Type
@@ -9590,39 +9821,51 @@ private constructor(
                                                 }
                                             }
 
-                                            @NoAutoDetect
                                             class BetaRequestCharLocationCitation
-                                            @JsonCreator
                                             private constructor(
-                                                @JsonProperty("cited_text")
-                                                @ExcludeMissing
-                                                private val citedText: JsonField<String> =
-                                                    JsonMissing.of(),
-                                                @JsonProperty("document_index")
-                                                @ExcludeMissing
-                                                private val documentIndex: JsonField<Long> =
-                                                    JsonMissing.of(),
-                                                @JsonProperty("document_title")
-                                                @ExcludeMissing
-                                                private val documentTitle: JsonField<String> =
-                                                    JsonMissing.of(),
-                                                @JsonProperty("end_char_index")
-                                                @ExcludeMissing
-                                                private val endCharIndex: JsonField<Long> =
-                                                    JsonMissing.of(),
-                                                @JsonProperty("start_char_index")
-                                                @ExcludeMissing
-                                                private val startCharIndex: JsonField<Long> =
-                                                    JsonMissing.of(),
-                                                @JsonProperty("type")
-                                                @ExcludeMissing
-                                                private val type: JsonField<Type> =
-                                                    JsonMissing.of(),
-                                                @JsonAnySetter
+                                                private val citedText: JsonField<String>,
+                                                private val documentIndex: JsonField<Long>,
+                                                private val documentTitle: JsonField<String>,
+                                                private val endCharIndex: JsonField<Long>,
+                                                private val startCharIndex: JsonField<Long>,
+                                                private val type: JsonField<Type>,
                                                 private val additionalProperties:
-                                                    Map<String, JsonValue> =
-                                                    immutableEmptyMap(),
+                                                    MutableMap<String, JsonValue>,
                                             ) {
+
+                                                @JsonCreator
+                                                private constructor(
+                                                    @JsonProperty("cited_text")
+                                                    @ExcludeMissing
+                                                    citedText: JsonField<String> = JsonMissing.of(),
+                                                    @JsonProperty("document_index")
+                                                    @ExcludeMissing
+                                                    documentIndex: JsonField<Long> =
+                                                        JsonMissing.of(),
+                                                    @JsonProperty("document_title")
+                                                    @ExcludeMissing
+                                                    documentTitle: JsonField<String> =
+                                                        JsonMissing.of(),
+                                                    @JsonProperty("end_char_index")
+                                                    @ExcludeMissing
+                                                    endCharIndex: JsonField<Long> =
+                                                        JsonMissing.of(),
+                                                    @JsonProperty("start_char_index")
+                                                    @ExcludeMissing
+                                                    startCharIndex: JsonField<Long> =
+                                                        JsonMissing.of(),
+                                                    @JsonProperty("type")
+                                                    @ExcludeMissing
+                                                    type: JsonField<Type> = JsonMissing.of(),
+                                                ) : this(
+                                                    citedText,
+                                                    documentIndex,
+                                                    documentTitle,
+                                                    endCharIndex,
+                                                    startCharIndex,
+                                                    type,
+                                                    mutableMapOf(),
+                                                )
 
                                                 /**
                                                  * @throws SamInvalidDataException if the JSON field
@@ -9741,27 +9984,21 @@ private constructor(
                                                 @ExcludeMissing
                                                 fun _type(): JsonField<Type> = type
 
+                                                @JsonAnySetter
+                                                private fun putAdditionalProperty(
+                                                    key: String,
+                                                    value: JsonValue,
+                                                ) {
+                                                    additionalProperties.put(key, value)
+                                                }
+
                                                 @JsonAnyGetter
                                                 @ExcludeMissing
                                                 fun _additionalProperties():
-                                                    Map<String, JsonValue> = additionalProperties
-
-                                                private var validated: Boolean = false
-
-                                                fun validate(): BetaRequestCharLocationCitation =
-                                                    apply {
-                                                        if (validated) {
-                                                            return@apply
-                                                        }
-
-                                                        citedText()
-                                                        documentIndex()
-                                                        documentTitle()
-                                                        endCharIndex()
-                                                        startCharIndex()
-                                                        type()
-                                                        validated = true
-                                                    }
+                                                    Map<String, JsonValue> =
+                                                    Collections.unmodifiableMap(
+                                                        additionalProperties
+                                                    )
 
                                                 fun toBuilder() = Builder().from(this)
 
@@ -10019,9 +10256,26 @@ private constructor(
                                                                 startCharIndex,
                                                             ),
                                                             checkRequired("type", type),
-                                                            additionalProperties.toImmutable(),
+                                                            additionalProperties.toMutableMap(),
                                                         )
                                                 }
+
+                                                private var validated: Boolean = false
+
+                                                fun validate(): BetaRequestCharLocationCitation =
+                                                    apply {
+                                                        if (validated) {
+                                                            return@apply
+                                                        }
+
+                                                        citedText()
+                                                        documentIndex()
+                                                        documentTitle()
+                                                        endCharIndex()
+                                                        startCharIndex()
+                                                        type()
+                                                        validated = true
+                                                    }
 
                                                 class Type
                                                 @JsonCreator
@@ -10167,39 +10421,51 @@ private constructor(
                                                     "BetaRequestCharLocationCitation{citedText=$citedText, documentIndex=$documentIndex, documentTitle=$documentTitle, endCharIndex=$endCharIndex, startCharIndex=$startCharIndex, type=$type, additionalProperties=$additionalProperties}"
                                             }
 
-                                            @NoAutoDetect
                                             class BetaRequestPageLocationCitation
-                                            @JsonCreator
                                             private constructor(
-                                                @JsonProperty("cited_text")
-                                                @ExcludeMissing
-                                                private val citedText: JsonField<String> =
-                                                    JsonMissing.of(),
-                                                @JsonProperty("document_index")
-                                                @ExcludeMissing
-                                                private val documentIndex: JsonField<Long> =
-                                                    JsonMissing.of(),
-                                                @JsonProperty("document_title")
-                                                @ExcludeMissing
-                                                private val documentTitle: JsonField<String> =
-                                                    JsonMissing.of(),
-                                                @JsonProperty("end_page_number")
-                                                @ExcludeMissing
-                                                private val endPageNumber: JsonField<Long> =
-                                                    JsonMissing.of(),
-                                                @JsonProperty("start_page_number")
-                                                @ExcludeMissing
-                                                private val startPageNumber: JsonField<Long> =
-                                                    JsonMissing.of(),
-                                                @JsonProperty("type")
-                                                @ExcludeMissing
-                                                private val type: JsonField<Type> =
-                                                    JsonMissing.of(),
-                                                @JsonAnySetter
+                                                private val citedText: JsonField<String>,
+                                                private val documentIndex: JsonField<Long>,
+                                                private val documentTitle: JsonField<String>,
+                                                private val endPageNumber: JsonField<Long>,
+                                                private val startPageNumber: JsonField<Long>,
+                                                private val type: JsonField<Type>,
                                                 private val additionalProperties:
-                                                    Map<String, JsonValue> =
-                                                    immutableEmptyMap(),
+                                                    MutableMap<String, JsonValue>,
                                             ) {
+
+                                                @JsonCreator
+                                                private constructor(
+                                                    @JsonProperty("cited_text")
+                                                    @ExcludeMissing
+                                                    citedText: JsonField<String> = JsonMissing.of(),
+                                                    @JsonProperty("document_index")
+                                                    @ExcludeMissing
+                                                    documentIndex: JsonField<Long> =
+                                                        JsonMissing.of(),
+                                                    @JsonProperty("document_title")
+                                                    @ExcludeMissing
+                                                    documentTitle: JsonField<String> =
+                                                        JsonMissing.of(),
+                                                    @JsonProperty("end_page_number")
+                                                    @ExcludeMissing
+                                                    endPageNumber: JsonField<Long> =
+                                                        JsonMissing.of(),
+                                                    @JsonProperty("start_page_number")
+                                                    @ExcludeMissing
+                                                    startPageNumber: JsonField<Long> =
+                                                        JsonMissing.of(),
+                                                    @JsonProperty("type")
+                                                    @ExcludeMissing
+                                                    type: JsonField<Type> = JsonMissing.of(),
+                                                ) : this(
+                                                    citedText,
+                                                    documentIndex,
+                                                    documentTitle,
+                                                    endPageNumber,
+                                                    startPageNumber,
+                                                    type,
+                                                    mutableMapOf(),
+                                                )
 
                                                 /**
                                                  * @throws SamInvalidDataException if the JSON field
@@ -10319,27 +10585,21 @@ private constructor(
                                                 @ExcludeMissing
                                                 fun _type(): JsonField<Type> = type
 
+                                                @JsonAnySetter
+                                                private fun putAdditionalProperty(
+                                                    key: String,
+                                                    value: JsonValue,
+                                                ) {
+                                                    additionalProperties.put(key, value)
+                                                }
+
                                                 @JsonAnyGetter
                                                 @ExcludeMissing
                                                 fun _additionalProperties():
-                                                    Map<String, JsonValue> = additionalProperties
-
-                                                private var validated: Boolean = false
-
-                                                fun validate(): BetaRequestPageLocationCitation =
-                                                    apply {
-                                                        if (validated) {
-                                                            return@apply
-                                                        }
-
-                                                        citedText()
-                                                        documentIndex()
-                                                        documentTitle()
-                                                        endPageNumber()
-                                                        startPageNumber()
-                                                        type()
-                                                        validated = true
-                                                    }
+                                                    Map<String, JsonValue> =
+                                                    Collections.unmodifiableMap(
+                                                        additionalProperties
+                                                    )
 
                                                 fun toBuilder() = Builder().from(this)
 
@@ -10599,9 +10859,26 @@ private constructor(
                                                                 startPageNumber,
                                                             ),
                                                             checkRequired("type", type),
-                                                            additionalProperties.toImmutable(),
+                                                            additionalProperties.toMutableMap(),
                                                         )
                                                 }
+
+                                                private var validated: Boolean = false
+
+                                                fun validate(): BetaRequestPageLocationCitation =
+                                                    apply {
+                                                        if (validated) {
+                                                            return@apply
+                                                        }
+
+                                                        citedText()
+                                                        documentIndex()
+                                                        documentTitle()
+                                                        endPageNumber()
+                                                        startPageNumber()
+                                                        type()
+                                                        validated = true
+                                                    }
 
                                                 class Type
                                                 @JsonCreator
@@ -10747,39 +11024,51 @@ private constructor(
                                                     "BetaRequestPageLocationCitation{citedText=$citedText, documentIndex=$documentIndex, documentTitle=$documentTitle, endPageNumber=$endPageNumber, startPageNumber=$startPageNumber, type=$type, additionalProperties=$additionalProperties}"
                                             }
 
-                                            @NoAutoDetect
                                             class BetaRequestContentBlockLocationCitation
-                                            @JsonCreator
                                             private constructor(
-                                                @JsonProperty("cited_text")
-                                                @ExcludeMissing
-                                                private val citedText: JsonField<String> =
-                                                    JsonMissing.of(),
-                                                @JsonProperty("document_index")
-                                                @ExcludeMissing
-                                                private val documentIndex: JsonField<Long> =
-                                                    JsonMissing.of(),
-                                                @JsonProperty("document_title")
-                                                @ExcludeMissing
-                                                private val documentTitle: JsonField<String> =
-                                                    JsonMissing.of(),
-                                                @JsonProperty("end_block_index")
-                                                @ExcludeMissing
-                                                private val endBlockIndex: JsonField<Long> =
-                                                    JsonMissing.of(),
-                                                @JsonProperty("start_block_index")
-                                                @ExcludeMissing
-                                                private val startBlockIndex: JsonField<Long> =
-                                                    JsonMissing.of(),
-                                                @JsonProperty("type")
-                                                @ExcludeMissing
-                                                private val type: JsonField<Type> =
-                                                    JsonMissing.of(),
-                                                @JsonAnySetter
+                                                private val citedText: JsonField<String>,
+                                                private val documentIndex: JsonField<Long>,
+                                                private val documentTitle: JsonField<String>,
+                                                private val endBlockIndex: JsonField<Long>,
+                                                private val startBlockIndex: JsonField<Long>,
+                                                private val type: JsonField<Type>,
                                                 private val additionalProperties:
-                                                    Map<String, JsonValue> =
-                                                    immutableEmptyMap(),
+                                                    MutableMap<String, JsonValue>,
                                             ) {
+
+                                                @JsonCreator
+                                                private constructor(
+                                                    @JsonProperty("cited_text")
+                                                    @ExcludeMissing
+                                                    citedText: JsonField<String> = JsonMissing.of(),
+                                                    @JsonProperty("document_index")
+                                                    @ExcludeMissing
+                                                    documentIndex: JsonField<Long> =
+                                                        JsonMissing.of(),
+                                                    @JsonProperty("document_title")
+                                                    @ExcludeMissing
+                                                    documentTitle: JsonField<String> =
+                                                        JsonMissing.of(),
+                                                    @JsonProperty("end_block_index")
+                                                    @ExcludeMissing
+                                                    endBlockIndex: JsonField<Long> =
+                                                        JsonMissing.of(),
+                                                    @JsonProperty("start_block_index")
+                                                    @ExcludeMissing
+                                                    startBlockIndex: JsonField<Long> =
+                                                        JsonMissing.of(),
+                                                    @JsonProperty("type")
+                                                    @ExcludeMissing
+                                                    type: JsonField<Type> = JsonMissing.of(),
+                                                ) : this(
+                                                    citedText,
+                                                    documentIndex,
+                                                    documentTitle,
+                                                    endBlockIndex,
+                                                    startBlockIndex,
+                                                    type,
+                                                    mutableMapOf(),
+                                                )
 
                                                 /**
                                                  * @throws SamInvalidDataException if the JSON field
@@ -10899,28 +11188,21 @@ private constructor(
                                                 @ExcludeMissing
                                                 fun _type(): JsonField<Type> = type
 
+                                                @JsonAnySetter
+                                                private fun putAdditionalProperty(
+                                                    key: String,
+                                                    value: JsonValue,
+                                                ) {
+                                                    additionalProperties.put(key, value)
+                                                }
+
                                                 @JsonAnyGetter
                                                 @ExcludeMissing
                                                 fun _additionalProperties():
-                                                    Map<String, JsonValue> = additionalProperties
-
-                                                private var validated: Boolean = false
-
-                                                fun validate():
-                                                    BetaRequestContentBlockLocationCitation =
-                                                    apply {
-                                                        if (validated) {
-                                                            return@apply
-                                                        }
-
-                                                        citedText()
-                                                        documentIndex()
-                                                        documentTitle()
-                                                        endBlockIndex()
-                                                        startBlockIndex()
-                                                        type()
-                                                        validated = true
-                                                    }
+                                                    Map<String, JsonValue> =
+                                                    Collections.unmodifiableMap(
+                                                        additionalProperties
+                                                    )
 
                                                 fun toBuilder() = Builder().from(this)
 
@@ -11184,9 +11466,27 @@ private constructor(
                                                                 startBlockIndex,
                                                             ),
                                                             checkRequired("type", type),
-                                                            additionalProperties.toImmutable(),
+                                                            additionalProperties.toMutableMap(),
                                                         )
                                                 }
+
+                                                private var validated: Boolean = false
+
+                                                fun validate():
+                                                    BetaRequestContentBlockLocationCitation =
+                                                    apply {
+                                                        if (validated) {
+                                                            return@apply
+                                                        }
+
+                                                        citedText()
+                                                        documentIndex()
+                                                        documentTitle()
+                                                        endBlockIndex()
+                                                        startBlockIndex()
+                                                        type()
+                                                        validated = true
+                                                    }
 
                                                 class Type
                                                 @JsonCreator
@@ -11354,24 +11654,27 @@ private constructor(
                                             "BetaRequestTextBlock{text=$text, type=$type, cacheControl=$cacheControl, citations=$citations, additionalProperties=$additionalProperties}"
                                     }
 
-                                    @NoAutoDetect
                                     class BetaRequestImageBlock
-                                    @JsonCreator
                                     private constructor(
-                                        @JsonProperty("source")
-                                        @ExcludeMissing
-                                        private val source: JsonField<Source> = JsonMissing.of(),
-                                        @JsonProperty("type")
-                                        @ExcludeMissing
-                                        private val type: JsonField<Type> = JsonMissing.of(),
-                                        @JsonProperty("cache_control")
-                                        @ExcludeMissing
-                                        private val cacheControl: JsonField<CacheControl> =
-                                            JsonMissing.of(),
-                                        @JsonAnySetter
-                                        private val additionalProperties: Map<String, JsonValue> =
-                                            immutableEmptyMap(),
+                                        private val source: JsonField<Source>,
+                                        private val type: JsonField<Type>,
+                                        private val cacheControl: JsonField<CacheControl>,
+                                        private val additionalProperties:
+                                            MutableMap<String, JsonValue>,
                                     ) {
+
+                                        @JsonCreator
+                                        private constructor(
+                                            @JsonProperty("source")
+                                            @ExcludeMissing
+                                            source: JsonField<Source> = JsonMissing.of(),
+                                            @JsonProperty("type")
+                                            @ExcludeMissing
+                                            type: JsonField<Type> = JsonMissing.of(),
+                                            @JsonProperty("cache_control")
+                                            @ExcludeMissing
+                                            cacheControl: JsonField<CacheControl> = JsonMissing.of(),
+                                        ) : this(source, type, cacheControl, mutableMapOf())
 
                                         /**
                                          * @throws SamInvalidDataException if the JSON field has an
@@ -11429,23 +11732,18 @@ private constructor(
                                         @ExcludeMissing
                                         fun _cacheControl(): JsonField<CacheControl> = cacheControl
 
+                                        @JsonAnySetter
+                                        private fun putAdditionalProperty(
+                                            key: String,
+                                            value: JsonValue,
+                                        ) {
+                                            additionalProperties.put(key, value)
+                                        }
+
                                         @JsonAnyGetter
                                         @ExcludeMissing
                                         fun _additionalProperties(): Map<String, JsonValue> =
-                                            additionalProperties
-
-                                        private var validated: Boolean = false
-
-                                        fun validate(): BetaRequestImageBlock = apply {
-                                            if (validated) {
-                                                return@apply
-                                            }
-
-                                            source().validate()
-                                            type()
-                                            cacheControl().ifPresent { it.validate() }
-                                            validated = true
-                                        }
+                                            Collections.unmodifiableMap(additionalProperties)
 
                                         fun toBuilder() = Builder().from(this)
 
@@ -11635,8 +11933,21 @@ private constructor(
                                                     checkRequired("source", source),
                                                     checkRequired("type", type),
                                                     cacheControl,
-                                                    additionalProperties.toImmutable(),
+                                                    additionalProperties.toMutableMap(),
                                                 )
+                                        }
+
+                                        private var validated: Boolean = false
+
+                                        fun validate(): BetaRequestImageBlock = apply {
+                                            if (validated) {
+                                                return@apply
+                                            }
+
+                                            source().validate()
+                                            type()
+                                            cacheControl().ifPresent { it.validate() }
+                                            validated = true
                                         }
 
                                         @JsonDeserialize(using = Source.Deserializer::class)
@@ -11858,27 +12169,28 @@ private constructor(
                                                 }
                                             }
 
-                                            @NoAutoDetect
                                             class BetaBase64ImageSource
-                                            @JsonCreator
                                             private constructor(
-                                                @JsonProperty("data")
-                                                @ExcludeMissing
-                                                private val data: JsonField<String> =
-                                                    JsonMissing.of(),
-                                                @JsonProperty("media_type")
-                                                @ExcludeMissing
-                                                private val mediaType: JsonField<MediaType> =
-                                                    JsonMissing.of(),
-                                                @JsonProperty("type")
-                                                @ExcludeMissing
-                                                private val type: JsonField<Type> =
-                                                    JsonMissing.of(),
-                                                @JsonAnySetter
+                                                private val data: JsonField<String>,
+                                                private val mediaType: JsonField<MediaType>,
+                                                private val type: JsonField<Type>,
                                                 private val additionalProperties:
-                                                    Map<String, JsonValue> =
-                                                    immutableEmptyMap(),
+                                                    MutableMap<String, JsonValue>,
                                             ) {
+
+                                                @JsonCreator
+                                                private constructor(
+                                                    @JsonProperty("data")
+                                                    @ExcludeMissing
+                                                    data: JsonField<String> = JsonMissing.of(),
+                                                    @JsonProperty("media_type")
+                                                    @ExcludeMissing
+                                                    mediaType: JsonField<MediaType> =
+                                                        JsonMissing.of(),
+                                                    @JsonProperty("type")
+                                                    @ExcludeMissing
+                                                    type: JsonField<Type> = JsonMissing.of(),
+                                                ) : this(data, mediaType, type, mutableMapOf())
 
                                                 /**
                                                  * @throws SamInvalidDataException if the JSON field
@@ -11935,23 +12247,21 @@ private constructor(
                                                 @ExcludeMissing
                                                 fun _type(): JsonField<Type> = type
 
+                                                @JsonAnySetter
+                                                private fun putAdditionalProperty(
+                                                    key: String,
+                                                    value: JsonValue,
+                                                ) {
+                                                    additionalProperties.put(key, value)
+                                                }
+
                                                 @JsonAnyGetter
                                                 @ExcludeMissing
                                                 fun _additionalProperties():
-                                                    Map<String, JsonValue> = additionalProperties
-
-                                                private var validated: Boolean = false
-
-                                                fun validate(): BetaBase64ImageSource = apply {
-                                                    if (validated) {
-                                                        return@apply
-                                                    }
-
-                                                    data()
-                                                    mediaType()
-                                                    type()
-                                                    validated = true
-                                                }
+                                                    Map<String, JsonValue> =
+                                                    Collections.unmodifiableMap(
+                                                        additionalProperties
+                                                    )
 
                                                 fun toBuilder() = Builder().from(this)
 
@@ -12101,8 +12411,21 @@ private constructor(
                                                             checkRequired("data", data),
                                                             checkRequired("mediaType", mediaType),
                                                             checkRequired("type", type),
-                                                            additionalProperties.toImmutable(),
+                                                            additionalProperties.toMutableMap(),
                                                         )
+                                                }
+
+                                                private var validated: Boolean = false
+
+                                                fun validate(): BetaBase64ImageSource = apply {
+                                                    if (validated) {
+                                                        return@apply
+                                                    }
+
+                                                    data()
+                                                    mediaType()
+                                                    type()
+                                                    validated = true
                                                 }
 
                                                 class MediaType
@@ -12395,23 +12718,23 @@ private constructor(
                                                     "BetaBase64ImageSource{data=$data, mediaType=$mediaType, type=$type, additionalProperties=$additionalProperties}"
                                             }
 
-                                            @NoAutoDetect
                                             class BetaUrlImageSource
-                                            @JsonCreator
                                             private constructor(
-                                                @JsonProperty("type")
-                                                @ExcludeMissing
-                                                private val type: JsonField<Type> =
-                                                    JsonMissing.of(),
-                                                @JsonProperty("url")
-                                                @ExcludeMissing
-                                                private val url: JsonField<String> =
-                                                    JsonMissing.of(),
-                                                @JsonAnySetter
+                                                private val type: JsonField<Type>,
+                                                private val url: JsonField<String>,
                                                 private val additionalProperties:
-                                                    Map<String, JsonValue> =
-                                                    immutableEmptyMap(),
+                                                    MutableMap<String, JsonValue>,
                                             ) {
+
+                                                @JsonCreator
+                                                private constructor(
+                                                    @JsonProperty("type")
+                                                    @ExcludeMissing
+                                                    type: JsonField<Type> = JsonMissing.of(),
+                                                    @JsonProperty("url")
+                                                    @ExcludeMissing
+                                                    url: JsonField<String> = JsonMissing.of(),
+                                                ) : this(type, url, mutableMapOf())
 
                                                 /**
                                                  * @throws SamInvalidDataException if the JSON field
@@ -12449,22 +12772,21 @@ private constructor(
                                                 @ExcludeMissing
                                                 fun _url(): JsonField<String> = url
 
+                                                @JsonAnySetter
+                                                private fun putAdditionalProperty(
+                                                    key: String,
+                                                    value: JsonValue,
+                                                ) {
+                                                    additionalProperties.put(key, value)
+                                                }
+
                                                 @JsonAnyGetter
                                                 @ExcludeMissing
                                                 fun _additionalProperties():
-                                                    Map<String, JsonValue> = additionalProperties
-
-                                                private var validated: Boolean = false
-
-                                                fun validate(): BetaUrlImageSource = apply {
-                                                    if (validated) {
-                                                        return@apply
-                                                    }
-
-                                                    type()
-                                                    url()
-                                                    validated = true
-                                                }
+                                                    Map<String, JsonValue> =
+                                                    Collections.unmodifiableMap(
+                                                        additionalProperties
+                                                    )
 
                                                 fun toBuilder() = Builder().from(this)
 
@@ -12588,8 +12910,20 @@ private constructor(
                                                         BetaUrlImageSource(
                                                             checkRequired("type", type),
                                                             checkRequired("url", url),
-                                                            additionalProperties.toImmutable(),
+                                                            additionalProperties.toMutableMap(),
                                                         )
+                                                }
+
+                                                private var validated: Boolean = false
+
+                                                fun validate(): BetaUrlImageSource = apply {
+                                                    if (validated) {
+                                                        return@apply
+                                                    }
+
+                                                    type()
+                                                    url()
+                                                    validated = true
                                                 }
 
                                                 class Type
@@ -12855,18 +13189,19 @@ private constructor(
                                             override fun toString() = value.toString()
                                         }
 
-                                        @NoAutoDetect
                                         class CacheControl
-                                        @JsonCreator
                                         private constructor(
-                                            @JsonProperty("type")
-                                            @ExcludeMissing
-                                            private val type: JsonField<Type> = JsonMissing.of(),
-                                            @JsonAnySetter
+                                            private val type: JsonField<Type>,
                                             private val additionalProperties:
-                                                Map<String, JsonValue> =
-                                                immutableEmptyMap(),
+                                                MutableMap<String, JsonValue>,
                                         ) {
+
+                                            @JsonCreator
+                                            private constructor(
+                                                @JsonProperty("type")
+                                                @ExcludeMissing
+                                                type: JsonField<Type> = JsonMissing.of()
+                                            ) : this(type, mutableMapOf())
 
                                             /**
                                              * @throws SamInvalidDataException if the JSON field has
@@ -12886,21 +13221,18 @@ private constructor(
                                             @ExcludeMissing
                                             fun _type(): JsonField<Type> = type
 
+                                            @JsonAnySetter
+                                            private fun putAdditionalProperty(
+                                                key: String,
+                                                value: JsonValue,
+                                            ) {
+                                                additionalProperties.put(key, value)
+                                            }
+
                                             @JsonAnyGetter
                                             @ExcludeMissing
                                             fun _additionalProperties(): Map<String, JsonValue> =
-                                                additionalProperties
-
-                                            private var validated: Boolean = false
-
-                                            fun validate(): CacheControl = apply {
-                                                if (validated) {
-                                                    return@apply
-                                                }
-
-                                                type()
-                                                validated = true
-                                            }
+                                                Collections.unmodifiableMap(additionalProperties)
 
                                             fun toBuilder() = Builder().from(this)
 
@@ -12996,8 +13328,19 @@ private constructor(
                                                 fun build(): CacheControl =
                                                     CacheControl(
                                                         checkRequired("type", type),
-                                                        additionalProperties.toImmutable(),
+                                                        additionalProperties.toMutableMap(),
                                                     )
+                                            }
+
+                                            private var validated: Boolean = false
+
+                                            fun validate(): CacheControl = apply {
+                                                if (validated) {
+                                                    return@apply
+                                                }
+
+                                                type()
+                                                validated = true
                                             }
 
                                             class Type
@@ -13179,32 +13522,46 @@ private constructor(
                                 "BetaRequestToolResultBlock{toolUseId=$toolUseId, type=$type, cacheControl=$cacheControl, content=$content, isError=$isError, additionalProperties=$additionalProperties}"
                         }
 
-                        @NoAutoDetect
                         class BetaRequestDocumentBlock
-                        @JsonCreator
                         private constructor(
-                            @JsonProperty("source")
-                            @ExcludeMissing
-                            private val source: JsonField<Source> = JsonMissing.of(),
-                            @JsonProperty("type")
-                            @ExcludeMissing
-                            private val type: JsonField<Type> = JsonMissing.of(),
-                            @JsonProperty("cache_control")
-                            @ExcludeMissing
-                            private val cacheControl: JsonField<CacheControl> = JsonMissing.of(),
-                            @JsonProperty("citations")
-                            @ExcludeMissing
-                            private val citations: JsonField<Citations> = JsonMissing.of(),
-                            @JsonProperty("context")
-                            @ExcludeMissing
-                            private val context: JsonField<String> = JsonMissing.of(),
-                            @JsonProperty("title")
-                            @ExcludeMissing
-                            private val title: JsonField<String> = JsonMissing.of(),
-                            @JsonAnySetter
-                            private val additionalProperties: Map<String, JsonValue> =
-                                immutableEmptyMap(),
+                            private val source: JsonField<Source>,
+                            private val type: JsonField<Type>,
+                            private val cacheControl: JsonField<CacheControl>,
+                            private val citations: JsonField<Citations>,
+                            private val context: JsonField<String>,
+                            private val title: JsonField<String>,
+                            private val additionalProperties: MutableMap<String, JsonValue>,
                         ) {
+
+                            @JsonCreator
+                            private constructor(
+                                @JsonProperty("source")
+                                @ExcludeMissing
+                                source: JsonField<Source> = JsonMissing.of(),
+                                @JsonProperty("type")
+                                @ExcludeMissing
+                                type: JsonField<Type> = JsonMissing.of(),
+                                @JsonProperty("cache_control")
+                                @ExcludeMissing
+                                cacheControl: JsonField<CacheControl> = JsonMissing.of(),
+                                @JsonProperty("citations")
+                                @ExcludeMissing
+                                citations: JsonField<Citations> = JsonMissing.of(),
+                                @JsonProperty("context")
+                                @ExcludeMissing
+                                context: JsonField<String> = JsonMissing.of(),
+                                @JsonProperty("title")
+                                @ExcludeMissing
+                                title: JsonField<String> = JsonMissing.of(),
+                            ) : this(
+                                source,
+                                type,
+                                cacheControl,
+                                citations,
+                                context,
+                                title,
+                                mutableMapOf(),
+                            )
 
                             /**
                              * @throws SamInvalidDataException if the JSON field has an unexpected
@@ -13308,26 +13665,15 @@ private constructor(
                             @ExcludeMissing
                             fun _title(): JsonField<String> = title
 
+                            @JsonAnySetter
+                            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                                additionalProperties.put(key, value)
+                            }
+
                             @JsonAnyGetter
                             @ExcludeMissing
                             fun _additionalProperties(): Map<String, JsonValue> =
-                                additionalProperties
-
-                            private var validated: Boolean = false
-
-                            fun validate(): BetaRequestDocumentBlock = apply {
-                                if (validated) {
-                                    return@apply
-                                }
-
-                                source().validate()
-                                type()
-                                cacheControl().ifPresent { it.validate() }
-                                citations().ifPresent { it.validate() }
-                                context()
-                                title()
-                                validated = true
-                            }
+                                Collections.unmodifiableMap(additionalProperties)
 
                             fun toBuilder() = Builder().from(this)
 
@@ -13618,8 +13964,24 @@ private constructor(
                                         citations,
                                         context,
                                         title,
-                                        additionalProperties.toImmutable(),
+                                        additionalProperties.toMutableMap(),
                                     )
+                            }
+
+                            private var validated: Boolean = false
+
+                            fun validate(): BetaRequestDocumentBlock = apply {
+                                if (validated) {
+                                    return@apply
+                                }
+
+                                source().validate()
+                                type()
+                                cacheControl().ifPresent { it.validate() }
+                                citations().ifPresent { it.validate() }
+                                context()
+                                title()
+                                validated = true
                             }
 
                             @JsonDeserialize(using = Source.Deserializer::class)
@@ -13889,23 +14251,26 @@ private constructor(
                                     }
                                 }
 
-                                @NoAutoDetect
                                 class BetaBase64PdfSource
-                                @JsonCreator
                                 private constructor(
-                                    @JsonProperty("data")
-                                    @ExcludeMissing
-                                    private val data: JsonField<String> = JsonMissing.of(),
-                                    @JsonProperty("media_type")
-                                    @ExcludeMissing
-                                    private val mediaType: JsonField<MediaType> = JsonMissing.of(),
-                                    @JsonProperty("type")
-                                    @ExcludeMissing
-                                    private val type: JsonField<Type> = JsonMissing.of(),
-                                    @JsonAnySetter
-                                    private val additionalProperties: Map<String, JsonValue> =
-                                        immutableEmptyMap(),
+                                    private val data: JsonField<String>,
+                                    private val mediaType: JsonField<MediaType>,
+                                    private val type: JsonField<Type>,
+                                    private val additionalProperties: MutableMap<String, JsonValue>,
                                 ) {
+
+                                    @JsonCreator
+                                    private constructor(
+                                        @JsonProperty("data")
+                                        @ExcludeMissing
+                                        data: JsonField<String> = JsonMissing.of(),
+                                        @JsonProperty("media_type")
+                                        @ExcludeMissing
+                                        mediaType: JsonField<MediaType> = JsonMissing.of(),
+                                        @JsonProperty("type")
+                                        @ExcludeMissing
+                                        type: JsonField<Type> = JsonMissing.of(),
+                                    ) : this(data, mediaType, type, mutableMapOf())
 
                                     /**
                                      * @throws SamInvalidDataException if the JSON field has an
@@ -13958,23 +14323,18 @@ private constructor(
                                     @ExcludeMissing
                                     fun _type(): JsonField<Type> = type
 
+                                    @JsonAnySetter
+                                    private fun putAdditionalProperty(
+                                        key: String,
+                                        value: JsonValue,
+                                    ) {
+                                        additionalProperties.put(key, value)
+                                    }
+
                                     @JsonAnyGetter
                                     @ExcludeMissing
                                     fun _additionalProperties(): Map<String, JsonValue> =
-                                        additionalProperties
-
-                                    private var validated: Boolean = false
-
-                                    fun validate(): BetaBase64PdfSource = apply {
-                                        if (validated) {
-                                            return@apply
-                                        }
-
-                                        data()
-                                        mediaType()
-                                        type()
-                                        validated = true
-                                    }
+                                        Collections.unmodifiableMap(additionalProperties)
 
                                     fun toBuilder() = Builder().from(this)
 
@@ -14105,8 +14465,21 @@ private constructor(
                                                 checkRequired("data", data),
                                                 checkRequired("mediaType", mediaType),
                                                 checkRequired("type", type),
-                                                additionalProperties.toImmutable(),
+                                                additionalProperties.toMutableMap(),
                                             )
+                                    }
+
+                                    private var validated: Boolean = false
+
+                                    fun validate(): BetaBase64PdfSource = apply {
+                                        if (validated) {
+                                            return@apply
+                                        }
+
+                                        data()
+                                        mediaType()
+                                        type()
+                                        validated = true
                                     }
 
                                     class MediaType
@@ -14359,23 +14732,26 @@ private constructor(
                                         "BetaBase64PdfSource{data=$data, mediaType=$mediaType, type=$type, additionalProperties=$additionalProperties}"
                                 }
 
-                                @NoAutoDetect
                                 class BetaPlainTextSource
-                                @JsonCreator
                                 private constructor(
-                                    @JsonProperty("data")
-                                    @ExcludeMissing
-                                    private val data: JsonField<String> = JsonMissing.of(),
-                                    @JsonProperty("media_type")
-                                    @ExcludeMissing
-                                    private val mediaType: JsonField<MediaType> = JsonMissing.of(),
-                                    @JsonProperty("type")
-                                    @ExcludeMissing
-                                    private val type: JsonField<Type> = JsonMissing.of(),
-                                    @JsonAnySetter
-                                    private val additionalProperties: Map<String, JsonValue> =
-                                        immutableEmptyMap(),
+                                    private val data: JsonField<String>,
+                                    private val mediaType: JsonField<MediaType>,
+                                    private val type: JsonField<Type>,
+                                    private val additionalProperties: MutableMap<String, JsonValue>,
                                 ) {
+
+                                    @JsonCreator
+                                    private constructor(
+                                        @JsonProperty("data")
+                                        @ExcludeMissing
+                                        data: JsonField<String> = JsonMissing.of(),
+                                        @JsonProperty("media_type")
+                                        @ExcludeMissing
+                                        mediaType: JsonField<MediaType> = JsonMissing.of(),
+                                        @JsonProperty("type")
+                                        @ExcludeMissing
+                                        type: JsonField<Type> = JsonMissing.of(),
+                                    ) : this(data, mediaType, type, mutableMapOf())
 
                                     /**
                                      * @throws SamInvalidDataException if the JSON field has an
@@ -14428,23 +14804,18 @@ private constructor(
                                     @ExcludeMissing
                                     fun _type(): JsonField<Type> = type
 
+                                    @JsonAnySetter
+                                    private fun putAdditionalProperty(
+                                        key: String,
+                                        value: JsonValue,
+                                    ) {
+                                        additionalProperties.put(key, value)
+                                    }
+
                                     @JsonAnyGetter
                                     @ExcludeMissing
                                     fun _additionalProperties(): Map<String, JsonValue> =
-                                        additionalProperties
-
-                                    private var validated: Boolean = false
-
-                                    fun validate(): BetaPlainTextSource = apply {
-                                        if (validated) {
-                                            return@apply
-                                        }
-
-                                        data()
-                                        mediaType()
-                                        type()
-                                        validated = true
-                                    }
+                                        Collections.unmodifiableMap(additionalProperties)
 
                                     fun toBuilder() = Builder().from(this)
 
@@ -14575,8 +14946,21 @@ private constructor(
                                                 checkRequired("data", data),
                                                 checkRequired("mediaType", mediaType),
                                                 checkRequired("type", type),
-                                                additionalProperties.toImmutable(),
+                                                additionalProperties.toMutableMap(),
                                             )
+                                    }
+
+                                    private var validated: Boolean = false
+
+                                    fun validate(): BetaPlainTextSource = apply {
+                                        if (validated) {
+                                            return@apply
+                                        }
+
+                                        data()
+                                        mediaType()
+                                        type()
+                                        validated = true
                                     }
 
                                     class MediaType
@@ -14829,20 +15213,22 @@ private constructor(
                                         "BetaPlainTextSource{data=$data, mediaType=$mediaType, type=$type, additionalProperties=$additionalProperties}"
                                 }
 
-                                @NoAutoDetect
                                 class BetaContentBlockSource
-                                @JsonCreator
                                 private constructor(
-                                    @JsonProperty("content")
-                                    @ExcludeMissing
-                                    private val content: JsonField<InnerContent> = JsonMissing.of(),
-                                    @JsonProperty("type")
-                                    @ExcludeMissing
-                                    private val type: JsonField<Type> = JsonMissing.of(),
-                                    @JsonAnySetter
-                                    private val additionalProperties: Map<String, JsonValue> =
-                                        immutableEmptyMap(),
+                                    private val content: JsonField<InnerContent>,
+                                    private val type: JsonField<Type>,
+                                    private val additionalProperties: MutableMap<String, JsonValue>,
                                 ) {
+
+                                    @JsonCreator
+                                    private constructor(
+                                        @JsonProperty("content")
+                                        @ExcludeMissing
+                                        content: JsonField<InnerContent> = JsonMissing.of(),
+                                        @JsonProperty("type")
+                                        @ExcludeMissing
+                                        type: JsonField<Type> = JsonMissing.of(),
+                                    ) : this(content, type, mutableMapOf())
 
                                     /**
                                      * @throws SamInvalidDataException if the JSON field has an
@@ -14878,22 +15264,18 @@ private constructor(
                                     @ExcludeMissing
                                     fun _type(): JsonField<Type> = type
 
+                                    @JsonAnySetter
+                                    private fun putAdditionalProperty(
+                                        key: String,
+                                        value: JsonValue,
+                                    ) {
+                                        additionalProperties.put(key, value)
+                                    }
+
                                     @JsonAnyGetter
                                     @ExcludeMissing
                                     fun _additionalProperties(): Map<String, JsonValue> =
-                                        additionalProperties
-
-                                    private var validated: Boolean = false
-
-                                    fun validate(): BetaContentBlockSource = apply {
-                                        if (validated) {
-                                            return@apply
-                                        }
-
-                                        content().validate()
-                                        type()
-                                        validated = true
-                                    }
+                                        Collections.unmodifiableMap(additionalProperties)
 
                                     fun toBuilder() = Builder().from(this)
 
@@ -15027,8 +15409,20 @@ private constructor(
                                             BetaContentBlockSource(
                                                 checkRequired("content", content),
                                                 checkRequired("type", type),
-                                                additionalProperties.toImmutable(),
+                                                additionalProperties.toMutableMap(),
                                             )
+                                    }
+
+                                    private var validated: Boolean = false
+
+                                    fun validate(): BetaContentBlockSource = apply {
+                                        if (validated) {
+                                            return@apply
+                                        }
+
+                                        content().validate()
+                                        type()
+                                        validated = true
                                     }
 
                                     @JsonDeserialize(using = InnerContent.Deserializer::class)
@@ -15485,31 +15879,39 @@ private constructor(
                                                 }
                                             }
 
-                                            @NoAutoDetect
                                             class BetaRequestTextBlock
-                                            @JsonCreator
                                             private constructor(
-                                                @JsonProperty("text")
-                                                @ExcludeMissing
-                                                private val text: JsonField<String> =
-                                                    JsonMissing.of(),
-                                                @JsonProperty("type")
-                                                @ExcludeMissing
-                                                private val type: JsonField<Type> =
-                                                    JsonMissing.of(),
-                                                @JsonProperty("cache_control")
-                                                @ExcludeMissing
-                                                private val cacheControl: JsonField<CacheControl> =
-                                                    JsonMissing.of(),
-                                                @JsonProperty("citations")
-                                                @ExcludeMissing
-                                                private val citations: JsonField<List<Citation>> =
-                                                    JsonMissing.of(),
-                                                @JsonAnySetter
+                                                private val text: JsonField<String>,
+                                                private val type: JsonField<Type>,
+                                                private val cacheControl: JsonField<CacheControl>,
+                                                private val citations: JsonField<List<Citation>>,
                                                 private val additionalProperties:
-                                                    Map<String, JsonValue> =
-                                                    immutableEmptyMap(),
+                                                    MutableMap<String, JsonValue>,
                                             ) {
+
+                                                @JsonCreator
+                                                private constructor(
+                                                    @JsonProperty("text")
+                                                    @ExcludeMissing
+                                                    text: JsonField<String> = JsonMissing.of(),
+                                                    @JsonProperty("type")
+                                                    @ExcludeMissing
+                                                    type: JsonField<Type> = JsonMissing.of(),
+                                                    @JsonProperty("cache_control")
+                                                    @ExcludeMissing
+                                                    cacheControl: JsonField<CacheControl> =
+                                                        JsonMissing.of(),
+                                                    @JsonProperty("citations")
+                                                    @ExcludeMissing
+                                                    citations: JsonField<List<Citation>> =
+                                                        JsonMissing.of(),
+                                                ) : this(
+                                                    text,
+                                                    type,
+                                                    cacheControl,
+                                                    citations,
+                                                    mutableMapOf(),
+                                                )
 
                                                 /**
                                                  * @throws SamInvalidDataException if the JSON field
@@ -15589,26 +15991,21 @@ private constructor(
                                                 fun _citations(): JsonField<List<Citation>> =
                                                     citations
 
+                                                @JsonAnySetter
+                                                private fun putAdditionalProperty(
+                                                    key: String,
+                                                    value: JsonValue,
+                                                ) {
+                                                    additionalProperties.put(key, value)
+                                                }
+
                                                 @JsonAnyGetter
                                                 @ExcludeMissing
                                                 fun _additionalProperties():
-                                                    Map<String, JsonValue> = additionalProperties
-
-                                                private var validated: Boolean = false
-
-                                                fun validate(): BetaRequestTextBlock = apply {
-                                                    if (validated) {
-                                                        return@apply
-                                                    }
-
-                                                    text()
-                                                    type()
-                                                    cacheControl().ifPresent { it.validate() }
-                                                    citations().ifPresent {
-                                                        it.forEach { it.validate() }
-                                                    }
-                                                    validated = true
-                                                }
+                                                    Map<String, JsonValue> =
+                                                    Collections.unmodifiableMap(
+                                                        additionalProperties
+                                                    )
 
                                                 fun toBuilder() = Builder().from(this)
 
@@ -15866,8 +16263,24 @@ private constructor(
                                                             (citations ?: JsonMissing.of()).map {
                                                                 it.toImmutable()
                                                             },
-                                                            additionalProperties.toImmutable(),
+                                                            additionalProperties.toMutableMap(),
                                                         )
+                                                }
+
+                                                private var validated: Boolean = false
+
+                                                fun validate(): BetaRequestTextBlock = apply {
+                                                    if (validated) {
+                                                        return@apply
+                                                    }
+
+                                                    text()
+                                                    type()
+                                                    cacheControl().ifPresent { it.validate() }
+                                                    citations().ifPresent {
+                                                        it.forEach { it.validate() }
+                                                    }
+                                                    validated = true
                                                 }
 
                                                 class Type
@@ -15995,19 +16408,19 @@ private constructor(
                                                     override fun toString() = value.toString()
                                                 }
 
-                                                @NoAutoDetect
                                                 class CacheControl
-                                                @JsonCreator
                                                 private constructor(
-                                                    @JsonProperty("type")
-                                                    @ExcludeMissing
-                                                    private val type: JsonField<Type> =
-                                                        JsonMissing.of(),
-                                                    @JsonAnySetter
+                                                    private val type: JsonField<Type>,
                                                     private val additionalProperties:
-                                                        Map<String, JsonValue> =
-                                                        immutableEmptyMap(),
+                                                        MutableMap<String, JsonValue>,
                                                 ) {
+
+                                                    @JsonCreator
+                                                    private constructor(
+                                                        @JsonProperty("type")
+                                                        @ExcludeMissing
+                                                        type: JsonField<Type> = JsonMissing.of()
+                                                    ) : this(type, mutableMapOf())
 
                                                     /**
                                                      * @throws SamInvalidDataException if the JSON
@@ -16027,22 +16440,21 @@ private constructor(
                                                     @ExcludeMissing
                                                     fun _type(): JsonField<Type> = type
 
+                                                    @JsonAnySetter
+                                                    private fun putAdditionalProperty(
+                                                        key: String,
+                                                        value: JsonValue,
+                                                    ) {
+                                                        additionalProperties.put(key, value)
+                                                    }
+
                                                     @JsonAnyGetter
                                                     @ExcludeMissing
                                                     fun _additionalProperties():
                                                         Map<String, JsonValue> =
-                                                        additionalProperties
-
-                                                    private var validated: Boolean = false
-
-                                                    fun validate(): CacheControl = apply {
-                                                        if (validated) {
-                                                            return@apply
-                                                        }
-
-                                                        type()
-                                                        validated = true
-                                                    }
+                                                        Collections.unmodifiableMap(
+                                                            additionalProperties
+                                                        )
 
                                                     fun toBuilder() = Builder().from(this)
 
@@ -16151,8 +16563,19 @@ private constructor(
                                                         fun build(): CacheControl =
                                                             CacheControl(
                                                                 checkRequired("type", type),
-                                                                additionalProperties.toImmutable(),
+                                                                additionalProperties.toMutableMap(),
                                                             )
+                                                    }
+
+                                                    private var validated: Boolean = false
+
+                                                    fun validate(): CacheControl = apply {
+                                                        if (validated) {
+                                                            return@apply
+                                                        }
+
+                                                        type()
+                                                        validated = true
                                                     }
 
                                                     class Type
@@ -16647,41 +17070,53 @@ private constructor(
                                                         }
                                                     }
 
-                                                    @NoAutoDetect
                                                     class BetaRequestCharLocationCitation
-                                                    @JsonCreator
                                                     private constructor(
-                                                        @JsonProperty("cited_text")
-                                                        @ExcludeMissing
-                                                        private val citedText: JsonField<String> =
-                                                            JsonMissing.of(),
-                                                        @JsonProperty("document_index")
-                                                        @ExcludeMissing
-                                                        private val documentIndex: JsonField<Long> =
-                                                            JsonMissing.of(),
-                                                        @JsonProperty("document_title")
-                                                        @ExcludeMissing
+                                                        private val citedText: JsonField<String>,
+                                                        private val documentIndex: JsonField<Long>,
                                                         private val documentTitle:
-                                                            JsonField<String> =
-                                                            JsonMissing.of(),
-                                                        @JsonProperty("end_char_index")
-                                                        @ExcludeMissing
-                                                        private val endCharIndex: JsonField<Long> =
-                                                            JsonMissing.of(),
-                                                        @JsonProperty("start_char_index")
-                                                        @ExcludeMissing
-                                                        private val startCharIndex:
-                                                            JsonField<Long> =
-                                                            JsonMissing.of(),
-                                                        @JsonProperty("type")
-                                                        @ExcludeMissing
-                                                        private val type: JsonField<Type> =
-                                                            JsonMissing.of(),
-                                                        @JsonAnySetter
+                                                            JsonField<String>,
+                                                        private val endCharIndex: JsonField<Long>,
+                                                        private val startCharIndex: JsonField<Long>,
+                                                        private val type: JsonField<Type>,
                                                         private val additionalProperties:
-                                                            Map<String, JsonValue> =
-                                                            immutableEmptyMap(),
+                                                            MutableMap<String, JsonValue>,
                                                     ) {
+
+                                                        @JsonCreator
+                                                        private constructor(
+                                                            @JsonProperty("cited_text")
+                                                            @ExcludeMissing
+                                                            citedText: JsonField<String> =
+                                                                JsonMissing.of(),
+                                                            @JsonProperty("document_index")
+                                                            @ExcludeMissing
+                                                            documentIndex: JsonField<Long> =
+                                                                JsonMissing.of(),
+                                                            @JsonProperty("document_title")
+                                                            @ExcludeMissing
+                                                            documentTitle: JsonField<String> =
+                                                                JsonMissing.of(),
+                                                            @JsonProperty("end_char_index")
+                                                            @ExcludeMissing
+                                                            endCharIndex: JsonField<Long> =
+                                                                JsonMissing.of(),
+                                                            @JsonProperty("start_char_index")
+                                                            @ExcludeMissing
+                                                            startCharIndex: JsonField<Long> =
+                                                                JsonMissing.of(),
+                                                            @JsonProperty("type")
+                                                            @ExcludeMissing
+                                                            type: JsonField<Type> = JsonMissing.of(),
+                                                        ) : this(
+                                                            citedText,
+                                                            documentIndex,
+                                                            documentTitle,
+                                                            endCharIndex,
+                                                            startCharIndex,
+                                                            type,
+                                                            mutableMapOf(),
+                                                        )
 
                                                         /**
                                                          * @throws SamInvalidDataException if the
@@ -16826,29 +17261,21 @@ private constructor(
                                                         @ExcludeMissing
                                                         fun _type(): JsonField<Type> = type
 
+                                                        @JsonAnySetter
+                                                        private fun putAdditionalProperty(
+                                                            key: String,
+                                                            value: JsonValue,
+                                                        ) {
+                                                            additionalProperties.put(key, value)
+                                                        }
+
                                                         @JsonAnyGetter
                                                         @ExcludeMissing
                                                         fun _additionalProperties():
                                                             Map<String, JsonValue> =
-                                                            additionalProperties
-
-                                                        private var validated: Boolean = false
-
-                                                        fun validate():
-                                                            BetaRequestCharLocationCitation =
-                                                            apply {
-                                                                if (validated) {
-                                                                    return@apply
-                                                                }
-
-                                                                citedText()
-                                                                documentIndex()
-                                                                documentTitle()
-                                                                endCharIndex()
-                                                                startCharIndex()
-                                                                type()
-                                                                validated = true
-                                                            }
+                                                            Collections.unmodifiableMap(
+                                                                additionalProperties
+                                                            )
 
                                                         fun toBuilder() = Builder().from(this)
 
@@ -17157,9 +17584,27 @@ private constructor(
                                                                     ),
                                                                     checkRequired("type", type),
                                                                     additionalProperties
-                                                                        .toImmutable(),
+                                                                        .toMutableMap(),
                                                                 )
                                                         }
+
+                                                        private var validated: Boolean = false
+
+                                                        fun validate():
+                                                            BetaRequestCharLocationCitation =
+                                                            apply {
+                                                                if (validated) {
+                                                                    return@apply
+                                                                }
+
+                                                                citedText()
+                                                                documentIndex()
+                                                                documentTitle()
+                                                                endCharIndex()
+                                                                startCharIndex()
+                                                                type()
+                                                                validated = true
+                                                            }
 
                                                         class Type
                                                         @JsonCreator
@@ -17326,41 +17771,54 @@ private constructor(
                                                             "BetaRequestCharLocationCitation{citedText=$citedText, documentIndex=$documentIndex, documentTitle=$documentTitle, endCharIndex=$endCharIndex, startCharIndex=$startCharIndex, type=$type, additionalProperties=$additionalProperties}"
                                                     }
 
-                                                    @NoAutoDetect
                                                     class BetaRequestPageLocationCitation
-                                                    @JsonCreator
                                                     private constructor(
-                                                        @JsonProperty("cited_text")
-                                                        @ExcludeMissing
-                                                        private val citedText: JsonField<String> =
-                                                            JsonMissing.of(),
-                                                        @JsonProperty("document_index")
-                                                        @ExcludeMissing
-                                                        private val documentIndex: JsonField<Long> =
-                                                            JsonMissing.of(),
-                                                        @JsonProperty("document_title")
-                                                        @ExcludeMissing
+                                                        private val citedText: JsonField<String>,
+                                                        private val documentIndex: JsonField<Long>,
                                                         private val documentTitle:
-                                                            JsonField<String> =
-                                                            JsonMissing.of(),
-                                                        @JsonProperty("end_page_number")
-                                                        @ExcludeMissing
-                                                        private val endPageNumber: JsonField<Long> =
-                                                            JsonMissing.of(),
-                                                        @JsonProperty("start_page_number")
-                                                        @ExcludeMissing
+                                                            JsonField<String>,
+                                                        private val endPageNumber: JsonField<Long>,
                                                         private val startPageNumber:
-                                                            JsonField<Long> =
-                                                            JsonMissing.of(),
-                                                        @JsonProperty("type")
-                                                        @ExcludeMissing
-                                                        private val type: JsonField<Type> =
-                                                            JsonMissing.of(),
-                                                        @JsonAnySetter
+                                                            JsonField<Long>,
+                                                        private val type: JsonField<Type>,
                                                         private val additionalProperties:
-                                                            Map<String, JsonValue> =
-                                                            immutableEmptyMap(),
+                                                            MutableMap<String, JsonValue>,
                                                     ) {
+
+                                                        @JsonCreator
+                                                        private constructor(
+                                                            @JsonProperty("cited_text")
+                                                            @ExcludeMissing
+                                                            citedText: JsonField<String> =
+                                                                JsonMissing.of(),
+                                                            @JsonProperty("document_index")
+                                                            @ExcludeMissing
+                                                            documentIndex: JsonField<Long> =
+                                                                JsonMissing.of(),
+                                                            @JsonProperty("document_title")
+                                                            @ExcludeMissing
+                                                            documentTitle: JsonField<String> =
+                                                                JsonMissing.of(),
+                                                            @JsonProperty("end_page_number")
+                                                            @ExcludeMissing
+                                                            endPageNumber: JsonField<Long> =
+                                                                JsonMissing.of(),
+                                                            @JsonProperty("start_page_number")
+                                                            @ExcludeMissing
+                                                            startPageNumber: JsonField<Long> =
+                                                                JsonMissing.of(),
+                                                            @JsonProperty("type")
+                                                            @ExcludeMissing
+                                                            type: JsonField<Type> = JsonMissing.of(),
+                                                        ) : this(
+                                                            citedText,
+                                                            documentIndex,
+                                                            documentTitle,
+                                                            endPageNumber,
+                                                            startPageNumber,
+                                                            type,
+                                                            mutableMapOf(),
+                                                        )
 
                                                         /**
                                                          * @throws SamInvalidDataException if the
@@ -17505,29 +17963,21 @@ private constructor(
                                                         @ExcludeMissing
                                                         fun _type(): JsonField<Type> = type
 
+                                                        @JsonAnySetter
+                                                        private fun putAdditionalProperty(
+                                                            key: String,
+                                                            value: JsonValue,
+                                                        ) {
+                                                            additionalProperties.put(key, value)
+                                                        }
+
                                                         @JsonAnyGetter
                                                         @ExcludeMissing
                                                         fun _additionalProperties():
                                                             Map<String, JsonValue> =
-                                                            additionalProperties
-
-                                                        private var validated: Boolean = false
-
-                                                        fun validate():
-                                                            BetaRequestPageLocationCitation =
-                                                            apply {
-                                                                if (validated) {
-                                                                    return@apply
-                                                                }
-
-                                                                citedText()
-                                                                documentIndex()
-                                                                documentTitle()
-                                                                endPageNumber()
-                                                                startPageNumber()
-                                                                type()
-                                                                validated = true
-                                                            }
+                                                            Collections.unmodifiableMap(
+                                                                additionalProperties
+                                                            )
 
                                                         fun toBuilder() = Builder().from(this)
 
@@ -17837,9 +18287,27 @@ private constructor(
                                                                     ),
                                                                     checkRequired("type", type),
                                                                     additionalProperties
-                                                                        .toImmutable(),
+                                                                        .toMutableMap(),
                                                                 )
                                                         }
+
+                                                        private var validated: Boolean = false
+
+                                                        fun validate():
+                                                            BetaRequestPageLocationCitation =
+                                                            apply {
+                                                                if (validated) {
+                                                                    return@apply
+                                                                }
+
+                                                                citedText()
+                                                                documentIndex()
+                                                                documentTitle()
+                                                                endPageNumber()
+                                                                startPageNumber()
+                                                                type()
+                                                                validated = true
+                                                            }
 
                                                         class Type
                                                         @JsonCreator
@@ -18006,41 +18474,54 @@ private constructor(
                                                             "BetaRequestPageLocationCitation{citedText=$citedText, documentIndex=$documentIndex, documentTitle=$documentTitle, endPageNumber=$endPageNumber, startPageNumber=$startPageNumber, type=$type, additionalProperties=$additionalProperties}"
                                                     }
 
-                                                    @NoAutoDetect
                                                     class BetaRequestContentBlockLocationCitation
-                                                    @JsonCreator
                                                     private constructor(
-                                                        @JsonProperty("cited_text")
-                                                        @ExcludeMissing
-                                                        private val citedText: JsonField<String> =
-                                                            JsonMissing.of(),
-                                                        @JsonProperty("document_index")
-                                                        @ExcludeMissing
-                                                        private val documentIndex: JsonField<Long> =
-                                                            JsonMissing.of(),
-                                                        @JsonProperty("document_title")
-                                                        @ExcludeMissing
+                                                        private val citedText: JsonField<String>,
+                                                        private val documentIndex: JsonField<Long>,
                                                         private val documentTitle:
-                                                            JsonField<String> =
-                                                            JsonMissing.of(),
-                                                        @JsonProperty("end_block_index")
-                                                        @ExcludeMissing
-                                                        private val endBlockIndex: JsonField<Long> =
-                                                            JsonMissing.of(),
-                                                        @JsonProperty("start_block_index")
-                                                        @ExcludeMissing
+                                                            JsonField<String>,
+                                                        private val endBlockIndex: JsonField<Long>,
                                                         private val startBlockIndex:
-                                                            JsonField<Long> =
-                                                            JsonMissing.of(),
-                                                        @JsonProperty("type")
-                                                        @ExcludeMissing
-                                                        private val type: JsonField<Type> =
-                                                            JsonMissing.of(),
-                                                        @JsonAnySetter
+                                                            JsonField<Long>,
+                                                        private val type: JsonField<Type>,
                                                         private val additionalProperties:
-                                                            Map<String, JsonValue> =
-                                                            immutableEmptyMap(),
+                                                            MutableMap<String, JsonValue>,
                                                     ) {
+
+                                                        @JsonCreator
+                                                        private constructor(
+                                                            @JsonProperty("cited_text")
+                                                            @ExcludeMissing
+                                                            citedText: JsonField<String> =
+                                                                JsonMissing.of(),
+                                                            @JsonProperty("document_index")
+                                                            @ExcludeMissing
+                                                            documentIndex: JsonField<Long> =
+                                                                JsonMissing.of(),
+                                                            @JsonProperty("document_title")
+                                                            @ExcludeMissing
+                                                            documentTitle: JsonField<String> =
+                                                                JsonMissing.of(),
+                                                            @JsonProperty("end_block_index")
+                                                            @ExcludeMissing
+                                                            endBlockIndex: JsonField<Long> =
+                                                                JsonMissing.of(),
+                                                            @JsonProperty("start_block_index")
+                                                            @ExcludeMissing
+                                                            startBlockIndex: JsonField<Long> =
+                                                                JsonMissing.of(),
+                                                            @JsonProperty("type")
+                                                            @ExcludeMissing
+                                                            type: JsonField<Type> = JsonMissing.of(),
+                                                        ) : this(
+                                                            citedText,
+                                                            documentIndex,
+                                                            documentTitle,
+                                                            endBlockIndex,
+                                                            startBlockIndex,
+                                                            type,
+                                                            mutableMapOf(),
+                                                        )
 
                                                         /**
                                                          * @throws SamInvalidDataException if the
@@ -18185,29 +18666,21 @@ private constructor(
                                                         @ExcludeMissing
                                                         fun _type(): JsonField<Type> = type
 
+                                                        @JsonAnySetter
+                                                        private fun putAdditionalProperty(
+                                                            key: String,
+                                                            value: JsonValue,
+                                                        ) {
+                                                            additionalProperties.put(key, value)
+                                                        }
+
                                                         @JsonAnyGetter
                                                         @ExcludeMissing
                                                         fun _additionalProperties():
                                                             Map<String, JsonValue> =
-                                                            additionalProperties
-
-                                                        private var validated: Boolean = false
-
-                                                        fun validate():
-                                                            BetaRequestContentBlockLocationCitation =
-                                                            apply {
-                                                                if (validated) {
-                                                                    return@apply
-                                                                }
-
-                                                                citedText()
-                                                                documentIndex()
-                                                                documentTitle()
-                                                                endBlockIndex()
-                                                                startBlockIndex()
-                                                                type()
-                                                                validated = true
-                                                            }
+                                                            Collections.unmodifiableMap(
+                                                                additionalProperties
+                                                            )
 
                                                         fun toBuilder() = Builder().from(this)
 
@@ -18517,9 +18990,27 @@ private constructor(
                                                                     ),
                                                                     checkRequired("type", type),
                                                                     additionalProperties
-                                                                        .toImmutable(),
+                                                                        .toMutableMap(),
                                                                 )
                                                         }
+
+                                                        private var validated: Boolean = false
+
+                                                        fun validate():
+                                                            BetaRequestContentBlockLocationCitation =
+                                                            apply {
+                                                                if (validated) {
+                                                                    return@apply
+                                                                }
+
+                                                                citedText()
+                                                                documentIndex()
+                                                                documentTitle()
+                                                                endBlockIndex()
+                                                                startBlockIndex()
+                                                                type()
+                                                                validated = true
+                                                            }
 
                                                         class Type
                                                         @JsonCreator
@@ -18705,27 +19196,29 @@ private constructor(
                                                     "BetaRequestTextBlock{text=$text, type=$type, cacheControl=$cacheControl, citations=$citations, additionalProperties=$additionalProperties}"
                                             }
 
-                                            @NoAutoDetect
                                             class BetaRequestImageBlock
-                                            @JsonCreator
                                             private constructor(
-                                                @JsonProperty("source")
-                                                @ExcludeMissing
-                                                private val source: JsonField<InnerSource> =
-                                                    JsonMissing.of(),
-                                                @JsonProperty("type")
-                                                @ExcludeMissing
-                                                private val type: JsonField<Type> =
-                                                    JsonMissing.of(),
-                                                @JsonProperty("cache_control")
-                                                @ExcludeMissing
-                                                private val cacheControl: JsonField<CacheControl> =
-                                                    JsonMissing.of(),
-                                                @JsonAnySetter
+                                                private val source: JsonField<InnerSource>,
+                                                private val type: JsonField<Type>,
+                                                private val cacheControl: JsonField<CacheControl>,
                                                 private val additionalProperties:
-                                                    Map<String, JsonValue> =
-                                                    immutableEmptyMap(),
+                                                    MutableMap<String, JsonValue>,
                                             ) {
+
+                                                @JsonCreator
+                                                private constructor(
+                                                    @JsonProperty("source")
+                                                    @ExcludeMissing
+                                                    source: JsonField<InnerSource> =
+                                                        JsonMissing.of(),
+                                                    @JsonProperty("type")
+                                                    @ExcludeMissing
+                                                    type: JsonField<Type> = JsonMissing.of(),
+                                                    @JsonProperty("cache_control")
+                                                    @ExcludeMissing
+                                                    cacheControl: JsonField<CacheControl> =
+                                                        JsonMissing.of(),
+                                                ) : this(source, type, cacheControl, mutableMapOf())
 
                                                 /**
                                                  * @throws SamInvalidDataException if the JSON field
@@ -18785,23 +19278,21 @@ private constructor(
                                                 fun _cacheControl(): JsonField<CacheControl> =
                                                     cacheControl
 
+                                                @JsonAnySetter
+                                                private fun putAdditionalProperty(
+                                                    key: String,
+                                                    value: JsonValue,
+                                                ) {
+                                                    additionalProperties.put(key, value)
+                                                }
+
                                                 @JsonAnyGetter
                                                 @ExcludeMissing
                                                 fun _additionalProperties():
-                                                    Map<String, JsonValue> = additionalProperties
-
-                                                private var validated: Boolean = false
-
-                                                fun validate(): BetaRequestImageBlock = apply {
-                                                    if (validated) {
-                                                        return@apply
-                                                    }
-
-                                                    source().validate()
-                                                    type()
-                                                    cacheControl().ifPresent { it.validate() }
-                                                    validated = true
-                                                }
+                                                    Map<String, JsonValue> =
+                                                    Collections.unmodifiableMap(
+                                                        additionalProperties
+                                                    )
 
                                                 fun toBuilder() = Builder().from(this)
 
@@ -19023,8 +19514,21 @@ private constructor(
                                                             checkRequired("source", source),
                                                             checkRequired("type", type),
                                                             cacheControl,
-                                                            additionalProperties.toImmutable(),
+                                                            additionalProperties.toMutableMap(),
                                                         )
+                                                }
+
+                                                private var validated: Boolean = false
+
+                                                fun validate(): BetaRequestImageBlock = apply {
+                                                    if (validated) {
+                                                        return@apply
+                                                    }
+
+                                                    source().validate()
+                                                    type()
+                                                    cacheControl().ifPresent { it.validate() }
+                                                    validated = true
                                                 }
 
                                                 @JsonDeserialize(
@@ -19274,28 +19778,34 @@ private constructor(
                                                         }
                                                     }
 
-                                                    @NoAutoDetect
                                                     class BetaBase64ImageSource
-                                                    @JsonCreator
                                                     private constructor(
-                                                        @JsonProperty("data")
-                                                        @ExcludeMissing
-                                                        private val data: JsonField<String> =
-                                                            JsonMissing.of(),
-                                                        @JsonProperty("media_type")
-                                                        @ExcludeMissing
-                                                        private val mediaType:
-                                                            JsonField<MediaType> =
-                                                            JsonMissing.of(),
-                                                        @JsonProperty("type")
-                                                        @ExcludeMissing
-                                                        private val type: JsonField<Type> =
-                                                            JsonMissing.of(),
-                                                        @JsonAnySetter
+                                                        private val data: JsonField<String>,
+                                                        private val mediaType: JsonField<MediaType>,
+                                                        private val type: JsonField<Type>,
                                                         private val additionalProperties:
-                                                            Map<String, JsonValue> =
-                                                            immutableEmptyMap(),
+                                                            MutableMap<String, JsonValue>,
                                                     ) {
+
+                                                        @JsonCreator
+                                                        private constructor(
+                                                            @JsonProperty("data")
+                                                            @ExcludeMissing
+                                                            data: JsonField<String> =
+                                                                JsonMissing.of(),
+                                                            @JsonProperty("media_type")
+                                                            @ExcludeMissing
+                                                            mediaType: JsonField<MediaType> =
+                                                                JsonMissing.of(),
+                                                            @JsonProperty("type")
+                                                            @ExcludeMissing
+                                                            type: JsonField<Type> = JsonMissing.of(),
+                                                        ) : this(
+                                                            data,
+                                                            mediaType,
+                                                            type,
+                                                            mutableMapOf(),
+                                                        )
 
                                                         /**
                                                          * @throws SamInvalidDataException if the
@@ -19359,25 +19869,21 @@ private constructor(
                                                         @ExcludeMissing
                                                         fun _type(): JsonField<Type> = type
 
+                                                        @JsonAnySetter
+                                                        private fun putAdditionalProperty(
+                                                            key: String,
+                                                            value: JsonValue,
+                                                        ) {
+                                                            additionalProperties.put(key, value)
+                                                        }
+
                                                         @JsonAnyGetter
                                                         @ExcludeMissing
                                                         fun _additionalProperties():
                                                             Map<String, JsonValue> =
-                                                            additionalProperties
-
-                                                        private var validated: Boolean = false
-
-                                                        fun validate(): BetaBase64ImageSource =
-                                                            apply {
-                                                                if (validated) {
-                                                                    return@apply
-                                                                }
-
-                                                                data()
-                                                                mediaType()
-                                                                type()
-                                                                validated = true
-                                                            }
+                                                            Collections.unmodifiableMap(
+                                                                additionalProperties
+                                                            )
 
                                                         fun toBuilder() = Builder().from(this)
 
@@ -19552,9 +20058,23 @@ private constructor(
                                                                     ),
                                                                     checkRequired("type", type),
                                                                     additionalProperties
-                                                                        .toImmutable(),
+                                                                        .toMutableMap(),
                                                                 )
                                                         }
+
+                                                        private var validated: Boolean = false
+
+                                                        fun validate(): BetaBase64ImageSource =
+                                                            apply {
+                                                                if (validated) {
+                                                                    return@apply
+                                                                }
+
+                                                                data()
+                                                                mediaType()
+                                                                type()
+                                                                validated = true
+                                                            }
 
                                                         class MediaType
                                                         @JsonCreator
@@ -19883,23 +20403,25 @@ private constructor(
                                                             "BetaBase64ImageSource{data=$data, mediaType=$mediaType, type=$type, additionalProperties=$additionalProperties}"
                                                     }
 
-                                                    @NoAutoDetect
                                                     class BetaUrlImageSource
-                                                    @JsonCreator
                                                     private constructor(
-                                                        @JsonProperty("type")
-                                                        @ExcludeMissing
-                                                        private val type: JsonField<Type> =
-                                                            JsonMissing.of(),
-                                                        @JsonProperty("url")
-                                                        @ExcludeMissing
-                                                        private val url: JsonField<String> =
-                                                            JsonMissing.of(),
-                                                        @JsonAnySetter
+                                                        private val type: JsonField<Type>,
+                                                        private val url: JsonField<String>,
                                                         private val additionalProperties:
-                                                            Map<String, JsonValue> =
-                                                            immutableEmptyMap(),
+                                                            MutableMap<String, JsonValue>,
                                                     ) {
+
+                                                        @JsonCreator
+                                                        private constructor(
+                                                            @JsonProperty("type")
+                                                            @ExcludeMissing
+                                                            type: JsonField<Type> =
+                                                                JsonMissing.of(),
+                                                            @JsonProperty("url")
+                                                            @ExcludeMissing
+                                                            url: JsonField<String> =
+                                                                JsonMissing.of(),
+                                                        ) : this(type, url, mutableMapOf())
 
                                                         /**
                                                          * @throws SamInvalidDataException if the
@@ -19939,23 +20461,21 @@ private constructor(
                                                         @ExcludeMissing
                                                         fun _url(): JsonField<String> = url
 
+                                                        @JsonAnySetter
+                                                        private fun putAdditionalProperty(
+                                                            key: String,
+                                                            value: JsonValue,
+                                                        ) {
+                                                            additionalProperties.put(key, value)
+                                                        }
+
                                                         @JsonAnyGetter
                                                         @ExcludeMissing
                                                         fun _additionalProperties():
                                                             Map<String, JsonValue> =
-                                                            additionalProperties
-
-                                                        private var validated: Boolean = false
-
-                                                        fun validate(): BetaUrlImageSource = apply {
-                                                            if (validated) {
-                                                                return@apply
-                                                            }
-
-                                                            type()
-                                                            url()
-                                                            validated = true
-                                                        }
+                                                            Collections.unmodifiableMap(
+                                                                additionalProperties
+                                                            )
 
                                                         fun toBuilder() = Builder().from(this)
 
@@ -20098,8 +20618,20 @@ private constructor(
                                                                     checkRequired("type", type),
                                                                     checkRequired("url", url),
                                                                     additionalProperties
-                                                                        .toImmutable(),
+                                                                        .toMutableMap(),
                                                                 )
+                                                        }
+
+                                                        private var validated: Boolean = false
+
+                                                        fun validate(): BetaUrlImageSource = apply {
+                                                            if (validated) {
+                                                                return@apply
+                                                            }
+
+                                                            type()
+                                                            url()
+                                                            validated = true
                                                         }
 
                                                         class Type
@@ -20389,19 +20921,19 @@ private constructor(
                                                     override fun toString() = value.toString()
                                                 }
 
-                                                @NoAutoDetect
                                                 class CacheControl
-                                                @JsonCreator
                                                 private constructor(
-                                                    @JsonProperty("type")
-                                                    @ExcludeMissing
-                                                    private val type: JsonField<Type> =
-                                                        JsonMissing.of(),
-                                                    @JsonAnySetter
+                                                    private val type: JsonField<Type>,
                                                     private val additionalProperties:
-                                                        Map<String, JsonValue> =
-                                                        immutableEmptyMap(),
+                                                        MutableMap<String, JsonValue>,
                                                 ) {
+
+                                                    @JsonCreator
+                                                    private constructor(
+                                                        @JsonProperty("type")
+                                                        @ExcludeMissing
+                                                        type: JsonField<Type> = JsonMissing.of()
+                                                    ) : this(type, mutableMapOf())
 
                                                     /**
                                                      * @throws SamInvalidDataException if the JSON
@@ -20421,22 +20953,21 @@ private constructor(
                                                     @ExcludeMissing
                                                     fun _type(): JsonField<Type> = type
 
+                                                    @JsonAnySetter
+                                                    private fun putAdditionalProperty(
+                                                        key: String,
+                                                        value: JsonValue,
+                                                    ) {
+                                                        additionalProperties.put(key, value)
+                                                    }
+
                                                     @JsonAnyGetter
                                                     @ExcludeMissing
                                                     fun _additionalProperties():
                                                         Map<String, JsonValue> =
-                                                        additionalProperties
-
-                                                    private var validated: Boolean = false
-
-                                                    fun validate(): CacheControl = apply {
-                                                        if (validated) {
-                                                            return@apply
-                                                        }
-
-                                                        type()
-                                                        validated = true
-                                                    }
+                                                        Collections.unmodifiableMap(
+                                                            additionalProperties
+                                                        )
 
                                                     fun toBuilder() = Builder().from(this)
 
@@ -20545,8 +21076,19 @@ private constructor(
                                                         fun build(): CacheControl =
                                                             CacheControl(
                                                                 checkRequired("type", type),
-                                                                additionalProperties.toImmutable(),
+                                                                additionalProperties.toMutableMap(),
                                                             )
+                                                    }
+
+                                                    private var validated: Boolean = false
+
+                                                    fun validate(): CacheControl = apply {
+                                                        if (validated) {
+                                                            return@apply
+                                                        }
+
+                                                        type()
+                                                        validated = true
                                                     }
 
                                                     class Type
@@ -20852,20 +21394,22 @@ private constructor(
                                         "BetaContentBlockSource{content=$content, type=$type, additionalProperties=$additionalProperties}"
                                 }
 
-                                @NoAutoDetect
                                 class BetaUrlpdfSource
-                                @JsonCreator
                                 private constructor(
-                                    @JsonProperty("type")
-                                    @ExcludeMissing
-                                    private val type: JsonField<Type> = JsonMissing.of(),
-                                    @JsonProperty("url")
-                                    @ExcludeMissing
-                                    private val url: JsonField<String> = JsonMissing.of(),
-                                    @JsonAnySetter
-                                    private val additionalProperties: Map<String, JsonValue> =
-                                        immutableEmptyMap(),
+                                    private val type: JsonField<Type>,
+                                    private val url: JsonField<String>,
+                                    private val additionalProperties: MutableMap<String, JsonValue>,
                                 ) {
+
+                                    @JsonCreator
+                                    private constructor(
+                                        @JsonProperty("type")
+                                        @ExcludeMissing
+                                        type: JsonField<Type> = JsonMissing.of(),
+                                        @JsonProperty("url")
+                                        @ExcludeMissing
+                                        url: JsonField<String> = JsonMissing.of(),
+                                    ) : this(type, url, mutableMapOf())
 
                                     /**
                                      * @throws SamInvalidDataException if the JSON field has an
@@ -20901,22 +21445,18 @@ private constructor(
                                     @ExcludeMissing
                                     fun _url(): JsonField<String> = url
 
+                                    @JsonAnySetter
+                                    private fun putAdditionalProperty(
+                                        key: String,
+                                        value: JsonValue,
+                                    ) {
+                                        additionalProperties.put(key, value)
+                                    }
+
                                     @JsonAnyGetter
                                     @ExcludeMissing
                                     fun _additionalProperties(): Map<String, JsonValue> =
-                                        additionalProperties
-
-                                    private var validated: Boolean = false
-
-                                    fun validate(): BetaUrlpdfSource = apply {
-                                        if (validated) {
-                                            return@apply
-                                        }
-
-                                        type()
-                                        url()
-                                        validated = true
-                                    }
+                                        Collections.unmodifiableMap(additionalProperties)
 
                                     fun toBuilder() = Builder().from(this)
 
@@ -21024,8 +21564,20 @@ private constructor(
                                             BetaUrlpdfSource(
                                                 checkRequired("type", type),
                                                 checkRequired("url", url),
-                                                additionalProperties.toImmutable(),
+                                                additionalProperties.toMutableMap(),
                                             )
+                                    }
+
+                                    private var validated: Boolean = false
+
+                                    fun validate(): BetaUrlpdfSource = apply {
+                                        if (validated) {
+                                            return@apply
+                                        }
+
+                                        type()
+                                        url()
+                                        validated = true
                                     }
 
                                     class Type
@@ -21271,17 +21823,18 @@ private constructor(
                                 override fun toString() = value.toString()
                             }
 
-                            @NoAutoDetect
                             class CacheControl
-                            @JsonCreator
                             private constructor(
-                                @JsonProperty("type")
-                                @ExcludeMissing
-                                private val type: JsonField<Type> = JsonMissing.of(),
-                                @JsonAnySetter
-                                private val additionalProperties: Map<String, JsonValue> =
-                                    immutableEmptyMap(),
+                                private val type: JsonField<Type>,
+                                private val additionalProperties: MutableMap<String, JsonValue>,
                             ) {
+
+                                @JsonCreator
+                                private constructor(
+                                    @JsonProperty("type")
+                                    @ExcludeMissing
+                                    type: JsonField<Type> = JsonMissing.of()
+                                ) : this(type, mutableMapOf())
 
                                 /**
                                  * @throws SamInvalidDataException if the JSON field has an
@@ -21300,21 +21853,15 @@ private constructor(
                                 @ExcludeMissing
                                 fun _type(): JsonField<Type> = type
 
+                                @JsonAnySetter
+                                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                                    additionalProperties.put(key, value)
+                                }
+
                                 @JsonAnyGetter
                                 @ExcludeMissing
                                 fun _additionalProperties(): Map<String, JsonValue> =
-                                    additionalProperties
-
-                                private var validated: Boolean = false
-
-                                fun validate(): CacheControl = apply {
-                                    if (validated) {
-                                        return@apply
-                                    }
-
-                                    type()
-                                    validated = true
-                                }
+                                    Collections.unmodifiableMap(additionalProperties)
 
                                 fun toBuilder() = Builder().from(this)
 
@@ -21400,8 +21947,19 @@ private constructor(
                                     fun build(): CacheControl =
                                         CacheControl(
                                             checkRequired("type", type),
-                                            additionalProperties.toImmutable(),
+                                            additionalProperties.toMutableMap(),
                                         )
+                                }
+
+                                private var validated: Boolean = false
+
+                                fun validate(): CacheControl = apply {
+                                    if (validated) {
+                                        return@apply
+                                    }
+
+                                    type()
+                                    validated = true
                                 }
 
                                 class Type
@@ -21532,17 +22090,18 @@ private constructor(
                                     "CacheControl{type=$type, additionalProperties=$additionalProperties}"
                             }
 
-                            @NoAutoDetect
                             class Citations
-                            @JsonCreator
                             private constructor(
-                                @JsonProperty("enabled")
-                                @ExcludeMissing
-                                private val enabled: JsonField<Boolean> = JsonMissing.of(),
-                                @JsonAnySetter
-                                private val additionalProperties: Map<String, JsonValue> =
-                                    immutableEmptyMap(),
+                                private val enabled: JsonField<Boolean>,
+                                private val additionalProperties: MutableMap<String, JsonValue>,
                             ) {
+
+                                @JsonCreator
+                                private constructor(
+                                    @JsonProperty("enabled")
+                                    @ExcludeMissing
+                                    enabled: JsonField<Boolean> = JsonMissing.of()
+                                ) : this(enabled, mutableMapOf())
 
                                 /**
                                  * @throws SamInvalidDataException if the JSON field has an
@@ -21562,21 +22121,15 @@ private constructor(
                                 @ExcludeMissing
                                 fun _enabled(): JsonField<Boolean> = enabled
 
+                                @JsonAnySetter
+                                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                                    additionalProperties.put(key, value)
+                                }
+
                                 @JsonAnyGetter
                                 @ExcludeMissing
                                 fun _additionalProperties(): Map<String, JsonValue> =
-                                    additionalProperties
-
-                                private var validated: Boolean = false
-
-                                fun validate(): Citations = apply {
-                                    if (validated) {
-                                        return@apply
-                                    }
-
-                                    enabled()
-                                    validated = true
-                                }
+                                    Collections.unmodifiableMap(additionalProperties)
 
                                 fun toBuilder() = Builder().from(this)
 
@@ -21650,7 +22203,18 @@ private constructor(
                                      * returned instance.
                                      */
                                     fun build(): Citations =
-                                        Citations(enabled, additionalProperties.toImmutable())
+                                        Citations(enabled, additionalProperties.toMutableMap())
+                                }
+
+                                private var validated: Boolean = false
+
+                                fun validate(): Citations = apply {
+                                    if (validated) {
+                                        return@apply
+                                    }
+
+                                    enabled()
+                                    validated = true
                                 }
 
                                 override fun equals(other: Any?): Boolean {
@@ -21689,23 +22253,26 @@ private constructor(
                                 "BetaRequestDocumentBlock{source=$source, type=$type, cacheControl=$cacheControl, citations=$citations, context=$context, title=$title, additionalProperties=$additionalProperties}"
                         }
 
-                        @NoAutoDetect
                         class BetaRequestThinkingBlock
-                        @JsonCreator
                         private constructor(
-                            @JsonProperty("signature")
-                            @ExcludeMissing
-                            private val signature: JsonField<String> = JsonMissing.of(),
-                            @JsonProperty("thinking")
-                            @ExcludeMissing
-                            private val thinking: JsonField<String> = JsonMissing.of(),
-                            @JsonProperty("type")
-                            @ExcludeMissing
-                            private val type: JsonField<Type> = JsonMissing.of(),
-                            @JsonAnySetter
-                            private val additionalProperties: Map<String, JsonValue> =
-                                immutableEmptyMap(),
+                            private val signature: JsonField<String>,
+                            private val thinking: JsonField<String>,
+                            private val type: JsonField<Type>,
+                            private val additionalProperties: MutableMap<String, JsonValue>,
                         ) {
+
+                            @JsonCreator
+                            private constructor(
+                                @JsonProperty("signature")
+                                @ExcludeMissing
+                                signature: JsonField<String> = JsonMissing.of(),
+                                @JsonProperty("thinking")
+                                @ExcludeMissing
+                                thinking: JsonField<String> = JsonMissing.of(),
+                                @JsonProperty("type")
+                                @ExcludeMissing
+                                type: JsonField<Type> = JsonMissing.of(),
+                            ) : this(signature, thinking, type, mutableMapOf())
 
                             /**
                              * @throws SamInvalidDataException if the JSON field has an unexpected
@@ -21758,23 +22325,15 @@ private constructor(
                             @ExcludeMissing
                             fun _type(): JsonField<Type> = type
 
+                            @JsonAnySetter
+                            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                                additionalProperties.put(key, value)
+                            }
+
                             @JsonAnyGetter
                             @ExcludeMissing
                             fun _additionalProperties(): Map<String, JsonValue> =
-                                additionalProperties
-
-                            private var validated: Boolean = false
-
-                            fun validate(): BetaRequestThinkingBlock = apply {
-                                if (validated) {
-                                    return@apply
-                                }
-
-                                signature()
-                                thinking()
-                                type()
-                                validated = true
-                            }
+                                Collections.unmodifiableMap(additionalProperties)
 
                             fun toBuilder() = Builder().from(this)
 
@@ -21895,8 +22454,21 @@ private constructor(
                                         checkRequired("signature", signature),
                                         checkRequired("thinking", thinking),
                                         checkRequired("type", type),
-                                        additionalProperties.toImmutable(),
+                                        additionalProperties.toMutableMap(),
                                     )
+                            }
+
+                            private var validated: Boolean = false
+
+                            fun validate(): BetaRequestThinkingBlock = apply {
+                                if (validated) {
+                                    return@apply
+                                }
+
+                                signature()
+                                thinking()
+                                type()
+                                validated = true
                             }
 
                             class Type
@@ -22025,20 +22597,22 @@ private constructor(
                                 "BetaRequestThinkingBlock{signature=$signature, thinking=$thinking, type=$type, additionalProperties=$additionalProperties}"
                         }
 
-                        @NoAutoDetect
                         class BetaRequestRedactedThinkingBlock
-                        @JsonCreator
                         private constructor(
-                            @JsonProperty("data")
-                            @ExcludeMissing
-                            private val data: JsonField<String> = JsonMissing.of(),
-                            @JsonProperty("type")
-                            @ExcludeMissing
-                            private val type: JsonField<Type> = JsonMissing.of(),
-                            @JsonAnySetter
-                            private val additionalProperties: Map<String, JsonValue> =
-                                immutableEmptyMap(),
+                            private val data: JsonField<String>,
+                            private val type: JsonField<Type>,
+                            private val additionalProperties: MutableMap<String, JsonValue>,
                         ) {
+
+                            @JsonCreator
+                            private constructor(
+                                @JsonProperty("data")
+                                @ExcludeMissing
+                                data: JsonField<String> = JsonMissing.of(),
+                                @JsonProperty("type")
+                                @ExcludeMissing
+                                type: JsonField<Type> = JsonMissing.of(),
+                            ) : this(data, type, mutableMapOf())
 
                             /**
                              * @throws SamInvalidDataException if the JSON field has an unexpected
@@ -22074,22 +22648,15 @@ private constructor(
                             @ExcludeMissing
                             fun _type(): JsonField<Type> = type
 
+                            @JsonAnySetter
+                            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                                additionalProperties.put(key, value)
+                            }
+
                             @JsonAnyGetter
                             @ExcludeMissing
                             fun _additionalProperties(): Map<String, JsonValue> =
-                                additionalProperties
-
-                            private var validated: Boolean = false
-
-                            fun validate(): BetaRequestRedactedThinkingBlock = apply {
-                                if (validated) {
-                                    return@apply
-                                }
-
-                                data()
-                                type()
-                                validated = true
-                            }
+                                Collections.unmodifiableMap(additionalProperties)
 
                             fun toBuilder() = Builder().from(this)
 
@@ -22192,8 +22759,20 @@ private constructor(
                                     BetaRequestRedactedThinkingBlock(
                                         checkRequired("data", data),
                                         checkRequired("type", type),
-                                        additionalProperties.toImmutable(),
+                                        additionalProperties.toMutableMap(),
                                     )
+                            }
+
+                            private var validated: Boolean = false
+
+                            fun validate(): BetaRequestRedactedThinkingBlock = apply {
+                                if (validated) {
+                                    return@apply
+                                }
+
+                                data()
+                                type()
+                                validated = true
                             }
 
                             class Type
@@ -22448,16 +23027,18 @@ private constructor(
             }
 
             /** An object describing metadata about the request. */
-            @NoAutoDetect
             class Metadata
-            @JsonCreator
             private constructor(
-                @JsonProperty("user_id")
-                @ExcludeMissing
-                private val userId: JsonField<String> = JsonMissing.of(),
-                @JsonAnySetter
-                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                private val userId: JsonField<String>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("user_id")
+                    @ExcludeMissing
+                    userId: JsonField<String> = JsonMissing.of()
+                ) : this(userId, mutableMapOf())
 
                 /**
                  * An external identifier for the user who is associated with the request.
@@ -22479,20 +23060,15 @@ private constructor(
                  */
                 @JsonProperty("user_id") @ExcludeMissing fun _userId(): JsonField<String> = userId
 
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
                 @JsonAnyGetter
                 @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                private var validated: Boolean = false
-
-                fun validate(): Metadata = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    userId()
-                    validated = true
-                }
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
 
                 fun toBuilder() = Builder().from(this)
 
@@ -22562,7 +23138,18 @@ private constructor(
                      *
                      * Further updates to this [Builder] will not mutate the returned instance.
                      */
-                    fun build(): Metadata = Metadata(userId, additionalProperties.toImmutable())
+                    fun build(): Metadata = Metadata(userId, additionalProperties.toMutableMap())
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): Metadata = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    userId()
+                    validated = true
                 }
 
                 override fun equals(other: Any?): Boolean {
@@ -22736,25 +23323,30 @@ private constructor(
                     }
                 }
 
-                @NoAutoDetect
                 class BetaRequestTextBlock
-                @JsonCreator
                 private constructor(
-                    @JsonProperty("text")
-                    @ExcludeMissing
-                    private val text: JsonField<String> = JsonMissing.of(),
-                    @JsonProperty("type")
-                    @ExcludeMissing
-                    private val type: JsonField<Type> = JsonMissing.of(),
-                    @JsonProperty("cache_control")
-                    @ExcludeMissing
-                    private val cacheControl: JsonField<CacheControl> = JsonMissing.of(),
-                    @JsonProperty("citations")
-                    @ExcludeMissing
-                    private val citations: JsonField<List<Citation>> = JsonMissing.of(),
-                    @JsonAnySetter
-                    private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                    private val text: JsonField<String>,
+                    private val type: JsonField<Type>,
+                    private val cacheControl: JsonField<CacheControl>,
+                    private val citations: JsonField<List<Citation>>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("text")
+                        @ExcludeMissing
+                        text: JsonField<String> = JsonMissing.of(),
+                        @JsonProperty("type")
+                        @ExcludeMissing
+                        type: JsonField<Type> = JsonMissing.of(),
+                        @JsonProperty("cache_control")
+                        @ExcludeMissing
+                        cacheControl: JsonField<CacheControl> = JsonMissing.of(),
+                        @JsonProperty("citations")
+                        @ExcludeMissing
+                        citations: JsonField<List<Citation>> = JsonMissing.of(),
+                    ) : this(text, type, cacheControl, citations, mutableMapOf())
 
                     /**
                      * @throws SamInvalidDataException if the JSON field has an unexpected type or
@@ -22820,23 +23412,15 @@ private constructor(
                     @ExcludeMissing
                     fun _citations(): JsonField<List<Citation>> = citations
 
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
                     @JsonAnyGetter
                     @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    private var validated: Boolean = false
-
-                    fun validate(): BetaRequestTextBlock = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        text()
-                        type()
-                        cacheControl().ifPresent { it.validate() }
-                        citations().ifPresent { it.forEach { it.validate() } }
-                        validated = true
-                    }
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
 
                     fun toBuilder() = Builder().from(this)
 
@@ -23020,8 +23604,22 @@ private constructor(
                                 checkRequired("type", type),
                                 cacheControl,
                                 (citations ?: JsonMissing.of()).map { it.toImmutable() },
-                                additionalProperties.toImmutable(),
+                                additionalProperties.toMutableMap(),
                             )
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): BetaRequestTextBlock = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        text()
+                        type()
+                        cacheControl().ifPresent { it.validate() }
+                        citations().ifPresent { it.forEach { it.validate() } }
+                        validated = true
                     }
 
                     class Type
@@ -23125,17 +23723,18 @@ private constructor(
                         override fun toString() = value.toString()
                     }
 
-                    @NoAutoDetect
                     class CacheControl
-                    @JsonCreator
                     private constructor(
-                        @JsonProperty("type")
-                        @ExcludeMissing
-                        private val type: JsonField<Type> = JsonMissing.of(),
-                        @JsonAnySetter
-                        private val additionalProperties: Map<String, JsonValue> =
-                            immutableEmptyMap(),
+                        private val type: JsonField<Type>,
+                        private val additionalProperties: MutableMap<String, JsonValue>,
                     ) {
+
+                        @JsonCreator
+                        private constructor(
+                            @JsonProperty("type")
+                            @ExcludeMissing
+                            type: JsonField<Type> = JsonMissing.of()
+                        ) : this(type, mutableMapOf())
 
                         /**
                          * @throws SamInvalidDataException if the JSON field has an unexpected type
@@ -23152,20 +23751,15 @@ private constructor(
                          */
                         @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+                        @JsonAnySetter
+                        private fun putAdditionalProperty(key: String, value: JsonValue) {
+                            additionalProperties.put(key, value)
+                        }
+
                         @JsonAnyGetter
                         @ExcludeMissing
-                        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                        private var validated: Boolean = false
-
-                        fun validate(): CacheControl = apply {
-                            if (validated) {
-                                return@apply
-                            }
-
-                            type()
-                            validated = true
-                        }
+                        fun _additionalProperties(): Map<String, JsonValue> =
+                            Collections.unmodifiableMap(additionalProperties)
 
                         fun toBuilder() = Builder().from(this)
 
@@ -23246,8 +23840,19 @@ private constructor(
                             fun build(): CacheControl =
                                 CacheControl(
                                     checkRequired("type", type),
-                                    additionalProperties.toImmutable(),
+                                    additionalProperties.toMutableMap(),
                                 )
+                        }
+
+                        private var validated: Boolean = false
+
+                        fun validate(): CacheControl = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            type()
+                            validated = true
                         }
 
                         class Type
@@ -23624,32 +24229,46 @@ private constructor(
                             }
                         }
 
-                        @NoAutoDetect
                         class BetaRequestCharLocationCitation
-                        @JsonCreator
                         private constructor(
-                            @JsonProperty("cited_text")
-                            @ExcludeMissing
-                            private val citedText: JsonField<String> = JsonMissing.of(),
-                            @JsonProperty("document_index")
-                            @ExcludeMissing
-                            private val documentIndex: JsonField<Long> = JsonMissing.of(),
-                            @JsonProperty("document_title")
-                            @ExcludeMissing
-                            private val documentTitle: JsonField<String> = JsonMissing.of(),
-                            @JsonProperty("end_char_index")
-                            @ExcludeMissing
-                            private val endCharIndex: JsonField<Long> = JsonMissing.of(),
-                            @JsonProperty("start_char_index")
-                            @ExcludeMissing
-                            private val startCharIndex: JsonField<Long> = JsonMissing.of(),
-                            @JsonProperty("type")
-                            @ExcludeMissing
-                            private val type: JsonField<Type> = JsonMissing.of(),
-                            @JsonAnySetter
-                            private val additionalProperties: Map<String, JsonValue> =
-                                immutableEmptyMap(),
+                            private val citedText: JsonField<String>,
+                            private val documentIndex: JsonField<Long>,
+                            private val documentTitle: JsonField<String>,
+                            private val endCharIndex: JsonField<Long>,
+                            private val startCharIndex: JsonField<Long>,
+                            private val type: JsonField<Type>,
+                            private val additionalProperties: MutableMap<String, JsonValue>,
                         ) {
+
+                            @JsonCreator
+                            private constructor(
+                                @JsonProperty("cited_text")
+                                @ExcludeMissing
+                                citedText: JsonField<String> = JsonMissing.of(),
+                                @JsonProperty("document_index")
+                                @ExcludeMissing
+                                documentIndex: JsonField<Long> = JsonMissing.of(),
+                                @JsonProperty("document_title")
+                                @ExcludeMissing
+                                documentTitle: JsonField<String> = JsonMissing.of(),
+                                @JsonProperty("end_char_index")
+                                @ExcludeMissing
+                                endCharIndex: JsonField<Long> = JsonMissing.of(),
+                                @JsonProperty("start_char_index")
+                                @ExcludeMissing
+                                startCharIndex: JsonField<Long> = JsonMissing.of(),
+                                @JsonProperty("type")
+                                @ExcludeMissing
+                                type: JsonField<Type> = JsonMissing.of(),
+                            ) : this(
+                                citedText,
+                                documentIndex,
+                                documentTitle,
+                                endCharIndex,
+                                startCharIndex,
+                                type,
+                                mutableMapOf(),
+                            )
 
                             /**
                              * @throws SamInvalidDataException if the JSON field has an unexpected
@@ -23754,26 +24373,15 @@ private constructor(
                             @ExcludeMissing
                             fun _type(): JsonField<Type> = type
 
+                            @JsonAnySetter
+                            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                                additionalProperties.put(key, value)
+                            }
+
                             @JsonAnyGetter
                             @ExcludeMissing
                             fun _additionalProperties(): Map<String, JsonValue> =
-                                additionalProperties
-
-                            private var validated: Boolean = false
-
-                            fun validate(): BetaRequestCharLocationCitation = apply {
-                                if (validated) {
-                                    return@apply
-                                }
-
-                                citedText()
-                                documentIndex()
-                                documentTitle()
-                                endCharIndex()
-                                startCharIndex()
-                                type()
-                                validated = true
-                            }
+                                Collections.unmodifiableMap(additionalProperties)
 
                             fun toBuilder() = Builder().from(this)
 
@@ -23961,8 +24569,24 @@ private constructor(
                                         checkRequired("endCharIndex", endCharIndex),
                                         checkRequired("startCharIndex", startCharIndex),
                                         checkRequired("type", type),
-                                        additionalProperties.toImmutable(),
+                                        additionalProperties.toMutableMap(),
                                     )
+                            }
+
+                            private var validated: Boolean = false
+
+                            fun validate(): BetaRequestCharLocationCitation = apply {
+                                if (validated) {
+                                    return@apply
+                                }
+
+                                citedText()
+                                documentIndex()
+                                documentTitle()
+                                endCharIndex()
+                                startCharIndex()
+                                type()
+                                validated = true
                             }
 
                             class Type
@@ -24091,32 +24715,46 @@ private constructor(
                                 "BetaRequestCharLocationCitation{citedText=$citedText, documentIndex=$documentIndex, documentTitle=$documentTitle, endCharIndex=$endCharIndex, startCharIndex=$startCharIndex, type=$type, additionalProperties=$additionalProperties}"
                         }
 
-                        @NoAutoDetect
                         class BetaRequestPageLocationCitation
-                        @JsonCreator
                         private constructor(
-                            @JsonProperty("cited_text")
-                            @ExcludeMissing
-                            private val citedText: JsonField<String> = JsonMissing.of(),
-                            @JsonProperty("document_index")
-                            @ExcludeMissing
-                            private val documentIndex: JsonField<Long> = JsonMissing.of(),
-                            @JsonProperty("document_title")
-                            @ExcludeMissing
-                            private val documentTitle: JsonField<String> = JsonMissing.of(),
-                            @JsonProperty("end_page_number")
-                            @ExcludeMissing
-                            private val endPageNumber: JsonField<Long> = JsonMissing.of(),
-                            @JsonProperty("start_page_number")
-                            @ExcludeMissing
-                            private val startPageNumber: JsonField<Long> = JsonMissing.of(),
-                            @JsonProperty("type")
-                            @ExcludeMissing
-                            private val type: JsonField<Type> = JsonMissing.of(),
-                            @JsonAnySetter
-                            private val additionalProperties: Map<String, JsonValue> =
-                                immutableEmptyMap(),
+                            private val citedText: JsonField<String>,
+                            private val documentIndex: JsonField<Long>,
+                            private val documentTitle: JsonField<String>,
+                            private val endPageNumber: JsonField<Long>,
+                            private val startPageNumber: JsonField<Long>,
+                            private val type: JsonField<Type>,
+                            private val additionalProperties: MutableMap<String, JsonValue>,
                         ) {
+
+                            @JsonCreator
+                            private constructor(
+                                @JsonProperty("cited_text")
+                                @ExcludeMissing
+                                citedText: JsonField<String> = JsonMissing.of(),
+                                @JsonProperty("document_index")
+                                @ExcludeMissing
+                                documentIndex: JsonField<Long> = JsonMissing.of(),
+                                @JsonProperty("document_title")
+                                @ExcludeMissing
+                                documentTitle: JsonField<String> = JsonMissing.of(),
+                                @JsonProperty("end_page_number")
+                                @ExcludeMissing
+                                endPageNumber: JsonField<Long> = JsonMissing.of(),
+                                @JsonProperty("start_page_number")
+                                @ExcludeMissing
+                                startPageNumber: JsonField<Long> = JsonMissing.of(),
+                                @JsonProperty("type")
+                                @ExcludeMissing
+                                type: JsonField<Type> = JsonMissing.of(),
+                            ) : this(
+                                citedText,
+                                documentIndex,
+                                documentTitle,
+                                endPageNumber,
+                                startPageNumber,
+                                type,
+                                mutableMapOf(),
+                            )
 
                             /**
                              * @throws SamInvalidDataException if the JSON field has an unexpected
@@ -24221,26 +24859,15 @@ private constructor(
                             @ExcludeMissing
                             fun _type(): JsonField<Type> = type
 
+                            @JsonAnySetter
+                            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                                additionalProperties.put(key, value)
+                            }
+
                             @JsonAnyGetter
                             @ExcludeMissing
                             fun _additionalProperties(): Map<String, JsonValue> =
-                                additionalProperties
-
-                            private var validated: Boolean = false
-
-                            fun validate(): BetaRequestPageLocationCitation = apply {
-                                if (validated) {
-                                    return@apply
-                                }
-
-                                citedText()
-                                documentIndex()
-                                documentTitle()
-                                endPageNumber()
-                                startPageNumber()
-                                type()
-                                validated = true
-                            }
+                                Collections.unmodifiableMap(additionalProperties)
 
                             fun toBuilder() = Builder().from(this)
 
@@ -24429,8 +25056,24 @@ private constructor(
                                         checkRequired("endPageNumber", endPageNumber),
                                         checkRequired("startPageNumber", startPageNumber),
                                         checkRequired("type", type),
-                                        additionalProperties.toImmutable(),
+                                        additionalProperties.toMutableMap(),
                                     )
+                            }
+
+                            private var validated: Boolean = false
+
+                            fun validate(): BetaRequestPageLocationCitation = apply {
+                                if (validated) {
+                                    return@apply
+                                }
+
+                                citedText()
+                                documentIndex()
+                                documentTitle()
+                                endPageNumber()
+                                startPageNumber()
+                                type()
+                                validated = true
                             }
 
                             class Type
@@ -24559,32 +25202,46 @@ private constructor(
                                 "BetaRequestPageLocationCitation{citedText=$citedText, documentIndex=$documentIndex, documentTitle=$documentTitle, endPageNumber=$endPageNumber, startPageNumber=$startPageNumber, type=$type, additionalProperties=$additionalProperties}"
                         }
 
-                        @NoAutoDetect
                         class BetaRequestContentBlockLocationCitation
-                        @JsonCreator
                         private constructor(
-                            @JsonProperty("cited_text")
-                            @ExcludeMissing
-                            private val citedText: JsonField<String> = JsonMissing.of(),
-                            @JsonProperty("document_index")
-                            @ExcludeMissing
-                            private val documentIndex: JsonField<Long> = JsonMissing.of(),
-                            @JsonProperty("document_title")
-                            @ExcludeMissing
-                            private val documentTitle: JsonField<String> = JsonMissing.of(),
-                            @JsonProperty("end_block_index")
-                            @ExcludeMissing
-                            private val endBlockIndex: JsonField<Long> = JsonMissing.of(),
-                            @JsonProperty("start_block_index")
-                            @ExcludeMissing
-                            private val startBlockIndex: JsonField<Long> = JsonMissing.of(),
-                            @JsonProperty("type")
-                            @ExcludeMissing
-                            private val type: JsonField<Type> = JsonMissing.of(),
-                            @JsonAnySetter
-                            private val additionalProperties: Map<String, JsonValue> =
-                                immutableEmptyMap(),
+                            private val citedText: JsonField<String>,
+                            private val documentIndex: JsonField<Long>,
+                            private val documentTitle: JsonField<String>,
+                            private val endBlockIndex: JsonField<Long>,
+                            private val startBlockIndex: JsonField<Long>,
+                            private val type: JsonField<Type>,
+                            private val additionalProperties: MutableMap<String, JsonValue>,
                         ) {
+
+                            @JsonCreator
+                            private constructor(
+                                @JsonProperty("cited_text")
+                                @ExcludeMissing
+                                citedText: JsonField<String> = JsonMissing.of(),
+                                @JsonProperty("document_index")
+                                @ExcludeMissing
+                                documentIndex: JsonField<Long> = JsonMissing.of(),
+                                @JsonProperty("document_title")
+                                @ExcludeMissing
+                                documentTitle: JsonField<String> = JsonMissing.of(),
+                                @JsonProperty("end_block_index")
+                                @ExcludeMissing
+                                endBlockIndex: JsonField<Long> = JsonMissing.of(),
+                                @JsonProperty("start_block_index")
+                                @ExcludeMissing
+                                startBlockIndex: JsonField<Long> = JsonMissing.of(),
+                                @JsonProperty("type")
+                                @ExcludeMissing
+                                type: JsonField<Type> = JsonMissing.of(),
+                            ) : this(
+                                citedText,
+                                documentIndex,
+                                documentTitle,
+                                endBlockIndex,
+                                startBlockIndex,
+                                type,
+                                mutableMapOf(),
+                            )
 
                             /**
                              * @throws SamInvalidDataException if the JSON field has an unexpected
@@ -24689,26 +25346,15 @@ private constructor(
                             @ExcludeMissing
                             fun _type(): JsonField<Type> = type
 
+                            @JsonAnySetter
+                            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                                additionalProperties.put(key, value)
+                            }
+
                             @JsonAnyGetter
                             @ExcludeMissing
                             fun _additionalProperties(): Map<String, JsonValue> =
-                                additionalProperties
-
-                            private var validated: Boolean = false
-
-                            fun validate(): BetaRequestContentBlockLocationCitation = apply {
-                                if (validated) {
-                                    return@apply
-                                }
-
-                                citedText()
-                                documentIndex()
-                                documentTitle()
-                                endBlockIndex()
-                                startBlockIndex()
-                                type()
-                                validated = true
-                            }
+                                Collections.unmodifiableMap(additionalProperties)
 
                             fun toBuilder() = Builder().from(this)
 
@@ -24901,8 +25547,24 @@ private constructor(
                                         checkRequired("endBlockIndex", endBlockIndex),
                                         checkRequired("startBlockIndex", startBlockIndex),
                                         checkRequired("type", type),
-                                        additionalProperties.toImmutable(),
+                                        additionalProperties.toMutableMap(),
                                     )
+                            }
+
+                            private var validated: Boolean = false
+
+                            fun validate(): BetaRequestContentBlockLocationCitation = apply {
+                                if (validated) {
+                                    return@apply
+                                }
+
+                                citedText()
+                                documentIndex()
+                                documentTitle()
+                                endBlockIndex()
+                                startBlockIndex()
+                                type()
+                                validated = true
                             }
 
                             class Type
@@ -25240,19 +25902,22 @@ private constructor(
                     }
                 }
 
-                @NoAutoDetect
                 class BetaThinkingConfigEnabled
-                @JsonCreator
                 private constructor(
-                    @JsonProperty("budget_tokens")
-                    @ExcludeMissing
-                    private val budgetTokens: JsonField<Long> = JsonMissing.of(),
-                    @JsonProperty("type")
-                    @ExcludeMissing
-                    private val type: JsonField<Type> = JsonMissing.of(),
-                    @JsonAnySetter
-                    private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                    private val budgetTokens: JsonField<Long>,
+                    private val type: JsonField<Type>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("budget_tokens")
+                        @ExcludeMissing
+                        budgetTokens: JsonField<Long> = JsonMissing.of(),
+                        @JsonProperty("type")
+                        @ExcludeMissing
+                        type: JsonField<Type> = JsonMissing.of(),
+                    ) : this(budgetTokens, type, mutableMapOf())
 
                     /**
                      * Determines how many tokens Claude can use for its internal reasoning process.
@@ -25296,21 +25961,15 @@ private constructor(
                      */
                     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
                     @JsonAnyGetter
                     @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    private var validated: Boolean = false
-
-                    fun validate(): BetaThinkingConfigEnabled = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        budgetTokens()
-                        type()
-                        validated = true
-                    }
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
 
                     fun toBuilder() = Builder().from(this)
 
@@ -25421,8 +26080,20 @@ private constructor(
                             BetaThinkingConfigEnabled(
                                 checkRequired("budgetTokens", budgetTokens),
                                 checkRequired("type", type),
-                                additionalProperties.toImmutable(),
+                                additionalProperties.toMutableMap(),
                             )
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): BetaThinkingConfigEnabled = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        budgetTokens()
+                        type()
+                        validated = true
                     }
 
                     class Type
@@ -25544,16 +26215,18 @@ private constructor(
                         "BetaThinkingConfigEnabled{budgetTokens=$budgetTokens, type=$type, additionalProperties=$additionalProperties}"
                 }
 
-                @NoAutoDetect
                 class BetaThinkingConfigDisabled
-                @JsonCreator
                 private constructor(
-                    @JsonProperty("type")
-                    @ExcludeMissing
-                    private val type: JsonField<Type> = JsonMissing.of(),
-                    @JsonAnySetter
-                    private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                    private val type: JsonField<Type>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("type")
+                        @ExcludeMissing
+                        type: JsonField<Type> = JsonMissing.of()
+                    ) : this(type, mutableMapOf())
 
                     /**
                      * @throws SamInvalidDataException if the JSON field has an unexpected type or
@@ -25570,20 +26243,15 @@ private constructor(
                      */
                     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
                     @JsonAnyGetter
                     @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    private var validated: Boolean = false
-
-                    fun validate(): BetaThinkingConfigDisabled = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        type()
-                        validated = true
-                    }
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
 
                     fun toBuilder() = Builder().from(this)
 
@@ -25664,8 +26332,19 @@ private constructor(
                         fun build(): BetaThinkingConfigDisabled =
                             BetaThinkingConfigDisabled(
                                 checkRequired("type", type),
-                                additionalProperties.toImmutable(),
+                                additionalProperties.toMutableMap(),
                             )
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): BetaThinkingConfigDisabled = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        type()
+                        validated = true
                     }
 
                     class Type
@@ -26044,19 +26723,22 @@ private constructor(
                 }
 
                 /** The model will automatically decide whether to use tools. */
-                @NoAutoDetect
                 class BetaToolChoiceAuto
-                @JsonCreator
                 private constructor(
-                    @JsonProperty("type")
-                    @ExcludeMissing
-                    private val type: JsonField<Type> = JsonMissing.of(),
-                    @JsonProperty("disable_parallel_tool_use")
-                    @ExcludeMissing
-                    private val disableParallelToolUse: JsonField<Boolean> = JsonMissing.of(),
-                    @JsonAnySetter
-                    private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                    private val type: JsonField<Type>,
+                    private val disableParallelToolUse: JsonField<Boolean>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("type")
+                        @ExcludeMissing
+                        type: JsonField<Type> = JsonMissing.of(),
+                        @JsonProperty("disable_parallel_tool_use")
+                        @ExcludeMissing
+                        disableParallelToolUse: JsonField<Boolean> = JsonMissing.of(),
+                    ) : this(type, disableParallelToolUse, mutableMapOf())
 
                     /**
                      * @throws SamInvalidDataException if the JSON field has an unexpected type or
@@ -26097,21 +26779,15 @@ private constructor(
                     @ExcludeMissing
                     fun _disableParallelToolUse(): JsonField<Boolean> = disableParallelToolUse
 
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
                     @JsonAnyGetter
                     @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    private var validated: Boolean = false
-
-                    fun validate(): BetaToolChoiceAuto = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        type()
-                        disableParallelToolUse()
-                        validated = true
-                    }
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
 
                     fun toBuilder() = Builder().from(this)
 
@@ -26215,8 +26891,20 @@ private constructor(
                             BetaToolChoiceAuto(
                                 checkRequired("type", type),
                                 disableParallelToolUse,
-                                additionalProperties.toImmutable(),
+                                additionalProperties.toMutableMap(),
                             )
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): BetaToolChoiceAuto = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        type()
+                        disableParallelToolUse()
+                        validated = true
                     }
 
                     class Type
@@ -26339,19 +27027,22 @@ private constructor(
                 }
 
                 /** The model will use any available tools. */
-                @NoAutoDetect
                 class BetaToolChoiceAny
-                @JsonCreator
                 private constructor(
-                    @JsonProperty("type")
-                    @ExcludeMissing
-                    private val type: JsonField<Type> = JsonMissing.of(),
-                    @JsonProperty("disable_parallel_tool_use")
-                    @ExcludeMissing
-                    private val disableParallelToolUse: JsonField<Boolean> = JsonMissing.of(),
-                    @JsonAnySetter
-                    private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                    private val type: JsonField<Type>,
+                    private val disableParallelToolUse: JsonField<Boolean>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("type")
+                        @ExcludeMissing
+                        type: JsonField<Type> = JsonMissing.of(),
+                        @JsonProperty("disable_parallel_tool_use")
+                        @ExcludeMissing
+                        disableParallelToolUse: JsonField<Boolean> = JsonMissing.of(),
+                    ) : this(type, disableParallelToolUse, mutableMapOf())
 
                     /**
                      * @throws SamInvalidDataException if the JSON field has an unexpected type or
@@ -26392,21 +27083,15 @@ private constructor(
                     @ExcludeMissing
                     fun _disableParallelToolUse(): JsonField<Boolean> = disableParallelToolUse
 
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
                     @JsonAnyGetter
                     @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    private var validated: Boolean = false
-
-                    fun validate(): BetaToolChoiceAny = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        type()
-                        disableParallelToolUse()
-                        validated = true
-                    }
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
 
                     fun toBuilder() = Builder().from(this)
 
@@ -26510,8 +27195,20 @@ private constructor(
                             BetaToolChoiceAny(
                                 checkRequired("type", type),
                                 disableParallelToolUse,
-                                additionalProperties.toImmutable(),
+                                additionalProperties.toMutableMap(),
                             )
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): BetaToolChoiceAny = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        type()
+                        disableParallelToolUse()
+                        validated = true
                     }
 
                     class Type
@@ -26634,22 +27331,26 @@ private constructor(
                 }
 
                 /** The model will use the specified tool with `tool_choice.name`. */
-                @NoAutoDetect
                 class BetaToolChoiceTool
-                @JsonCreator
                 private constructor(
-                    @JsonProperty("name")
-                    @ExcludeMissing
-                    private val name: JsonField<String> = JsonMissing.of(),
-                    @JsonProperty("type")
-                    @ExcludeMissing
-                    private val type: JsonField<Type> = JsonMissing.of(),
-                    @JsonProperty("disable_parallel_tool_use")
-                    @ExcludeMissing
-                    private val disableParallelToolUse: JsonField<Boolean> = JsonMissing.of(),
-                    @JsonAnySetter
-                    private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                    private val name: JsonField<String>,
+                    private val type: JsonField<Type>,
+                    private val disableParallelToolUse: JsonField<Boolean>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("name")
+                        @ExcludeMissing
+                        name: JsonField<String> = JsonMissing.of(),
+                        @JsonProperty("type")
+                        @ExcludeMissing
+                        type: JsonField<Type> = JsonMissing.of(),
+                        @JsonProperty("disable_parallel_tool_use")
+                        @ExcludeMissing
+                        disableParallelToolUse: JsonField<Boolean> = JsonMissing.of(),
+                    ) : this(name, type, disableParallelToolUse, mutableMapOf())
 
                     /**
                      * The name of the tool to use.
@@ -26707,22 +27408,15 @@ private constructor(
                     @ExcludeMissing
                     fun _disableParallelToolUse(): JsonField<Boolean> = disableParallelToolUse
 
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
                     @JsonAnyGetter
                     @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    private var validated: Boolean = false
-
-                    fun validate(): BetaToolChoiceTool = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        name()
-                        type()
-                        disableParallelToolUse()
-                        validated = true
-                    }
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
 
                     fun toBuilder() = Builder().from(this)
 
@@ -26843,8 +27537,21 @@ private constructor(
                                 checkRequired("name", name),
                                 checkRequired("type", type),
                                 disableParallelToolUse,
-                                additionalProperties.toImmutable(),
+                                additionalProperties.toMutableMap(),
                             )
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): BetaToolChoiceTool = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        name()
+                        type()
+                        disableParallelToolUse()
+                        validated = true
                     }
 
                     class Type
@@ -26967,16 +27674,18 @@ private constructor(
                 }
 
                 /** The model will not be allowed to use tools. */
-                @NoAutoDetect
                 class BetaToolChoiceNone
-                @JsonCreator
                 private constructor(
-                    @JsonProperty("type")
-                    @ExcludeMissing
-                    private val type: JsonField<Type> = JsonMissing.of(),
-                    @JsonAnySetter
-                    private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                    private val type: JsonField<Type>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("type")
+                        @ExcludeMissing
+                        type: JsonField<Type> = JsonMissing.of()
+                    ) : this(type, mutableMapOf())
 
                     /**
                      * @throws SamInvalidDataException if the JSON field has an unexpected type or
@@ -26993,20 +27702,15 @@ private constructor(
                      */
                     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
                     @JsonAnyGetter
                     @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    private var validated: Boolean = false
-
-                    fun validate(): BetaToolChoiceNone = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        type()
-                        validated = true
-                    }
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
 
                     fun toBuilder() = Builder().from(this)
 
@@ -27086,8 +27790,19 @@ private constructor(
                         fun build(): BetaToolChoiceNone =
                             BetaToolChoiceNone(
                                 checkRequired("type", type),
-                                additionalProperties.toImmutable(),
+                                additionalProperties.toMutableMap(),
                             )
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): BetaToolChoiceNone = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        type()
+                        validated = true
                     }
 
                     class Type
@@ -27532,28 +28247,34 @@ private constructor(
                     }
                 }
 
-                @NoAutoDetect
                 class BetaTool
-                @JsonCreator
                 private constructor(
-                    @JsonProperty("input_schema")
-                    @ExcludeMissing
-                    private val inputSchema: JsonField<InputSchema> = JsonMissing.of(),
-                    @JsonProperty("name")
-                    @ExcludeMissing
-                    private val name: JsonField<String> = JsonMissing.of(),
-                    @JsonProperty("cache_control")
-                    @ExcludeMissing
-                    private val cacheControl: JsonField<CacheControl> = JsonMissing.of(),
-                    @JsonProperty("description")
-                    @ExcludeMissing
-                    private val description: JsonField<String> = JsonMissing.of(),
-                    @JsonProperty("type")
-                    @ExcludeMissing
-                    private val type: JsonField<Type> = JsonMissing.of(),
-                    @JsonAnySetter
-                    private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                    private val inputSchema: JsonField<InputSchema>,
+                    private val name: JsonField<String>,
+                    private val cacheControl: JsonField<CacheControl>,
+                    private val description: JsonField<String>,
+                    private val type: JsonField<Type>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("input_schema")
+                        @ExcludeMissing
+                        inputSchema: JsonField<InputSchema> = JsonMissing.of(),
+                        @JsonProperty("name")
+                        @ExcludeMissing
+                        name: JsonField<String> = JsonMissing.of(),
+                        @JsonProperty("cache_control")
+                        @ExcludeMissing
+                        cacheControl: JsonField<CacheControl> = JsonMissing.of(),
+                        @JsonProperty("description")
+                        @ExcludeMissing
+                        description: JsonField<String> = JsonMissing.of(),
+                        @JsonProperty("type")
+                        @ExcludeMissing
+                        type: JsonField<Type> = JsonMissing.of(),
+                    ) : this(inputSchema, name, cacheControl, description, type, mutableMapOf())
 
                     /**
                      * [JSON schema](https://json-schema.org/draft/2020-12) for this tool's input.
@@ -27651,24 +28372,15 @@ private constructor(
                      */
                     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
                     @JsonAnyGetter
                     @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    private var validated: Boolean = false
-
-                    fun validate(): BetaTool = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        inputSchema().validate()
-                        name()
-                        cacheControl().ifPresent { it.validate() }
-                        description()
-                        type()
-                        validated = true
-                    }
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
 
                     fun toBuilder() = Builder().from(this)
 
@@ -27843,8 +28555,23 @@ private constructor(
                                 cacheControl,
                                 description,
                                 type,
-                                additionalProperties.toImmutable(),
+                                additionalProperties.toMutableMap(),
                             )
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): BetaTool = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        inputSchema().validate()
+                        name()
+                        cacheControl().ifPresent { it.validate() }
+                        description()
+                        type()
+                        validated = true
                     }
 
                     /**
@@ -27853,20 +28580,22 @@ private constructor(
                      * This defines the shape of the `input` that your tool accepts and that the
                      * model will produce.
                      */
-                    @NoAutoDetect
                     class InputSchema
-                    @JsonCreator
                     private constructor(
-                        @JsonProperty("type")
-                        @ExcludeMissing
-                        private val type: JsonField<Type> = JsonMissing.of(),
-                        @JsonProperty("properties")
-                        @ExcludeMissing
-                        private val properties: JsonValue = JsonMissing.of(),
-                        @JsonAnySetter
-                        private val additionalProperties: Map<String, JsonValue> =
-                            immutableEmptyMap(),
+                        private val type: JsonField<Type>,
+                        private val properties: JsonValue,
+                        private val additionalProperties: MutableMap<String, JsonValue>,
                     ) {
+
+                        @JsonCreator
+                        private constructor(
+                            @JsonProperty("type")
+                            @ExcludeMissing
+                            type: JsonField<Type> = JsonMissing.of(),
+                            @JsonProperty("properties")
+                            @ExcludeMissing
+                            properties: JsonValue = JsonMissing.of(),
+                        ) : this(type, properties, mutableMapOf())
 
                         /**
                          * @throws SamInvalidDataException if the JSON field has an unexpected type
@@ -27887,20 +28616,15 @@ private constructor(
                          */
                         @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+                        @JsonAnySetter
+                        private fun putAdditionalProperty(key: String, value: JsonValue) {
+                            additionalProperties.put(key, value)
+                        }
+
                         @JsonAnyGetter
                         @ExcludeMissing
-                        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                        private var validated: Boolean = false
-
-                        fun validate(): InputSchema = apply {
-                            if (validated) {
-                                return@apply
-                            }
-
-                            type()
-                            validated = true
-                        }
+                        fun _additionalProperties(): Map<String, JsonValue> =
+                            Collections.unmodifiableMap(additionalProperties)
 
                         fun toBuilder() = Builder().from(this)
 
@@ -27988,8 +28712,19 @@ private constructor(
                                 InputSchema(
                                     checkRequired("type", type),
                                     properties,
-                                    additionalProperties.toImmutable(),
+                                    additionalProperties.toMutableMap(),
                                 )
+                        }
+
+                        private var validated: Boolean = false
+
+                        fun validate(): InputSchema = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            type()
+                            validated = true
                         }
 
                         class Type
@@ -28113,17 +28848,18 @@ private constructor(
                             "InputSchema{type=$type, properties=$properties, additionalProperties=$additionalProperties}"
                     }
 
-                    @NoAutoDetect
                     class CacheControl
-                    @JsonCreator
                     private constructor(
-                        @JsonProperty("type")
-                        @ExcludeMissing
-                        private val type: JsonField<Type> = JsonMissing.of(),
-                        @JsonAnySetter
-                        private val additionalProperties: Map<String, JsonValue> =
-                            immutableEmptyMap(),
+                        private val type: JsonField<Type>,
+                        private val additionalProperties: MutableMap<String, JsonValue>,
                     ) {
+
+                        @JsonCreator
+                        private constructor(
+                            @JsonProperty("type")
+                            @ExcludeMissing
+                            type: JsonField<Type> = JsonMissing.of()
+                        ) : this(type, mutableMapOf())
 
                         /**
                          * @throws SamInvalidDataException if the JSON field has an unexpected type
@@ -28140,20 +28876,15 @@ private constructor(
                          */
                         @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+                        @JsonAnySetter
+                        private fun putAdditionalProperty(key: String, value: JsonValue) {
+                            additionalProperties.put(key, value)
+                        }
+
                         @JsonAnyGetter
                         @ExcludeMissing
-                        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                        private var validated: Boolean = false
-
-                        fun validate(): CacheControl = apply {
-                            if (validated) {
-                                return@apply
-                            }
-
-                            type()
-                            validated = true
-                        }
+                        fun _additionalProperties(): Map<String, JsonValue> =
+                            Collections.unmodifiableMap(additionalProperties)
 
                         fun toBuilder() = Builder().from(this)
 
@@ -28234,8 +28965,19 @@ private constructor(
                             fun build(): CacheControl =
                                 CacheControl(
                                     checkRequired("type", type),
-                                    additionalProperties.toImmutable(),
+                                    additionalProperties.toMutableMap(),
                                 )
+                        }
+
+                        private var validated: Boolean = false
+
+                        fun validate(): CacheControl = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            type()
+                            validated = true
                         }
 
                         class Type
@@ -28478,31 +29220,46 @@ private constructor(
                         "BetaTool{inputSchema=$inputSchema, name=$name, cacheControl=$cacheControl, description=$description, type=$type, additionalProperties=$additionalProperties}"
                 }
 
-                @NoAutoDetect
                 class BetaComputerUseTool20241022
-                @JsonCreator
                 private constructor(
-                    @JsonProperty("display_height_px")
-                    @ExcludeMissing
-                    private val displayHeightPx: JsonField<Long> = JsonMissing.of(),
-                    @JsonProperty("display_width_px")
-                    @ExcludeMissing
-                    private val displayWidthPx: JsonField<Long> = JsonMissing.of(),
-                    @JsonProperty("name")
-                    @ExcludeMissing
-                    private val name: JsonField<Name> = JsonMissing.of(),
-                    @JsonProperty("type")
-                    @ExcludeMissing
-                    private val type: JsonField<Type> = JsonMissing.of(),
-                    @JsonProperty("cache_control")
-                    @ExcludeMissing
-                    private val cacheControl: JsonField<CacheControl> = JsonMissing.of(),
-                    @JsonProperty("display_number")
-                    @ExcludeMissing
-                    private val displayNumber: JsonField<Long> = JsonMissing.of(),
-                    @JsonAnySetter
-                    private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                    private val displayHeightPx: JsonField<Long>,
+                    private val displayWidthPx: JsonField<Long>,
+                    private val name: JsonField<Name>,
+                    private val type: JsonField<Type>,
+                    private val cacheControl: JsonField<CacheControl>,
+                    private val displayNumber: JsonField<Long>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("display_height_px")
+                        @ExcludeMissing
+                        displayHeightPx: JsonField<Long> = JsonMissing.of(),
+                        @JsonProperty("display_width_px")
+                        @ExcludeMissing
+                        displayWidthPx: JsonField<Long> = JsonMissing.of(),
+                        @JsonProperty("name")
+                        @ExcludeMissing
+                        name: JsonField<Name> = JsonMissing.of(),
+                        @JsonProperty("type")
+                        @ExcludeMissing
+                        type: JsonField<Type> = JsonMissing.of(),
+                        @JsonProperty("cache_control")
+                        @ExcludeMissing
+                        cacheControl: JsonField<CacheControl> = JsonMissing.of(),
+                        @JsonProperty("display_number")
+                        @ExcludeMissing
+                        displayNumber: JsonField<Long> = JsonMissing.of(),
+                    ) : this(
+                        displayHeightPx,
+                        displayWidthPx,
+                        name,
+                        type,
+                        cacheControl,
+                        displayNumber,
+                        mutableMapOf(),
+                    )
 
                     /**
                      * The height of the display in pixels.
@@ -28612,25 +29369,15 @@ private constructor(
                     @ExcludeMissing
                     fun _displayNumber(): JsonField<Long> = displayNumber
 
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
                     @JsonAnyGetter
                     @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    private var validated: Boolean = false
-
-                    fun validate(): BetaComputerUseTool20241022 = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        displayHeightPx()
-                        displayWidthPx()
-                        name()
-                        type()
-                        cacheControl().ifPresent { it.validate() }
-                        displayNumber()
-                        validated = true
-                    }
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
 
                     fun toBuilder() = Builder().from(this)
 
@@ -28830,8 +29577,24 @@ private constructor(
                                 checkRequired("type", type),
                                 cacheControl,
                                 displayNumber,
-                                additionalProperties.toImmutable(),
+                                additionalProperties.toMutableMap(),
                             )
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): BetaComputerUseTool20241022 = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        displayHeightPx()
+                        displayWidthPx()
+                        name()
+                        type()
+                        cacheControl().ifPresent { it.validate() }
+                        displayNumber()
+                        validated = true
                     }
 
                     /**
@@ -29041,17 +29804,18 @@ private constructor(
                         override fun toString() = value.toString()
                     }
 
-                    @NoAutoDetect
                     class CacheControl
-                    @JsonCreator
                     private constructor(
-                        @JsonProperty("type")
-                        @ExcludeMissing
-                        private val type: JsonField<Type> = JsonMissing.of(),
-                        @JsonAnySetter
-                        private val additionalProperties: Map<String, JsonValue> =
-                            immutableEmptyMap(),
+                        private val type: JsonField<Type>,
+                        private val additionalProperties: MutableMap<String, JsonValue>,
                     ) {
+
+                        @JsonCreator
+                        private constructor(
+                            @JsonProperty("type")
+                            @ExcludeMissing
+                            type: JsonField<Type> = JsonMissing.of()
+                        ) : this(type, mutableMapOf())
 
                         /**
                          * @throws SamInvalidDataException if the JSON field has an unexpected type
@@ -29068,20 +29832,15 @@ private constructor(
                          */
                         @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+                        @JsonAnySetter
+                        private fun putAdditionalProperty(key: String, value: JsonValue) {
+                            additionalProperties.put(key, value)
+                        }
+
                         @JsonAnyGetter
                         @ExcludeMissing
-                        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                        private var validated: Boolean = false
-
-                        fun validate(): CacheControl = apply {
-                            if (validated) {
-                                return@apply
-                            }
-
-                            type()
-                            validated = true
-                        }
+                        fun _additionalProperties(): Map<String, JsonValue> =
+                            Collections.unmodifiableMap(additionalProperties)
 
                         fun toBuilder() = Builder().from(this)
 
@@ -29162,8 +29921,19 @@ private constructor(
                             fun build(): CacheControl =
                                 CacheControl(
                                     checkRequired("type", type),
-                                    additionalProperties.toImmutable(),
+                                    additionalProperties.toMutableMap(),
                                 )
+                        }
+
+                        private var validated: Boolean = false
+
+                        fun validate(): CacheControl = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            type()
+                            validated = true
                         }
 
                         class Type
@@ -29305,22 +30075,26 @@ private constructor(
                         "BetaComputerUseTool20241022{displayHeightPx=$displayHeightPx, displayWidthPx=$displayWidthPx, name=$name, type=$type, cacheControl=$cacheControl, displayNumber=$displayNumber, additionalProperties=$additionalProperties}"
                 }
 
-                @NoAutoDetect
                 class BetaBashTool20241022
-                @JsonCreator
                 private constructor(
-                    @JsonProperty("name")
-                    @ExcludeMissing
-                    private val name: JsonField<Name> = JsonMissing.of(),
-                    @JsonProperty("type")
-                    @ExcludeMissing
-                    private val type: JsonField<Type> = JsonMissing.of(),
-                    @JsonProperty("cache_control")
-                    @ExcludeMissing
-                    private val cacheControl: JsonField<CacheControl> = JsonMissing.of(),
-                    @JsonAnySetter
-                    private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                    private val name: JsonField<Name>,
+                    private val type: JsonField<Type>,
+                    private val cacheControl: JsonField<CacheControl>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("name")
+                        @ExcludeMissing
+                        name: JsonField<Name> = JsonMissing.of(),
+                        @JsonProperty("type")
+                        @ExcludeMissing
+                        type: JsonField<Type> = JsonMissing.of(),
+                        @JsonProperty("cache_control")
+                        @ExcludeMissing
+                        cacheControl: JsonField<CacheControl> = JsonMissing.of(),
+                    ) : this(name, type, cacheControl, mutableMapOf())
 
                     /**
                      * Name of the tool.
@@ -29373,22 +30147,15 @@ private constructor(
                     @ExcludeMissing
                     fun _cacheControl(): JsonField<CacheControl> = cacheControl
 
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
                     @JsonAnyGetter
                     @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    private var validated: Boolean = false
-
-                    fun validate(): BetaBashTool20241022 = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        name()
-                        type()
-                        cacheControl().ifPresent { it.validate() }
-                        validated = true
-                    }
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
 
                     fun toBuilder() = Builder().from(this)
 
@@ -29513,8 +30280,21 @@ private constructor(
                                 checkRequired("name", name),
                                 checkRequired("type", type),
                                 cacheControl,
-                                additionalProperties.toImmutable(),
+                                additionalProperties.toMutableMap(),
                             )
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): BetaBashTool20241022 = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        name()
+                        type()
+                        cacheControl().ifPresent { it.validate() }
+                        validated = true
                     }
 
                     /**
@@ -29724,17 +30504,18 @@ private constructor(
                         override fun toString() = value.toString()
                     }
 
-                    @NoAutoDetect
                     class CacheControl
-                    @JsonCreator
                     private constructor(
-                        @JsonProperty("type")
-                        @ExcludeMissing
-                        private val type: JsonField<Type> = JsonMissing.of(),
-                        @JsonAnySetter
-                        private val additionalProperties: Map<String, JsonValue> =
-                            immutableEmptyMap(),
+                        private val type: JsonField<Type>,
+                        private val additionalProperties: MutableMap<String, JsonValue>,
                     ) {
+
+                        @JsonCreator
+                        private constructor(
+                            @JsonProperty("type")
+                            @ExcludeMissing
+                            type: JsonField<Type> = JsonMissing.of()
+                        ) : this(type, mutableMapOf())
 
                         /**
                          * @throws SamInvalidDataException if the JSON field has an unexpected type
@@ -29751,20 +30532,15 @@ private constructor(
                          */
                         @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+                        @JsonAnySetter
+                        private fun putAdditionalProperty(key: String, value: JsonValue) {
+                            additionalProperties.put(key, value)
+                        }
+
                         @JsonAnyGetter
                         @ExcludeMissing
-                        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                        private var validated: Boolean = false
-
-                        fun validate(): CacheControl = apply {
-                            if (validated) {
-                                return@apply
-                            }
-
-                            type()
-                            validated = true
-                        }
+                        fun _additionalProperties(): Map<String, JsonValue> =
+                            Collections.unmodifiableMap(additionalProperties)
 
                         fun toBuilder() = Builder().from(this)
 
@@ -29845,8 +30621,19 @@ private constructor(
                             fun build(): CacheControl =
                                 CacheControl(
                                     checkRequired("type", type),
-                                    additionalProperties.toImmutable(),
+                                    additionalProperties.toMutableMap(),
                                 )
+                        }
+
+                        private var validated: Boolean = false
+
+                        fun validate(): CacheControl = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            type()
+                            validated = true
                         }
 
                         class Type
@@ -29988,22 +30775,26 @@ private constructor(
                         "BetaBashTool20241022{name=$name, type=$type, cacheControl=$cacheControl, additionalProperties=$additionalProperties}"
                 }
 
-                @NoAutoDetect
                 class BetaTextEditor20241022
-                @JsonCreator
                 private constructor(
-                    @JsonProperty("name")
-                    @ExcludeMissing
-                    private val name: JsonField<Name> = JsonMissing.of(),
-                    @JsonProperty("type")
-                    @ExcludeMissing
-                    private val type: JsonField<Type> = JsonMissing.of(),
-                    @JsonProperty("cache_control")
-                    @ExcludeMissing
-                    private val cacheControl: JsonField<CacheControl> = JsonMissing.of(),
-                    @JsonAnySetter
-                    private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                    private val name: JsonField<Name>,
+                    private val type: JsonField<Type>,
+                    private val cacheControl: JsonField<CacheControl>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("name")
+                        @ExcludeMissing
+                        name: JsonField<Name> = JsonMissing.of(),
+                        @JsonProperty("type")
+                        @ExcludeMissing
+                        type: JsonField<Type> = JsonMissing.of(),
+                        @JsonProperty("cache_control")
+                        @ExcludeMissing
+                        cacheControl: JsonField<CacheControl> = JsonMissing.of(),
+                    ) : this(name, type, cacheControl, mutableMapOf())
 
                     /**
                      * Name of the tool.
@@ -30056,22 +30847,15 @@ private constructor(
                     @ExcludeMissing
                     fun _cacheControl(): JsonField<CacheControl> = cacheControl
 
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
                     @JsonAnyGetter
                     @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    private var validated: Boolean = false
-
-                    fun validate(): BetaTextEditor20241022 = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        name()
-                        type()
-                        cacheControl().ifPresent { it.validate() }
-                        validated = true
-                    }
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
 
                     fun toBuilder() = Builder().from(this)
 
@@ -30196,8 +30980,21 @@ private constructor(
                                 checkRequired("name", name),
                                 checkRequired("type", type),
                                 cacheControl,
-                                additionalProperties.toImmutable(),
+                                additionalProperties.toMutableMap(),
                             )
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): BetaTextEditor20241022 = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        name()
+                        type()
+                        cacheControl().ifPresent { it.validate() }
+                        validated = true
                     }
 
                     /**
@@ -30407,17 +31204,18 @@ private constructor(
                         override fun toString() = value.toString()
                     }
 
-                    @NoAutoDetect
                     class CacheControl
-                    @JsonCreator
                     private constructor(
-                        @JsonProperty("type")
-                        @ExcludeMissing
-                        private val type: JsonField<Type> = JsonMissing.of(),
-                        @JsonAnySetter
-                        private val additionalProperties: Map<String, JsonValue> =
-                            immutableEmptyMap(),
+                        private val type: JsonField<Type>,
+                        private val additionalProperties: MutableMap<String, JsonValue>,
                     ) {
+
+                        @JsonCreator
+                        private constructor(
+                            @JsonProperty("type")
+                            @ExcludeMissing
+                            type: JsonField<Type> = JsonMissing.of()
+                        ) : this(type, mutableMapOf())
 
                         /**
                          * @throws SamInvalidDataException if the JSON field has an unexpected type
@@ -30434,20 +31232,15 @@ private constructor(
                          */
                         @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+                        @JsonAnySetter
+                        private fun putAdditionalProperty(key: String, value: JsonValue) {
+                            additionalProperties.put(key, value)
+                        }
+
                         @JsonAnyGetter
                         @ExcludeMissing
-                        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                        private var validated: Boolean = false
-
-                        fun validate(): CacheControl = apply {
-                            if (validated) {
-                                return@apply
-                            }
-
-                            type()
-                            validated = true
-                        }
+                        fun _additionalProperties(): Map<String, JsonValue> =
+                            Collections.unmodifiableMap(additionalProperties)
 
                         fun toBuilder() = Builder().from(this)
 
@@ -30528,8 +31321,19 @@ private constructor(
                             fun build(): CacheControl =
                                 CacheControl(
                                     checkRequired("type", type),
-                                    additionalProperties.toImmutable(),
+                                    additionalProperties.toMutableMap(),
                                 )
+                        }
+
+                        private var validated: Boolean = false
+
+                        fun validate(): CacheControl = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            type()
+                            validated = true
                         }
 
                         class Type
@@ -30671,31 +31475,46 @@ private constructor(
                         "BetaTextEditor20241022{name=$name, type=$type, cacheControl=$cacheControl, additionalProperties=$additionalProperties}"
                 }
 
-                @NoAutoDetect
                 class BetaComputerUseTool20250124
-                @JsonCreator
                 private constructor(
-                    @JsonProperty("display_height_px")
-                    @ExcludeMissing
-                    private val displayHeightPx: JsonField<Long> = JsonMissing.of(),
-                    @JsonProperty("display_width_px")
-                    @ExcludeMissing
-                    private val displayWidthPx: JsonField<Long> = JsonMissing.of(),
-                    @JsonProperty("name")
-                    @ExcludeMissing
-                    private val name: JsonField<Name> = JsonMissing.of(),
-                    @JsonProperty("type")
-                    @ExcludeMissing
-                    private val type: JsonField<Type> = JsonMissing.of(),
-                    @JsonProperty("cache_control")
-                    @ExcludeMissing
-                    private val cacheControl: JsonField<CacheControl> = JsonMissing.of(),
-                    @JsonProperty("display_number")
-                    @ExcludeMissing
-                    private val displayNumber: JsonField<Long> = JsonMissing.of(),
-                    @JsonAnySetter
-                    private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                    private val displayHeightPx: JsonField<Long>,
+                    private val displayWidthPx: JsonField<Long>,
+                    private val name: JsonField<Name>,
+                    private val type: JsonField<Type>,
+                    private val cacheControl: JsonField<CacheControl>,
+                    private val displayNumber: JsonField<Long>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("display_height_px")
+                        @ExcludeMissing
+                        displayHeightPx: JsonField<Long> = JsonMissing.of(),
+                        @JsonProperty("display_width_px")
+                        @ExcludeMissing
+                        displayWidthPx: JsonField<Long> = JsonMissing.of(),
+                        @JsonProperty("name")
+                        @ExcludeMissing
+                        name: JsonField<Name> = JsonMissing.of(),
+                        @JsonProperty("type")
+                        @ExcludeMissing
+                        type: JsonField<Type> = JsonMissing.of(),
+                        @JsonProperty("cache_control")
+                        @ExcludeMissing
+                        cacheControl: JsonField<CacheControl> = JsonMissing.of(),
+                        @JsonProperty("display_number")
+                        @ExcludeMissing
+                        displayNumber: JsonField<Long> = JsonMissing.of(),
+                    ) : this(
+                        displayHeightPx,
+                        displayWidthPx,
+                        name,
+                        type,
+                        cacheControl,
+                        displayNumber,
+                        mutableMapOf(),
+                    )
 
                     /**
                      * The height of the display in pixels.
@@ -30805,25 +31624,15 @@ private constructor(
                     @ExcludeMissing
                     fun _displayNumber(): JsonField<Long> = displayNumber
 
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
                     @JsonAnyGetter
                     @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    private var validated: Boolean = false
-
-                    fun validate(): BetaComputerUseTool20250124 = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        displayHeightPx()
-                        displayWidthPx()
-                        name()
-                        type()
-                        cacheControl().ifPresent { it.validate() }
-                        displayNumber()
-                        validated = true
-                    }
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
 
                     fun toBuilder() = Builder().from(this)
 
@@ -31023,8 +31832,24 @@ private constructor(
                                 checkRequired("type", type),
                                 cacheControl,
                                 displayNumber,
-                                additionalProperties.toImmutable(),
+                                additionalProperties.toMutableMap(),
                             )
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): BetaComputerUseTool20250124 = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        displayHeightPx()
+                        displayWidthPx()
+                        name()
+                        type()
+                        cacheControl().ifPresent { it.validate() }
+                        displayNumber()
+                        validated = true
                     }
 
                     /**
@@ -31234,17 +32059,18 @@ private constructor(
                         override fun toString() = value.toString()
                     }
 
-                    @NoAutoDetect
                     class CacheControl
-                    @JsonCreator
                     private constructor(
-                        @JsonProperty("type")
-                        @ExcludeMissing
-                        private val type: JsonField<Type> = JsonMissing.of(),
-                        @JsonAnySetter
-                        private val additionalProperties: Map<String, JsonValue> =
-                            immutableEmptyMap(),
+                        private val type: JsonField<Type>,
+                        private val additionalProperties: MutableMap<String, JsonValue>,
                     ) {
+
+                        @JsonCreator
+                        private constructor(
+                            @JsonProperty("type")
+                            @ExcludeMissing
+                            type: JsonField<Type> = JsonMissing.of()
+                        ) : this(type, mutableMapOf())
 
                         /**
                          * @throws SamInvalidDataException if the JSON field has an unexpected type
@@ -31261,20 +32087,15 @@ private constructor(
                          */
                         @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+                        @JsonAnySetter
+                        private fun putAdditionalProperty(key: String, value: JsonValue) {
+                            additionalProperties.put(key, value)
+                        }
+
                         @JsonAnyGetter
                         @ExcludeMissing
-                        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                        private var validated: Boolean = false
-
-                        fun validate(): CacheControl = apply {
-                            if (validated) {
-                                return@apply
-                            }
-
-                            type()
-                            validated = true
-                        }
+                        fun _additionalProperties(): Map<String, JsonValue> =
+                            Collections.unmodifiableMap(additionalProperties)
 
                         fun toBuilder() = Builder().from(this)
 
@@ -31355,8 +32176,19 @@ private constructor(
                             fun build(): CacheControl =
                                 CacheControl(
                                     checkRequired("type", type),
-                                    additionalProperties.toImmutable(),
+                                    additionalProperties.toMutableMap(),
                                 )
+                        }
+
+                        private var validated: Boolean = false
+
+                        fun validate(): CacheControl = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            type()
+                            validated = true
                         }
 
                         class Type
@@ -31498,22 +32330,26 @@ private constructor(
                         "BetaComputerUseTool20250124{displayHeightPx=$displayHeightPx, displayWidthPx=$displayWidthPx, name=$name, type=$type, cacheControl=$cacheControl, displayNumber=$displayNumber, additionalProperties=$additionalProperties}"
                 }
 
-                @NoAutoDetect
                 class BetaBashTool20250124
-                @JsonCreator
                 private constructor(
-                    @JsonProperty("name")
-                    @ExcludeMissing
-                    private val name: JsonField<Name> = JsonMissing.of(),
-                    @JsonProperty("type")
-                    @ExcludeMissing
-                    private val type: JsonField<Type> = JsonMissing.of(),
-                    @JsonProperty("cache_control")
-                    @ExcludeMissing
-                    private val cacheControl: JsonField<CacheControl> = JsonMissing.of(),
-                    @JsonAnySetter
-                    private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                    private val name: JsonField<Name>,
+                    private val type: JsonField<Type>,
+                    private val cacheControl: JsonField<CacheControl>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("name")
+                        @ExcludeMissing
+                        name: JsonField<Name> = JsonMissing.of(),
+                        @JsonProperty("type")
+                        @ExcludeMissing
+                        type: JsonField<Type> = JsonMissing.of(),
+                        @JsonProperty("cache_control")
+                        @ExcludeMissing
+                        cacheControl: JsonField<CacheControl> = JsonMissing.of(),
+                    ) : this(name, type, cacheControl, mutableMapOf())
 
                     /**
                      * Name of the tool.
@@ -31566,22 +32402,15 @@ private constructor(
                     @ExcludeMissing
                     fun _cacheControl(): JsonField<CacheControl> = cacheControl
 
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
                     @JsonAnyGetter
                     @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    private var validated: Boolean = false
-
-                    fun validate(): BetaBashTool20250124 = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        name()
-                        type()
-                        cacheControl().ifPresent { it.validate() }
-                        validated = true
-                    }
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
 
                     fun toBuilder() = Builder().from(this)
 
@@ -31706,8 +32535,21 @@ private constructor(
                                 checkRequired("name", name),
                                 checkRequired("type", type),
                                 cacheControl,
-                                additionalProperties.toImmutable(),
+                                additionalProperties.toMutableMap(),
                             )
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): BetaBashTool20250124 = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        name()
+                        type()
+                        cacheControl().ifPresent { it.validate() }
+                        validated = true
                     }
 
                     /**
@@ -31917,17 +32759,18 @@ private constructor(
                         override fun toString() = value.toString()
                     }
 
-                    @NoAutoDetect
                     class CacheControl
-                    @JsonCreator
                     private constructor(
-                        @JsonProperty("type")
-                        @ExcludeMissing
-                        private val type: JsonField<Type> = JsonMissing.of(),
-                        @JsonAnySetter
-                        private val additionalProperties: Map<String, JsonValue> =
-                            immutableEmptyMap(),
+                        private val type: JsonField<Type>,
+                        private val additionalProperties: MutableMap<String, JsonValue>,
                     ) {
+
+                        @JsonCreator
+                        private constructor(
+                            @JsonProperty("type")
+                            @ExcludeMissing
+                            type: JsonField<Type> = JsonMissing.of()
+                        ) : this(type, mutableMapOf())
 
                         /**
                          * @throws SamInvalidDataException if the JSON field has an unexpected type
@@ -31944,20 +32787,15 @@ private constructor(
                          */
                         @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+                        @JsonAnySetter
+                        private fun putAdditionalProperty(key: String, value: JsonValue) {
+                            additionalProperties.put(key, value)
+                        }
+
                         @JsonAnyGetter
                         @ExcludeMissing
-                        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                        private var validated: Boolean = false
-
-                        fun validate(): CacheControl = apply {
-                            if (validated) {
-                                return@apply
-                            }
-
-                            type()
-                            validated = true
-                        }
+                        fun _additionalProperties(): Map<String, JsonValue> =
+                            Collections.unmodifiableMap(additionalProperties)
 
                         fun toBuilder() = Builder().from(this)
 
@@ -32038,8 +32876,19 @@ private constructor(
                             fun build(): CacheControl =
                                 CacheControl(
                                     checkRequired("type", type),
-                                    additionalProperties.toImmutable(),
+                                    additionalProperties.toMutableMap(),
                                 )
+                        }
+
+                        private var validated: Boolean = false
+
+                        fun validate(): CacheControl = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            type()
+                            validated = true
                         }
 
                         class Type
@@ -32181,22 +33030,26 @@ private constructor(
                         "BetaBashTool20250124{name=$name, type=$type, cacheControl=$cacheControl, additionalProperties=$additionalProperties}"
                 }
 
-                @NoAutoDetect
                 class BetaTextEditor20250124
-                @JsonCreator
                 private constructor(
-                    @JsonProperty("name")
-                    @ExcludeMissing
-                    private val name: JsonField<Name> = JsonMissing.of(),
-                    @JsonProperty("type")
-                    @ExcludeMissing
-                    private val type: JsonField<Type> = JsonMissing.of(),
-                    @JsonProperty("cache_control")
-                    @ExcludeMissing
-                    private val cacheControl: JsonField<CacheControl> = JsonMissing.of(),
-                    @JsonAnySetter
-                    private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                    private val name: JsonField<Name>,
+                    private val type: JsonField<Type>,
+                    private val cacheControl: JsonField<CacheControl>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("name")
+                        @ExcludeMissing
+                        name: JsonField<Name> = JsonMissing.of(),
+                        @JsonProperty("type")
+                        @ExcludeMissing
+                        type: JsonField<Type> = JsonMissing.of(),
+                        @JsonProperty("cache_control")
+                        @ExcludeMissing
+                        cacheControl: JsonField<CacheControl> = JsonMissing.of(),
+                    ) : this(name, type, cacheControl, mutableMapOf())
 
                     /**
                      * Name of the tool.
@@ -32249,22 +33102,15 @@ private constructor(
                     @ExcludeMissing
                     fun _cacheControl(): JsonField<CacheControl> = cacheControl
 
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
                     @JsonAnyGetter
                     @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    private var validated: Boolean = false
-
-                    fun validate(): BetaTextEditor20250124 = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        name()
-                        type()
-                        cacheControl().ifPresent { it.validate() }
-                        validated = true
-                    }
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
 
                     fun toBuilder() = Builder().from(this)
 
@@ -32389,8 +33235,21 @@ private constructor(
                                 checkRequired("name", name),
                                 checkRequired("type", type),
                                 cacheControl,
-                                additionalProperties.toImmutable(),
+                                additionalProperties.toMutableMap(),
                             )
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): BetaTextEditor20250124 = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        name()
+                        type()
+                        cacheControl().ifPresent { it.validate() }
+                        validated = true
                     }
 
                     /**
@@ -32600,17 +33459,18 @@ private constructor(
                         override fun toString() = value.toString()
                     }
 
-                    @NoAutoDetect
                     class CacheControl
-                    @JsonCreator
                     private constructor(
-                        @JsonProperty("type")
-                        @ExcludeMissing
-                        private val type: JsonField<Type> = JsonMissing.of(),
-                        @JsonAnySetter
-                        private val additionalProperties: Map<String, JsonValue> =
-                            immutableEmptyMap(),
+                        private val type: JsonField<Type>,
+                        private val additionalProperties: MutableMap<String, JsonValue>,
                     ) {
+
+                        @JsonCreator
+                        private constructor(
+                            @JsonProperty("type")
+                            @ExcludeMissing
+                            type: JsonField<Type> = JsonMissing.of()
+                        ) : this(type, mutableMapOf())
 
                         /**
                          * @throws SamInvalidDataException if the JSON field has an unexpected type
@@ -32627,20 +33487,15 @@ private constructor(
                          */
                         @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+                        @JsonAnySetter
+                        private fun putAdditionalProperty(key: String, value: JsonValue) {
+                            additionalProperties.put(key, value)
+                        }
+
                         @JsonAnyGetter
                         @ExcludeMissing
-                        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                        private var validated: Boolean = false
-
-                        fun validate(): CacheControl = apply {
-                            if (validated) {
-                                return@apply
-                            }
-
-                            type()
-                            validated = true
-                        }
+                        fun _additionalProperties(): Map<String, JsonValue> =
+                            Collections.unmodifiableMap(additionalProperties)
 
                         fun toBuilder() = Builder().from(this)
 
@@ -32721,8 +33576,19 @@ private constructor(
                             fun build(): CacheControl =
                                 CacheControl(
                                     checkRequired("type", type),
-                                    additionalProperties.toImmutable(),
+                                    additionalProperties.toMutableMap(),
                                 )
+                        }
+
+                        private var validated: Boolean = false
+
+                        fun validate(): CacheControl = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            type()
+                            validated = true
                         }
 
                         class Type

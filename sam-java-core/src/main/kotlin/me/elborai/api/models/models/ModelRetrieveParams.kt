@@ -5,7 +5,6 @@ package me.elborai.api.models.models
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
-import me.elborai.api.core.NoAutoDetect
 import me.elborai.api.core.Params
 import me.elborai.api.core.checkRequired
 import me.elborai.api.core.http.Headers
@@ -50,23 +49,6 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    fun _pathParam(index: Int): String =
-        when (index) {
-            0 -> modelId
-            else -> ""
-        }
-
-    override fun _headers(): Headers =
-        Headers.builder()
-            .apply {
-                anthropicVersion?.let { put("anthropic-version", it) }
-                xApiKey?.let { put("x-api-key", it) }
-                putAll(additionalHeaders)
-            }
-            .build()
-
-    override fun _queryParams(): QueryParams = additionalQueryParams
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -83,7 +65,6 @@ private constructor(
     }
 
     /** A builder for [ModelRetrieveParams]. */
-    @NoAutoDetect
     class Builder internal constructor() {
 
         private var modelId: String? = null
@@ -250,6 +231,23 @@ private constructor(
                 additionalQueryParams.build(),
             )
     }
+
+    fun _pathParam(index: Int): String =
+        when (index) {
+            0 -> modelId
+            else -> ""
+        }
+
+    override fun _headers(): Headers =
+        Headers.builder()
+            .apply {
+                anthropicVersion?.let { put("anthropic-version", it) }
+                xApiKey?.let { put("x-api-key", it) }
+                putAll(additionalHeaders)
+            }
+            .build()
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
