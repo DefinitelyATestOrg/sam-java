@@ -5,7 +5,6 @@ package me.elborai.api.models.messages.batches
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
-import me.elborai.api.core.NoAutoDetect
 import me.elborai.api.core.Params
 import me.elborai.api.core.http.Headers
 import me.elborai.api.core.http.QueryParams
@@ -77,26 +76,6 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    override fun _headers(): Headers =
-        Headers.builder()
-            .apply {
-                anthropicBeta?.forEach { put("anthropic-beta", it) }
-                anthropicVersion?.let { put("anthropic-version", it) }
-                xApiKey?.let { put("x-api-key", it) }
-                putAll(additionalHeaders)
-            }
-            .build()
-
-    override fun _queryParams(): QueryParams =
-        QueryParams.builder()
-            .apply {
-                afterId?.let { put("after_id", it) }
-                beforeId?.let { put("before_id", it) }
-                limit?.let { put("limit", it.toString()) }
-                putAll(additionalQueryParams)
-            }
-            .build()
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -108,7 +87,6 @@ private constructor(
     }
 
     /** A builder for [BatchListParams]. */
-    @NoAutoDetect
     class Builder internal constructor() {
 
         private var afterId: String? = null
@@ -333,6 +311,26 @@ private constructor(
                 additionalQueryParams.build(),
             )
     }
+
+    override fun _headers(): Headers =
+        Headers.builder()
+            .apply {
+                anthropicBeta?.forEach { put("anthropic-beta", it) }
+                anthropicVersion?.let { put("anthropic-version", it) }
+                xApiKey?.let { put("x-api-key", it) }
+                putAll(additionalHeaders)
+            }
+            .build()
+
+    override fun _queryParams(): QueryParams =
+        QueryParams.builder()
+            .apply {
+                afterId?.let { put("after_id", it) }
+                beforeId?.let { put("before_id", it) }
+                limit?.let { put("limit", it.toString()) }
+                putAll(additionalQueryParams)
+            }
+            .build()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
