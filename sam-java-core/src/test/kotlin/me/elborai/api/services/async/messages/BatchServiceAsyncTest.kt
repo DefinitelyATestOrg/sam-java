@@ -217,7 +217,7 @@ internal class BatchServiceAsyncTest {
                 .build()
         val batchServiceAsync = client.messages().batches()
 
-        val batchFuture =
+        val batchesFuture =
             batchServiceAsync.list(
                 BatchListParams.builder()
                     .afterId("after_id")
@@ -229,8 +229,8 @@ internal class BatchServiceAsyncTest {
                     .build()
             )
 
-        val batch = batchFuture.get()
-        batch.validate()
+        val batches = batchesFuture.get()
+        batches.validate()
     }
 
     @Test
