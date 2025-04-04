@@ -1355,7 +1355,7 @@ private constructor(
          * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
+        fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
         /**
          * Custom text sequences that will cause the model to stop generating.
@@ -1371,8 +1371,7 @@ private constructor(
          * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun stopSequences(): Optional<List<String>> =
-            Optional.ofNullable(stopSequences.getNullable("stop_sequences"))
+        fun stopSequences(): Optional<List<String>> = stopSequences.getOptional("stop_sequences")
 
         /**
          * Whether to incrementally stream the response using server-sent events.
@@ -1382,7 +1381,7 @@ private constructor(
          * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun stream(): Optional<Boolean> = Optional.ofNullable(stream.getNullable("stream"))
+        fun stream(): Optional<Boolean> = stream.getOptional("stream")
 
         /**
          * System prompt.
@@ -1394,7 +1393,7 @@ private constructor(
          * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun system(): Optional<System> = Optional.ofNullable(system.getNullable("system"))
+        fun system(): Optional<System> = system.getOptional("system")
 
         /**
          * Amount of randomness injected into the response.
@@ -1407,8 +1406,7 @@ private constructor(
          * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun temperature(): Optional<Double> =
-            Optional.ofNullable(temperature.getNullable("temperature"))
+        fun temperature(): Optional<Double> = temperature.getOptional("temperature")
 
         /**
          * Configuration for enabling Claude's extended thinking.
@@ -1424,7 +1422,7 @@ private constructor(
          * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun thinking(): Optional<Thinking> = Optional.ofNullable(thinking.getNullable("thinking"))
+        fun thinking(): Optional<Thinking> = thinking.getOptional("thinking")
 
         /**
          * How the model should use the provided tools. The model can use a specific tool, any
@@ -1433,8 +1431,7 @@ private constructor(
          * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun toolChoice(): Optional<ToolChoice> =
-            Optional.ofNullable(toolChoice.getNullable("tool_choice"))
+        fun toolChoice(): Optional<ToolChoice> = toolChoice.getOptional("tool_choice")
 
         /**
          * Definitions of tools that the model may use.
@@ -1504,7 +1501,7 @@ private constructor(
          * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun tools(): Optional<List<Tool>> = Optional.ofNullable(tools.getNullable("tools"))
+        fun tools(): Optional<List<Tool>> = tools.getOptional("tools")
 
         /**
          * Only sample from the top K options for each subsequent token.
@@ -1517,7 +1514,7 @@ private constructor(
          * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun topK(): Optional<Long> = Optional.ofNullable(topK.getNullable("top_k"))
+        fun topK(): Optional<Long> = topK.getOptional("top_k")
 
         /**
          * Use nucleus sampling.
@@ -1532,7 +1529,7 @@ private constructor(
          * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun topP(): Optional<Double> = Optional.ofNullable(topP.getNullable("top_p"))
+        fun topP(): Optional<Double> = topP.getOptional("top_p")
 
         /**
          * Returns the raw JSON value of [maxTokens].
@@ -3146,14 +3143,13 @@ private constructor(
                      *   (e.g. if the server responded with an unexpected value).
                      */
                     fun cacheControl(): Optional<CacheControl> =
-                        Optional.ofNullable(cacheControl.getNullable("cache_control"))
+                        cacheControl.getOptional("cache_control")
 
                     /**
                      * @throws SamInvalidDataException if the JSON field has an unexpected type
                      *   (e.g. if the server responded with an unexpected value).
                      */
-                    fun citations(): Optional<List<Citation>> =
-                        Optional.ofNullable(citations.getNullable("citations"))
+                    fun citations(): Optional<List<Citation>> = citations.getOptional("citations")
 
                     /**
                      * Returns the raw JSON value of [text].
@@ -4169,7 +4165,7 @@ private constructor(
                              *   type (e.g. if the server responded with an unexpected value).
                              */
                             fun documentTitle(): Optional<String> =
-                                Optional.ofNullable(documentTitle.getNullable("document_title"))
+                                documentTitle.getOptional("document_title")
 
                             /**
                              * @throws SamInvalidDataException if the JSON field has an unexpected
@@ -4706,7 +4702,7 @@ private constructor(
                              *   type (e.g. if the server responded with an unexpected value).
                              */
                             fun documentTitle(): Optional<String> =
-                                Optional.ofNullable(documentTitle.getNullable("document_title"))
+                                documentTitle.getOptional("document_title")
 
                             /**
                              * @throws SamInvalidDataException if the JSON field has an unexpected
@@ -5243,7 +5239,7 @@ private constructor(
                              *   type (e.g. if the server responded with an unexpected value).
                              */
                             fun documentTitle(): Optional<String> =
-                                Optional.ofNullable(documentTitle.getNullable("document_title"))
+                                documentTitle.getOptional("document_title")
 
                             /**
                              * @throws SamInvalidDataException if the JSON field has an unexpected
@@ -5786,7 +5782,7 @@ private constructor(
                      *   (e.g. if the server responded with an unexpected value).
                      */
                     fun cacheControl(): Optional<CacheControl> =
-                        Optional.ofNullable(cacheControl.getNullable("cache_control"))
+                        cacheControl.getOptional("cache_control")
 
                     /**
                      * Returns the raw JSON value of [source].
@@ -7593,7 +7589,7 @@ private constructor(
                      *   (e.g. if the server responded with an unexpected value).
                      */
                     fun cacheControl(): Optional<CacheControl> =
-                        Optional.ofNullable(cacheControl.getNullable("cache_control"))
+                        cacheControl.getOptional("cache_control")
 
                     /**
                      * Returns the raw JSON value of [id].
@@ -8312,21 +8308,19 @@ private constructor(
                      *   (e.g. if the server responded with an unexpected value).
                      */
                     fun cacheControl(): Optional<CacheControl> =
-                        Optional.ofNullable(cacheControl.getNullable("cache_control"))
+                        cacheControl.getOptional("cache_control")
 
                     /**
                      * @throws SamInvalidDataException if the JSON field has an unexpected type
                      *   (e.g. if the server responded with an unexpected value).
                      */
-                    fun content(): Optional<InnerContent> =
-                        Optional.ofNullable(content.getNullable("content"))
+                    fun content(): Optional<InnerContent> = content.getOptional("content")
 
                     /**
                      * @throws SamInvalidDataException if the JSON field has an unexpected type
                      *   (e.g. if the server responded with an unexpected value).
                      */
-                    fun isError(): Optional<Boolean> =
-                        Optional.ofNullable(isError.getNullable("is_error"))
+                    fun isError(): Optional<Boolean> = isError.getOptional("is_error")
 
                     /**
                      * Returns the raw JSON value of [toolUseId].
@@ -9513,7 +9507,7 @@ private constructor(
                                  *   unexpected value).
                                  */
                                 fun cacheControl(): Optional<CacheControl> =
-                                    Optional.ofNullable(cacheControl.getNullable("cache_control"))
+                                    cacheControl.getOptional("cache_control")
 
                                 /**
                                  * @throws SamInvalidDataException if the JSON field has an
@@ -9521,7 +9515,7 @@ private constructor(
                                  *   unexpected value).
                                  */
                                 fun citations(): Optional<List<Citation>> =
-                                    Optional.ofNullable(citations.getNullable("citations"))
+                                    citations.getOptional("citations")
 
                                 /**
                                  * Returns the raw JSON value of [text].
@@ -10653,9 +10647,7 @@ private constructor(
                                          *   unexpected value).
                                          */
                                         fun documentTitle(): Optional<String> =
-                                            Optional.ofNullable(
-                                                documentTitle.getNullable("document_title")
-                                            )
+                                            documentTitle.getOptional("document_title")
 
                                         /**
                                          * @throws SamInvalidDataException if the JSON field has an
@@ -11246,9 +11238,7 @@ private constructor(
                                          *   unexpected value).
                                          */
                                         fun documentTitle(): Optional<String> =
-                                            Optional.ofNullable(
-                                                documentTitle.getNullable("document_title")
-                                            )
+                                            documentTitle.getOptional("document_title")
 
                                         /**
                                          * @throws SamInvalidDataException if the JSON field has an
@@ -11843,9 +11833,7 @@ private constructor(
                                          *   unexpected value).
                                          */
                                         fun documentTitle(): Optional<String> =
-                                            Optional.ofNullable(
-                                                documentTitle.getNullable("document_title")
-                                            )
+                                            documentTitle.getOptional("document_title")
 
                                         /**
                                          * @throws SamInvalidDataException if the JSON field has an
@@ -12445,7 +12433,7 @@ private constructor(
                                  *   unexpected value).
                                  */
                                 fun cacheControl(): Optional<CacheControl> =
-                                    Optional.ofNullable(cacheControl.getNullable("cache_control"))
+                                    cacheControl.getOptional("cache_control")
 
                                 /**
                                  * Returns the raw JSON value of [source].
@@ -14435,27 +14423,25 @@ private constructor(
                      *   (e.g. if the server responded with an unexpected value).
                      */
                     fun cacheControl(): Optional<CacheControl> =
-                        Optional.ofNullable(cacheControl.getNullable("cache_control"))
+                        cacheControl.getOptional("cache_control")
 
                     /**
                      * @throws SamInvalidDataException if the JSON field has an unexpected type
                      *   (e.g. if the server responded with an unexpected value).
                      */
-                    fun citations(): Optional<Citations> =
-                        Optional.ofNullable(citations.getNullable("citations"))
+                    fun citations(): Optional<Citations> = citations.getOptional("citations")
 
                     /**
                      * @throws SamInvalidDataException if the JSON field has an unexpected type
                      *   (e.g. if the server responded with an unexpected value).
                      */
-                    fun context(): Optional<String> =
-                        Optional.ofNullable(context.getNullable("context"))
+                    fun context(): Optional<String> = context.getOptional("context")
 
                     /**
                      * @throws SamInvalidDataException if the JSON field has an unexpected type
                      *   (e.g. if the server responded with an unexpected value).
                      */
-                    fun title(): Optional<String> = Optional.ofNullable(title.getNullable("title"))
+                    fun title(): Optional<String> = title.getOptional("title")
 
                     /**
                      * Returns the raw JSON value of [source].
@@ -16886,9 +16872,7 @@ private constructor(
                                          *   unexpected value).
                                          */
                                         fun cacheControl(): Optional<CacheControl> =
-                                            Optional.ofNullable(
-                                                cacheControl.getNullable("cache_control")
-                                            )
+                                            cacheControl.getOptional("cache_control")
 
                                         /**
                                          * @throws SamInvalidDataException if the JSON field has an
@@ -16896,7 +16880,7 @@ private constructor(
                                          *   unexpected value).
                                          */
                                         fun citations(): Optional<List<Citation>> =
-                                            Optional.ofNullable(citations.getNullable("citations"))
+                                            citations.getOptional("citations")
 
                                         /**
                                          * Returns the raw JSON value of [text].
@@ -18119,9 +18103,7 @@ private constructor(
                                                  *   responded with an unexpected value).
                                                  */
                                                 fun documentTitle(): Optional<String> =
-                                                    Optional.ofNullable(
-                                                        documentTitle.getNullable("document_title")
-                                                    )
+                                                    documentTitle.getOptional("document_title")
 
                                                 /**
                                                  * @throws SamInvalidDataException if the JSON field
@@ -18772,9 +18754,7 @@ private constructor(
                                                  *   responded with an unexpected value).
                                                  */
                                                 fun documentTitle(): Optional<String> =
-                                                    Optional.ofNullable(
-                                                        documentTitle.getNullable("document_title")
-                                                    )
+                                                    documentTitle.getOptional("document_title")
 
                                                 /**
                                                  * @throws SamInvalidDataException if the JSON field
@@ -19429,9 +19409,7 @@ private constructor(
                                                  *   responded with an unexpected value).
                                                  */
                                                 fun documentTitle(): Optional<String> =
-                                                    Optional.ofNullable(
-                                                        documentTitle.getNullable("document_title")
-                                                    )
+                                                    documentTitle.getOptional("document_title")
 
                                                 /**
                                                  * @throws SamInvalidDataException if the JSON field
@@ -20089,9 +20067,7 @@ private constructor(
                                          *   unexpected value).
                                          */
                                         fun cacheControl(): Optional<CacheControl> =
-                                            Optional.ofNullable(
-                                                cacheControl.getNullable("cache_control")
-                                            )
+                                            cacheControl.getOptional("cache_control")
 
                                         /**
                                          * Returns the raw JSON value of [source].
@@ -23075,8 +23051,7 @@ private constructor(
                          * @throws SamInvalidDataException if the JSON field has an unexpected type
                          *   (e.g. if the server responded with an unexpected value).
                          */
-                        fun enabled(): Optional<Boolean> =
-                            Optional.ofNullable(enabled.getNullable("enabled"))
+                        fun enabled(): Optional<Boolean> = enabled.getOptional("enabled")
 
                         /**
                          * Returns the raw JSON value of [enabled].
@@ -24111,7 +24086,7 @@ private constructor(
          * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun userId(): Optional<String> = Optional.ofNullable(userId.getNullable("user_id"))
+        fun userId(): Optional<String> = userId.getOptional("user_id")
 
         /**
          * Returns the raw JSON value of [userId].
@@ -24463,15 +24438,13 @@ private constructor(
              * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
              *   server responded with an unexpected value).
              */
-            fun cacheControl(): Optional<CacheControl> =
-                Optional.ofNullable(cacheControl.getNullable("cache_control"))
+            fun cacheControl(): Optional<CacheControl> = cacheControl.getOptional("cache_control")
 
             /**
              * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
              *   server responded with an unexpected value).
              */
-            fun citations(): Optional<List<Citation>> =
-                Optional.ofNullable(citations.getNullable("citations"))
+            fun citations(): Optional<List<Citation>> = citations.getOptional("citations")
 
             /**
              * Returns the raw JSON value of [text].
@@ -25437,7 +25410,7 @@ private constructor(
                      *   (e.g. if the server responded with an unexpected value).
                      */
                     fun documentTitle(): Optional<String> =
-                        Optional.ofNullable(documentTitle.getNullable("document_title"))
+                        documentTitle.getOptional("document_title")
 
                     /**
                      * @throws SamInvalidDataException if the JSON field has an unexpected type or
@@ -25959,7 +25932,7 @@ private constructor(
                      *   (e.g. if the server responded with an unexpected value).
                      */
                     fun documentTitle(): Optional<String> =
-                        Optional.ofNullable(documentTitle.getNullable("document_title"))
+                        documentTitle.getOptional("document_title")
 
                     /**
                      * @throws SamInvalidDataException if the JSON field has an unexpected type or
@@ -26481,7 +26454,7 @@ private constructor(
                      *   (e.g. if the server responded with an unexpected value).
                      */
                     fun documentTitle(): Optional<String> =
-                        Optional.ofNullable(documentTitle.getNullable("document_title"))
+                        documentTitle.getOptional("document_title")
 
                     /**
                      * @throws SamInvalidDataException if the JSON field has an unexpected type or
@@ -28048,7 +28021,7 @@ private constructor(
              *   server responded with an unexpected value).
              */
             fun disableParallelToolUse(): Optional<Boolean> =
-                Optional.ofNullable(disableParallelToolUse.getNullable("disable_parallel_tool_use"))
+                disableParallelToolUse.getOptional("disable_parallel_tool_use")
 
             /**
              * Returns the raw JSON value of [type].
@@ -28384,7 +28357,7 @@ private constructor(
              *   server responded with an unexpected value).
              */
             fun disableParallelToolUse(): Optional<Boolean> =
-                Optional.ofNullable(disableParallelToolUse.getNullable("disable_parallel_tool_use"))
+                disableParallelToolUse.getOptional("disable_parallel_tool_use")
 
             /**
              * Returns the raw JSON value of [type].
@@ -28731,7 +28704,7 @@ private constructor(
              *   server responded with an unexpected value).
              */
             fun disableParallelToolUse(): Optional<Boolean> =
-                Optional.ofNullable(disableParallelToolUse.getNullable("disable_parallel_tool_use"))
+                disableParallelToolUse.getOptional("disable_parallel_tool_use")
 
             /**
              * Returns the raw JSON value of [name].
@@ -29595,8 +29568,7 @@ private constructor(
              * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
              *   server responded with an unexpected value).
              */
-            fun cacheControl(): Optional<CacheControl> =
-                Optional.ofNullable(cacheControl.getNullable("cache_control"))
+            fun cacheControl(): Optional<CacheControl> = cacheControl.getOptional("cache_control")
 
             /**
              * Description of what this tool does.
@@ -29609,8 +29581,7 @@ private constructor(
              * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
              *   server responded with an unexpected value).
              */
-            fun description(): Optional<String> =
-                Optional.ofNullable(description.getNullable("description"))
+            fun description(): Optional<String> = description.getOptional("description")
 
             /**
              * Returns the raw JSON value of [inputSchema].
@@ -30499,8 +30470,7 @@ private constructor(
              * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
              *   server responded with an unexpected value).
              */
-            fun cacheControl(): Optional<CacheControl> =
-                Optional.ofNullable(cacheControl.getNullable("cache_control"))
+            fun cacheControl(): Optional<CacheControl> = cacheControl.getOptional("cache_control")
 
             /**
              * Returns the raw JSON value of [name].
@@ -31288,8 +31258,7 @@ private constructor(
              * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
              *   server responded with an unexpected value).
              */
-            fun cacheControl(): Optional<CacheControl> =
-                Optional.ofNullable(cacheControl.getNullable("cache_control"))
+            fun cacheControl(): Optional<CacheControl> = cacheControl.getOptional("cache_control")
 
             /**
              * Returns the raw JSON value of [name].

@@ -50,7 +50,7 @@ private constructor(
      * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the server
      *   responded with an unexpected value).
      */
-    fun firstId(): Optional<String> = Optional.ofNullable(firstId.getNullable("first_id"))
+    fun firstId(): Optional<String> = firstId.getOptional("first_id")
 
     /**
      * Indicates if there are more results in the requested page direction.
@@ -66,7 +66,7 @@ private constructor(
      * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the server
      *   responded with an unexpected value).
      */
-    fun lastId(): Optional<String> = Optional.ofNullable(lastId.getNullable("last_id"))
+    fun lastId(): Optional<String> = lastId.getOptional("last_id")
 
     /**
      * Returns the raw JSON value of [data].
@@ -357,8 +357,7 @@ private constructor(
          * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun archivedAt(): Optional<OffsetDateTime> =
-            Optional.ofNullable(archivedAt.getNullable("archived_at"))
+        fun archivedAt(): Optional<OffsetDateTime> = archivedAt.getOptional("archived_at")
 
         /**
          * RFC 3339 datetime string representing the time at which cancellation was initiated for
@@ -368,7 +367,7 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun cancelInitiatedAt(): Optional<OffsetDateTime> =
-            Optional.ofNullable(cancelInitiatedAt.getNullable("cancel_initiated_at"))
+            cancelInitiatedAt.getOptional("cancel_initiated_at")
 
         /**
          * RFC 3339 datetime string representing the time at which the Message Batch was created.
@@ -388,8 +387,7 @@ private constructor(
          * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun endedAt(): Optional<OffsetDateTime> =
-            Optional.ofNullable(endedAt.getNullable("ended_at"))
+        fun endedAt(): Optional<OffsetDateTime> = endedAt.getOptional("ended_at")
 
         /**
          * RFC 3339 datetime string representing the time at which the Message Batch will expire and
@@ -430,8 +428,7 @@ private constructor(
          * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun resultsUrl(): Optional<String> =
-            Optional.ofNullable(resultsUrl.getNullable("results_url"))
+        fun resultsUrl(): Optional<String> = resultsUrl.getOptional("results_url")
 
         /**
          * Object type.
