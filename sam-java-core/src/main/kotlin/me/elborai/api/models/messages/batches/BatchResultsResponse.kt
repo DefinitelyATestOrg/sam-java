@@ -798,8 +798,7 @@ private constructor(
                  * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if
                  *   the server responded with an unexpected value).
                  */
-                fun stopReason(): Optional<StopReason> =
-                    Optional.ofNullable(stopReason.getNullable("stop_reason"))
+                fun stopReason(): Optional<StopReason> = stopReason.getOptional("stop_reason")
 
                 /**
                  * Which custom stop sequence was generated, if any.
@@ -810,8 +809,7 @@ private constructor(
                  * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if
                  *   the server responded with an unexpected value).
                  */
-                fun stopSequence(): Optional<String> =
-                    Optional.ofNullable(stopSequence.getNullable("stop_sequence"))
+                fun stopSequence(): Optional<String> = stopSequence.getOptional("stop_sequence")
 
                 /**
                  * Object type.
@@ -1644,7 +1642,7 @@ private constructor(
                          *   (e.g. if the server responded with an unexpected value).
                          */
                         fun citations(): Optional<List<Citation>> =
-                            Optional.ofNullable(citations.getNullable("citations"))
+                            citations.getOptional("citations")
 
                         /**
                          * @throws SamInvalidDataException if the JSON field has an unexpected type
@@ -2248,7 +2246,7 @@ private constructor(
                                  *   unexpected value).
                                  */
                                 fun documentTitle(): Optional<String> =
-                                    Optional.ofNullable(documentTitle.getNullable("document_title"))
+                                    documentTitle.getOptional("document_title")
 
                                 /**
                                  * @throws SamInvalidDataException if the JSON field has an
@@ -2799,7 +2797,7 @@ private constructor(
                                  *   unexpected value).
                                  */
                                 fun documentTitle(): Optional<String> =
-                                    Optional.ofNullable(documentTitle.getNullable("document_title"))
+                                    documentTitle.getOptional("document_title")
 
                                 /**
                                  * @throws SamInvalidDataException if the JSON field has an
@@ -3351,7 +3349,7 @@ private constructor(
                                  *   unexpected value).
                                  */
                                 fun documentTitle(): Optional<String> =
-                                    Optional.ofNullable(documentTitle.getNullable("document_title"))
+                                    documentTitle.getOptional("document_title")
 
                                 /**
                                  * @throws SamInvalidDataException if the JSON field has an
@@ -5584,9 +5582,7 @@ private constructor(
                      *   (e.g. if the server responded with an unexpected value).
                      */
                     fun cacheCreationInputTokens(): Optional<Long> =
-                        Optional.ofNullable(
-                            cacheCreationInputTokens.getNullable("cache_creation_input_tokens")
-                        )
+                        cacheCreationInputTokens.getOptional("cache_creation_input_tokens")
 
                     /**
                      * The number of input tokens read from the cache.
@@ -5595,9 +5591,7 @@ private constructor(
                      *   (e.g. if the server responded with an unexpected value).
                      */
                     fun cacheReadInputTokens(): Optional<Long> =
-                        Optional.ofNullable(
-                            cacheReadInputTokens.getNullable("cache_read_input_tokens")
-                        )
+                        cacheReadInputTokens.getOptional("cache_read_input_tokens")
 
                     /**
                      * The number of input tokens which were used.

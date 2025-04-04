@@ -731,7 +731,7 @@ private constructor(
          * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
+        fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
         /**
          * Sequences that will cause the model to stop generating.
@@ -743,8 +743,7 @@ private constructor(
          * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun stopSequences(): Optional<List<String>> =
-            Optional.ofNullable(stopSequences.getNullable("stop_sequences"))
+        fun stopSequences(): Optional<List<String>> = stopSequences.getOptional("stop_sequences")
 
         /**
          * Whether to incrementally stream the response using server-sent events.
@@ -754,7 +753,7 @@ private constructor(
          * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun stream(): Optional<Boolean> = Optional.ofNullable(stream.getNullable("stream"))
+        fun stream(): Optional<Boolean> = stream.getOptional("stream")
 
         /**
          * Amount of randomness injected into the response.
@@ -767,8 +766,7 @@ private constructor(
          * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun temperature(): Optional<Double> =
-            Optional.ofNullable(temperature.getNullable("temperature"))
+        fun temperature(): Optional<Double> = temperature.getOptional("temperature")
 
         /**
          * Only sample from the top K options for each subsequent token.
@@ -781,7 +779,7 @@ private constructor(
          * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun topK(): Optional<Long> = Optional.ofNullable(topK.getNullable("top_k"))
+        fun topK(): Optional<Long> = topK.getOptional("top_k")
 
         /**
          * Use nucleus sampling.
@@ -796,7 +794,7 @@ private constructor(
          * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun topP(): Optional<Double> = Optional.ofNullable(topP.getNullable("top_p"))
+        fun topP(): Optional<Double> = topP.getOptional("top_p")
 
         /**
          * Returns the raw JSON value of [maxTokensToSample].
@@ -1241,7 +1239,7 @@ private constructor(
          * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun userId(): Optional<String> = Optional.ofNullable(userId.getNullable("user_id"))
+        fun userId(): Optional<String> = userId.getOptional("user_id")
 
         /**
          * Returns the raw JSON value of [userId].

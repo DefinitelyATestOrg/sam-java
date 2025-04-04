@@ -50,7 +50,7 @@ private constructor(
      * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the server
      *   responded with an unexpected value).
      */
-    fun firstId(): Optional<String> = Optional.ofNullable(firstId.getNullable("first_id"))
+    fun firstId(): Optional<String> = firstId.getOptional("first_id")
 
     /**
      * Indicates if there are more results in the requested page direction.
@@ -66,7 +66,7 @@ private constructor(
      * @throws SamInvalidDataException if the JSON field has an unexpected type (e.g. if the server
      *   responded with an unexpected value).
      */
-    fun lastId(): Optional<String> = Optional.ofNullable(lastId.getNullable("last_id"))
+    fun lastId(): Optional<String> = lastId.getOptional("last_id")
 
     /**
      * Returns the raw JSON value of [data].
