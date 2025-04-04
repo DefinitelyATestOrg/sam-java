@@ -414,6 +414,24 @@ JsonValue complexValue = JsonValue.from(Map.of(
 ));
 ```
 
+Normally a `Builder` class's `build` method will throw [`IllegalStateException`](https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalStateException.html) if any required parameter or property is unset.
+
+To forcibly omit a required parameter or property, pass [`JsonMissing`](sam-java-core/src/main/kotlin/me/elborai/api/core/Values.kt):
+
+```java
+import me.elborai.api.core.JsonMissing;
+import me.elborai.api.models.messages.MessageCreateParams;
+
+MessageCreateParams params = MessageCreateParams.builder()
+    .addMessage(MessageCreateParams.Message.builder()
+        .content("Hello, world")
+        .role(MessageCreateParams.Message.Role.USER)
+        .build())
+    .model("claude-3-7-sonnet-20250219")
+    .maxTokens(JsonMissing.of())
+    .build();
+```
+
 ### Response properties
 
 To access undocumented response properties, call the `_additionalProperties()` method:
