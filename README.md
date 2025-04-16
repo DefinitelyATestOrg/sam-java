@@ -336,6 +336,42 @@ SamClient client = SamOkHttpClient.builder()
     .build();
 ```
 
+### Custom HTTP client
+
+The SDK consists of three artifacts:
+
+- `sam-java-core`
+  - Contains core SDK logic
+  - Does not depend on [OkHttp](https://square.github.io/okhttp)
+  - Exposes [`SamClient`](sam-java-core/src/main/kotlin/me/elborai/api/client/SamClient.kt), [`SamClientAsync`](sam-java-core/src/main/kotlin/me/elborai/api/client/SamClientAsync.kt), [`SamClientImpl`](sam-java-core/src/main/kotlin/me/elborai/api/client/SamClientImpl.kt), and [`SamClientAsyncImpl`](sam-java-core/src/main/kotlin/me/elborai/api/client/SamClientAsyncImpl.kt), all of which can work with any HTTP client
+- `sam-java-client-okhttp`
+  - Depends on [OkHttp](https://square.github.io/okhttp)
+  - Exposes [`SamOkHttpClient`](sam-java-client-okhttp/src/main/kotlin/me/elborai/api/client/okhttp/SamOkHttpClient.kt) and [`SamOkHttpClientAsync`](sam-java-client-okhttp/src/main/kotlin/me/elborai/api/client/okhttp/SamOkHttpClientAsync.kt), which provide a way to construct [`SamClientImpl`](sam-java-core/src/main/kotlin/me/elborai/api/client/SamClientImpl.kt) and [`SamClientAsyncImpl`](sam-java-core/src/main/kotlin/me/elborai/api/client/SamClientAsyncImpl.kt), respectively, using OkHttp
+- `sam-java`
+  - Depends on and exposes the APIs of both `sam-java-core` and `sam-java-client-okhttp`
+  - Does not have its own logic
+
+This structure allows replacing the SDK's default HTTP client without pulling in unnecessary dependencies.
+
+#### Customized [`OkHttpClient`](https://square.github.io/okhttp/3.x/okhttp/okhttp3/OkHttpClient.html)
+
+> [!TIP]
+> Try the available [network options](#network-options) before replacing the default client.
+
+To use a customized `OkHttpClient`:
+
+1. Replace your [`sam-java` dependency](#installation) with `sam-java-core`
+2. Copy `sam-java-client-okhttp`'s [`OkHttpClient`](sam-java-client-okhttp/src/main/kotlin/me/elborai/api/client/okhttp/OkHttpClient.kt) class into your code and customize it
+3. Construct [`SamClientImpl`](sam-java-core/src/main/kotlin/me/elborai/api/client/SamClientImpl.kt) or [`SamClientAsyncImpl`](sam-java-core/src/main/kotlin/me/elborai/api/client/SamClientAsyncImpl.kt), similarly to [`SamOkHttpClient`](sam-java-client-okhttp/src/main/kotlin/me/elborai/api/client/okhttp/SamOkHttpClient.kt) or [`SamOkHttpClientAsync`](sam-java-client-okhttp/src/main/kotlin/me/elborai/api/client/okhttp/SamOkHttpClientAsync.kt), using your customized client
+
+### Completely custom HTTP client
+
+To use a completely custom HTTP client:
+
+1. Replace your [`sam-java` dependency](#installation) with `sam-java-core`
+2. Write a class that implements the [`HttpClient`](sam-java-core/src/main/kotlin/me/elborai/api/core/http/HttpClient.kt) interface
+3. Construct [`SamClientImpl`](sam-java-core/src/main/kotlin/me/elborai/api/client/SamClientImpl.kt) or [`SamClientAsyncImpl`](sam-java-core/src/main/kotlin/me/elborai/api/client/SamClientAsyncImpl.kt), similarly to [`SamOkHttpClient`](sam-java-client-okhttp/src/main/kotlin/me/elborai/api/client/okhttp/SamOkHttpClient.kt) or [`SamOkHttpClientAsync`](sam-java-client-okhttp/src/main/kotlin/me/elborai/api/client/okhttp/SamOkHttpClientAsync.kt), using your new client class
+
 ## Undocumented API functionality
 
 The SDK is typed for convenient usage of the documented API. However, it also supports working with undocumented or not yet supported parts of the API.
