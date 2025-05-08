@@ -3,9 +3,11 @@
 package me.elborai.api.services.async.messages.batches
 
 import java.util.concurrent.CompletableFuture
+import kotlin.jvm.optionals.getOrNull
 import me.elborai.api.core.ClientOptions
 import me.elborai.api.core.JsonValue
 import me.elborai.api.core.RequestOptions
+import me.elborai.api.core.checkRequired
 import me.elborai.api.core.handlers.errorHandler
 import me.elborai.api.core.handlers.jsonHandler
 import me.elborai.api.core.handlers.withErrorHandler
@@ -57,6 +59,9 @@ class BetaTrueServiceAsyncImpl internal constructor(private val clientOptions: C
             params: BetaTrueRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<BetaTrueRetrieveResponse>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("messageBatchId", params.messageBatchId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -88,6 +93,9 @@ class BetaTrueServiceAsyncImpl internal constructor(private val clientOptions: C
             params: BetaTrueDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<BetaTrueDeleteResponse>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("messageBatchId", params.messageBatchId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)

@@ -25,14 +25,40 @@ interface BetaTrueServiceAsync {
      * Learn more about the Message Batches API in our
      * [user guide](/en/docs/build-with-claude/batch-processing)
      */
-    fun retrieve(params: BetaTrueRetrieveParams): CompletableFuture<BetaTrueRetrieveResponse> =
-        retrieve(params, RequestOptions.none())
+    fun retrieve(messageBatchId: String): CompletableFuture<BetaTrueRetrieveResponse> =
+        retrieve(messageBatchId, BetaTrueRetrieveParams.none())
+
+    /** @see [retrieve] */
+    fun retrieve(
+        messageBatchId: String,
+        params: BetaTrueRetrieveParams = BetaTrueRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<BetaTrueRetrieveResponse> =
+        retrieve(params.toBuilder().messageBatchId(messageBatchId).build(), requestOptions)
+
+    /** @see [retrieve] */
+    fun retrieve(
+        messageBatchId: String,
+        params: BetaTrueRetrieveParams = BetaTrueRetrieveParams.none(),
+    ): CompletableFuture<BetaTrueRetrieveResponse> =
+        retrieve(messageBatchId, params, RequestOptions.none())
 
     /** @see [retrieve] */
     fun retrieve(
         params: BetaTrueRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<BetaTrueRetrieveResponse>
+
+    /** @see [retrieve] */
+    fun retrieve(params: BetaTrueRetrieveParams): CompletableFuture<BetaTrueRetrieveResponse> =
+        retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
+    fun retrieve(
+        messageBatchId: String,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<BetaTrueRetrieveResponse> =
+        retrieve(messageBatchId, BetaTrueRetrieveParams.none(), requestOptions)
 
     /**
      * Delete a Message Batch.
@@ -43,14 +69,40 @@ interface BetaTrueServiceAsync {
      * Learn more about the Message Batches API in our
      * [user guide](/en/docs/build-with-claude/batch-processing)
      */
-    fun delete(params: BetaTrueDeleteParams): CompletableFuture<BetaTrueDeleteResponse> =
-        delete(params, RequestOptions.none())
+    fun delete(messageBatchId: String): CompletableFuture<BetaTrueDeleteResponse> =
+        delete(messageBatchId, BetaTrueDeleteParams.none())
+
+    /** @see [delete] */
+    fun delete(
+        messageBatchId: String,
+        params: BetaTrueDeleteParams = BetaTrueDeleteParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<BetaTrueDeleteResponse> =
+        delete(params.toBuilder().messageBatchId(messageBatchId).build(), requestOptions)
+
+    /** @see [delete] */
+    fun delete(
+        messageBatchId: String,
+        params: BetaTrueDeleteParams = BetaTrueDeleteParams.none(),
+    ): CompletableFuture<BetaTrueDeleteResponse> =
+        delete(messageBatchId, params, RequestOptions.none())
 
     /** @see [delete] */
     fun delete(
         params: BetaTrueDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<BetaTrueDeleteResponse>
+
+    /** @see [delete] */
+    fun delete(params: BetaTrueDeleteParams): CompletableFuture<BetaTrueDeleteResponse> =
+        delete(params, RequestOptions.none())
+
+    /** @see [delete] */
+    fun delete(
+        messageBatchId: String,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<BetaTrueDeleteResponse> =
+        delete(messageBatchId, BetaTrueDeleteParams.none(), requestOptions)
 
     /**
      * A view of [BetaTrueServiceAsync] that provides access to raw HTTP responses for each method.
@@ -63,9 +115,26 @@ interface BetaTrueServiceAsync {
          */
         @MustBeClosed
         fun retrieve(
-            params: BetaTrueRetrieveParams
+            messageBatchId: String
         ): CompletableFuture<HttpResponseFor<BetaTrueRetrieveResponse>> =
-            retrieve(params, RequestOptions.none())
+            retrieve(messageBatchId, BetaTrueRetrieveParams.none())
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            messageBatchId: String,
+            params: BetaTrueRetrieveParams = BetaTrueRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<BetaTrueRetrieveResponse>> =
+            retrieve(params.toBuilder().messageBatchId(messageBatchId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            messageBatchId: String,
+            params: BetaTrueRetrieveParams = BetaTrueRetrieveParams.none(),
+        ): CompletableFuture<HttpResponseFor<BetaTrueRetrieveResponse>> =
+            retrieve(messageBatchId, params, RequestOptions.none())
 
         /** @see [retrieve] */
         @MustBeClosed
@@ -74,11 +143,57 @@ interface BetaTrueServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<BetaTrueRetrieveResponse>>
 
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            params: BetaTrueRetrieveParams
+        ): CompletableFuture<HttpResponseFor<BetaTrueRetrieveResponse>> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            messageBatchId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<BetaTrueRetrieveResponse>> =
+            retrieve(messageBatchId, BetaTrueRetrieveParams.none(), requestOptions)
+
         /**
          * Returns a raw HTTP response for `delete
          * /v1/messages/batches/{message_batch_id}?beta=true`, but is otherwise the same as
          * [BetaTrueServiceAsync.delete].
          */
+        @MustBeClosed
+        fun delete(
+            messageBatchId: String
+        ): CompletableFuture<HttpResponseFor<BetaTrueDeleteResponse>> =
+            delete(messageBatchId, BetaTrueDeleteParams.none())
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            messageBatchId: String,
+            params: BetaTrueDeleteParams = BetaTrueDeleteParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<BetaTrueDeleteResponse>> =
+            delete(params.toBuilder().messageBatchId(messageBatchId).build(), requestOptions)
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            messageBatchId: String,
+            params: BetaTrueDeleteParams = BetaTrueDeleteParams.none(),
+        ): CompletableFuture<HttpResponseFor<BetaTrueDeleteResponse>> =
+            delete(messageBatchId, params, RequestOptions.none())
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            params: BetaTrueDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<BetaTrueDeleteResponse>>
+
+        /** @see [delete] */
         @MustBeClosed
         fun delete(
             params: BetaTrueDeleteParams
@@ -88,8 +203,9 @@ interface BetaTrueServiceAsync {
         /** @see [delete] */
         @MustBeClosed
         fun delete(
-            params: BetaTrueDeleteParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<BetaTrueDeleteResponse>>
+            messageBatchId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<BetaTrueDeleteResponse>> =
+            delete(messageBatchId, BetaTrueDeleteParams.none(), requestOptions)
     }
 }
