@@ -6,7 +6,6 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 import me.elborai.api.core.Params
-import me.elborai.api.core.checkRequired
 import me.elborai.api.core.http.Headers
 import me.elborai.api.core.http.QueryParams
 import me.elborai.api.core.toImmutable
@@ -20,7 +19,7 @@ import me.elborai.api.core.toImmutable
  */
 class BetaTrueRetrieveParams
 private constructor(
-    private val messageBatchId: String,
+    private val messageBatchId: String?,
     private val anthropicBeta: List<String>?,
     private val anthropicVersion: String?,
     private val xApiKey: String?,
@@ -29,7 +28,7 @@ private constructor(
 ) : Params {
 
     /** ID of the Message Batch. */
-    fun messageBatchId(): String = messageBatchId
+    fun messageBatchId(): Optional<String> = Optional.ofNullable(messageBatchId)
 
     /**
      * Optional header to specify the beta version(s) you want to use.
@@ -64,14 +63,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [BetaTrueRetrieveParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .messageBatchId()
-         * ```
-         */
+        @JvmStatic fun none(): BetaTrueRetrieveParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [BetaTrueRetrieveParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -96,7 +90,11 @@ private constructor(
         }
 
         /** ID of the Message Batch. */
-        fun messageBatchId(messageBatchId: String) = apply { this.messageBatchId = messageBatchId }
+        fun messageBatchId(messageBatchId: String?) = apply { this.messageBatchId = messageBatchId }
+
+        /** Alias for calling [Builder.messageBatchId] with `messageBatchId.orElse(null)`. */
+        fun messageBatchId(messageBatchId: Optional<String>) =
+            messageBatchId(messageBatchId.getOrNull())
 
         /**
          * Optional header to specify the beta version(s) you want to use.
@@ -251,17 +249,10 @@ private constructor(
          * Returns an immutable instance of [BetaTrueRetrieveParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .messageBatchId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): BetaTrueRetrieveParams =
             BetaTrueRetrieveParams(
-                checkRequired("messageBatchId", messageBatchId),
+                messageBatchId,
                 anthropicBeta?.toImmutable(),
                 anthropicVersion,
                 xApiKey,
@@ -272,7 +263,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> messageBatchId
+            0 -> messageBatchId ?: ""
             else -> ""
         }
 

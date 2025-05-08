@@ -59,14 +59,36 @@ interface BatchService {
      * Learn more about the Message Batches API in our
      * [user guide](/en/docs/build-with-claude/batch-processing)
      */
-    fun retrieve(params: BatchRetrieveParams): BatchRetrieveResponse =
-        retrieve(params, RequestOptions.none())
+    fun retrieve(messageBatchId: String): BatchRetrieveResponse =
+        retrieve(messageBatchId, BatchRetrieveParams.none())
+
+    /** @see [retrieve] */
+    fun retrieve(
+        messageBatchId: String,
+        params: BatchRetrieveParams = BatchRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): BatchRetrieveResponse =
+        retrieve(params.toBuilder().messageBatchId(messageBatchId).build(), requestOptions)
+
+    /** @see [retrieve] */
+    fun retrieve(
+        messageBatchId: String,
+        params: BatchRetrieveParams = BatchRetrieveParams.none(),
+    ): BatchRetrieveResponse = retrieve(messageBatchId, params, RequestOptions.none())
 
     /** @see [retrieve] */
     fun retrieve(
         params: BatchRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): BatchRetrieveResponse
+
+    /** @see [retrieve] */
+    fun retrieve(params: BatchRetrieveParams): BatchRetrieveResponse =
+        retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
+    fun retrieve(messageBatchId: String, requestOptions: RequestOptions): BatchRetrieveResponse =
+        retrieve(messageBatchId, BatchRetrieveParams.none(), requestOptions)
 
     /**
      * List all Message Batches within a Workspace. Most recently created batches are returned
@@ -100,8 +122,22 @@ interface BatchService {
      * Learn more about the Message Batches API in our
      * [user guide](/en/docs/build-with-claude/batch-processing)
      */
-    fun delete(params: BatchDeleteParams): BatchDeleteResponse =
-        delete(params, RequestOptions.none())
+    fun delete(messageBatchId: String): BatchDeleteResponse =
+        delete(messageBatchId, BatchDeleteParams.none())
+
+    /** @see [delete] */
+    fun delete(
+        messageBatchId: String,
+        params: BatchDeleteParams = BatchDeleteParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): BatchDeleteResponse =
+        delete(params.toBuilder().messageBatchId(messageBatchId).build(), requestOptions)
+
+    /** @see [delete] */
+    fun delete(
+        messageBatchId: String,
+        params: BatchDeleteParams = BatchDeleteParams.none(),
+    ): BatchDeleteResponse = delete(messageBatchId, params, RequestOptions.none())
 
     /** @see [delete] */
     fun delete(
@@ -109,6 +145,14 @@ interface BatchService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): BatchDeleteResponse
 
+    /** @see [delete] */
+    fun delete(params: BatchDeleteParams): BatchDeleteResponse =
+        delete(params, RequestOptions.none())
+
+    /** @see [delete] */
+    fun delete(messageBatchId: String, requestOptions: RequestOptions): BatchDeleteResponse =
+        delete(messageBatchId, BatchDeleteParams.none(), requestOptions)
+
     /**
      * Batches may be canceled any time before processing ends. Once cancellation is initiated, the
      * batch enters a `canceling` state, at which time the system may complete any in-progress,
@@ -121,8 +165,22 @@ interface BatchService {
      * Learn more about the Message Batches API in our
      * [user guide](/en/docs/build-with-claude/batch-processing)
      */
-    fun cancel(params: BatchCancelParams): BatchCancelResponse =
-        cancel(params, RequestOptions.none())
+    fun cancel(messageBatchId: String): BatchCancelResponse =
+        cancel(messageBatchId, BatchCancelParams.none())
+
+    /** @see [cancel] */
+    fun cancel(
+        messageBatchId: String,
+        params: BatchCancelParams = BatchCancelParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): BatchCancelResponse =
+        cancel(params.toBuilder().messageBatchId(messageBatchId).build(), requestOptions)
+
+    /** @see [cancel] */
+    fun cancel(
+        messageBatchId: String,
+        params: BatchCancelParams = BatchCancelParams.none(),
+    ): BatchCancelResponse = cancel(messageBatchId, params, RequestOptions.none())
 
     /** @see [cancel] */
     fun cancel(
@@ -130,6 +188,14 @@ interface BatchService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): BatchCancelResponse
 
+    /** @see [cancel] */
+    fun cancel(params: BatchCancelParams): BatchCancelResponse =
+        cancel(params, RequestOptions.none())
+
+    /** @see [cancel] */
+    fun cancel(messageBatchId: String, requestOptions: RequestOptions): BatchCancelResponse =
+        cancel(messageBatchId, BatchCancelParams.none(), requestOptions)
+
     /**
      * Batches may be canceled any time before processing ends. Once cancellation is initiated, the
      * batch enters a `canceling` state, at which time the system may complete any in-progress,
@@ -142,14 +208,39 @@ interface BatchService {
      * Learn more about the Message Batches API in our
      * [user guide](/en/docs/build-with-claude/batch-processing)
      */
-    fun cancelBeta(params: BatchCancelBetaParams): BatchCancelBetaResponse =
-        cancelBeta(params, RequestOptions.none())
+    fun cancelBeta(messageBatchId: String): BatchCancelBetaResponse =
+        cancelBeta(messageBatchId, BatchCancelBetaParams.none())
+
+    /** @see [cancelBeta] */
+    fun cancelBeta(
+        messageBatchId: String,
+        params: BatchCancelBetaParams = BatchCancelBetaParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): BatchCancelBetaResponse =
+        cancelBeta(params.toBuilder().messageBatchId(messageBatchId).build(), requestOptions)
+
+    /** @see [cancelBeta] */
+    fun cancelBeta(
+        messageBatchId: String,
+        params: BatchCancelBetaParams = BatchCancelBetaParams.none(),
+    ): BatchCancelBetaResponse = cancelBeta(messageBatchId, params, RequestOptions.none())
 
     /** @see [cancelBeta] */
     fun cancelBeta(
         params: BatchCancelBetaParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): BatchCancelBetaResponse
+
+    /** @see [cancelBeta] */
+    fun cancelBeta(params: BatchCancelBetaParams): BatchCancelBetaResponse =
+        cancelBeta(params, RequestOptions.none())
+
+    /** @see [cancelBeta] */
+    fun cancelBeta(
+        messageBatchId: String,
+        requestOptions: RequestOptions,
+    ): BatchCancelBetaResponse =
+        cancelBeta(messageBatchId, BatchCancelBetaParams.none(), requestOptions)
 
     /**
      * Streams the results of a Message Batch as a `.jsonl` file.
@@ -162,8 +253,25 @@ interface BatchService {
      * [user guide](/en/docs/build-with-claude/batch-processing)
      */
     @MustBeClosed
-    fun resultsStreaming(params: BatchResultsParams): StreamResponse<BatchResultsResponse> =
-        resultsStreaming(params, RequestOptions.none())
+    fun resultsStreaming(messageBatchId: String): StreamResponse<BatchResultsResponse> =
+        resultsStreaming(messageBatchId, BatchResultsParams.none())
+
+    /** @see [resultsStreaming] */
+    @MustBeClosed
+    fun resultsStreaming(
+        messageBatchId: String,
+        params: BatchResultsParams = BatchResultsParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): StreamResponse<BatchResultsResponse> =
+        resultsStreaming(params.toBuilder().messageBatchId(messageBatchId).build(), requestOptions)
+
+    /** @see [resultsStreaming] */
+    @MustBeClosed
+    fun resultsStreaming(
+        messageBatchId: String,
+        params: BatchResultsParams = BatchResultsParams.none(),
+    ): StreamResponse<BatchResultsResponse> =
+        resultsStreaming(messageBatchId, params, RequestOptions.none())
 
     /** @see [resultsStreaming] */
     @MustBeClosed
@@ -172,6 +280,19 @@ interface BatchService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): StreamResponse<BatchResultsResponse>
 
+    /** @see [resultsStreaming] */
+    @MustBeClosed
+    fun resultsStreaming(params: BatchResultsParams): StreamResponse<BatchResultsResponse> =
+        resultsStreaming(params, RequestOptions.none())
+
+    /** @see [resultsStreaming] */
+    @MustBeClosed
+    fun resultsStreaming(
+        messageBatchId: String,
+        requestOptions: RequestOptions,
+    ): StreamResponse<BatchResultsResponse> =
+        resultsStreaming(messageBatchId, BatchResultsParams.none(), requestOptions)
+
     /**
      * Streams the results of a Message Batch as a `.jsonl` file.
      *
@@ -182,6 +303,38 @@ interface BatchService {
      * Learn more about the Message Batches API in our
      * [user guide](/en/docs/build-with-claude/batch-processing)
      */
+    @MustBeClosed
+    fun resultsBetaStreaming(messageBatchId: String): StreamResponse<BatchResultsBetaResponse> =
+        resultsBetaStreaming(messageBatchId, BatchResultsBetaParams.none())
+
+    /** @see [resultsBetaStreaming] */
+    @MustBeClosed
+    fun resultsBetaStreaming(
+        messageBatchId: String,
+        params: BatchResultsBetaParams = BatchResultsBetaParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): StreamResponse<BatchResultsBetaResponse> =
+        resultsBetaStreaming(
+            params.toBuilder().messageBatchId(messageBatchId).build(),
+            requestOptions,
+        )
+
+    /** @see [resultsBetaStreaming] */
+    @MustBeClosed
+    fun resultsBetaStreaming(
+        messageBatchId: String,
+        params: BatchResultsBetaParams = BatchResultsBetaParams.none(),
+    ): StreamResponse<BatchResultsBetaResponse> =
+        resultsBetaStreaming(messageBatchId, params, RequestOptions.none())
+
+    /** @see [resultsBetaStreaming] */
+    @MustBeClosed
+    fun resultsBetaStreaming(
+        params: BatchResultsBetaParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): StreamResponse<BatchResultsBetaResponse>
+
+    /** @see [resultsBetaStreaming] */
     @MustBeClosed
     fun resultsBetaStreaming(
         params: BatchResultsBetaParams
@@ -191,9 +344,10 @@ interface BatchService {
     /** @see [resultsBetaStreaming] */
     @MustBeClosed
     fun resultsBetaStreaming(
-        params: BatchResultsBetaParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): StreamResponse<BatchResultsBetaResponse>
+        messageBatchId: String,
+        requestOptions: RequestOptions,
+    ): StreamResponse<BatchResultsBetaResponse> =
+        resultsBetaStreaming(messageBatchId, BatchResultsBetaParams.none(), requestOptions)
 
     /** A view of [BatchService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -220,8 +374,25 @@ interface BatchService {
          * otherwise the same as [BatchService.retrieve].
          */
         @MustBeClosed
-        fun retrieve(params: BatchRetrieveParams): HttpResponseFor<BatchRetrieveResponse> =
-            retrieve(params, RequestOptions.none())
+        fun retrieve(messageBatchId: String): HttpResponseFor<BatchRetrieveResponse> =
+            retrieve(messageBatchId, BatchRetrieveParams.none())
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            messageBatchId: String,
+            params: BatchRetrieveParams = BatchRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<BatchRetrieveResponse> =
+            retrieve(params.toBuilder().messageBatchId(messageBatchId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            messageBatchId: String,
+            params: BatchRetrieveParams = BatchRetrieveParams.none(),
+        ): HttpResponseFor<BatchRetrieveResponse> =
+            retrieve(messageBatchId, params, RequestOptions.none())
 
         /** @see [retrieve] */
         @MustBeClosed
@@ -229,6 +400,19 @@ interface BatchService {
             params: BatchRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<BatchRetrieveResponse>
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(params: BatchRetrieveParams): HttpResponseFor<BatchRetrieveResponse> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            messageBatchId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<BatchRetrieveResponse> =
+            retrieve(messageBatchId, BatchRetrieveParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /v1/messages/batches`, but is otherwise the same as
@@ -259,8 +443,25 @@ interface BatchService {
          * otherwise the same as [BatchService.delete].
          */
         @MustBeClosed
-        fun delete(params: BatchDeleteParams): HttpResponseFor<BatchDeleteResponse> =
-            delete(params, RequestOptions.none())
+        fun delete(messageBatchId: String): HttpResponseFor<BatchDeleteResponse> =
+            delete(messageBatchId, BatchDeleteParams.none())
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            messageBatchId: String,
+            params: BatchDeleteParams = BatchDeleteParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<BatchDeleteResponse> =
+            delete(params.toBuilder().messageBatchId(messageBatchId).build(), requestOptions)
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            messageBatchId: String,
+            params: BatchDeleteParams = BatchDeleteParams.none(),
+        ): HttpResponseFor<BatchDeleteResponse> =
+            delete(messageBatchId, params, RequestOptions.none())
 
         /** @see [delete] */
         @MustBeClosed
@@ -269,13 +470,43 @@ interface BatchService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<BatchDeleteResponse>
 
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(params: BatchDeleteParams): HttpResponseFor<BatchDeleteResponse> =
+            delete(params, RequestOptions.none())
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            messageBatchId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<BatchDeleteResponse> =
+            delete(messageBatchId, BatchDeleteParams.none(), requestOptions)
+
         /**
          * Returns a raw HTTP response for `post /v1/messages/batches/{message_batch_id}/cancel`,
          * but is otherwise the same as [BatchService.cancel].
          */
         @MustBeClosed
-        fun cancel(params: BatchCancelParams): HttpResponseFor<BatchCancelResponse> =
-            cancel(params, RequestOptions.none())
+        fun cancel(messageBatchId: String): HttpResponseFor<BatchCancelResponse> =
+            cancel(messageBatchId, BatchCancelParams.none())
+
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(
+            messageBatchId: String,
+            params: BatchCancelParams = BatchCancelParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<BatchCancelResponse> =
+            cancel(params.toBuilder().messageBatchId(messageBatchId).build(), requestOptions)
+
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(
+            messageBatchId: String,
+            params: BatchCancelParams = BatchCancelParams.none(),
+        ): HttpResponseFor<BatchCancelResponse> =
+            cancel(messageBatchId, params, RequestOptions.none())
 
         /** @see [cancel] */
         @MustBeClosed
@@ -284,14 +515,44 @@ interface BatchService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<BatchCancelResponse>
 
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(params: BatchCancelParams): HttpResponseFor<BatchCancelResponse> =
+            cancel(params, RequestOptions.none())
+
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(
+            messageBatchId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<BatchCancelResponse> =
+            cancel(messageBatchId, BatchCancelParams.none(), requestOptions)
+
         /**
          * Returns a raw HTTP response for `post
          * /v1/messages/batches/{message_batch_id}/cancel?beta=true`, but is otherwise the same as
          * [BatchService.cancelBeta].
          */
         @MustBeClosed
-        fun cancelBeta(params: BatchCancelBetaParams): HttpResponseFor<BatchCancelBetaResponse> =
-            cancelBeta(params, RequestOptions.none())
+        fun cancelBeta(messageBatchId: String): HttpResponseFor<BatchCancelBetaResponse> =
+            cancelBeta(messageBatchId, BatchCancelBetaParams.none())
+
+        /** @see [cancelBeta] */
+        @MustBeClosed
+        fun cancelBeta(
+            messageBatchId: String,
+            params: BatchCancelBetaParams = BatchCancelBetaParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<BatchCancelBetaResponse> =
+            cancelBeta(params.toBuilder().messageBatchId(messageBatchId).build(), requestOptions)
+
+        /** @see [cancelBeta] */
+        @MustBeClosed
+        fun cancelBeta(
+            messageBatchId: String,
+            params: BatchCancelBetaParams = BatchCancelBetaParams.none(),
+        ): HttpResponseFor<BatchCancelBetaResponse> =
+            cancelBeta(messageBatchId, params, RequestOptions.none())
 
         /** @see [cancelBeta] */
         @MustBeClosed
@@ -300,10 +561,57 @@ interface BatchService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<BatchCancelBetaResponse>
 
+        /** @see [cancelBeta] */
+        @MustBeClosed
+        fun cancelBeta(params: BatchCancelBetaParams): HttpResponseFor<BatchCancelBetaResponse> =
+            cancelBeta(params, RequestOptions.none())
+
+        /** @see [cancelBeta] */
+        @MustBeClosed
+        fun cancelBeta(
+            messageBatchId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<BatchCancelBetaResponse> =
+            cancelBeta(messageBatchId, BatchCancelBetaParams.none(), requestOptions)
+
         /**
          * Returns a raw HTTP response for `get /v1/messages/batches/{message_batch_id}/results`,
          * but is otherwise the same as [BatchService.resultsStreaming].
          */
+        @MustBeClosed
+        fun resultsStreaming(
+            messageBatchId: String
+        ): HttpResponseFor<StreamResponse<BatchResultsResponse>> =
+            resultsStreaming(messageBatchId, BatchResultsParams.none())
+
+        /** @see [resultsStreaming] */
+        @MustBeClosed
+        fun resultsStreaming(
+            messageBatchId: String,
+            params: BatchResultsParams = BatchResultsParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<StreamResponse<BatchResultsResponse>> =
+            resultsStreaming(
+                params.toBuilder().messageBatchId(messageBatchId).build(),
+                requestOptions,
+            )
+
+        /** @see [resultsStreaming] */
+        @MustBeClosed
+        fun resultsStreaming(
+            messageBatchId: String,
+            params: BatchResultsParams = BatchResultsParams.none(),
+        ): HttpResponseFor<StreamResponse<BatchResultsResponse>> =
+            resultsStreaming(messageBatchId, params, RequestOptions.none())
+
+        /** @see [resultsStreaming] */
+        @MustBeClosed
+        fun resultsStreaming(
+            params: BatchResultsParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<StreamResponse<BatchResultsResponse>>
+
+        /** @see [resultsStreaming] */
         @MustBeClosed
         fun resultsStreaming(
             params: BatchResultsParams
@@ -313,15 +621,50 @@ interface BatchService {
         /** @see [resultsStreaming] */
         @MustBeClosed
         fun resultsStreaming(
-            params: BatchResultsParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<StreamResponse<BatchResultsResponse>>
+            messageBatchId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<StreamResponse<BatchResultsResponse>> =
+            resultsStreaming(messageBatchId, BatchResultsParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get
          * /v1/messages/batches/{message_batch_id}/results?beta=true`, but is otherwise the same as
          * [BatchService.resultsBetaStreaming].
          */
+        @MustBeClosed
+        fun resultsBetaStreaming(
+            messageBatchId: String
+        ): HttpResponseFor<StreamResponse<BatchResultsBetaResponse>> =
+            resultsBetaStreaming(messageBatchId, BatchResultsBetaParams.none())
+
+        /** @see [resultsBetaStreaming] */
+        @MustBeClosed
+        fun resultsBetaStreaming(
+            messageBatchId: String,
+            params: BatchResultsBetaParams = BatchResultsBetaParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<StreamResponse<BatchResultsBetaResponse>> =
+            resultsBetaStreaming(
+                params.toBuilder().messageBatchId(messageBatchId).build(),
+                requestOptions,
+            )
+
+        /** @see [resultsBetaStreaming] */
+        @MustBeClosed
+        fun resultsBetaStreaming(
+            messageBatchId: String,
+            params: BatchResultsBetaParams = BatchResultsBetaParams.none(),
+        ): HttpResponseFor<StreamResponse<BatchResultsBetaResponse>> =
+            resultsBetaStreaming(messageBatchId, params, RequestOptions.none())
+
+        /** @see [resultsBetaStreaming] */
+        @MustBeClosed
+        fun resultsBetaStreaming(
+            params: BatchResultsBetaParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<StreamResponse<BatchResultsBetaResponse>>
+
+        /** @see [resultsBetaStreaming] */
         @MustBeClosed
         fun resultsBetaStreaming(
             params: BatchResultsBetaParams
@@ -331,8 +674,9 @@ interface BatchService {
         /** @see [resultsBetaStreaming] */
         @MustBeClosed
         fun resultsBetaStreaming(
-            params: BatchResultsBetaParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<StreamResponse<BatchResultsBetaResponse>>
+            messageBatchId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<StreamResponse<BatchResultsBetaResponse>> =
+            resultsBetaStreaming(messageBatchId, BatchResultsBetaParams.none(), requestOptions)
     }
 }

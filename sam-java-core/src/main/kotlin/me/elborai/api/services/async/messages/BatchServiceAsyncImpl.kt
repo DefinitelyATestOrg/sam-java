@@ -3,9 +3,11 @@
 package me.elborai.api.services.async.messages
 
 import java.util.concurrent.CompletableFuture
+import kotlin.jvm.optionals.getOrNull
 import me.elborai.api.core.ClientOptions
 import me.elborai.api.core.JsonValue
 import me.elborai.api.core.RequestOptions
+import me.elborai.api.core.checkRequired
 import me.elborai.api.core.handlers.errorHandler
 import me.elborai.api.core.handlers.jsonHandler
 import me.elborai.api.core.handlers.jsonlHandler
@@ -165,6 +167,9 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
             params: BatchRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<BatchRetrieveResponse>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("messageBatchId", params.messageBatchId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -224,6 +229,9 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
             params: BatchDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<BatchDeleteResponse>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("messageBatchId", params.messageBatchId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
@@ -255,6 +263,9 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
             params: BatchCancelParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<BatchCancelResponse>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("messageBatchId", params.messageBatchId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -286,6 +297,9 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
             params: BatchCancelBetaParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<BatchCancelBetaResponse>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("messageBatchId", params.messageBatchId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -318,6 +332,9 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
             params: BatchResultsParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<StreamResponse<BatchResultsResponse>>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("messageBatchId", params.messageBatchId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -350,6 +367,9 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
             params: BatchResultsBetaParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<StreamResponse<BatchResultsBetaResponse>>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("messageBatchId", params.messageBatchId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)

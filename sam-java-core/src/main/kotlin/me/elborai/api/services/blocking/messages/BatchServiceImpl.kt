@@ -2,9 +2,11 @@
 
 package me.elborai.api.services.blocking.messages
 
+import kotlin.jvm.optionals.getOrNull
 import me.elborai.api.core.ClientOptions
 import me.elborai.api.core.JsonValue
 import me.elborai.api.core.RequestOptions
+import me.elborai.api.core.checkRequired
 import me.elborai.api.core.handlers.errorHandler
 import me.elborai.api.core.handlers.jsonHandler
 import me.elborai.api.core.handlers.jsonlHandler
@@ -150,6 +152,9 @@ class BatchServiceImpl internal constructor(private val clientOptions: ClientOpt
             params: BatchRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<BatchRetrieveResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("messageBatchId", params.messageBatchId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -203,6 +208,9 @@ class BatchServiceImpl internal constructor(private val clientOptions: ClientOpt
             params: BatchDeleteParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<BatchDeleteResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("messageBatchId", params.messageBatchId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
@@ -231,6 +239,9 @@ class BatchServiceImpl internal constructor(private val clientOptions: ClientOpt
             params: BatchCancelParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<BatchCancelResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("messageBatchId", params.messageBatchId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -259,6 +270,9 @@ class BatchServiceImpl internal constructor(private val clientOptions: ClientOpt
             params: BatchCancelBetaParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<BatchCancelBetaResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("messageBatchId", params.messageBatchId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -288,6 +302,9 @@ class BatchServiceImpl internal constructor(private val clientOptions: ClientOpt
             params: BatchResultsParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<StreamResponse<BatchResultsResponse>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("messageBatchId", params.messageBatchId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -317,6 +334,9 @@ class BatchServiceImpl internal constructor(private val clientOptions: ClientOpt
             params: BatchResultsBetaParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<StreamResponse<BatchResultsBetaResponse>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("messageBatchId", params.messageBatchId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)

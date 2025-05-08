@@ -6,7 +6,6 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 import me.elborai.api.core.Params
-import me.elborai.api.core.checkRequired
 import me.elborai.api.core.http.Headers
 import me.elborai.api.core.http.QueryParams
 
@@ -18,7 +17,7 @@ import me.elborai.api.core.http.QueryParams
  */
 class ModelRetrieveBetaParams
 private constructor(
-    private val modelId: String,
+    private val modelId: String?,
     private val anthropicVersion: String?,
     private val xApiKey: String?,
     private val additionalHeaders: Headers,
@@ -26,7 +25,7 @@ private constructor(
 ) : Params {
 
     /** Model identifier or alias. */
-    fun modelId(): String = modelId
+    fun modelId(): Optional<String> = Optional.ofNullable(modelId)
 
     /**
      * The version of the Anthropic API you want to use.
@@ -53,14 +52,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [ModelRetrieveBetaParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .modelId()
-         * ```
-         */
+        @JvmStatic fun none(): ModelRetrieveBetaParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [ModelRetrieveBetaParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -83,7 +77,10 @@ private constructor(
         }
 
         /** Model identifier or alias. */
-        fun modelId(modelId: String) = apply { this.modelId = modelId }
+        fun modelId(modelId: String?) = apply { this.modelId = modelId }
+
+        /** Alias for calling [Builder.modelId] with `modelId.orElse(null)`. */
+        fun modelId(modelId: Optional<String>) = modelId(modelId.getOrNull())
 
         /**
          * The version of the Anthropic API you want to use.
@@ -214,17 +211,10 @@ private constructor(
          * Returns an immutable instance of [ModelRetrieveBetaParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .modelId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ModelRetrieveBetaParams =
             ModelRetrieveBetaParams(
-                checkRequired("modelId", modelId),
+                modelId,
                 anthropicVersion,
                 xApiKey,
                 additionalHeaders.build(),
@@ -234,7 +224,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> modelId
+            0 -> modelId ?: ""
             else -> ""
         }
 
