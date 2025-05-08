@@ -295,7 +295,6 @@ Requests time out after 1 minute by default.
 To set a custom timeout, configure the method call using the `timeout` method:
 
 ```java
-import me.elborai.api.models.messages.MessageCreateParams;
 import me.elborai.api.models.messages.MessageCreateResponse;
 
 MessageCreateResponse message = client.messages().create(
@@ -551,7 +550,6 @@ MessageCreateResponse message = client.messages().create(params).validate();
 Or configure the method call to validate the response using the `responseValidation` method:
 
 ```java
-import me.elborai.api.models.messages.MessageCreateParams;
 import me.elborai.api.models.messages.MessageCreateResponse;
 
 MessageCreateResponse message = client.messages().create(
