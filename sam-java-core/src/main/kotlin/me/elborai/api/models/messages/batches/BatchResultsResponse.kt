@@ -157,50 +157,50 @@ private constructor(
         fun result(result: JsonField<Result>) = apply { this.result = result }
 
         /** Alias for calling [result] with `Result.ofSucceeded(succeeded)`. */
-        fun result(succeeded: Result.SucceededResult) = result(Result.ofSucceeded(succeeded))
+        fun result(succeeded: Result.Succeeded) = result(Result.ofSucceeded(succeeded))
 
         /**
          * Alias for calling [result] with the following:
          * ```java
-         * Result.SucceededResult.builder()
-         *     .type(BatchResultsResponse.Result.SucceededResult.Type.SUCCEEDED)
+         * Result.Succeeded.builder()
+         *     .type(BatchResultsResponse.Result.Succeeded.Type.SUCCEEDED)
          *     .message(message)
          *     .build()
          * ```
          */
-        fun succeededResult(message: Result.SucceededResult.Message) =
+        fun succeededResult(message: Result.Succeeded.Message) =
             result(
-                Result.SucceededResult.builder()
-                    .type(BatchResultsResponse.Result.SucceededResult.Type.SUCCEEDED)
+                Result.Succeeded.builder()
+                    .type(BatchResultsResponse.Result.Succeeded.Type.SUCCEEDED)
                     .message(message)
                     .build()
             )
 
         /** Alias for calling [result] with `Result.ofErrored(errored)`. */
-        fun result(errored: Result.ErroredResult) = result(Result.ofErrored(errored))
+        fun result(errored: Result.Errored) = result(Result.ofErrored(errored))
 
         /**
          * Alias for calling [result] with the following:
          * ```java
-         * Result.ErroredResult.builder()
-         *     .type(BatchResultsResponse.Result.ErroredResult.Type.ERRORED)
+         * Result.Errored.builder()
+         *     .type(BatchResultsResponse.Result.Errored.Type.ERRORED)
          *     .error(error)
          *     .build()
          * ```
          */
-        fun erroredResult(error: Result.ErroredResult.Error) =
+        fun erroredResult(error: Result.Errored.Error) =
             result(
-                Result.ErroredResult.builder()
-                    .type(BatchResultsResponse.Result.ErroredResult.Type.ERRORED)
+                Result.Errored.builder()
+                    .type(BatchResultsResponse.Result.Errored.Type.ERRORED)
                     .error(error)
                     .build()
             )
 
         /** Alias for calling [result] with `Result.ofCanceled(canceled)`. */
-        fun result(canceled: Result.CanceledResult) = result(Result.ofCanceled(canceled))
+        fun result(canceled: Result.Canceled) = result(Result.ofCanceled(canceled))
 
         /** Alias for calling [result] with `Result.ofExpired(expired)`. */
-        fun result(expired: Result.ExpiredResult) = result(Result.ofExpired(expired))
+        fun result(expired: Result.Expired) = result(Result.ofExpired(expired))
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -282,20 +282,20 @@ private constructor(
     @JsonSerialize(using = Result.Serializer::class)
     class Result
     private constructor(
-        private val succeeded: SucceededResult? = null,
-        private val errored: ErroredResult? = null,
-        private val canceled: CanceledResult? = null,
-        private val expired: ExpiredResult? = null,
+        private val succeeded: Succeeded? = null,
+        private val errored: Errored? = null,
+        private val canceled: Canceled? = null,
+        private val expired: Expired? = null,
         private val _json: JsonValue? = null,
     ) {
 
-        fun succeeded(): Optional<SucceededResult> = Optional.ofNullable(succeeded)
+        fun succeeded(): Optional<Succeeded> = Optional.ofNullable(succeeded)
 
-        fun errored(): Optional<ErroredResult> = Optional.ofNullable(errored)
+        fun errored(): Optional<Errored> = Optional.ofNullable(errored)
 
-        fun canceled(): Optional<CanceledResult> = Optional.ofNullable(canceled)
+        fun canceled(): Optional<Canceled> = Optional.ofNullable(canceled)
 
-        fun expired(): Optional<ExpiredResult> = Optional.ofNullable(expired)
+        fun expired(): Optional<Expired> = Optional.ofNullable(expired)
 
         fun isSucceeded(): Boolean = succeeded != null
 
@@ -305,13 +305,13 @@ private constructor(
 
         fun isExpired(): Boolean = expired != null
 
-        fun asSucceeded(): SucceededResult = succeeded.getOrThrow("succeeded")
+        fun asSucceeded(): Succeeded = succeeded.getOrThrow("succeeded")
 
-        fun asErrored(): ErroredResult = errored.getOrThrow("errored")
+        fun asErrored(): Errored = errored.getOrThrow("errored")
 
-        fun asCanceled(): CanceledResult = canceled.getOrThrow("canceled")
+        fun asCanceled(): Canceled = canceled.getOrThrow("canceled")
 
-        fun asExpired(): ExpiredResult = expired.getOrThrow("expired")
+        fun asExpired(): Expired = expired.getOrThrow("expired")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -333,19 +333,19 @@ private constructor(
 
             accept(
                 object : Visitor<Unit> {
-                    override fun visitSucceeded(succeeded: SucceededResult) {
+                    override fun visitSucceeded(succeeded: Succeeded) {
                         succeeded.validate()
                     }
 
-                    override fun visitErrored(errored: ErroredResult) {
+                    override fun visitErrored(errored: Errored) {
                         errored.validate()
                     }
 
-                    override fun visitCanceled(canceled: CanceledResult) {
+                    override fun visitCanceled(canceled: Canceled) {
                         canceled.validate()
                     }
 
-                    override fun visitExpired(expired: ExpiredResult) {
+                    override fun visitExpired(expired: Expired) {
                         expired.validate()
                     }
                 }
@@ -371,13 +371,13 @@ private constructor(
         internal fun validity(): Int =
             accept(
                 object : Visitor<Int> {
-                    override fun visitSucceeded(succeeded: SucceededResult) = succeeded.validity()
+                    override fun visitSucceeded(succeeded: Succeeded) = succeeded.validity()
 
-                    override fun visitErrored(errored: ErroredResult) = errored.validity()
+                    override fun visitErrored(errored: Errored) = errored.validity()
 
-                    override fun visitCanceled(canceled: CanceledResult) = canceled.validity()
+                    override fun visitCanceled(canceled: Canceled) = canceled.validity()
 
-                    override fun visitExpired(expired: ExpiredResult) = expired.validity()
+                    override fun visitExpired(expired: Expired) = expired.validity()
 
                     override fun unknown(json: JsonValue?) = 0
                 }
@@ -405,25 +405,25 @@ private constructor(
 
         companion object {
 
-            @JvmStatic fun ofSucceeded(succeeded: SucceededResult) = Result(succeeded = succeeded)
+            @JvmStatic fun ofSucceeded(succeeded: Succeeded) = Result(succeeded = succeeded)
 
-            @JvmStatic fun ofErrored(errored: ErroredResult) = Result(errored = errored)
+            @JvmStatic fun ofErrored(errored: Errored) = Result(errored = errored)
 
-            @JvmStatic fun ofCanceled(canceled: CanceledResult) = Result(canceled = canceled)
+            @JvmStatic fun ofCanceled(canceled: Canceled) = Result(canceled = canceled)
 
-            @JvmStatic fun ofExpired(expired: ExpiredResult) = Result(expired = expired)
+            @JvmStatic fun ofExpired(expired: Expired) = Result(expired = expired)
         }
 
         /** An interface that defines how to map each variant of [Result] to a value of type [T]. */
         interface Visitor<out T> {
 
-            fun visitSucceeded(succeeded: SucceededResult): T
+            fun visitSucceeded(succeeded: Succeeded): T
 
-            fun visitErrored(errored: ErroredResult): T
+            fun visitErrored(errored: Errored): T
 
-            fun visitCanceled(canceled: CanceledResult): T
+            fun visitCanceled(canceled: Canceled): T
 
-            fun visitExpired(expired: ExpiredResult): T
+            fun visitExpired(expired: Expired): T
 
             /**
              * Maps an unknown variant of [Result] to a value of type [T].
@@ -448,22 +448,22 @@ private constructor(
 
                 when (type) {
                     "succeeded" -> {
-                        return tryDeserialize(node, jacksonTypeRef<SucceededResult>())?.let {
+                        return tryDeserialize(node, jacksonTypeRef<Succeeded>())?.let {
                             Result(succeeded = it, _json = json)
                         } ?: Result(_json = json)
                     }
                     "errored" -> {
-                        return tryDeserialize(node, jacksonTypeRef<ErroredResult>())?.let {
+                        return tryDeserialize(node, jacksonTypeRef<Errored>())?.let {
                             Result(errored = it, _json = json)
                         } ?: Result(_json = json)
                     }
                     "canceled" -> {
-                        return tryDeserialize(node, jacksonTypeRef<CanceledResult>())?.let {
+                        return tryDeserialize(node, jacksonTypeRef<Canceled>())?.let {
                             Result(canceled = it, _json = json)
                         } ?: Result(_json = json)
                     }
                     "expired" -> {
-                        return tryDeserialize(node, jacksonTypeRef<ExpiredResult>())?.let {
+                        return tryDeserialize(node, jacksonTypeRef<Expired>())?.let {
                             Result(expired = it, _json = json)
                         } ?: Result(_json = json)
                     }
@@ -491,7 +491,7 @@ private constructor(
             }
         }
 
-        class SucceededResult
+        class Succeeded
         private constructor(
             private val message: JsonField<Message>,
             private val type: JsonField<Type>,
@@ -549,7 +549,7 @@ private constructor(
             companion object {
 
                 /**
-                 * Returns a mutable builder for constructing an instance of [SucceededResult].
+                 * Returns a mutable builder for constructing an instance of [Succeeded].
                  *
                  * The following fields are required:
                  * ```java
@@ -560,7 +560,7 @@ private constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
-            /** A builder for [SucceededResult]. */
+            /** A builder for [Succeeded]. */
             class Builder internal constructor() {
 
                 private var message: JsonField<Message>? = null
@@ -568,10 +568,10 @@ private constructor(
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
-                internal fun from(succeededResult: SucceededResult) = apply {
-                    message = succeededResult.message
-                    type = succeededResult.type
-                    additionalProperties = succeededResult.additionalProperties.toMutableMap()
+                internal fun from(succeeded: Succeeded) = apply {
+                    message = succeeded.message
+                    type = succeeded.type
+                    additionalProperties = succeeded.additionalProperties.toMutableMap()
                 }
 
                 fun message(message: Message) = message(JsonField.of(message))
@@ -619,7 +619,7 @@ private constructor(
                 }
 
                 /**
-                 * Returns an immutable instance of [SucceededResult].
+                 * Returns an immutable instance of [Succeeded].
                  *
                  * Further updates to this [Builder] will not mutate the returned instance.
                  *
@@ -631,8 +631,8 @@ private constructor(
                  *
                  * @throws IllegalStateException if any required field is unset.
                  */
-                fun build(): SucceededResult =
-                    SucceededResult(
+                fun build(): Succeeded =
+                    Succeeded(
                         checkRequired("message", message),
                         checkRequired("type", type),
                         additionalProperties.toMutableMap(),
@@ -641,7 +641,7 @@ private constructor(
 
             private var validated: Boolean = false
 
-            fun validate(): SucceededResult = apply {
+            fun validate(): Succeeded = apply {
                 if (validated) {
                     return@apply
                 }
@@ -1044,53 +1044,39 @@ private constructor(
                             }
                     }
 
-                    /**
-                     * Alias for calling [addContent] with
-                     * `Content.ofResponseTextBlock(responseTextBlock)`.
-                     */
-                    fun addContent(responseTextBlock: Content.ResponseTextBlock) =
-                        addContent(Content.ofResponseTextBlock(responseTextBlock))
+                    /** Alias for calling [addContent] with `Content.ofText(text)`. */
+                    fun addContent(text: Content.Text) = addContent(Content.ofText(text))
+
+                    /** Alias for calling [addContent] with `Content.ofToolUse(toolUse)`. */
+                    fun addContent(toolUse: Content.ToolUse) =
+                        addContent(Content.ofToolUse(toolUse))
+
+                    /** Alias for calling [addContent] with `Content.ofThinking(thinking)`. */
+                    fun addContent(thinking: Content.Thinking) =
+                        addContent(Content.ofThinking(thinking))
 
                     /**
                      * Alias for calling [addContent] with
-                     * `Content.ofResponseToolUseBlock(responseToolUseBlock)`.
+                     * `Content.ofRedactedThinking(redactedThinking)`.
                      */
-                    fun addContent(responseToolUseBlock: Content.ResponseToolUseBlock) =
-                        addContent(Content.ofResponseToolUseBlock(responseToolUseBlock))
-
-                    /**
-                     * Alias for calling [addContent] with
-                     * `Content.ofResponseThinkingBlock(responseThinkingBlock)`.
-                     */
-                    fun addContent(responseThinkingBlock: Content.ResponseThinkingBlock) =
-                        addContent(Content.ofResponseThinkingBlock(responseThinkingBlock))
-
-                    /**
-                     * Alias for calling [addContent] with
-                     * `Content.ofResponseRedactedThinkingBlock(responseRedactedThinkingBlock)`.
-                     */
-                    fun addContent(
-                        responseRedactedThinkingBlock: Content.ResponseRedactedThinkingBlock
-                    ) =
-                        addContent(
-                            Content.ofResponseRedactedThinkingBlock(responseRedactedThinkingBlock)
-                        )
+                    fun addContent(redactedThinking: Content.RedactedThinking) =
+                        addContent(Content.ofRedactedThinking(redactedThinking))
 
                     /**
                      * Alias for calling [addContent] with the following:
                      * ```java
-                     * Content.ResponseRedactedThinkingBlock.builder()
-                     *     .type(BatchResultsResponse.Result.SucceededResult.Message.Content.ResponseRedactedThinkingBlock.Type.REDACTED_THINKING)
+                     * Content.RedactedThinking.builder()
+                     *     .type(BatchResultsResponse.Result.Succeeded.Message.Content.RedactedThinking.Type.REDACTED_THINKING)
                      *     .data(data)
                      *     .build()
                      * ```
                      */
-                    fun addResponseRedactedThinkingBlockContent(data: String) =
+                    fun addRedactedThinkingContent(data: String) =
                         addContent(
-                            Content.ResponseRedactedThinkingBlock.builder()
+                            Content.RedactedThinking.builder()
                                 .type(
-                                    BatchResultsResponse.Result.SucceededResult.Message.Content
-                                        .ResponseRedactedThinkingBlock
+                                    BatchResultsResponse.Result.Succeeded.Message.Content
+                                        .RedactedThinking
                                         .Type
                                         .REDACTED_THINKING
                                 )
@@ -1330,61 +1316,48 @@ private constructor(
                 @JsonSerialize(using = Content.Serializer::class)
                 class Content
                 private constructor(
-                    private val responseTextBlock: ResponseTextBlock? = null,
-                    private val responseToolUseBlock: ResponseToolUseBlock? = null,
-                    private val responseThinkingBlock: ResponseThinkingBlock? = null,
-                    private val responseRedactedThinkingBlock: ResponseRedactedThinkingBlock? =
-                        null,
+                    private val text: Text? = null,
+                    private val toolUse: ToolUse? = null,
+                    private val thinking: Thinking? = null,
+                    private val redactedThinking: RedactedThinking? = null,
                     private val _json: JsonValue? = null,
                 ) {
 
-                    fun responseTextBlock(): Optional<ResponseTextBlock> =
-                        Optional.ofNullable(responseTextBlock)
+                    fun text(): Optional<Text> = Optional.ofNullable(text)
 
-                    fun responseToolUseBlock(): Optional<ResponseToolUseBlock> =
-                        Optional.ofNullable(responseToolUseBlock)
+                    fun toolUse(): Optional<ToolUse> = Optional.ofNullable(toolUse)
 
-                    fun responseThinkingBlock(): Optional<ResponseThinkingBlock> =
-                        Optional.ofNullable(responseThinkingBlock)
+                    fun thinking(): Optional<Thinking> = Optional.ofNullable(thinking)
 
-                    fun responseRedactedThinkingBlock(): Optional<ResponseRedactedThinkingBlock> =
-                        Optional.ofNullable(responseRedactedThinkingBlock)
+                    fun redactedThinking(): Optional<RedactedThinking> =
+                        Optional.ofNullable(redactedThinking)
 
-                    fun isResponseTextBlock(): Boolean = responseTextBlock != null
+                    fun isText(): Boolean = text != null
 
-                    fun isResponseToolUseBlock(): Boolean = responseToolUseBlock != null
+                    fun isToolUse(): Boolean = toolUse != null
 
-                    fun isResponseThinkingBlock(): Boolean = responseThinkingBlock != null
+                    fun isThinking(): Boolean = thinking != null
 
-                    fun isResponseRedactedThinkingBlock(): Boolean =
-                        responseRedactedThinkingBlock != null
+                    fun isRedactedThinking(): Boolean = redactedThinking != null
 
-                    fun asResponseTextBlock(): ResponseTextBlock =
-                        responseTextBlock.getOrThrow("responseTextBlock")
+                    fun asText(): Text = text.getOrThrow("text")
 
-                    fun asResponseToolUseBlock(): ResponseToolUseBlock =
-                        responseToolUseBlock.getOrThrow("responseToolUseBlock")
+                    fun asToolUse(): ToolUse = toolUse.getOrThrow("toolUse")
 
-                    fun asResponseThinkingBlock(): ResponseThinkingBlock =
-                        responseThinkingBlock.getOrThrow("responseThinkingBlock")
+                    fun asThinking(): Thinking = thinking.getOrThrow("thinking")
 
-                    fun asResponseRedactedThinkingBlock(): ResponseRedactedThinkingBlock =
-                        responseRedactedThinkingBlock.getOrThrow("responseRedactedThinkingBlock")
+                    fun asRedactedThinking(): RedactedThinking =
+                        redactedThinking.getOrThrow("redactedThinking")
 
                     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
                     fun <T> accept(visitor: Visitor<T>): T =
                         when {
-                            responseTextBlock != null ->
-                                visitor.visitResponseTextBlock(responseTextBlock)
-                            responseToolUseBlock != null ->
-                                visitor.visitResponseToolUseBlock(responseToolUseBlock)
-                            responseThinkingBlock != null ->
-                                visitor.visitResponseThinkingBlock(responseThinkingBlock)
-                            responseRedactedThinkingBlock != null ->
-                                visitor.visitResponseRedactedThinkingBlock(
-                                    responseRedactedThinkingBlock
-                                )
+                            text != null -> visitor.visitText(text)
+                            toolUse != null -> visitor.visitToolUse(toolUse)
+                            thinking != null -> visitor.visitThinking(thinking)
+                            redactedThinking != null ->
+                                visitor.visitRedactedThinking(redactedThinking)
                             else -> visitor.unknown(_json)
                         }
 
@@ -1397,28 +1370,22 @@ private constructor(
 
                         accept(
                             object : Visitor<Unit> {
-                                override fun visitResponseTextBlock(
-                                    responseTextBlock: ResponseTextBlock
-                                ) {
-                                    responseTextBlock.validate()
+                                override fun visitText(text: Text) {
+                                    text.validate()
                                 }
 
-                                override fun visitResponseToolUseBlock(
-                                    responseToolUseBlock: ResponseToolUseBlock
-                                ) {
-                                    responseToolUseBlock.validate()
+                                override fun visitToolUse(toolUse: ToolUse) {
+                                    toolUse.validate()
                                 }
 
-                                override fun visitResponseThinkingBlock(
-                                    responseThinkingBlock: ResponseThinkingBlock
-                                ) {
-                                    responseThinkingBlock.validate()
+                                override fun visitThinking(thinking: Thinking) {
+                                    thinking.validate()
                                 }
 
-                                override fun visitResponseRedactedThinkingBlock(
-                                    responseRedactedThinkingBlock: ResponseRedactedThinkingBlock
+                                override fun visitRedactedThinking(
+                                    redactedThinking: RedactedThinking
                                 ) {
-                                    responseRedactedThinkingBlock.validate()
+                                    redactedThinking.validate()
                                 }
                             }
                         )
@@ -1443,21 +1410,15 @@ private constructor(
                     internal fun validity(): Int =
                         accept(
                             object : Visitor<Int> {
-                                override fun visitResponseTextBlock(
-                                    responseTextBlock: ResponseTextBlock
-                                ) = responseTextBlock.validity()
+                                override fun visitText(text: Text) = text.validity()
 
-                                override fun visitResponseToolUseBlock(
-                                    responseToolUseBlock: ResponseToolUseBlock
-                                ) = responseToolUseBlock.validity()
+                                override fun visitToolUse(toolUse: ToolUse) = toolUse.validity()
 
-                                override fun visitResponseThinkingBlock(
-                                    responseThinkingBlock: ResponseThinkingBlock
-                                ) = responseThinkingBlock.validity()
+                                override fun visitThinking(thinking: Thinking) = thinking.validity()
 
-                                override fun visitResponseRedactedThinkingBlock(
-                                    responseRedactedThinkingBlock: ResponseRedactedThinkingBlock
-                                ) = responseRedactedThinkingBlock.validity()
+                                override fun visitRedactedThinking(
+                                    redactedThinking: RedactedThinking
+                                ) = redactedThinking.validity()
 
                                 override fun unknown(json: JsonValue?) = 0
                             }
@@ -1468,43 +1429,33 @@ private constructor(
                             return true
                         }
 
-                        return /* spotless:off */ other is Content && responseTextBlock == other.responseTextBlock && responseToolUseBlock == other.responseToolUseBlock && responseThinkingBlock == other.responseThinkingBlock && responseRedactedThinkingBlock == other.responseRedactedThinkingBlock /* spotless:on */
+                        return /* spotless:off */ other is Content && text == other.text && toolUse == other.toolUse && thinking == other.thinking && redactedThinking == other.redactedThinking /* spotless:on */
                     }
 
-                    override fun hashCode(): Int = /* spotless:off */ Objects.hash(responseTextBlock, responseToolUseBlock, responseThinkingBlock, responseRedactedThinkingBlock) /* spotless:on */
+                    override fun hashCode(): Int = /* spotless:off */ Objects.hash(text, toolUse, thinking, redactedThinking) /* spotless:on */
 
                     override fun toString(): String =
                         when {
-                            responseTextBlock != null ->
-                                "Content{responseTextBlock=$responseTextBlock}"
-                            responseToolUseBlock != null ->
-                                "Content{responseToolUseBlock=$responseToolUseBlock}"
-                            responseThinkingBlock != null ->
-                                "Content{responseThinkingBlock=$responseThinkingBlock}"
-                            responseRedactedThinkingBlock != null ->
-                                "Content{responseRedactedThinkingBlock=$responseRedactedThinkingBlock}"
+                            text != null -> "Content{text=$text}"
+                            toolUse != null -> "Content{toolUse=$toolUse}"
+                            thinking != null -> "Content{thinking=$thinking}"
+                            redactedThinking != null ->
+                                "Content{redactedThinking=$redactedThinking}"
                             _json != null -> "Content{_unknown=$_json}"
                             else -> throw IllegalStateException("Invalid Content")
                         }
 
                     companion object {
 
-                        @JvmStatic
-                        fun ofResponseTextBlock(responseTextBlock: ResponseTextBlock) =
-                            Content(responseTextBlock = responseTextBlock)
+                        @JvmStatic fun ofText(text: Text) = Content(text = text)
+
+                        @JvmStatic fun ofToolUse(toolUse: ToolUse) = Content(toolUse = toolUse)
+
+                        @JvmStatic fun ofThinking(thinking: Thinking) = Content(thinking = thinking)
 
                         @JvmStatic
-                        fun ofResponseToolUseBlock(responseToolUseBlock: ResponseToolUseBlock) =
-                            Content(responseToolUseBlock = responseToolUseBlock)
-
-                        @JvmStatic
-                        fun ofResponseThinkingBlock(responseThinkingBlock: ResponseThinkingBlock) =
-                            Content(responseThinkingBlock = responseThinkingBlock)
-
-                        @JvmStatic
-                        fun ofResponseRedactedThinkingBlock(
-                            responseRedactedThinkingBlock: ResponseRedactedThinkingBlock
-                        ) = Content(responseRedactedThinkingBlock = responseRedactedThinkingBlock)
+                        fun ofRedactedThinking(redactedThinking: RedactedThinking) =
+                            Content(redactedThinking = redactedThinking)
                     }
 
                     /**
@@ -1513,17 +1464,13 @@ private constructor(
                      */
                     interface Visitor<out T> {
 
-                        fun visitResponseTextBlock(responseTextBlock: ResponseTextBlock): T
+                        fun visitText(text: Text): T
 
-                        fun visitResponseToolUseBlock(responseToolUseBlock: ResponseToolUseBlock): T
+                        fun visitToolUse(toolUse: ToolUse): T
 
-                        fun visitResponseThinkingBlock(
-                            responseThinkingBlock: ResponseThinkingBlock
-                        ): T
+                        fun visitThinking(thinking: Thinking): T
 
-                        fun visitResponseRedactedThinkingBlock(
-                            responseRedactedThinkingBlock: ResponseRedactedThinkingBlock
-                        ): T
+                        fun visitRedactedThinking(redactedThinking: RedactedThinking): T
 
                         /**
                          * Maps an unknown variant of [Content] to a value of type [T].
@@ -1549,37 +1496,24 @@ private constructor(
 
                             when (type) {
                                 "text" -> {
-                                    return tryDeserialize(node, jacksonTypeRef<ResponseTextBlock>())
-                                        ?.let { Content(responseTextBlock = it, _json = json) }
-                                        ?: Content(_json = json)
+                                    return tryDeserialize(node, jacksonTypeRef<Text>())?.let {
+                                        Content(text = it, _json = json)
+                                    } ?: Content(_json = json)
                                 }
                                 "tool_use" -> {
-                                    return tryDeserialize(
-                                            node,
-                                            jacksonTypeRef<ResponseToolUseBlock>(),
-                                        )
-                                        ?.let { Content(responseToolUseBlock = it, _json = json) }
-                                        ?: Content(_json = json)
+                                    return tryDeserialize(node, jacksonTypeRef<ToolUse>())?.let {
+                                        Content(toolUse = it, _json = json)
+                                    } ?: Content(_json = json)
                                 }
                                 "thinking" -> {
-                                    return tryDeserialize(
-                                            node,
-                                            jacksonTypeRef<ResponseThinkingBlock>(),
-                                        )
-                                        ?.let { Content(responseThinkingBlock = it, _json = json) }
-                                        ?: Content(_json = json)
+                                    return tryDeserialize(node, jacksonTypeRef<Thinking>())?.let {
+                                        Content(thinking = it, _json = json)
+                                    } ?: Content(_json = json)
                                 }
                                 "redacted_thinking" -> {
-                                    return tryDeserialize(
-                                            node,
-                                            jacksonTypeRef<ResponseRedactedThinkingBlock>(),
-                                        )
-                                        ?.let {
-                                            Content(
-                                                responseRedactedThinkingBlock = it,
-                                                _json = json,
-                                            )
-                                        } ?: Content(_json = json)
+                                    return tryDeserialize(node, jacksonTypeRef<RedactedThinking>())
+                                        ?.let { Content(redactedThinking = it, _json = json) }
+                                        ?: Content(_json = json)
                                 }
                             }
 
@@ -1595,21 +1529,18 @@ private constructor(
                             provider: SerializerProvider,
                         ) {
                             when {
-                                value.responseTextBlock != null ->
-                                    generator.writeObject(value.responseTextBlock)
-                                value.responseToolUseBlock != null ->
-                                    generator.writeObject(value.responseToolUseBlock)
-                                value.responseThinkingBlock != null ->
-                                    generator.writeObject(value.responseThinkingBlock)
-                                value.responseRedactedThinkingBlock != null ->
-                                    generator.writeObject(value.responseRedactedThinkingBlock)
+                                value.text != null -> generator.writeObject(value.text)
+                                value.toolUse != null -> generator.writeObject(value.toolUse)
+                                value.thinking != null -> generator.writeObject(value.thinking)
+                                value.redactedThinking != null ->
+                                    generator.writeObject(value.redactedThinking)
                                 value._json != null -> generator.writeObject(value._json)
                                 else -> throw IllegalStateException("Invalid Content")
                             }
                         }
                     }
 
-                    class ResponseTextBlock
+                    class Text
                     private constructor(
                         private val citations: JsonField<List<Citation>>,
                         private val text: JsonField<String>,
@@ -1699,8 +1630,7 @@ private constructor(
                         companion object {
 
                             /**
-                             * Returns a mutable builder for constructing an instance of
-                             * [ResponseTextBlock].
+                             * Returns a mutable builder for constructing an instance of [Text].
                              *
                              * The following fields are required:
                              * ```java
@@ -1712,7 +1642,7 @@ private constructor(
                             @JvmStatic fun builder() = Builder()
                         }
 
-                        /** A builder for [ResponseTextBlock]. */
+                        /** A builder for [Text]. */
                         class Builder internal constructor() {
 
                             private var citations: JsonField<MutableList<Citation>>? = null
@@ -1722,12 +1652,11 @@ private constructor(
                                 mutableMapOf()
 
                             @JvmSynthetic
-                            internal fun from(responseTextBlock: ResponseTextBlock) = apply {
-                                citations = responseTextBlock.citations.map { it.toMutableList() }
-                                text = responseTextBlock.text
-                                type = responseTextBlock.type
-                                additionalProperties =
-                                    responseTextBlock.additionalProperties.toMutableMap()
+                            internal fun from(text: Text) = apply {
+                                citations = text.citations.map { it.toMutableList() }
+                                this.text = text.text
+                                type = text.type
+                                additionalProperties = text.additionalProperties.toMutableMap()
                             }
 
                             /**
@@ -1773,33 +1702,24 @@ private constructor(
 
                             /**
                              * Alias for calling [addCitation] with
-                             * `Citation.ofResponseCharLocation(responseCharLocation)`.
+                             * `Citation.ofCharLocation(charLocation)`.
                              */
-                            fun addCitation(
-                                responseCharLocation: Citation.ResponseCharLocationCitation
-                            ) = addCitation(Citation.ofResponseCharLocation(responseCharLocation))
+                            fun addCitation(charLocation: Citation.CharLocation) =
+                                addCitation(Citation.ofCharLocation(charLocation))
 
                             /**
                              * Alias for calling [addCitation] with
-                             * `Citation.ofResponsePageLocation(responsePageLocation)`.
+                             * `Citation.ofPageLocation(pageLocation)`.
                              */
-                            fun addCitation(
-                                responsePageLocation: Citation.ResponsePageLocationCitation
-                            ) = addCitation(Citation.ofResponsePageLocation(responsePageLocation))
+                            fun addCitation(pageLocation: Citation.PageLocation) =
+                                addCitation(Citation.ofPageLocation(pageLocation))
 
                             /**
                              * Alias for calling [addCitation] with
-                             * `Citation.ofResponseContentBlockLocation(responseContentBlockLocation)`.
+                             * `Citation.ofContentBlockLocation(contentBlockLocation)`.
                              */
-                            fun addCitation(
-                                responseContentBlockLocation:
-                                    Citation.ResponseContentBlockLocationCitation
-                            ) =
-                                addCitation(
-                                    Citation.ofResponseContentBlockLocation(
-                                        responseContentBlockLocation
-                                    )
-                                )
+                            fun addCitation(contentBlockLocation: Citation.ContentBlockLocation) =
+                                addCitation(Citation.ofContentBlockLocation(contentBlockLocation))
 
                             fun text(text: String) = text(JsonField.of(text))
 
@@ -1846,7 +1766,7 @@ private constructor(
                             }
 
                             /**
-                             * Returns an immutable instance of [ResponseTextBlock].
+                             * Returns an immutable instance of [Text].
                              *
                              * Further updates to this [Builder] will not mutate the returned
                              * instance.
@@ -1860,8 +1780,8 @@ private constructor(
                              *
                              * @throws IllegalStateException if any required field is unset.
                              */
-                            fun build(): ResponseTextBlock =
-                                ResponseTextBlock(
+                            fun build(): Text =
+                                Text(
                                     checkRequired("citations", citations).map { it.toImmutable() },
                                     checkRequired("text", text),
                                     checkRequired("type", type),
@@ -1871,7 +1791,7 @@ private constructor(
 
                         private var validated: Boolean = false
 
-                        fun validate(): ResponseTextBlock = apply {
+                        fun validate(): Text = apply {
                             if (validated) {
                                 return@apply
                             }
@@ -1907,55 +1827,44 @@ private constructor(
                         @JsonSerialize(using = Citation.Serializer::class)
                         class Citation
                         private constructor(
-                            private val responseCharLocation: ResponseCharLocationCitation? = null,
-                            private val responsePageLocation: ResponsePageLocationCitation? = null,
-                            private val responseContentBlockLocation:
-                                ResponseContentBlockLocationCitation? =
-                                null,
+                            private val charLocation: CharLocation? = null,
+                            private val pageLocation: PageLocation? = null,
+                            private val contentBlockLocation: ContentBlockLocation? = null,
                             private val _json: JsonValue? = null,
                         ) {
 
-                            fun responseCharLocation(): Optional<ResponseCharLocationCitation> =
-                                Optional.ofNullable(responseCharLocation)
+                            fun charLocation(): Optional<CharLocation> =
+                                Optional.ofNullable(charLocation)
 
-                            fun responsePageLocation(): Optional<ResponsePageLocationCitation> =
-                                Optional.ofNullable(responsePageLocation)
+                            fun pageLocation(): Optional<PageLocation> =
+                                Optional.ofNullable(pageLocation)
 
-                            fun responseContentBlockLocation():
-                                Optional<ResponseContentBlockLocationCitation> =
-                                Optional.ofNullable(responseContentBlockLocation)
+                            fun contentBlockLocation(): Optional<ContentBlockLocation> =
+                                Optional.ofNullable(contentBlockLocation)
 
-                            fun isResponseCharLocation(): Boolean = responseCharLocation != null
+                            fun isCharLocation(): Boolean = charLocation != null
 
-                            fun isResponsePageLocation(): Boolean = responsePageLocation != null
+                            fun isPageLocation(): Boolean = pageLocation != null
 
-                            fun isResponseContentBlockLocation(): Boolean =
-                                responseContentBlockLocation != null
+                            fun isContentBlockLocation(): Boolean = contentBlockLocation != null
 
-                            fun asResponseCharLocation(): ResponseCharLocationCitation =
-                                responseCharLocation.getOrThrow("responseCharLocation")
+                            fun asCharLocation(): CharLocation =
+                                charLocation.getOrThrow("charLocation")
 
-                            fun asResponsePageLocation(): ResponsePageLocationCitation =
-                                responsePageLocation.getOrThrow("responsePageLocation")
+                            fun asPageLocation(): PageLocation =
+                                pageLocation.getOrThrow("pageLocation")
 
-                            fun asResponseContentBlockLocation():
-                                ResponseContentBlockLocationCitation =
-                                responseContentBlockLocation.getOrThrow(
-                                    "responseContentBlockLocation"
-                                )
+                            fun asContentBlockLocation(): ContentBlockLocation =
+                                contentBlockLocation.getOrThrow("contentBlockLocation")
 
                             fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
                             fun <T> accept(visitor: Visitor<T>): T =
                                 when {
-                                    responseCharLocation != null ->
-                                        visitor.visitResponseCharLocation(responseCharLocation)
-                                    responsePageLocation != null ->
-                                        visitor.visitResponsePageLocation(responsePageLocation)
-                                    responseContentBlockLocation != null ->
-                                        visitor.visitResponseContentBlockLocation(
-                                            responseContentBlockLocation
-                                        )
+                                    charLocation != null -> visitor.visitCharLocation(charLocation)
+                                    pageLocation != null -> visitor.visitPageLocation(pageLocation)
+                                    contentBlockLocation != null ->
+                                        visitor.visitContentBlockLocation(contentBlockLocation)
                                     else -> visitor.unknown(_json)
                                 }
 
@@ -1968,23 +1877,18 @@ private constructor(
 
                                 accept(
                                     object : Visitor<Unit> {
-                                        override fun visitResponseCharLocation(
-                                            responseCharLocation: ResponseCharLocationCitation
-                                        ) {
-                                            responseCharLocation.validate()
+                                        override fun visitCharLocation(charLocation: CharLocation) {
+                                            charLocation.validate()
                                         }
 
-                                        override fun visitResponsePageLocation(
-                                            responsePageLocation: ResponsePageLocationCitation
-                                        ) {
-                                            responsePageLocation.validate()
+                                        override fun visitPageLocation(pageLocation: PageLocation) {
+                                            pageLocation.validate()
                                         }
 
-                                        override fun visitResponseContentBlockLocation(
-                                            responseContentBlockLocation:
-                                                ResponseContentBlockLocationCitation
+                                        override fun visitContentBlockLocation(
+                                            contentBlockLocation: ContentBlockLocation
                                         ) {
-                                            responseContentBlockLocation.validate()
+                                            contentBlockLocation.validate()
                                         }
                                     }
                                 )
@@ -2009,18 +1913,15 @@ private constructor(
                             internal fun validity(): Int =
                                 accept(
                                     object : Visitor<Int> {
-                                        override fun visitResponseCharLocation(
-                                            responseCharLocation: ResponseCharLocationCitation
-                                        ) = responseCharLocation.validity()
+                                        override fun visitCharLocation(charLocation: CharLocation) =
+                                            charLocation.validity()
 
-                                        override fun visitResponsePageLocation(
-                                            responsePageLocation: ResponsePageLocationCitation
-                                        ) = responsePageLocation.validity()
+                                        override fun visitPageLocation(pageLocation: PageLocation) =
+                                            pageLocation.validity()
 
-                                        override fun visitResponseContentBlockLocation(
-                                            responseContentBlockLocation:
-                                                ResponseContentBlockLocationCitation
-                                        ) = responseContentBlockLocation.validity()
+                                        override fun visitContentBlockLocation(
+                                            contentBlockLocation: ContentBlockLocation
+                                        ) = contentBlockLocation.validity()
 
                                         override fun unknown(json: JsonValue?) = 0
                                     }
@@ -2031,19 +1932,17 @@ private constructor(
                                     return true
                                 }
 
-                                return /* spotless:off */ other is Citation && responseCharLocation == other.responseCharLocation && responsePageLocation == other.responsePageLocation && responseContentBlockLocation == other.responseContentBlockLocation /* spotless:on */
+                                return /* spotless:off */ other is Citation && charLocation == other.charLocation && pageLocation == other.pageLocation && contentBlockLocation == other.contentBlockLocation /* spotless:on */
                             }
 
-                            override fun hashCode(): Int = /* spotless:off */ Objects.hash(responseCharLocation, responsePageLocation, responseContentBlockLocation) /* spotless:on */
+                            override fun hashCode(): Int = /* spotless:off */ Objects.hash(charLocation, pageLocation, contentBlockLocation) /* spotless:on */
 
                             override fun toString(): String =
                                 when {
-                                    responseCharLocation != null ->
-                                        "Citation{responseCharLocation=$responseCharLocation}"
-                                    responsePageLocation != null ->
-                                        "Citation{responsePageLocation=$responsePageLocation}"
-                                    responseContentBlockLocation != null ->
-                                        "Citation{responseContentBlockLocation=$responseContentBlockLocation}"
+                                    charLocation != null -> "Citation{charLocation=$charLocation}"
+                                    pageLocation != null -> "Citation{pageLocation=$pageLocation}"
+                                    contentBlockLocation != null ->
+                                        "Citation{contentBlockLocation=$contentBlockLocation}"
                                     _json != null -> "Citation{_unknown=$_json}"
                                     else -> throw IllegalStateException("Invalid Citation")
                                 }
@@ -2051,23 +1950,17 @@ private constructor(
                             companion object {
 
                                 @JvmStatic
-                                fun ofResponseCharLocation(
-                                    responseCharLocation: ResponseCharLocationCitation
-                                ) = Citation(responseCharLocation = responseCharLocation)
+                                fun ofCharLocation(charLocation: CharLocation) =
+                                    Citation(charLocation = charLocation)
 
                                 @JvmStatic
-                                fun ofResponsePageLocation(
-                                    responsePageLocation: ResponsePageLocationCitation
-                                ) = Citation(responsePageLocation = responsePageLocation)
+                                fun ofPageLocation(pageLocation: PageLocation) =
+                                    Citation(pageLocation = pageLocation)
 
                                 @JvmStatic
-                                fun ofResponseContentBlockLocation(
-                                    responseContentBlockLocation:
-                                        ResponseContentBlockLocationCitation
-                                ) =
-                                    Citation(
-                                        responseContentBlockLocation = responseContentBlockLocation
-                                    )
+                                fun ofContentBlockLocation(
+                                    contentBlockLocation: ContentBlockLocation
+                                ) = Citation(contentBlockLocation = contentBlockLocation)
                             }
 
                             /**
@@ -2076,17 +1969,12 @@ private constructor(
                              */
                             interface Visitor<out T> {
 
-                                fun visitResponseCharLocation(
-                                    responseCharLocation: ResponseCharLocationCitation
-                                ): T
+                                fun visitCharLocation(charLocation: CharLocation): T
 
-                                fun visitResponsePageLocation(
-                                    responsePageLocation: ResponsePageLocationCitation
-                                ): T
+                                fun visitPageLocation(pageLocation: PageLocation): T
 
-                                fun visitResponseContentBlockLocation(
-                                    responseContentBlockLocation:
-                                        ResponseContentBlockLocationCitation
+                                fun visitContentBlockLocation(
+                                    contentBlockLocation: ContentBlockLocation
                                 ): T
 
                                 /**
@@ -2121,37 +2009,27 @@ private constructor(
                                         "char_location" -> {
                                             return tryDeserialize(
                                                     node,
-                                                    jacksonTypeRef<ResponseCharLocationCitation>(),
+                                                    jacksonTypeRef<CharLocation>(),
                                                 )
-                                                ?.let {
-                                                    Citation(
-                                                        responseCharLocation = it,
-                                                        _json = json,
-                                                    )
-                                                } ?: Citation(_json = json)
+                                                ?.let { Citation(charLocation = it, _json = json) }
+                                                ?: Citation(_json = json)
                                         }
                                         "page_location" -> {
                                             return tryDeserialize(
                                                     node,
-                                                    jacksonTypeRef<ResponsePageLocationCitation>(),
+                                                    jacksonTypeRef<PageLocation>(),
                                                 )
-                                                ?.let {
-                                                    Citation(
-                                                        responsePageLocation = it,
-                                                        _json = json,
-                                                    )
-                                                } ?: Citation(_json = json)
+                                                ?.let { Citation(pageLocation = it, _json = json) }
+                                                ?: Citation(_json = json)
                                         }
                                         "content_block_location" -> {
                                             return tryDeserialize(
                                                     node,
-                                                    jacksonTypeRef<
-                                                        ResponseContentBlockLocationCitation
-                                                    >(),
+                                                    jacksonTypeRef<ContentBlockLocation>(),
                                                 )
                                                 ?.let {
                                                     Citation(
-                                                        responseContentBlockLocation = it,
+                                                        contentBlockLocation = it,
                                                         _json = json,
                                                     )
                                                 } ?: Citation(_json = json)
@@ -2170,21 +2048,19 @@ private constructor(
                                     provider: SerializerProvider,
                                 ) {
                                     when {
-                                        value.responseCharLocation != null ->
-                                            generator.writeObject(value.responseCharLocation)
-                                        value.responsePageLocation != null ->
-                                            generator.writeObject(value.responsePageLocation)
-                                        value.responseContentBlockLocation != null ->
-                                            generator.writeObject(
-                                                value.responseContentBlockLocation
-                                            )
+                                        value.charLocation != null ->
+                                            generator.writeObject(value.charLocation)
+                                        value.pageLocation != null ->
+                                            generator.writeObject(value.pageLocation)
+                                        value.contentBlockLocation != null ->
+                                            generator.writeObject(value.contentBlockLocation)
                                         value._json != null -> generator.writeObject(value._json)
                                         else -> throw IllegalStateException("Invalid Citation")
                                     }
                                 }
                             }
 
-                            class ResponseCharLocationCitation
+                            class CharLocation
                             private constructor(
                                 private val citedText: JsonField<String>,
                                 private val documentIndex: JsonField<Long>,
@@ -2347,7 +2223,7 @@ private constructor(
 
                                     /**
                                      * Returns a mutable builder for constructing an instance of
-                                     * [ResponseCharLocationCitation].
+                                     * [CharLocation].
                                      *
                                      * The following fields are required:
                                      * ```java
@@ -2362,7 +2238,7 @@ private constructor(
                                     @JvmStatic fun builder() = Builder()
                                 }
 
-                                /** A builder for [ResponseCharLocationCitation]. */
+                                /** A builder for [CharLocation]. */
                                 class Builder internal constructor() {
 
                                     private var citedText: JsonField<String>? = null
@@ -2376,18 +2252,15 @@ private constructor(
                                         mutableMapOf()
 
                                     @JvmSynthetic
-                                    internal fun from(
-                                        responseCharLocationCitation: ResponseCharLocationCitation
-                                    ) = apply {
-                                        citedText = responseCharLocationCitation.citedText
-                                        documentIndex = responseCharLocationCitation.documentIndex
-                                        documentTitle = responseCharLocationCitation.documentTitle
-                                        endCharIndex = responseCharLocationCitation.endCharIndex
-                                        startCharIndex = responseCharLocationCitation.startCharIndex
-                                        type = responseCharLocationCitation.type
+                                    internal fun from(charLocation: CharLocation) = apply {
+                                        citedText = charLocation.citedText
+                                        documentIndex = charLocation.documentIndex
+                                        documentTitle = charLocation.documentTitle
+                                        endCharIndex = charLocation.endCharIndex
+                                        startCharIndex = charLocation.startCharIndex
+                                        type = charLocation.type
                                         additionalProperties =
-                                            responseCharLocationCitation.additionalProperties
-                                                .toMutableMap()
+                                            charLocation.additionalProperties.toMutableMap()
                                     }
 
                                     fun citedText(citedText: String) =
@@ -2509,8 +2382,7 @@ private constructor(
                                     }
 
                                     /**
-                                     * Returns an immutable instance of
-                                     * [ResponseCharLocationCitation].
+                                     * Returns an immutable instance of [CharLocation].
                                      *
                                      * Further updates to this [Builder] will not mutate the
                                      * returned instance.
@@ -2527,8 +2399,8 @@ private constructor(
                                      *
                                      * @throws IllegalStateException if any required field is unset.
                                      */
-                                    fun build(): ResponseCharLocationCitation =
-                                        ResponseCharLocationCitation(
+                                    fun build(): CharLocation =
+                                        CharLocation(
                                             checkRequired("citedText", citedText),
                                             checkRequired("documentIndex", documentIndex),
                                             checkRequired("documentTitle", documentTitle),
@@ -2541,7 +2413,7 @@ private constructor(
 
                                 private var validated: Boolean = false
 
-                                fun validate(): ResponseCharLocationCitation = apply {
+                                fun validate(): CharLocation = apply {
                                     if (validated) {
                                         return@apply
                                     }
@@ -2722,7 +2594,7 @@ private constructor(
                                         return true
                                     }
 
-                                    return /* spotless:off */ other is ResponseCharLocationCitation && citedText == other.citedText && documentIndex == other.documentIndex && documentTitle == other.documentTitle && endCharIndex == other.endCharIndex && startCharIndex == other.startCharIndex && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                                    return /* spotless:off */ other is CharLocation && citedText == other.citedText && documentIndex == other.documentIndex && documentTitle == other.documentTitle && endCharIndex == other.endCharIndex && startCharIndex == other.startCharIndex && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
                                 }
 
                                 /* spotless:off */
@@ -2732,10 +2604,10 @@ private constructor(
                                 override fun hashCode(): Int = hashCode
 
                                 override fun toString() =
-                                    "ResponseCharLocationCitation{citedText=$citedText, documentIndex=$documentIndex, documentTitle=$documentTitle, endCharIndex=$endCharIndex, startCharIndex=$startCharIndex, type=$type, additionalProperties=$additionalProperties}"
+                                    "CharLocation{citedText=$citedText, documentIndex=$documentIndex, documentTitle=$documentTitle, endCharIndex=$endCharIndex, startCharIndex=$startCharIndex, type=$type, additionalProperties=$additionalProperties}"
                             }
 
-                            class ResponsePageLocationCitation
+                            class PageLocation
                             private constructor(
                                 private val citedText: JsonField<String>,
                                 private val documentIndex: JsonField<Long>,
@@ -2898,7 +2770,7 @@ private constructor(
 
                                     /**
                                      * Returns a mutable builder for constructing an instance of
-                                     * [ResponsePageLocationCitation].
+                                     * [PageLocation].
                                      *
                                      * The following fields are required:
                                      * ```java
@@ -2913,7 +2785,7 @@ private constructor(
                                     @JvmStatic fun builder() = Builder()
                                 }
 
-                                /** A builder for [ResponsePageLocationCitation]. */
+                                /** A builder for [PageLocation]. */
                                 class Builder internal constructor() {
 
                                     private var citedText: JsonField<String>? = null
@@ -2927,19 +2799,15 @@ private constructor(
                                         mutableMapOf()
 
                                     @JvmSynthetic
-                                    internal fun from(
-                                        responsePageLocationCitation: ResponsePageLocationCitation
-                                    ) = apply {
-                                        citedText = responsePageLocationCitation.citedText
-                                        documentIndex = responsePageLocationCitation.documentIndex
-                                        documentTitle = responsePageLocationCitation.documentTitle
-                                        endPageNumber = responsePageLocationCitation.endPageNumber
-                                        startPageNumber =
-                                            responsePageLocationCitation.startPageNumber
-                                        type = responsePageLocationCitation.type
+                                    internal fun from(pageLocation: PageLocation) = apply {
+                                        citedText = pageLocation.citedText
+                                        documentIndex = pageLocation.documentIndex
+                                        documentTitle = pageLocation.documentTitle
+                                        endPageNumber = pageLocation.endPageNumber
+                                        startPageNumber = pageLocation.startPageNumber
+                                        type = pageLocation.type
                                         additionalProperties =
-                                            responsePageLocationCitation.additionalProperties
-                                                .toMutableMap()
+                                            pageLocation.additionalProperties.toMutableMap()
                                     }
 
                                     fun citedText(citedText: String) =
@@ -3061,8 +2929,7 @@ private constructor(
                                     }
 
                                     /**
-                                     * Returns an immutable instance of
-                                     * [ResponsePageLocationCitation].
+                                     * Returns an immutable instance of [PageLocation].
                                      *
                                      * Further updates to this [Builder] will not mutate the
                                      * returned instance.
@@ -3079,8 +2946,8 @@ private constructor(
                                      *
                                      * @throws IllegalStateException if any required field is unset.
                                      */
-                                    fun build(): ResponsePageLocationCitation =
-                                        ResponsePageLocationCitation(
+                                    fun build(): PageLocation =
+                                        PageLocation(
                                             checkRequired("citedText", citedText),
                                             checkRequired("documentIndex", documentIndex),
                                             checkRequired("documentTitle", documentTitle),
@@ -3093,7 +2960,7 @@ private constructor(
 
                                 private var validated: Boolean = false
 
-                                fun validate(): ResponsePageLocationCitation = apply {
+                                fun validate(): PageLocation = apply {
                                     if (validated) {
                                         return@apply
                                     }
@@ -3274,7 +3141,7 @@ private constructor(
                                         return true
                                     }
 
-                                    return /* spotless:off */ other is ResponsePageLocationCitation && citedText == other.citedText && documentIndex == other.documentIndex && documentTitle == other.documentTitle && endPageNumber == other.endPageNumber && startPageNumber == other.startPageNumber && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                                    return /* spotless:off */ other is PageLocation && citedText == other.citedText && documentIndex == other.documentIndex && documentTitle == other.documentTitle && endPageNumber == other.endPageNumber && startPageNumber == other.startPageNumber && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
                                 }
 
                                 /* spotless:off */
@@ -3284,10 +3151,10 @@ private constructor(
                                 override fun hashCode(): Int = hashCode
 
                                 override fun toString() =
-                                    "ResponsePageLocationCitation{citedText=$citedText, documentIndex=$documentIndex, documentTitle=$documentTitle, endPageNumber=$endPageNumber, startPageNumber=$startPageNumber, type=$type, additionalProperties=$additionalProperties}"
+                                    "PageLocation{citedText=$citedText, documentIndex=$documentIndex, documentTitle=$documentTitle, endPageNumber=$endPageNumber, startPageNumber=$startPageNumber, type=$type, additionalProperties=$additionalProperties}"
                             }
 
-                            class ResponseContentBlockLocationCitation
+                            class ContentBlockLocation
                             private constructor(
                                 private val citedText: JsonField<String>,
                                 private val documentIndex: JsonField<Long>,
@@ -3450,7 +3317,7 @@ private constructor(
 
                                     /**
                                      * Returns a mutable builder for constructing an instance of
-                                     * [ResponseContentBlockLocationCitation].
+                                     * [ContentBlockLocation].
                                      *
                                      * The following fields are required:
                                      * ```java
@@ -3465,7 +3332,7 @@ private constructor(
                                     @JvmStatic fun builder() = Builder()
                                 }
 
-                                /** A builder for [ResponseContentBlockLocationCitation]. */
+                                /** A builder for [ContentBlockLocation]. */
                                 class Builder internal constructor() {
 
                                     private var citedText: JsonField<String>? = null
@@ -3479,25 +3346,18 @@ private constructor(
                                         mutableMapOf()
 
                                     @JvmSynthetic
-                                    internal fun from(
-                                        responseContentBlockLocationCitation:
-                                            ResponseContentBlockLocationCitation
-                                    ) = apply {
-                                        citedText = responseContentBlockLocationCitation.citedText
-                                        documentIndex =
-                                            responseContentBlockLocationCitation.documentIndex
-                                        documentTitle =
-                                            responseContentBlockLocationCitation.documentTitle
-                                        endBlockIndex =
-                                            responseContentBlockLocationCitation.endBlockIndex
-                                        startBlockIndex =
-                                            responseContentBlockLocationCitation.startBlockIndex
-                                        type = responseContentBlockLocationCitation.type
-                                        additionalProperties =
-                                            responseContentBlockLocationCitation
-                                                .additionalProperties
-                                                .toMutableMap()
-                                    }
+                                    internal fun from(contentBlockLocation: ContentBlockLocation) =
+                                        apply {
+                                            citedText = contentBlockLocation.citedText
+                                            documentIndex = contentBlockLocation.documentIndex
+                                            documentTitle = contentBlockLocation.documentTitle
+                                            endBlockIndex = contentBlockLocation.endBlockIndex
+                                            startBlockIndex = contentBlockLocation.startBlockIndex
+                                            type = contentBlockLocation.type
+                                            additionalProperties =
+                                                contentBlockLocation.additionalProperties
+                                                    .toMutableMap()
+                                        }
 
                                     fun citedText(citedText: String) =
                                         citedText(JsonField.of(citedText))
@@ -3618,8 +3478,7 @@ private constructor(
                                     }
 
                                     /**
-                                     * Returns an immutable instance of
-                                     * [ResponseContentBlockLocationCitation].
+                                     * Returns an immutable instance of [ContentBlockLocation].
                                      *
                                      * Further updates to this [Builder] will not mutate the
                                      * returned instance.
@@ -3636,8 +3495,8 @@ private constructor(
                                      *
                                      * @throws IllegalStateException if any required field is unset.
                                      */
-                                    fun build(): ResponseContentBlockLocationCitation =
-                                        ResponseContentBlockLocationCitation(
+                                    fun build(): ContentBlockLocation =
+                                        ContentBlockLocation(
                                             checkRequired("citedText", citedText),
                                             checkRequired("documentIndex", documentIndex),
                                             checkRequired("documentTitle", documentTitle),
@@ -3650,7 +3509,7 @@ private constructor(
 
                                 private var validated: Boolean = false
 
-                                fun validate(): ResponseContentBlockLocationCitation = apply {
+                                fun validate(): ContentBlockLocation = apply {
                                     if (validated) {
                                         return@apply
                                     }
@@ -3832,7 +3691,7 @@ private constructor(
                                         return true
                                     }
 
-                                    return /* spotless:off */ other is ResponseContentBlockLocationCitation && citedText == other.citedText && documentIndex == other.documentIndex && documentTitle == other.documentTitle && endBlockIndex == other.endBlockIndex && startBlockIndex == other.startBlockIndex && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                                    return /* spotless:off */ other is ContentBlockLocation && citedText == other.citedText && documentIndex == other.documentIndex && documentTitle == other.documentTitle && endBlockIndex == other.endBlockIndex && startBlockIndex == other.startBlockIndex && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
                                 }
 
                                 /* spotless:off */
@@ -3842,7 +3701,7 @@ private constructor(
                                 override fun hashCode(): Int = hashCode
 
                                 override fun toString() =
-                                    "ResponseContentBlockLocationCitation{citedText=$citedText, documentIndex=$documentIndex, documentTitle=$documentTitle, endBlockIndex=$endBlockIndex, startBlockIndex=$startBlockIndex, type=$type, additionalProperties=$additionalProperties}"
+                                    "ContentBlockLocation{citedText=$citedText, documentIndex=$documentIndex, documentTitle=$documentTitle, endBlockIndex=$endBlockIndex, startBlockIndex=$startBlockIndex, type=$type, additionalProperties=$additionalProperties}"
                             }
                         }
 
@@ -3982,7 +3841,7 @@ private constructor(
                                 return true
                             }
 
-                            return /* spotless:off */ other is ResponseTextBlock && citations == other.citations && text == other.text && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                            return /* spotless:off */ other is Text && citations == other.citations && text == other.text && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
                         }
 
                         /* spotless:off */
@@ -3992,10 +3851,10 @@ private constructor(
                         override fun hashCode(): Int = hashCode
 
                         override fun toString() =
-                            "ResponseTextBlock{citations=$citations, text=$text, type=$type, additionalProperties=$additionalProperties}"
+                            "Text{citations=$citations, text=$text, type=$type, additionalProperties=$additionalProperties}"
                     }
 
-                    class ResponseToolUseBlock
+                    class ToolUse
                     private constructor(
                         private val id: JsonField<String>,
                         private val input: JsonValue,
@@ -4082,8 +3941,7 @@ private constructor(
                         companion object {
 
                             /**
-                             * Returns a mutable builder for constructing an instance of
-                             * [ResponseToolUseBlock].
+                             * Returns a mutable builder for constructing an instance of [ToolUse].
                              *
                              * The following fields are required:
                              * ```java
@@ -4096,7 +3954,7 @@ private constructor(
                             @JvmStatic fun builder() = Builder()
                         }
 
-                        /** A builder for [ResponseToolUseBlock]. */
+                        /** A builder for [ToolUse]. */
                         class Builder internal constructor() {
 
                             private var id: JsonField<String>? = null
@@ -4107,13 +3965,12 @@ private constructor(
                                 mutableMapOf()
 
                             @JvmSynthetic
-                            internal fun from(responseToolUseBlock: ResponseToolUseBlock) = apply {
-                                id = responseToolUseBlock.id
-                                input = responseToolUseBlock.input
-                                name = responseToolUseBlock.name
-                                type = responseToolUseBlock.type
-                                additionalProperties =
-                                    responseToolUseBlock.additionalProperties.toMutableMap()
+                            internal fun from(toolUse: ToolUse) = apply {
+                                id = toolUse.id
+                                input = toolUse.input
+                                name = toolUse.name
+                                type = toolUse.type
+                                additionalProperties = toolUse.additionalProperties.toMutableMap()
                             }
 
                             fun id(id: String) = id(JsonField.of(id))
@@ -4174,7 +4031,7 @@ private constructor(
                             }
 
                             /**
-                             * Returns an immutable instance of [ResponseToolUseBlock].
+                             * Returns an immutable instance of [ToolUse].
                              *
                              * Further updates to this [Builder] will not mutate the returned
                              * instance.
@@ -4189,8 +4046,8 @@ private constructor(
                              *
                              * @throws IllegalStateException if any required field is unset.
                              */
-                            fun build(): ResponseToolUseBlock =
-                                ResponseToolUseBlock(
+                            fun build(): ToolUse =
+                                ToolUse(
                                     checkRequired("id", id),
                                     checkRequired("input", input),
                                     checkRequired("name", name),
@@ -4201,7 +4058,7 @@ private constructor(
 
                         private var validated: Boolean = false
 
-                        fun validate(): ResponseToolUseBlock = apply {
+                        fun validate(): ToolUse = apply {
                             if (validated) {
                                 return@apply
                             }
@@ -4368,7 +4225,7 @@ private constructor(
                                 return true
                             }
 
-                            return /* spotless:off */ other is ResponseToolUseBlock && id == other.id && input == other.input && name == other.name && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                            return /* spotless:off */ other is ToolUse && id == other.id && input == other.input && name == other.name && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
                         }
 
                         /* spotless:off */
@@ -4378,10 +4235,10 @@ private constructor(
                         override fun hashCode(): Int = hashCode
 
                         override fun toString() =
-                            "ResponseToolUseBlock{id=$id, input=$input, name=$name, type=$type, additionalProperties=$additionalProperties}"
+                            "ToolUse{id=$id, input=$input, name=$name, type=$type, additionalProperties=$additionalProperties}"
                     }
 
-                    class ResponseThinkingBlock
+                    class Thinking
                     private constructor(
                         private val signature: JsonField<String>,
                         private val thinking: JsonField<String>,
@@ -4466,8 +4323,7 @@ private constructor(
                         companion object {
 
                             /**
-                             * Returns a mutable builder for constructing an instance of
-                             * [ResponseThinkingBlock].
+                             * Returns a mutable builder for constructing an instance of [Thinking].
                              *
                              * The following fields are required:
                              * ```java
@@ -4479,7 +4335,7 @@ private constructor(
                             @JvmStatic fun builder() = Builder()
                         }
 
-                        /** A builder for [ResponseThinkingBlock]. */
+                        /** A builder for [Thinking]. */
                         class Builder internal constructor() {
 
                             private var signature: JsonField<String>? = null
@@ -4489,14 +4345,12 @@ private constructor(
                                 mutableMapOf()
 
                             @JvmSynthetic
-                            internal fun from(responseThinkingBlock: ResponseThinkingBlock) =
-                                apply {
-                                    signature = responseThinkingBlock.signature
-                                    thinking = responseThinkingBlock.thinking
-                                    type = responseThinkingBlock.type
-                                    additionalProperties =
-                                        responseThinkingBlock.additionalProperties.toMutableMap()
-                                }
+                            internal fun from(thinking: Thinking) = apply {
+                                signature = thinking.signature
+                                this.thinking = thinking.thinking
+                                type = thinking.type
+                                additionalProperties = thinking.additionalProperties.toMutableMap()
+                            }
 
                             fun signature(signature: String) = signature(JsonField.of(signature))
 
@@ -4558,7 +4412,7 @@ private constructor(
                             }
 
                             /**
-                             * Returns an immutable instance of [ResponseThinkingBlock].
+                             * Returns an immutable instance of [Thinking].
                              *
                              * Further updates to this [Builder] will not mutate the returned
                              * instance.
@@ -4572,8 +4426,8 @@ private constructor(
                              *
                              * @throws IllegalStateException if any required field is unset.
                              */
-                            fun build(): ResponseThinkingBlock =
-                                ResponseThinkingBlock(
+                            fun build(): Thinking =
+                                Thinking(
                                     checkRequired("signature", signature),
                                     checkRequired("thinking", thinking),
                                     checkRequired("type", type),
@@ -4583,7 +4437,7 @@ private constructor(
 
                         private var validated: Boolean = false
 
-                        fun validate(): ResponseThinkingBlock = apply {
+                        fun validate(): Thinking = apply {
                             if (validated) {
                                 return@apply
                             }
@@ -4750,7 +4604,7 @@ private constructor(
                                 return true
                             }
 
-                            return /* spotless:off */ other is ResponseThinkingBlock && signature == other.signature && thinking == other.thinking && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                            return /* spotless:off */ other is Thinking && signature == other.signature && thinking == other.thinking && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
                         }
 
                         /* spotless:off */
@@ -4760,10 +4614,10 @@ private constructor(
                         override fun hashCode(): Int = hashCode
 
                         override fun toString() =
-                            "ResponseThinkingBlock{signature=$signature, thinking=$thinking, type=$type, additionalProperties=$additionalProperties}"
+                            "Thinking{signature=$signature, thinking=$thinking, type=$type, additionalProperties=$additionalProperties}"
                     }
 
-                    class ResponseRedactedThinkingBlock
+                    class RedactedThinking
                     private constructor(
                         private val data: JsonField<String>,
                         private val type: JsonField<Type>,
@@ -4826,7 +4680,7 @@ private constructor(
 
                             /**
                              * Returns a mutable builder for constructing an instance of
-                             * [ResponseRedactedThinkingBlock].
+                             * [RedactedThinking].
                              *
                              * The following fields are required:
                              * ```java
@@ -4837,7 +4691,7 @@ private constructor(
                             @JvmStatic fun builder() = Builder()
                         }
 
-                        /** A builder for [ResponseRedactedThinkingBlock]. */
+                        /** A builder for [RedactedThinking]. */
                         class Builder internal constructor() {
 
                             private var data: JsonField<String>? = null
@@ -4846,14 +4700,11 @@ private constructor(
                                 mutableMapOf()
 
                             @JvmSynthetic
-                            internal fun from(
-                                responseRedactedThinkingBlock: ResponseRedactedThinkingBlock
-                            ) = apply {
-                                data = responseRedactedThinkingBlock.data
-                                type = responseRedactedThinkingBlock.type
+                            internal fun from(redactedThinking: RedactedThinking) = apply {
+                                data = redactedThinking.data
+                                type = redactedThinking.type
                                 additionalProperties =
-                                    responseRedactedThinkingBlock.additionalProperties
-                                        .toMutableMap()
+                                    redactedThinking.additionalProperties.toMutableMap()
                             }
 
                             fun data(data: String) = data(JsonField.of(data))
@@ -4901,7 +4752,7 @@ private constructor(
                             }
 
                             /**
-                             * Returns an immutable instance of [ResponseRedactedThinkingBlock].
+                             * Returns an immutable instance of [RedactedThinking].
                              *
                              * Further updates to this [Builder] will not mutate the returned
                              * instance.
@@ -4914,8 +4765,8 @@ private constructor(
                              *
                              * @throws IllegalStateException if any required field is unset.
                              */
-                            fun build(): ResponseRedactedThinkingBlock =
-                                ResponseRedactedThinkingBlock(
+                            fun build(): RedactedThinking =
+                                RedactedThinking(
                                     checkRequired("data", data),
                                     checkRequired("type", type),
                                     additionalProperties.toMutableMap(),
@@ -4924,7 +4775,7 @@ private constructor(
 
                         private var validated: Boolean = false
 
-                        fun validate(): ResponseRedactedThinkingBlock = apply {
+                        fun validate(): RedactedThinking = apply {
                             if (validated) {
                                 return@apply
                             }
@@ -5089,7 +4940,7 @@ private constructor(
                                 return true
                             }
 
-                            return /* spotless:off */ other is ResponseRedactedThinkingBlock && data == other.data && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                            return /* spotless:off */ other is RedactedThinking && data == other.data && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
                         }
 
                         /* spotless:off */
@@ -5099,7 +4950,7 @@ private constructor(
                         override fun hashCode(): Int = hashCode
 
                         override fun toString() =
-                            "ResponseRedactedThinkingBlock{data=$data, type=$type, additionalProperties=$additionalProperties}"
+                            "RedactedThinking{data=$data, type=$type, additionalProperties=$additionalProperties}"
                     }
                 }
 
@@ -6035,7 +5886,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is SucceededResult && message == other.message && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                return /* spotless:off */ other is Succeeded && message == other.message && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
             /* spotless:off */
@@ -6045,10 +5896,10 @@ private constructor(
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "SucceededResult{message=$message, type=$type, additionalProperties=$additionalProperties}"
+                "Succeeded{message=$message, type=$type, additionalProperties=$additionalProperties}"
         }
 
-        class ErroredResult
+        class Errored
         private constructor(
             private val error: JsonField<Error>,
             private val type: JsonField<Type>,
@@ -6104,7 +5955,7 @@ private constructor(
             companion object {
 
                 /**
-                 * Returns a mutable builder for constructing an instance of [ErroredResult].
+                 * Returns a mutable builder for constructing an instance of [Errored].
                  *
                  * The following fields are required:
                  * ```java
@@ -6115,7 +5966,7 @@ private constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
-            /** A builder for [ErroredResult]. */
+            /** A builder for [Errored]. */
             class Builder internal constructor() {
 
                 private var error: JsonField<Error>? = null
@@ -6123,10 +5974,10 @@ private constructor(
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
-                internal fun from(erroredResult: ErroredResult) = apply {
-                    error = erroredResult.error
-                    type = erroredResult.type
-                    additionalProperties = erroredResult.additionalProperties.toMutableMap()
+                internal fun from(errored: Errored) = apply {
+                    error = errored.error
+                    type = errored.type
+                    additionalProperties = errored.additionalProperties.toMutableMap()
                 }
 
                 fun error(error: Error) = error(JsonField.of(error))
@@ -6174,7 +6025,7 @@ private constructor(
                 }
 
                 /**
-                 * Returns an immutable instance of [ErroredResult].
+                 * Returns an immutable instance of [Errored].
                  *
                  * Further updates to this [Builder] will not mutate the returned instance.
                  *
@@ -6186,8 +6037,8 @@ private constructor(
                  *
                  * @throws IllegalStateException if any required field is unset.
                  */
-                fun build(): ErroredResult =
-                    ErroredResult(
+                fun build(): Errored =
+                    Errored(
                         checkRequired("error", error),
                         checkRequired("type", type),
                         additionalProperties.toMutableMap(),
@@ -6196,7 +6047,7 @@ private constructor(
 
             private var validated: Boolean = false
 
-            fun validate(): ErroredResult = apply {
+            fun validate(): Errored = apply {
                 if (validated) {
                     return@apply
                 }
@@ -6331,7 +6182,7 @@ private constructor(
                      * Alias for calling [error] with the following:
                      * ```java
                      * InnerError.InvalidRequestError.builder()
-                     *     .type(BatchResultsResponse.Result.ErroredResult.Error.InnerError.InvalidRequestError.Type.INVALID_REQUEST_ERROR)
+                     *     .type(BatchResultsResponse.Result.Errored.Error.InnerError.InvalidRequestError.Type.INVALID_REQUEST_ERROR)
                      *     .message(message)
                      *     .build()
                      * ```
@@ -6340,7 +6191,7 @@ private constructor(
                         error(
                             InnerError.InvalidRequestError.builder()
                                 .type(
-                                    BatchResultsResponse.Result.ErroredResult.Error.InnerError
+                                    BatchResultsResponse.Result.Errored.Error.InnerError
                                         .InvalidRequestError
                                         .Type
                                         .INVALID_REQUEST_ERROR
@@ -6359,7 +6210,7 @@ private constructor(
                      * Alias for calling [error] with the following:
                      * ```java
                      * InnerError.AuthenticationError.builder()
-                     *     .type(BatchResultsResponse.Result.ErroredResult.Error.InnerError.AuthenticationError.Type.AUTHENTICATION_ERROR)
+                     *     .type(BatchResultsResponse.Result.Errored.Error.InnerError.AuthenticationError.Type.AUTHENTICATION_ERROR)
                      *     .message(message)
                      *     .build()
                      * ```
@@ -6368,7 +6219,7 @@ private constructor(
                         error(
                             InnerError.AuthenticationError.builder()
                                 .type(
-                                    BatchResultsResponse.Result.ErroredResult.Error.InnerError
+                                    BatchResultsResponse.Result.Errored.Error.InnerError
                                         .AuthenticationError
                                         .Type
                                         .AUTHENTICATION_ERROR
@@ -6385,7 +6236,7 @@ private constructor(
                      * Alias for calling [error] with the following:
                      * ```java
                      * InnerError.BillingError.builder()
-                     *     .type(BatchResultsResponse.Result.ErroredResult.Error.InnerError.BillingError.Type.BILLING_ERROR)
+                     *     .type(BatchResultsResponse.Result.Errored.Error.InnerError.BillingError.Type.BILLING_ERROR)
                      *     .message(message)
                      *     .build()
                      * ```
@@ -6394,7 +6245,7 @@ private constructor(
                         error(
                             InnerError.BillingError.builder()
                                 .type(
-                                    BatchResultsResponse.Result.ErroredResult.Error.InnerError
+                                    BatchResultsResponse.Result.Errored.Error.InnerError
                                         .BillingError
                                         .Type
                                         .BILLING_ERROR
@@ -6411,7 +6262,7 @@ private constructor(
                      * Alias for calling [error] with the following:
                      * ```java
                      * InnerError.PermissionError.builder()
-                     *     .type(BatchResultsResponse.Result.ErroredResult.Error.InnerError.PermissionError.Type.PERMISSION_ERROR)
+                     *     .type(BatchResultsResponse.Result.Errored.Error.InnerError.PermissionError.Type.PERMISSION_ERROR)
                      *     .message(message)
                      *     .build()
                      * ```
@@ -6420,7 +6271,7 @@ private constructor(
                         error(
                             InnerError.PermissionError.builder()
                                 .type(
-                                    BatchResultsResponse.Result.ErroredResult.Error.InnerError
+                                    BatchResultsResponse.Result.Errored.Error.InnerError
                                         .PermissionError
                                         .Type
                                         .PERMISSION_ERROR
@@ -6437,7 +6288,7 @@ private constructor(
                      * Alias for calling [error] with the following:
                      * ```java
                      * InnerError.NotFoundError.builder()
-                     *     .type(BatchResultsResponse.Result.ErroredResult.Error.InnerError.NotFoundError.Type.NOT_FOUND_ERROR)
+                     *     .type(BatchResultsResponse.Result.Errored.Error.InnerError.NotFoundError.Type.NOT_FOUND_ERROR)
                      *     .message(message)
                      *     .build()
                      * ```
@@ -6446,7 +6297,7 @@ private constructor(
                         error(
                             InnerError.NotFoundError.builder()
                                 .type(
-                                    BatchResultsResponse.Result.ErroredResult.Error.InnerError
+                                    BatchResultsResponse.Result.Errored.Error.InnerError
                                         .NotFoundError
                                         .Type
                                         .NOT_FOUND_ERROR
@@ -6463,7 +6314,7 @@ private constructor(
                      * Alias for calling [error] with the following:
                      * ```java
                      * InnerError.RateLimitError.builder()
-                     *     .type(BatchResultsResponse.Result.ErroredResult.Error.InnerError.RateLimitError.Type.RATE_LIMIT_ERROR)
+                     *     .type(BatchResultsResponse.Result.Errored.Error.InnerError.RateLimitError.Type.RATE_LIMIT_ERROR)
                      *     .message(message)
                      *     .build()
                      * ```
@@ -6472,7 +6323,7 @@ private constructor(
                         error(
                             InnerError.RateLimitError.builder()
                                 .type(
-                                    BatchResultsResponse.Result.ErroredResult.Error.InnerError
+                                    BatchResultsResponse.Result.Errored.Error.InnerError
                                         .RateLimitError
                                         .Type
                                         .RATE_LIMIT_ERROR
@@ -6481,27 +6332,25 @@ private constructor(
                                 .build()
                         )
 
-                    /**
-                     * Alias for calling [error] with `InnerError.ofGatewayTimeout(gatewayTimeout)`.
-                     */
-                    fun error(gatewayTimeout: InnerError.GatewayTimeoutError) =
-                        error(InnerError.ofGatewayTimeout(gatewayTimeout))
+                    /** Alias for calling [error] with `InnerError.ofTimeout(timeout)`. */
+                    fun error(timeout: InnerError.TimeoutError) =
+                        error(InnerError.ofTimeout(timeout))
 
                     /**
                      * Alias for calling [error] with the following:
                      * ```java
-                     * InnerError.GatewayTimeoutError.builder()
-                     *     .type(BatchResultsResponse.Result.ErroredResult.Error.InnerError.GatewayTimeoutError.Type.TIMEOUT_ERROR)
+                     * InnerError.TimeoutError.builder()
+                     *     .type(BatchResultsResponse.Result.Errored.Error.InnerError.TimeoutError.Type.TIMEOUT_ERROR)
                      *     .message(message)
                      *     .build()
                      * ```
                      */
-                    fun gatewayTimeoutError(message: String) =
+                    fun timeoutError(message: String) =
                         error(
-                            InnerError.GatewayTimeoutError.builder()
+                            InnerError.TimeoutError.builder()
                                 .type(
-                                    BatchResultsResponse.Result.ErroredResult.Error.InnerError
-                                        .GatewayTimeoutError
+                                    BatchResultsResponse.Result.Errored.Error.InnerError
+                                        .TimeoutError
                                         .Type
                                         .TIMEOUT_ERROR
                                 )
@@ -6516,7 +6365,7 @@ private constructor(
                      * Alias for calling [error] with the following:
                      * ```java
                      * InnerError.ApiError.builder()
-                     *     .type(BatchResultsResponse.Result.ErroredResult.Error.InnerError.ApiError.Type.API_ERROR)
+                     *     .type(BatchResultsResponse.Result.Errored.Error.InnerError.ApiError.Type.API_ERROR)
                      *     .message(message)
                      *     .build()
                      * ```
@@ -6525,8 +6374,7 @@ private constructor(
                         error(
                             InnerError.ApiError.builder()
                                 .type(
-                                    BatchResultsResponse.Result.ErroredResult.Error.InnerError
-                                        .ApiError
+                                    BatchResultsResponse.Result.Errored.Error.InnerError.ApiError
                                         .Type
                                         .API_ERROR
                                 )
@@ -6542,7 +6390,7 @@ private constructor(
                      * Alias for calling [error] with the following:
                      * ```java
                      * InnerError.OverloadedError.builder()
-                     *     .type(BatchResultsResponse.Result.ErroredResult.Error.InnerError.OverloadedError.Type.OVERLOADED_ERROR)
+                     *     .type(BatchResultsResponse.Result.Errored.Error.InnerError.OverloadedError.Type.OVERLOADED_ERROR)
                      *     .message(message)
                      *     .build()
                      * ```
@@ -6551,7 +6399,7 @@ private constructor(
                         error(
                             InnerError.OverloadedError.builder()
                                 .type(
-                                    BatchResultsResponse.Result.ErroredResult.Error.InnerError
+                                    BatchResultsResponse.Result.Errored.Error.InnerError
                                         .OverloadedError
                                         .Type
                                         .OVERLOADED_ERROR
@@ -6655,7 +6503,7 @@ private constructor(
                     private val permission: PermissionError? = null,
                     private val notFound: NotFoundError? = null,
                     private val rateLimit: RateLimitError? = null,
-                    private val gatewayTimeout: GatewayTimeoutError? = null,
+                    private val timeout: TimeoutError? = null,
                     private val api: ApiError? = null,
                     private val overloaded: OverloadedError? = null,
                     private val _json: JsonValue? = null,
@@ -6675,8 +6523,7 @@ private constructor(
 
                     fun rateLimit(): Optional<RateLimitError> = Optional.ofNullable(rateLimit)
 
-                    fun gatewayTimeout(): Optional<GatewayTimeoutError> =
-                        Optional.ofNullable(gatewayTimeout)
+                    fun timeout(): Optional<TimeoutError> = Optional.ofNullable(timeout)
 
                     fun api(): Optional<ApiError> = Optional.ofNullable(api)
 
@@ -6694,7 +6541,7 @@ private constructor(
 
                     fun isRateLimit(): Boolean = rateLimit != null
 
-                    fun isGatewayTimeout(): Boolean = gatewayTimeout != null
+                    fun isTimeout(): Boolean = timeout != null
 
                     fun isApi(): Boolean = api != null
 
@@ -6714,8 +6561,7 @@ private constructor(
 
                     fun asRateLimit(): RateLimitError = rateLimit.getOrThrow("rateLimit")
 
-                    fun asGatewayTimeout(): GatewayTimeoutError =
-                        gatewayTimeout.getOrThrow("gatewayTimeout")
+                    fun asTimeout(): TimeoutError = timeout.getOrThrow("timeout")
 
                     fun asApi(): ApiError = api.getOrThrow("api")
 
@@ -6731,7 +6577,7 @@ private constructor(
                             permission != null -> visitor.visitPermission(permission)
                             notFound != null -> visitor.visitNotFound(notFound)
                             rateLimit != null -> visitor.visitRateLimit(rateLimit)
-                            gatewayTimeout != null -> visitor.visitGatewayTimeout(gatewayTimeout)
+                            timeout != null -> visitor.visitTimeout(timeout)
                             api != null -> visitor.visitApi(api)
                             overloaded != null -> visitor.visitOverloaded(overloaded)
                             else -> visitor.unknown(_json)
@@ -6774,10 +6620,8 @@ private constructor(
                                     rateLimit.validate()
                                 }
 
-                                override fun visitGatewayTimeout(
-                                    gatewayTimeout: GatewayTimeoutError
-                                ) {
-                                    gatewayTimeout.validate()
+                                override fun visitTimeout(timeout: TimeoutError) {
+                                    timeout.validate()
                                 }
 
                                 override fun visitApi(api: ApiError) {
@@ -6830,9 +6674,8 @@ private constructor(
                                 override fun visitRateLimit(rateLimit: RateLimitError) =
                                     rateLimit.validity()
 
-                                override fun visitGatewayTimeout(
-                                    gatewayTimeout: GatewayTimeoutError
-                                ) = gatewayTimeout.validity()
+                                override fun visitTimeout(timeout: TimeoutError) =
+                                    timeout.validity()
 
                                 override fun visitApi(api: ApiError) = api.validity()
 
@@ -6848,10 +6691,10 @@ private constructor(
                             return true
                         }
 
-                        return /* spotless:off */ other is InnerError && invalidRequest == other.invalidRequest && authentication == other.authentication && billing == other.billing && permission == other.permission && notFound == other.notFound && rateLimit == other.rateLimit && gatewayTimeout == other.gatewayTimeout && api == other.api && overloaded == other.overloaded /* spotless:on */
+                        return /* spotless:off */ other is InnerError && invalidRequest == other.invalidRequest && authentication == other.authentication && billing == other.billing && permission == other.permission && notFound == other.notFound && rateLimit == other.rateLimit && timeout == other.timeout && api == other.api && overloaded == other.overloaded /* spotless:on */
                     }
 
-                    override fun hashCode(): Int = /* spotless:off */ Objects.hash(invalidRequest, authentication, billing, permission, notFound, rateLimit, gatewayTimeout, api, overloaded) /* spotless:on */
+                    override fun hashCode(): Int = /* spotless:off */ Objects.hash(invalidRequest, authentication, billing, permission, notFound, rateLimit, timeout, api, overloaded) /* spotless:on */
 
                     override fun toString(): String =
                         when {
@@ -6861,7 +6704,7 @@ private constructor(
                             permission != null -> "InnerError{permission=$permission}"
                             notFound != null -> "InnerError{notFound=$notFound}"
                             rateLimit != null -> "InnerError{rateLimit=$rateLimit}"
-                            gatewayTimeout != null -> "InnerError{gatewayTimeout=$gatewayTimeout}"
+                            timeout != null -> "InnerError{timeout=$timeout}"
                             api != null -> "InnerError{api=$api}"
                             overloaded != null -> "InnerError{overloaded=$overloaded}"
                             _json != null -> "InnerError{_unknown=$_json}"
@@ -6893,8 +6736,7 @@ private constructor(
                             InnerError(rateLimit = rateLimit)
 
                         @JvmStatic
-                        fun ofGatewayTimeout(gatewayTimeout: GatewayTimeoutError) =
-                            InnerError(gatewayTimeout = gatewayTimeout)
+                        fun ofTimeout(timeout: TimeoutError) = InnerError(timeout = timeout)
 
                         @JvmStatic fun ofApi(api: ApiError) = InnerError(api = api)
 
@@ -6921,7 +6763,7 @@ private constructor(
 
                         fun visitRateLimit(rateLimit: RateLimitError): T
 
-                        fun visitGatewayTimeout(gatewayTimeout: GatewayTimeoutError): T
+                        fun visitTimeout(timeout: TimeoutError): T
 
                         fun visitApi(api: ApiError): T
 
@@ -6987,11 +6829,8 @@ private constructor(
                                         ?: InnerError(_json = json)
                                 }
                                 "timeout_error" -> {
-                                    return tryDeserialize(
-                                            node,
-                                            jacksonTypeRef<GatewayTimeoutError>(),
-                                        )
-                                        ?.let { InnerError(gatewayTimeout = it, _json = json) }
+                                    return tryDeserialize(node, jacksonTypeRef<TimeoutError>())
+                                        ?.let { InnerError(timeout = it, _json = json) }
                                         ?: InnerError(_json = json)
                                 }
                                 "api_error" -> {
@@ -7026,8 +6865,7 @@ private constructor(
                                 value.permission != null -> generator.writeObject(value.permission)
                                 value.notFound != null -> generator.writeObject(value.notFound)
                                 value.rateLimit != null -> generator.writeObject(value.rateLimit)
-                                value.gatewayTimeout != null ->
-                                    generator.writeObject(value.gatewayTimeout)
+                                value.timeout != null -> generator.writeObject(value.timeout)
                                 value.api != null -> generator.writeObject(value.api)
                                 value.overloaded != null -> generator.writeObject(value.overloaded)
                                 value._json != null -> generator.writeObject(value._json)
@@ -9076,7 +8914,7 @@ private constructor(
                             "RateLimitError{message=$message, type=$type, additionalProperties=$additionalProperties}"
                     }
 
-                    class GatewayTimeoutError
+                    class TimeoutError
                     private constructor(
                         private val message: JsonField<String>,
                         private val type: JsonField<Type>,
@@ -9141,7 +8979,7 @@ private constructor(
 
                             /**
                              * Returns a mutable builder for constructing an instance of
-                             * [GatewayTimeoutError].
+                             * [TimeoutError].
                              *
                              * The following fields are required:
                              * ```java
@@ -9152,7 +8990,7 @@ private constructor(
                             @JvmStatic fun builder() = Builder()
                         }
 
-                        /** A builder for [GatewayTimeoutError]. */
+                        /** A builder for [TimeoutError]. */
                         class Builder internal constructor() {
 
                             private var message: JsonField<String>? = null
@@ -9161,11 +8999,11 @@ private constructor(
                                 mutableMapOf()
 
                             @JvmSynthetic
-                            internal fun from(gatewayTimeoutError: GatewayTimeoutError) = apply {
-                                message = gatewayTimeoutError.message
-                                type = gatewayTimeoutError.type
+                            internal fun from(timeoutError: TimeoutError) = apply {
+                                message = timeoutError.message
+                                type = timeoutError.type
                                 additionalProperties =
-                                    gatewayTimeoutError.additionalProperties.toMutableMap()
+                                    timeoutError.additionalProperties.toMutableMap()
                             }
 
                             fun message(message: String) = message(JsonField.of(message))
@@ -9215,7 +9053,7 @@ private constructor(
                             }
 
                             /**
-                             * Returns an immutable instance of [GatewayTimeoutError].
+                             * Returns an immutable instance of [TimeoutError].
                              *
                              * Further updates to this [Builder] will not mutate the returned
                              * instance.
@@ -9228,8 +9066,8 @@ private constructor(
                              *
                              * @throws IllegalStateException if any required field is unset.
                              */
-                            fun build(): GatewayTimeoutError =
-                                GatewayTimeoutError(
+                            fun build(): TimeoutError =
+                                TimeoutError(
                                     checkRequired("message", message),
                                     checkRequired("type", type),
                                     additionalProperties.toMutableMap(),
@@ -9238,7 +9076,7 @@ private constructor(
 
                         private var validated: Boolean = false
 
-                        fun validate(): GatewayTimeoutError = apply {
+                        fun validate(): TimeoutError = apply {
                             if (validated) {
                                 return@apply
                             }
@@ -9403,7 +9241,7 @@ private constructor(
                                 return true
                             }
 
-                            return /* spotless:off */ other is GatewayTimeoutError && message == other.message && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                            return /* spotless:off */ other is TimeoutError && message == other.message && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
                         }
 
                         /* spotless:off */
@@ -9413,7 +9251,7 @@ private constructor(
                         override fun hashCode(): Int = hashCode
 
                         override fun toString() =
-                            "GatewayTimeoutError{message=$message, type=$type, additionalProperties=$additionalProperties}"
+                            "TimeoutError{message=$message, type=$type, additionalProperties=$additionalProperties}"
                     }
 
                     class ApiError
@@ -10369,7 +10207,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is ErroredResult && error == other.error && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                return /* spotless:off */ other is Errored && error == other.error && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
             /* spotless:off */
@@ -10379,10 +10217,10 @@ private constructor(
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "ErroredResult{error=$error, type=$type, additionalProperties=$additionalProperties}"
+                "Errored{error=$error, type=$type, additionalProperties=$additionalProperties}"
         }
 
-        class CanceledResult
+        class Canceled
         private constructor(
             private val type: JsonField<Type>,
             private val additionalProperties: MutableMap<String, JsonValue>,
@@ -10422,7 +10260,7 @@ private constructor(
             companion object {
 
                 /**
-                 * Returns a mutable builder for constructing an instance of [CanceledResult].
+                 * Returns a mutable builder for constructing an instance of [Canceled].
                  *
                  * The following fields are required:
                  * ```java
@@ -10432,16 +10270,16 @@ private constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
-            /** A builder for [CanceledResult]. */
+            /** A builder for [Canceled]. */
             class Builder internal constructor() {
 
                 private var type: JsonField<Type>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
-                internal fun from(canceledResult: CanceledResult) = apply {
-                    type = canceledResult.type
-                    additionalProperties = canceledResult.additionalProperties.toMutableMap()
+                internal fun from(canceled: Canceled) = apply {
+                    type = canceled.type
+                    additionalProperties = canceled.additionalProperties.toMutableMap()
                 }
 
                 fun type(type: Type) = type(JsonField.of(type))
@@ -10478,7 +10316,7 @@ private constructor(
                 }
 
                 /**
-                 * Returns an immutable instance of [CanceledResult].
+                 * Returns an immutable instance of [Canceled].
                  *
                  * Further updates to this [Builder] will not mutate the returned instance.
                  *
@@ -10489,13 +10327,13 @@ private constructor(
                  *
                  * @throws IllegalStateException if any required field is unset.
                  */
-                fun build(): CanceledResult =
-                    CanceledResult(checkRequired("type", type), additionalProperties.toMutableMap())
+                fun build(): Canceled =
+                    Canceled(checkRequired("type", type), additionalProperties.toMutableMap())
             }
 
             private var validated: Boolean = false
 
-            fun validate(): CanceledResult = apply {
+            fun validate(): Canceled = apply {
                 if (validated) {
                     return@apply
                 }
@@ -10650,7 +10488,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is CanceledResult && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                return /* spotless:off */ other is Canceled && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
             /* spotless:off */
@@ -10660,10 +10498,10 @@ private constructor(
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "CanceledResult{type=$type, additionalProperties=$additionalProperties}"
+                "Canceled{type=$type, additionalProperties=$additionalProperties}"
         }
 
-        class ExpiredResult
+        class Expired
         private constructor(
             private val type: JsonField<Type>,
             private val additionalProperties: MutableMap<String, JsonValue>,
@@ -10703,7 +10541,7 @@ private constructor(
             companion object {
 
                 /**
-                 * Returns a mutable builder for constructing an instance of [ExpiredResult].
+                 * Returns a mutable builder for constructing an instance of [Expired].
                  *
                  * The following fields are required:
                  * ```java
@@ -10713,16 +10551,16 @@ private constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
-            /** A builder for [ExpiredResult]. */
+            /** A builder for [Expired]. */
             class Builder internal constructor() {
 
                 private var type: JsonField<Type>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
-                internal fun from(expiredResult: ExpiredResult) = apply {
-                    type = expiredResult.type
-                    additionalProperties = expiredResult.additionalProperties.toMutableMap()
+                internal fun from(expired: Expired) = apply {
+                    type = expired.type
+                    additionalProperties = expired.additionalProperties.toMutableMap()
                 }
 
                 fun type(type: Type) = type(JsonField.of(type))
@@ -10759,7 +10597,7 @@ private constructor(
                 }
 
                 /**
-                 * Returns an immutable instance of [ExpiredResult].
+                 * Returns an immutable instance of [Expired].
                  *
                  * Further updates to this [Builder] will not mutate the returned instance.
                  *
@@ -10770,13 +10608,13 @@ private constructor(
                  *
                  * @throws IllegalStateException if any required field is unset.
                  */
-                fun build(): ExpiredResult =
-                    ExpiredResult(checkRequired("type", type), additionalProperties.toMutableMap())
+                fun build(): Expired =
+                    Expired(checkRequired("type", type), additionalProperties.toMutableMap())
             }
 
             private var validated: Boolean = false
 
-            fun validate(): ExpiredResult = apply {
+            fun validate(): Expired = apply {
                 if (validated) {
                     return@apply
                 }
@@ -10931,7 +10769,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is ExpiredResult && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                return /* spotless:off */ other is Expired && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
             /* spotless:off */
@@ -10941,7 +10779,7 @@ private constructor(
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "ExpiredResult{type=$type, additionalProperties=$additionalProperties}"
+                "Expired{type=$type, additionalProperties=$additionalProperties}"
         }
     }
 

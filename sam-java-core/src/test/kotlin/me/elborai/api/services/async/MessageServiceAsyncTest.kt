@@ -61,7 +61,7 @@ internal class MessageServiceAsyncTest {
                                 )
                                 .addCitation(
                                     MessageCreateParams.System.RequestTextBlock.Citation
-                                        .RequestCharLocationCitation
+                                        .CharLocation
                                         .builder()
                                         .citedText("cited_text")
                                         .documentIndex(0L)
@@ -70,7 +70,7 @@ internal class MessageServiceAsyncTest {
                                         .startCharIndex(0L)
                                         .type(
                                             MessageCreateParams.System.RequestTextBlock.Citation
-                                                .RequestCharLocationCitation
+                                                .CharLocation
                                                 .Type
                                                 .CHAR_LOCATION
                                         )
@@ -80,10 +80,10 @@ internal class MessageServiceAsyncTest {
                         )
                     )
                     .temperature(1.0)
-                    .configEnabledThinking(1024L)
+                    .enabledThinking(1024L)
                     .toolChoice(
-                        MessageCreateParams.ToolChoice.ToolChoiceAuto.builder()
-                            .type(MessageCreateParams.ToolChoice.ToolChoiceAuto.Type.AUTO)
+                        MessageCreateParams.ToolChoice.Auto.builder()
+                            .type(MessageCreateParams.ToolChoice.Auto.Type.AUTO)
                             .disableParallelToolUse(true)
                             .build()
                     )
@@ -175,7 +175,7 @@ internal class MessageServiceAsyncTest {
                                 )
                                 .addCitation(
                                     MessageCountTokensParams.System.RequestTextBlock.Citation
-                                        .RequestCharLocationCitation
+                                        .CharLocation
                                         .builder()
                                         .citedText("cited_text")
                                         .documentIndex(0L)
@@ -185,7 +185,7 @@ internal class MessageServiceAsyncTest {
                                         .type(
                                             MessageCountTokensParams.System.RequestTextBlock
                                                 .Citation
-                                                .RequestCharLocationCitation
+                                                .CharLocation
                                                 .Type
                                                 .CHAR_LOCATION
                                         )
@@ -194,10 +194,10 @@ internal class MessageServiceAsyncTest {
                                 .build()
                         )
                     )
-                    .configEnabledThinking(1024L)
+                    .enabledThinking(1024L)
                     .toolChoice(
-                        MessageCountTokensParams.ToolChoice.ToolChoiceAuto.builder()
-                            .type(MessageCountTokensParams.ToolChoice.ToolChoiceAuto.Type.AUTO)
+                        MessageCountTokensParams.ToolChoice.Auto.builder()
+                            .type(MessageCountTokensParams.ToolChoice.Auto.Type.AUTO)
                             .disableParallelToolUse(true)
                             .build()
                     )
@@ -293,7 +293,7 @@ internal class MessageServiceAsyncTest {
                                 .addCitation(
                                     MessageCountTokensBetaParams.System.BetaRequestTextBlock
                                         .Citation
-                                        .BetaRequestCharLocationCitation
+                                        .CharLocation
                                         .builder()
                                         .citedText("cited_text")
                                         .documentIndex(0L)
@@ -303,7 +303,7 @@ internal class MessageServiceAsyncTest {
                                         .type(
                                             MessageCountTokensBetaParams.System.BetaRequestTextBlock
                                                 .Citation
-                                                .BetaRequestCharLocationCitation
+                                                .CharLocation
                                                 .Type
                                                 .CHAR_LOCATION
                                         )
@@ -312,12 +312,10 @@ internal class MessageServiceAsyncTest {
                                 .build()
                         )
                     )
-                    .betaThinkingConfigEnabledThinking(1024L)
+                    .enabledThinking(1024L)
                     .toolChoice(
-                        MessageCountTokensBetaParams.ToolChoice.BetaToolChoiceAuto.builder()
-                            .type(
-                                MessageCountTokensBetaParams.ToolChoice.BetaToolChoiceAuto.Type.AUTO
-                            )
+                        MessageCountTokensBetaParams.ToolChoice.Auto.builder()
+                            .type(MessageCountTokensBetaParams.ToolChoice.Auto.Type.AUTO)
                             .disableParallelToolUse(true)
                             .build()
                     )
