@@ -38,8 +38,7 @@ internal class MessageCountTokensParamsTest {
                                 .build()
                         )
                         .addCitation(
-                            MessageCountTokensParams.System.RequestTextBlock.Citation
-                                .RequestCharLocationCitation
+                            MessageCountTokensParams.System.RequestTextBlock.Citation.CharLocation
                                 .builder()
                                 .citedText("cited_text")
                                 .documentIndex(0L)
@@ -48,7 +47,7 @@ internal class MessageCountTokensParamsTest {
                                 .startCharIndex(0L)
                                 .type(
                                     MessageCountTokensParams.System.RequestTextBlock.Citation
-                                        .RequestCharLocationCitation
+                                        .CharLocation
                                         .Type
                                         .CHAR_LOCATION
                                 )
@@ -57,10 +56,10 @@ internal class MessageCountTokensParamsTest {
                         .build()
                 )
             )
-            .configEnabledThinking(1024L)
+            .enabledThinking(1024L)
             .toolChoice(
-                MessageCountTokensParams.ToolChoice.ToolChoiceAuto.builder()
-                    .type(MessageCountTokensParams.ToolChoice.ToolChoiceAuto.Type.AUTO)
+                MessageCountTokensParams.ToolChoice.Auto.builder()
+                    .type(MessageCountTokensParams.ToolChoice.Auto.Type.AUTO)
                     .disableParallelToolUse(true)
                     .build()
             )
@@ -135,7 +134,7 @@ internal class MessageCountTokensParamsTest {
                             )
                             .addCitation(
                                 MessageCountTokensParams.System.RequestTextBlock.Citation
-                                    .RequestCharLocationCitation
+                                    .CharLocation
                                     .builder()
                                     .citedText("cited_text")
                                     .documentIndex(0L)
@@ -144,7 +143,7 @@ internal class MessageCountTokensParamsTest {
                                     .startCharIndex(0L)
                                     .type(
                                         MessageCountTokensParams.System.RequestTextBlock.Citation
-                                            .RequestCharLocationCitation
+                                            .CharLocation
                                             .Type
                                             .CHAR_LOCATION
                                     )
@@ -153,10 +152,10 @@ internal class MessageCountTokensParamsTest {
                             .build()
                     )
                 )
-                .configEnabledThinking(1024L)
+                .enabledThinking(1024L)
                 .toolChoice(
-                    MessageCountTokensParams.ToolChoice.ToolChoiceAuto.builder()
-                        .type(MessageCountTokensParams.ToolChoice.ToolChoiceAuto.Type.AUTO)
+                    MessageCountTokensParams.ToolChoice.Auto.builder()
+                        .type(MessageCountTokensParams.ToolChoice.Auto.Type.AUTO)
                         .disableParallelToolUse(true)
                         .build()
                 )
@@ -263,7 +262,7 @@ internal class MessageCountTokensParamsTest {
                             )
                             .addCitation(
                                 MessageCountTokensParams.System.RequestTextBlock.Citation
-                                    .RequestCharLocationCitation
+                                    .CharLocation
                                     .builder()
                                     .citedText("cited_text")
                                     .documentIndex(0L)
@@ -272,7 +271,7 @@ internal class MessageCountTokensParamsTest {
                                     .startCharIndex(0L)
                                     .type(
                                         MessageCountTokensParams.System.RequestTextBlock.Citation
-                                            .RequestCharLocationCitation
+                                            .CharLocation
                                             .Type
                                             .CHAR_LOCATION
                                     )
@@ -281,10 +280,10 @@ internal class MessageCountTokensParamsTest {
                             .build()
                     )
                 )
-                .configEnabledThinking(1024L)
+                .enabledThinking(1024L)
                 .toolChoice(
-                    MessageCountTokensParams.ToolChoice.ToolChoiceAuto.builder()
-                        .type(MessageCountTokensParams.ToolChoice.ToolChoiceAuto.Type.AUTO)
+                    MessageCountTokensParams.ToolChoice.Auto.builder()
+                        .type(MessageCountTokensParams.ToolChoice.Auto.Type.AUTO)
                         .disableParallelToolUse(true)
                         .build()
                 )
@@ -359,7 +358,7 @@ internal class MessageCountTokensParamsTest {
                             )
                             .addCitation(
                                 MessageCountTokensParams.System.RequestTextBlock.Citation
-                                    .RequestCharLocationCitation
+                                    .CharLocation
                                     .builder()
                                     .citedText("cited_text")
                                     .documentIndex(0L)
@@ -368,7 +367,7 @@ internal class MessageCountTokensParamsTest {
                                     .startCharIndex(0L)
                                     .type(
                                         MessageCountTokensParams.System.RequestTextBlock.Citation
-                                            .RequestCharLocationCitation
+                                            .CharLocation
                                             .Type
                                             .CHAR_LOCATION
                                     )
@@ -380,18 +379,18 @@ internal class MessageCountTokensParamsTest {
             )
         assertThat(body.thinking())
             .contains(
-                MessageCountTokensParams.Thinking.ofConfigEnabled(
-                    MessageCountTokensParams.Thinking.ThinkingConfigEnabled.builder()
+                MessageCountTokensParams.Thinking.ofEnabled(
+                    MessageCountTokensParams.Thinking.Enabled.builder()
                         .budgetTokens(1024L)
-                        .type(MessageCountTokensParams.Thinking.ThinkingConfigEnabled.Type.ENABLED)
+                        .type(MessageCountTokensParams.Thinking.Enabled.Type.ENABLED)
                         .build()
                 )
             )
         assertThat(body.toolChoice())
             .contains(
                 MessageCountTokensParams.ToolChoice.ofAuto(
-                    MessageCountTokensParams.ToolChoice.ToolChoiceAuto.builder()
-                        .type(MessageCountTokensParams.ToolChoice.ToolChoiceAuto.Type.AUTO)
+                    MessageCountTokensParams.ToolChoice.Auto.builder()
+                        .type(MessageCountTokensParams.ToolChoice.Auto.Type.AUTO)
                         .disableParallelToolUse(true)
                         .build()
                 )
