@@ -2,7 +2,6 @@
 
 package me.elborai.api.services.async
 
-import com.google.errorprone.annotations.MustBeClosed
 import java.util.concurrent.CompletableFuture
 import me.elborai.api.core.RequestOptions
 import me.elborai.api.core.http.HttpResponseFor
@@ -44,14 +43,12 @@ interface CompleteServiceAsync {
          * Returns a raw HTTP response for `post /v1/complete`, but is otherwise the same as
          * [CompleteServiceAsync.create].
          */
-        @MustBeClosed
         fun create(
             params: CompleteCreateParams
         ): CompletableFuture<HttpResponseFor<CompleteCreateResponse>> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             params: CompleteCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),

@@ -2,7 +2,6 @@
 
 package me.elborai.api.services.async
 
-import com.google.errorprone.annotations.MustBeClosed
 import java.util.concurrent.CompletableFuture
 import me.elborai.api.core.RequestOptions
 import me.elborai.api.core.http.HttpResponseFor
@@ -50,26 +49,22 @@ interface ModelsBetaTrueServiceAsync {
          * Returns a raw HTTP response for `get /v1/models?beta=true`, but is otherwise the same as
          * [ModelsBetaTrueServiceAsync.list].
          */
-        @MustBeClosed
         fun list(): CompletableFuture<HttpResponseFor<ModelsBetaTrueListResponse>> =
             list(ModelsBetaTrueListParams.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             params: ModelsBetaTrueListParams = ModelsBetaTrueListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ModelsBetaTrueListResponse>>
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             params: ModelsBetaTrueListParams = ModelsBetaTrueListParams.none()
         ): CompletableFuture<HttpResponseFor<ModelsBetaTrueListResponse>> =
             list(params, RequestOptions.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<ModelsBetaTrueListResponse>> =

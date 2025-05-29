@@ -2,7 +2,6 @@
 
 package me.elborai.api.services.async
 
-import com.google.errorprone.annotations.MustBeClosed
 import java.util.concurrent.CompletableFuture
 import me.elborai.api.core.RequestOptions
 import me.elborai.api.core.http.HttpResponseFor
@@ -95,14 +94,12 @@ interface MessageServiceAsync {
          * Returns a raw HTTP response for `post /v1/messages`, but is otherwise the same as
          * [MessageServiceAsync.create].
          */
-        @MustBeClosed
         fun create(
             params: MessageCreateParams
         ): CompletableFuture<HttpResponseFor<MessageCreateResponse>> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             params: MessageCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -112,14 +109,12 @@ interface MessageServiceAsync {
          * Returns a raw HTTP response for `post /v1/messages/count_tokens`, but is otherwise the
          * same as [MessageServiceAsync.countTokens].
          */
-        @MustBeClosed
         fun countTokens(
             params: MessageCountTokensParams
         ): CompletableFuture<HttpResponseFor<MessageCountTokensResponse>> =
             countTokens(params, RequestOptions.none())
 
         /** @see [countTokens] */
-        @MustBeClosed
         fun countTokens(
             params: MessageCountTokensParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -129,14 +124,12 @@ interface MessageServiceAsync {
          * Returns a raw HTTP response for `post /v1/messages/count_tokens?beta=true`, but is
          * otherwise the same as [MessageServiceAsync.countTokensBeta].
          */
-        @MustBeClosed
         fun countTokensBeta(
             params: MessageCountTokensBetaParams
         ): CompletableFuture<HttpResponseFor<MessageCountTokensBetaResponse>> =
             countTokensBeta(params, RequestOptions.none())
 
         /** @see [countTokensBeta] */
-        @MustBeClosed
         fun countTokensBeta(
             params: MessageCountTokensBetaParams,
             requestOptions: RequestOptions = RequestOptions.none(),

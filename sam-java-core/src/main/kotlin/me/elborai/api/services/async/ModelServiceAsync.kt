@@ -2,7 +2,6 @@
 
 package me.elborai.api.services.async
 
-import com.google.errorprone.annotations.MustBeClosed
 import java.util.concurrent.CompletableFuture
 import me.elborai.api.core.RequestOptions
 import me.elborai.api.core.http.HttpResponseFor
@@ -132,12 +131,10 @@ interface ModelServiceAsync {
          * Returns a raw HTTP response for `get /v1/models/{model_id}`, but is otherwise the same as
          * [ModelServiceAsync.retrieve].
          */
-        @MustBeClosed
         fun retrieve(modelId: String): CompletableFuture<HttpResponseFor<ModelRetrieveResponse>> =
             retrieve(modelId, ModelRetrieveParams.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             modelId: String,
             params: ModelRetrieveParams = ModelRetrieveParams.none(),
@@ -146,7 +143,6 @@ interface ModelServiceAsync {
             retrieve(params.toBuilder().modelId(modelId).build(), requestOptions)
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             modelId: String,
             params: ModelRetrieveParams = ModelRetrieveParams.none(),
@@ -154,21 +150,18 @@ interface ModelServiceAsync {
             retrieve(modelId, params, RequestOptions.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             params: ModelRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ModelRetrieveResponse>>
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             params: ModelRetrieveParams
         ): CompletableFuture<HttpResponseFor<ModelRetrieveResponse>> =
             retrieve(params, RequestOptions.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             modelId: String,
             requestOptions: RequestOptions,
@@ -179,26 +172,22 @@ interface ModelServiceAsync {
          * Returns a raw HTTP response for `get /v1/models`, but is otherwise the same as
          * [ModelServiceAsync.list].
          */
-        @MustBeClosed
         fun list(): CompletableFuture<HttpResponseFor<ModelListResponse>> =
             list(ModelListParams.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             params: ModelListParams = ModelListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ModelListResponse>>
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             params: ModelListParams = ModelListParams.none()
         ): CompletableFuture<HttpResponseFor<ModelListResponse>> =
             list(params, RequestOptions.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<ModelListResponse>> =
@@ -208,14 +197,12 @@ interface ModelServiceAsync {
          * Returns a raw HTTP response for `get /v1/models/{model_id}?beta=true`, but is otherwise
          * the same as [ModelServiceAsync.retrieveBeta].
          */
-        @MustBeClosed
         fun retrieveBeta(
             modelId: String
         ): CompletableFuture<HttpResponseFor<ModelRetrieveBetaResponse>> =
             retrieveBeta(modelId, ModelRetrieveBetaParams.none())
 
         /** @see [retrieveBeta] */
-        @MustBeClosed
         fun retrieveBeta(
             modelId: String,
             params: ModelRetrieveBetaParams = ModelRetrieveBetaParams.none(),
@@ -224,7 +211,6 @@ interface ModelServiceAsync {
             retrieveBeta(params.toBuilder().modelId(modelId).build(), requestOptions)
 
         /** @see [retrieveBeta] */
-        @MustBeClosed
         fun retrieveBeta(
             modelId: String,
             params: ModelRetrieveBetaParams = ModelRetrieveBetaParams.none(),
@@ -232,21 +218,18 @@ interface ModelServiceAsync {
             retrieveBeta(modelId, params, RequestOptions.none())
 
         /** @see [retrieveBeta] */
-        @MustBeClosed
         fun retrieveBeta(
             params: ModelRetrieveBetaParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ModelRetrieveBetaResponse>>
 
         /** @see [retrieveBeta] */
-        @MustBeClosed
         fun retrieveBeta(
             params: ModelRetrieveBetaParams
         ): CompletableFuture<HttpResponseFor<ModelRetrieveBetaResponse>> =
             retrieveBeta(params, RequestOptions.none())
 
         /** @see [retrieveBeta] */
-        @MustBeClosed
         fun retrieveBeta(
             modelId: String,
             requestOptions: RequestOptions,

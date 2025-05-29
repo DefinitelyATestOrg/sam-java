@@ -2,7 +2,6 @@
 
 package me.elborai.api.services.async
 
-import com.google.errorprone.annotations.MustBeClosed
 import java.util.concurrent.CompletableFuture
 import me.elborai.api.core.RequestOptions
 import me.elborai.api.core.http.HttpResponseFor
@@ -44,14 +43,12 @@ interface MessagesBetaTrueServiceAsync {
          * Returns a raw HTTP response for `post /v1/messages?beta=true`, but is otherwise the same
          * as [MessagesBetaTrueServiceAsync.create].
          */
-        @MustBeClosed
         fun create(
             params: MessagesBetaTrueCreateParams
         ): CompletableFuture<HttpResponseFor<MessagesBetaTrueCreateResponse>> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             params: MessagesBetaTrueCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
