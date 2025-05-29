@@ -2,7 +2,6 @@
 
 package me.elborai.api.services.async.messages
 
-import com.google.errorprone.annotations.MustBeClosed
 import java.util.concurrent.CompletableFuture
 import me.elborai.api.core.RequestOptions
 import me.elborai.api.core.http.HttpResponseFor
@@ -73,14 +72,12 @@ interface BatchesBetaTrueServiceAsync {
          * Returns a raw HTTP response for `post /v1/messages/batches?beta=true`, but is otherwise
          * the same as [BatchesBetaTrueServiceAsync.create].
          */
-        @MustBeClosed
         fun create(
             params: BatchesBetaTrueCreateParams
         ): CompletableFuture<HttpResponseFor<BatchesBetaTrueCreateResponse>> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             params: BatchesBetaTrueCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -90,26 +87,22 @@ interface BatchesBetaTrueServiceAsync {
          * Returns a raw HTTP response for `get /v1/messages/batches?beta=true`, but is otherwise
          * the same as [BatchesBetaTrueServiceAsync.list].
          */
-        @MustBeClosed
         fun list(): CompletableFuture<HttpResponseFor<BatchesBetaTrueListResponse>> =
             list(BatchesBetaTrueListParams.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             params: BatchesBetaTrueListParams = BatchesBetaTrueListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<BatchesBetaTrueListResponse>>
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             params: BatchesBetaTrueListParams = BatchesBetaTrueListParams.none()
         ): CompletableFuture<HttpResponseFor<BatchesBetaTrueListResponse>> =
             list(params, RequestOptions.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<BatchesBetaTrueListResponse>> =
