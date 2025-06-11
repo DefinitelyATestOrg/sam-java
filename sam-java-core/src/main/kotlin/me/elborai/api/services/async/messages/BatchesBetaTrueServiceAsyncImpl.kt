@@ -60,6 +60,7 @@ internal constructor(private val clientOptions: ClientOptions) : BatchesBetaTrue
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("v1", "messages", "batches")
                     .putQueryParam("beta", "true")
                     .body(json(clientOptions.jsonMapper, params._body()))
@@ -92,6 +93,7 @@ internal constructor(private val clientOptions: ClientOptions) : BatchesBetaTrue
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("v1", "messages", "batches")
                     .putQueryParam("beta", "true")
                     .build()
