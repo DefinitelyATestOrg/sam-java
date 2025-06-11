@@ -51,6 +51,7 @@ internal constructor(private val clientOptions: ClientOptions) : MessagesBetaTru
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("v1", "messages")
                     .putQueryParam("beta", "true")
                     .body(json(clientOptions.jsonMapper, params._body()))

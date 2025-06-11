@@ -65,6 +65,7 @@ class BetaTrueServiceAsyncImpl internal constructor(private val clientOptions: C
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("v1", "messages", "batches", params._pathParam(0))
                     .putQueryParam("beta", "true")
                     .build()
@@ -99,6 +100,7 @@ class BetaTrueServiceAsyncImpl internal constructor(private val clientOptions: C
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("v1", "messages", "batches", params._pathParam(0))
                     .putQueryParam("beta", "true")
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
