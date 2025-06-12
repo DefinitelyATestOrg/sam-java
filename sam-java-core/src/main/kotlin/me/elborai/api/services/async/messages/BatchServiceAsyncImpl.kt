@@ -3,6 +3,7 @@
 package me.elborai.api.services.async.messages
 
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 import me.elborai.api.core.ClientOptions
 import me.elborai.api.core.JsonValue
@@ -52,6 +53,9 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
     private val betaTrue: BetaTrueServiceAsync by lazy { BetaTrueServiceAsyncImpl(clientOptions) }
 
     override fun withRawResponse(): BatchServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): BatchServiceAsync =
+        BatchServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun betaTrue(): BetaTrueServiceAsync = betaTrue
 
@@ -125,6 +129,13 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
         private val betaTrue: BetaTrueServiceAsync.WithRawResponse by lazy {
             BetaTrueServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): BatchServiceAsync.WithRawResponse =
+            BatchServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun betaTrue(): BetaTrueServiceAsync.WithRawResponse = betaTrue
 

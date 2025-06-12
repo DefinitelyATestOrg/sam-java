@@ -2,6 +2,8 @@
 
 package me.elborai.api.client
 
+import java.util.function.Consumer
+import me.elborai.api.core.ClientOptions
 import me.elborai.api.services.async.CompleteServiceAsync
 import me.elborai.api.services.async.MessageServiceAsync
 import me.elborai.api.services.async.MessagesBetaTrueServiceAsync
@@ -40,6 +42,13 @@ interface SamClientAsync {
      */
     fun withRawResponse(): WithRawResponse
 
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): SamClientAsync
+
     fun store(): StoreServiceAsync
 
     fun user(): UserServiceAsync
@@ -71,6 +80,13 @@ interface SamClientAsync {
 
     /** A view of [SamClientAsync] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(modifier: Consumer<ClientOptions.Builder>): SamClientAsync.WithRawResponse
 
         fun store(): StoreServiceAsync.WithRawResponse
 

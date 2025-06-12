@@ -2,6 +2,7 @@
 
 package me.elborai.api.services.blocking.messages
 
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 import me.elborai.api.core.ClientOptions
 import me.elborai.api.core.JsonValue
@@ -49,6 +50,9 @@ class BatchServiceImpl internal constructor(private val clientOptions: ClientOpt
     private val betaTrue: BetaTrueService by lazy { BetaTrueServiceImpl(clientOptions) }
 
     override fun withRawResponse(): BatchService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): BatchService =
+        BatchServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun betaTrue(): BetaTrueService = betaTrue
 
@@ -113,6 +117,13 @@ class BatchServiceImpl internal constructor(private val clientOptions: ClientOpt
         private val betaTrue: BetaTrueService.WithRawResponse by lazy {
             BetaTrueServiceImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): BatchService.WithRawResponse =
+            BatchServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun betaTrue(): BetaTrueService.WithRawResponse = betaTrue
 

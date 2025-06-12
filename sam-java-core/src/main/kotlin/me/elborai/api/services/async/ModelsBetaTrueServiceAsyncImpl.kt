@@ -3,6 +3,7 @@
 package me.elborai.api.services.async
 
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import me.elborai.api.core.ClientOptions
 import me.elborai.api.core.JsonValue
 import me.elborai.api.core.RequestOptions
@@ -27,6 +28,11 @@ internal constructor(private val clientOptions: ClientOptions) : ModelsBetaTrueS
 
     override fun withRawResponse(): ModelsBetaTrueServiceAsync.WithRawResponse = withRawResponse
 
+    override fun withOptions(
+        modifier: Consumer<ClientOptions.Builder>
+    ): ModelsBetaTrueServiceAsync =
+        ModelsBetaTrueServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
     override fun list(
         params: ModelsBetaTrueListParams,
         requestOptions: RequestOptions,
@@ -38,6 +44,13 @@ internal constructor(private val clientOptions: ClientOptions) : ModelsBetaTrueS
         ModelsBetaTrueServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ModelsBetaTrueServiceAsync.WithRawResponse =
+            ModelsBetaTrueServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         private val listHandler: Handler<ModelsBetaTrueListResponse> =
             jsonHandler<ModelsBetaTrueListResponse>(clientOptions.jsonMapper)

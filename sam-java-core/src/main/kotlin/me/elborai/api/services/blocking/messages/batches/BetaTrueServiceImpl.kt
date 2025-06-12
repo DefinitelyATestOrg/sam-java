@@ -2,6 +2,7 @@
 
 package me.elborai.api.services.blocking.messages.batches
 
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 import me.elborai.api.core.ClientOptions
 import me.elborai.api.core.JsonValue
@@ -31,6 +32,9 @@ class BetaTrueServiceImpl internal constructor(private val clientOptions: Client
 
     override fun withRawResponse(): BetaTrueService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaTrueService =
+        BetaTrueServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
     override fun retrieve(
         params: BetaTrueRetrieveParams,
         requestOptions: RequestOptions,
@@ -49,6 +53,13 @@ class BetaTrueServiceImpl internal constructor(private val clientOptions: Client
         BetaTrueService.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): BetaTrueService.WithRawResponse =
+            BetaTrueServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         private val retrieveHandler: Handler<BetaTrueRetrieveResponse> =
             jsonHandler<BetaTrueRetrieveResponse>(clientOptions.jsonMapper)

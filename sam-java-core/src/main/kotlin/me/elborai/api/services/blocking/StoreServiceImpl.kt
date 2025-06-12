@@ -2,6 +2,7 @@
 
 package me.elborai.api.services.blocking
 
+import java.util.function.Consumer
 import me.elborai.api.core.ClientOptions
 import me.elborai.api.services.blocking.store.OrderService
 import me.elborai.api.services.blocking.store.OrderServiceImpl
@@ -17,6 +18,9 @@ class StoreServiceImpl internal constructor(private val clientOptions: ClientOpt
 
     override fun withRawResponse(): StoreService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): StoreService =
+        StoreServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
     override fun orders(): OrderService = orders
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -25,6 +29,13 @@ class StoreServiceImpl internal constructor(private val clientOptions: ClientOpt
         private val orders: OrderService.WithRawResponse by lazy {
             OrderServiceImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): StoreService.WithRawResponse =
+            StoreServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun orders(): OrderService.WithRawResponse = orders
     }
