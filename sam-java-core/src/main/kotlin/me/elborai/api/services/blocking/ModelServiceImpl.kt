@@ -2,6 +2,7 @@
 
 package me.elborai.api.services.blocking
 
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 import me.elborai.api.core.ClientOptions
 import me.elborai.api.core.JsonValue
@@ -32,6 +33,9 @@ class ModelServiceImpl internal constructor(private val clientOptions: ClientOpt
 
     override fun withRawResponse(): ModelService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ModelService =
+        ModelServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
     override fun retrieve(
         params: ModelRetrieveParams,
         requestOptions: RequestOptions,
@@ -54,6 +58,13 @@ class ModelServiceImpl internal constructor(private val clientOptions: ClientOpt
         ModelService.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ModelService.WithRawResponse =
+            ModelServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         private val retrieveHandler: Handler<ModelRetrieveResponse> =
             jsonHandler<ModelRetrieveResponse>(clientOptions.jsonMapper)

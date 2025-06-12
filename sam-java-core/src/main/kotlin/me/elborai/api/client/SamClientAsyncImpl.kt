@@ -2,6 +2,7 @@
 
 package me.elborai.api.client
 
+import java.util.function.Consumer
 import me.elborai.api.core.ClientOptions
 import me.elborai.api.core.getPackageVersion
 import me.elborai.api.services.async.CompleteServiceAsync
@@ -72,6 +73,9 @@ class SamClientAsyncImpl(private val clientOptions: ClientOptions) : SamClientAs
 
     override fun withRawResponse(): SamClientAsync.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): SamClientAsync =
+        SamClientAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
     override fun store(): StoreServiceAsync = store
 
     override fun user(): UserServiceAsync = user
@@ -124,6 +128,13 @@ class SamClientAsyncImpl(private val clientOptions: ClientOptions) : SamClientAs
         private val samPlopPlop: SamPlopPlopServiceAsync.WithRawResponse by lazy {
             SamPlopPlopServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): SamClientAsync.WithRawResponse =
+            SamClientAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun store(): StoreServiceAsync.WithRawResponse = store
 

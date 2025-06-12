@@ -2,6 +2,7 @@
 
 package me.elborai.api.services.blocking
 
+import java.util.function.Consumer
 import me.elborai.api.core.ClientOptions
 import me.elborai.api.core.JsonValue
 import me.elborai.api.core.RequestOptions
@@ -26,6 +27,9 @@ class ModelsBetaTrueServiceImpl internal constructor(private val clientOptions: 
 
     override fun withRawResponse(): ModelsBetaTrueService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ModelsBetaTrueService =
+        ModelsBetaTrueServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
     override fun list(
         params: ModelsBetaTrueListParams,
         requestOptions: RequestOptions,
@@ -37,6 +41,13 @@ class ModelsBetaTrueServiceImpl internal constructor(private val clientOptions: 
         ModelsBetaTrueService.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ModelsBetaTrueService.WithRawResponse =
+            ModelsBetaTrueServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         private val listHandler: Handler<ModelsBetaTrueListResponse> =
             jsonHandler<ModelsBetaTrueListResponse>(clientOptions.jsonMapper)

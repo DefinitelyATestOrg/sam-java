@@ -2,6 +2,7 @@
 
 package me.elborai.api.services.blocking.messages
 
+import java.util.function.Consumer
 import me.elborai.api.core.ClientOptions
 import me.elborai.api.core.JsonValue
 import me.elborai.api.core.RequestOptions
@@ -29,6 +30,9 @@ class BatchesBetaTrueServiceImpl internal constructor(private val clientOptions:
 
     override fun withRawResponse(): BatchesBetaTrueService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): BatchesBetaTrueService =
+        BatchesBetaTrueServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
     override fun create(
         params: BatchesBetaTrueCreateParams,
         requestOptions: RequestOptions,
@@ -47,6 +51,13 @@ class BatchesBetaTrueServiceImpl internal constructor(private val clientOptions:
         BatchesBetaTrueService.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): BatchesBetaTrueService.WithRawResponse =
+            BatchesBetaTrueServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         private val createHandler: Handler<BatchesBetaTrueCreateResponse> =
             jsonHandler<BatchesBetaTrueCreateResponse>(clientOptions.jsonMapper)

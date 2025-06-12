@@ -3,6 +3,7 @@
 package me.elborai.api.services.async
 
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 import me.elborai.api.core.ClientOptions
 import me.elborai.api.core.JsonValue
@@ -33,6 +34,9 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
     override fun withRawResponse(): ModelServiceAsync.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ModelServiceAsync =
+        ModelServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
     override fun retrieve(
         params: ModelRetrieveParams,
         requestOptions: RequestOptions,
@@ -58,6 +62,13 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
         ModelServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ModelServiceAsync.WithRawResponse =
+            ModelServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         private val retrieveHandler: Handler<ModelRetrieveResponse> =
             jsonHandler<ModelRetrieveResponse>(clientOptions.jsonMapper)

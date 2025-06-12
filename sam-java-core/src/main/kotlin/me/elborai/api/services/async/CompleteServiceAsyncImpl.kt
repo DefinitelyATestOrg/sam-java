@@ -3,6 +3,7 @@
 package me.elborai.api.services.async
 
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import me.elborai.api.core.ClientOptions
 import me.elborai.api.core.JsonValue
 import me.elborai.api.core.RequestOptions
@@ -28,6 +29,9 @@ class CompleteServiceAsyncImpl internal constructor(private val clientOptions: C
 
     override fun withRawResponse(): CompleteServiceAsync.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): CompleteServiceAsync =
+        CompleteServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
     override fun create(
         params: CompleteCreateParams,
         requestOptions: RequestOptions,
@@ -39,6 +43,13 @@ class CompleteServiceAsyncImpl internal constructor(private val clientOptions: C
         CompleteServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): CompleteServiceAsync.WithRawResponse =
+            CompleteServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         private val createHandler: Handler<CompleteCreateResponse> =
             jsonHandler<CompleteCreateResponse>(clientOptions.jsonMapper)

@@ -2,6 +2,7 @@
 
 package me.elborai.api.services.async
 
+import java.util.function.Consumer
 import me.elborai.api.core.ClientOptions
 
 class UserServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -13,6 +14,17 @@ class UserServiceAsyncImpl internal constructor(private val clientOptions: Clien
 
     override fun withRawResponse(): UserServiceAsync.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): UserServiceAsync =
+        UserServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
-        UserServiceAsync.WithRawResponse
+        UserServiceAsync.WithRawResponse {
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): UserServiceAsync.WithRawResponse =
+            UserServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+    }
 }
