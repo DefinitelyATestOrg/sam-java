@@ -17,5 +17,12 @@ tasks.withType<JavaCompile>().configureEach {
 }
 
 application {
-    mainClass = "me.elborai.api.example.Main"
+    // Use `./gradlew :sam-java-example:run` to run `Main`
+    // Use `./gradlew :sam-java-example:run -Dexample=Something` to run `SomethingExample`
+    mainClass = "me.elborai.api.example.${
+        if (project.hasProperty("example"))
+            "${project.property("example")}Example"
+        else
+            "Main"
+    }"
 }
