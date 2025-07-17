@@ -5,13 +5,13 @@ package me.elborai.api.services.async.messages
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import me.elborai.api.core.ClientOptions
-import me.elborai.api.core.JsonValue
 import me.elborai.api.core.RequestOptions
+import me.elborai.api.core.handlers.errorBodyHandler
 import me.elborai.api.core.handlers.errorHandler
 import me.elborai.api.core.handlers.jsonHandler
-import me.elborai.api.core.handlers.withErrorHandler
 import me.elborai.api.core.http.HttpMethod
 import me.elborai.api.core.http.HttpRequest
+import me.elborai.api.core.http.HttpResponse
 import me.elborai.api.core.http.HttpResponse.Handler
 import me.elborai.api.core.http.HttpResponseFor
 import me.elborai.api.core.http.json
@@ -53,7 +53,8 @@ internal constructor(private val clientOptions: ClientOptions) : BatchesBetaTrue
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         BatchesBetaTrueServiceAsync.WithRawResponse {
 
-        private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
@@ -64,7 +65,6 @@ internal constructor(private val clientOptions: ClientOptions) : BatchesBetaTrue
 
         private val createHandler: Handler<BatchesBetaTrueCreateResponse> =
             jsonHandler<BatchesBetaTrueCreateResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun create(
             params: BatchesBetaTrueCreateParams,
@@ -83,7 +83,7 @@ internal constructor(private val clientOptions: ClientOptions) : BatchesBetaTrue
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
                             .also {
@@ -97,7 +97,6 @@ internal constructor(private val clientOptions: ClientOptions) : BatchesBetaTrue
 
         private val listHandler: Handler<BatchesBetaTrueListResponse> =
             jsonHandler<BatchesBetaTrueListResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun list(
             params: BatchesBetaTrueListParams,
@@ -115,7 +114,7 @@ internal constructor(private val clientOptions: ClientOptions) : BatchesBetaTrue
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { listHandler.handle(it) }
                             .also {

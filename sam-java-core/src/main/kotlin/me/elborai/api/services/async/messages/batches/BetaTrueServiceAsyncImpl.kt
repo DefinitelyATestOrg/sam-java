@@ -6,14 +6,14 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 import me.elborai.api.core.ClientOptions
-import me.elborai.api.core.JsonValue
 import me.elborai.api.core.RequestOptions
 import me.elborai.api.core.checkRequired
+import me.elborai.api.core.handlers.errorBodyHandler
 import me.elborai.api.core.handlers.errorHandler
 import me.elborai.api.core.handlers.jsonHandler
-import me.elborai.api.core.handlers.withErrorHandler
 import me.elborai.api.core.http.HttpMethod
 import me.elborai.api.core.http.HttpRequest
+import me.elborai.api.core.http.HttpResponse
 import me.elborai.api.core.http.HttpResponse.Handler
 import me.elborai.api.core.http.HttpResponseFor
 import me.elborai.api.core.http.json
@@ -53,7 +53,8 @@ class BetaTrueServiceAsyncImpl internal constructor(private val clientOptions: C
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         BetaTrueServiceAsync.WithRawResponse {
 
-        private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
@@ -64,7 +65,6 @@ class BetaTrueServiceAsyncImpl internal constructor(private val clientOptions: C
 
         private val retrieveHandler: Handler<BetaTrueRetrieveResponse> =
             jsonHandler<BetaTrueRetrieveResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun retrieve(
             params: BetaTrueRetrieveParams,
@@ -85,7 +85,7 @@ class BetaTrueServiceAsyncImpl internal constructor(private val clientOptions: C
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { retrieveHandler.handle(it) }
                             .also {
@@ -99,7 +99,6 @@ class BetaTrueServiceAsyncImpl internal constructor(private val clientOptions: C
 
         private val deleteHandler: Handler<BetaTrueDeleteResponse> =
             jsonHandler<BetaTrueDeleteResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun delete(
             params: BetaTrueDeleteParams,
@@ -121,7 +120,7 @@ class BetaTrueServiceAsyncImpl internal constructor(private val clientOptions: C
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { deleteHandler.handle(it) }
                             .also {

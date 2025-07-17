@@ -6,14 +6,14 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 import me.elborai.api.core.ClientOptions
-import me.elborai.api.core.JsonValue
 import me.elborai.api.core.RequestOptions
 import me.elborai.api.core.checkRequired
+import me.elborai.api.core.handlers.errorBodyHandler
 import me.elborai.api.core.handlers.errorHandler
 import me.elborai.api.core.handlers.jsonHandler
-import me.elborai.api.core.handlers.withErrorHandler
 import me.elborai.api.core.http.HttpMethod
 import me.elborai.api.core.http.HttpRequest
+import me.elborai.api.core.http.HttpResponse
 import me.elborai.api.core.http.HttpResponse.Handler
 import me.elborai.api.core.http.HttpResponseFor
 import me.elborai.api.core.http.parseable
@@ -61,7 +61,8 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ModelServiceAsync.WithRawResponse {
 
-        private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
@@ -72,7 +73,6 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
         private val retrieveHandler: Handler<ModelRetrieveResponse> =
             jsonHandler<ModelRetrieveResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun retrieve(
             params: ModelRetrieveParams,
@@ -92,7 +92,7 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { retrieveHandler.handle(it) }
                             .also {
@@ -105,7 +105,7 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
         }
 
         private val listHandler: Handler<ModelListResponse> =
-            jsonHandler<ModelListResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<ModelListResponse>(clientOptions.jsonMapper)
 
         override fun list(
             params: ModelListParams,
@@ -122,7 +122,7 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { listHandler.handle(it) }
                             .also {
@@ -136,7 +136,6 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
         private val retrieveBetaHandler: Handler<ModelRetrieveBetaResponse> =
             jsonHandler<ModelRetrieveBetaResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun retrieveBeta(
             params: ModelRetrieveBetaParams,
@@ -157,7 +156,7 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { retrieveBetaHandler.handle(it) }
                             .also {

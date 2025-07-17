@@ -5,14 +5,14 @@ package me.elborai.api.services.blocking
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 import me.elborai.api.core.ClientOptions
-import me.elborai.api.core.JsonValue
 import me.elborai.api.core.RequestOptions
 import me.elborai.api.core.checkRequired
+import me.elborai.api.core.handlers.errorBodyHandler
 import me.elborai.api.core.handlers.errorHandler
 import me.elborai.api.core.handlers.jsonHandler
-import me.elborai.api.core.handlers.withErrorHandler
 import me.elborai.api.core.http.HttpMethod
 import me.elborai.api.core.http.HttpRequest
+import me.elborai.api.core.http.HttpResponse
 import me.elborai.api.core.http.HttpResponse.Handler
 import me.elborai.api.core.http.HttpResponseFor
 import me.elborai.api.core.http.parseable
@@ -57,7 +57,8 @@ class ModelServiceImpl internal constructor(private val clientOptions: ClientOpt
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ModelService.WithRawResponse {
 
-        private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
@@ -68,7 +69,6 @@ class ModelServiceImpl internal constructor(private val clientOptions: ClientOpt
 
         private val retrieveHandler: Handler<ModelRetrieveResponse> =
             jsonHandler<ModelRetrieveResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun retrieve(
             params: ModelRetrieveParams,
@@ -86,7 +86,7 @@ class ModelServiceImpl internal constructor(private val clientOptions: ClientOpt
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { retrieveHandler.handle(it) }
                     .also {
@@ -98,7 +98,7 @@ class ModelServiceImpl internal constructor(private val clientOptions: ClientOpt
         }
 
         private val listHandler: Handler<ModelListResponse> =
-            jsonHandler<ModelListResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<ModelListResponse>(clientOptions.jsonMapper)
 
         override fun list(
             params: ModelListParams,
@@ -113,7 +113,7 @@ class ModelServiceImpl internal constructor(private val clientOptions: ClientOpt
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { listHandler.handle(it) }
                     .also {
@@ -126,7 +126,6 @@ class ModelServiceImpl internal constructor(private val clientOptions: ClientOpt
 
         private val retrieveBetaHandler: Handler<ModelRetrieveBetaResponse> =
             jsonHandler<ModelRetrieveBetaResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun retrieveBeta(
             params: ModelRetrieveBetaParams,
@@ -145,7 +144,7 @@ class ModelServiceImpl internal constructor(private val clientOptions: ClientOpt
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { retrieveBetaHandler.handle(it) }
                     .also {
