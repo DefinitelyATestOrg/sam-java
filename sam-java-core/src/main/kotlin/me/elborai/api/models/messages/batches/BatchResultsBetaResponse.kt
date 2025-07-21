@@ -163,18 +163,12 @@ private constructor(
          * Alias for calling [result] with the following:
          * ```java
          * Result.Succeeded.builder()
-         *     .type(BatchResultsBetaResponse.Result.Succeeded.Type.SUCCEEDED)
          *     .message(message)
          *     .build()
          * ```
          */
         fun succeededResult(message: Result.Succeeded.Message) =
-            result(
-                Result.Succeeded.builder()
-                    .type(BatchResultsBetaResponse.Result.Succeeded.Type.SUCCEEDED)
-                    .message(message)
-                    .build()
-            )
+            result(Result.Succeeded.builder().message(message).build())
 
         /** Alias for calling [result] with `Result.ofErrored(errored)`. */
         fun result(errored: Result.Errored) = result(Result.ofErrored(errored))
@@ -183,24 +177,18 @@ private constructor(
          * Alias for calling [result] with the following:
          * ```java
          * Result.Errored.builder()
-         *     .type(BatchResultsBetaResponse.Result.Errored.Type.ERRORED)
          *     .error(error)
          *     .build()
          * ```
          */
         fun erroredResult(error: Result.Errored.Error) =
-            result(
-                Result.Errored.builder()
-                    .type(BatchResultsBetaResponse.Result.Errored.Type.ERRORED)
-                    .error(error)
-                    .build()
-            )
+            result(Result.Errored.builder().error(error).build())
 
-        /** Alias for calling [result] with `Result.ofCanceled(canceled)`. */
-        fun result(canceled: Result.Canceled) = result(Result.ofCanceled(canceled))
+        /** Alias for calling [result] with `Result.ofCanceled()`. */
+        fun resultCanceled() = result(Result.ofCanceled())
 
-        /** Alias for calling [result] with `Result.ofExpired(expired)`. */
-        fun result(expired: Result.Expired) = result(Result.ofExpired(expired))
+        /** Alias for calling [result] with `Result.ofExpired()`. */
+        fun resultExpired() = result(Result.ofExpired())
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -284,8 +272,8 @@ private constructor(
     private constructor(
         private val succeeded: Succeeded? = null,
         private val errored: Errored? = null,
-        private val canceled: Canceled? = null,
-        private val expired: Expired? = null,
+        private val canceled: JsonValue? = null,
+        private val expired: JsonValue? = null,
         private val _json: JsonValue? = null,
     ) {
 
@@ -293,9 +281,9 @@ private constructor(
 
         fun errored(): Optional<Errored> = Optional.ofNullable(errored)
 
-        fun canceled(): Optional<Canceled> = Optional.ofNullable(canceled)
+        fun canceled(): Optional<JsonValue> = Optional.ofNullable(canceled)
 
-        fun expired(): Optional<Expired> = Optional.ofNullable(expired)
+        fun expired(): Optional<JsonValue> = Optional.ofNullable(expired)
 
         fun isSucceeded(): Boolean = succeeded != null
 
@@ -309,9 +297,9 @@ private constructor(
 
         fun asErrored(): Errored = errored.getOrThrow("errored")
 
-        fun asCanceled(): Canceled = canceled.getOrThrow("canceled")
+        fun asCanceled(): JsonValue = canceled.getOrThrow("canceled")
 
-        fun asExpired(): Expired = expired.getOrThrow("expired")
+        fun asExpired(): JsonValue = expired.getOrThrow("expired")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -341,12 +329,20 @@ private constructor(
                         errored.validate()
                     }
 
-                    override fun visitCanceled(canceled: Canceled) {
-                        canceled.validate()
+                    override fun visitCanceled(canceled: JsonValue) {
+                        canceled.let {
+                            if (it != JsonValue.from(mapOf("type" to "canceled"))) {
+                                throw SamInvalidDataException("'canceled' is invalid, received $it")
+                            }
+                        }
                     }
 
-                    override fun visitExpired(expired: Expired) {
-                        expired.validate()
+                    override fun visitExpired(expired: JsonValue) {
+                        expired.let {
+                            if (it != JsonValue.from(mapOf("type" to "expired"))) {
+                                throw SamInvalidDataException("'expired' is invalid, received $it")
+                            }
+                        }
                     }
                 }
             )
@@ -375,9 +371,15 @@ private constructor(
 
                     override fun visitErrored(errored: Errored) = errored.validity()
 
-                    override fun visitCanceled(canceled: Canceled) = canceled.validity()
+                    override fun visitCanceled(canceled: JsonValue) =
+                        canceled.let {
+                            if (it == JsonValue.from(mapOf("type" to "canceled"))) 1 else 0
+                        }
 
-                    override fun visitExpired(expired: Expired) = expired.validity()
+                    override fun visitExpired(expired: JsonValue) =
+                        expired.let {
+                            if (it == JsonValue.from(mapOf("type" to "expired"))) 1 else 0
+                        }
 
                     override fun unknown(json: JsonValue?) = 0
                 }
@@ -409,9 +411,11 @@ private constructor(
 
             @JvmStatic fun ofErrored(errored: Errored) = Result(errored = errored)
 
-            @JvmStatic fun ofCanceled(canceled: Canceled) = Result(canceled = canceled)
+            @JvmStatic
+            fun ofCanceled() = Result(canceled = JsonValue.from(mapOf("type" to "canceled")))
 
-            @JvmStatic fun ofExpired(expired: Expired) = Result(expired = expired)
+            @JvmStatic
+            fun ofExpired() = Result(expired = JsonValue.from(mapOf("type" to "expired")))
         }
 
         /** An interface that defines how to map each variant of [Result] to a value of type [T]. */
@@ -421,9 +425,9 @@ private constructor(
 
             fun visitErrored(errored: Errored): T
 
-            fun visitCanceled(canceled: Canceled): T
+            fun visitCanceled(canceled: JsonValue): T
 
-            fun visitExpired(expired: Expired): T
+            fun visitExpired(expired: JsonValue): T
 
             /**
              * Maps an unknown variant of [Result] to a value of type [T].
@@ -458,14 +462,14 @@ private constructor(
                         } ?: Result(_json = json)
                     }
                     "canceled" -> {
-                        return tryDeserialize(node, jacksonTypeRef<Canceled>())?.let {
-                            Result(canceled = it, _json = json)
-                        } ?: Result(_json = json)
+                        return tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                            ?.let { Result(canceled = it, _json = json) }
+                            ?.takeIf { it.isValid() } ?: Result(_json = json)
                     }
                     "expired" -> {
-                        return tryDeserialize(node, jacksonTypeRef<Expired>())?.let {
-                            Result(expired = it, _json = json)
-                        } ?: Result(_json = json)
+                        return tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                            ?.let { Result(expired = it, _json = json) }
+                            ?.takeIf { it.isValid() } ?: Result(_json = json)
                     }
                 }
 
@@ -494,7 +498,7 @@ private constructor(
         class Succeeded
         private constructor(
             private val message: JsonField<Message>,
-            private val type: JsonField<Type>,
+            private val type: JsonValue,
             private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
 
@@ -503,7 +507,7 @@ private constructor(
                 @JsonProperty("message")
                 @ExcludeMissing
                 message: JsonField<Message> = JsonMissing.of(),
-                @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
             ) : this(message, type, mutableMapOf())
 
             /**
@@ -514,11 +518,15 @@ private constructor(
             fun message(): Message = message.getRequired("message")
 
             /**
-             * @throws SamInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("succeeded")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
              */
-            fun type(): Type = type.getRequired("type")
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
             /**
              * Returns the raw JSON value of [message].
@@ -526,13 +534,6 @@ private constructor(
              * Unlike [message], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<Message> = message
-
-            /**
-             * Returns the raw JSON value of [type].
-             *
-             * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
-             */
-            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
             @JsonAnySetter
             private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -554,7 +555,6 @@ private constructor(
                  * The following fields are required:
                  * ```java
                  * .message()
-                 * .type()
                  * ```
                  */
                 @JvmStatic fun builder() = Builder()
@@ -564,7 +564,7 @@ private constructor(
             class Builder internal constructor() {
 
                 private var message: JsonField<Message>? = null
-                private var type: JsonField<Type>? = null
+                private var type: JsonValue = JsonValue.from("succeeded")
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
@@ -585,16 +585,19 @@ private constructor(
                  */
                 fun message(message: JsonField<Message>) = apply { this.message = message }
 
-                fun type(type: Type) = type(JsonField.of(type))
-
                 /**
-                 * Sets [Builder.type] to an arbitrary JSON value.
+                 * Sets the field to an arbitrary JSON value.
                  *
-                 * You should usually call [Builder.type] with a well-typed [Type] value instead.
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("succeeded")
+                 * ```
+                 *
                  * This method is primarily for setting the field to an undocumented or not yet
                  * supported value.
                  */
-                fun type(type: JsonField<Type>) = apply { this.type = type }
+                fun type(type: JsonValue) = apply { this.type = type }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -626,7 +629,6 @@ private constructor(
                  * The following fields are required:
                  * ```java
                  * .message()
-                 * .type()
                  * ```
                  *
                  * @throws IllegalStateException if any required field is unset.
@@ -634,7 +636,7 @@ private constructor(
                 fun build(): Succeeded =
                     Succeeded(
                         checkRequired("message", message),
-                        checkRequired("type", type),
+                        type,
                         additionalProperties.toMutableMap(),
                     )
             }
@@ -647,7 +649,11 @@ private constructor(
                 }
 
                 message().validate()
-                type().validate()
+                _type().let {
+                    if (it != JsonValue.from("succeeded")) {
+                        throw SamInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
                 validated = true
             }
 
@@ -668,17 +674,17 @@ private constructor(
             @JvmSynthetic
             internal fun validity(): Int =
                 (message.asKnown().getOrNull()?.validity() ?: 0) +
-                    (type.asKnown().getOrNull()?.validity() ?: 0)
+                    type.let { if (it == JsonValue.from("succeeded")) 1 else 0 }
 
             class Message
             private constructor(
                 private val id: JsonField<String>,
                 private val content: JsonField<List<Content>>,
                 private val model: JsonField<String>,
-                private val role: JsonField<Role>,
+                private val role: JsonValue,
                 private val stopReason: JsonField<StopReason>,
                 private val stopSequence: JsonField<String>,
-                private val type: JsonField<Type>,
+                private val type: JsonValue,
                 private val usage: JsonField<Usage>,
                 private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
@@ -692,14 +698,14 @@ private constructor(
                     @JsonProperty("model")
                     @ExcludeMissing
                     model: JsonField<String> = JsonMissing.of(),
-                    @JsonProperty("role") @ExcludeMissing role: JsonField<Role> = JsonMissing.of(),
+                    @JsonProperty("role") @ExcludeMissing role: JsonValue = JsonMissing.of(),
                     @JsonProperty("stop_reason")
                     @ExcludeMissing
                     stopReason: JsonField<StopReason> = JsonMissing.of(),
                     @JsonProperty("stop_sequence")
                     @ExcludeMissing
                     stopSequence: JsonField<String> = JsonMissing.of(),
-                    @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+                    @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
                     @JsonProperty("usage")
                     @ExcludeMissing
                     usage: JsonField<Usage> = JsonMissing.of(),
@@ -777,11 +783,15 @@ private constructor(
                  *
                  * This will always be `"assistant"`.
                  *
-                 * @throws SamInvalidDataException if the JSON field has an unexpected type or is
-                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-                 *   value).
+                 * Expected to always return the following:
+                 * ```java
+                 * JsonValue.from("assistant")
+                 * ```
+                 *
+                 * However, this method can be useful for debugging and logging (e.g. if the server
+                 * responded with an unexpected value).
                  */
-                fun role(): Role = role.getRequired("role")
+                @JsonProperty("role") @ExcludeMissing fun _role(): JsonValue = role
 
                 /**
                  * The reason that we stopped.
@@ -816,11 +826,15 @@ private constructor(
                  *
                  * For Messages, this is always `"message"`.
                  *
-                 * @throws SamInvalidDataException if the JSON field has an unexpected type or is
-                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-                 *   value).
+                 * Expected to always return the following:
+                 * ```java
+                 * JsonValue.from("message")
+                 * ```
+                 *
+                 * However, this method can be useful for debugging and logging (e.g. if the server
+                 * responded with an unexpected value).
                  */
-                fun type(): Type = type.getRequired("type")
+                @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
                 /**
                  * Billing and rate-limit usage.
@@ -871,14 +885,6 @@ private constructor(
                 @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
 
                 /**
-                 * Returns the raw JSON value of [role].
-                 *
-                 * Unlike [role], this method doesn't throw if the JSON field has an unexpected
-                 * type.
-                 */
-                @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
-
-                /**
                  * Returns the raw JSON value of [stopReason].
                  *
                  * Unlike [stopReason], this method doesn't throw if the JSON field has an
@@ -897,14 +903,6 @@ private constructor(
                 @JsonProperty("stop_sequence")
                 @ExcludeMissing
                 fun _stopSequence(): JsonField<String> = stopSequence
-
-                /**
-                 * Returns the raw JSON value of [type].
-                 *
-                 * Unlike [type], this method doesn't throw if the JSON field has an unexpected
-                 * type.
-                 */
-                @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                 /**
                  * Returns the raw JSON value of [usage].
@@ -936,10 +934,8 @@ private constructor(
                      * .id()
                      * .content()
                      * .model()
-                     * .role()
                      * .stopReason()
                      * .stopSequence()
-                     * .type()
                      * .usage()
                      * ```
                      */
@@ -952,10 +948,10 @@ private constructor(
                     private var id: JsonField<String>? = null
                     private var content: JsonField<MutableList<Content>>? = null
                     private var model: JsonField<String>? = null
-                    private var role: JsonField<Role>? = null
+                    private var role: JsonValue = JsonValue.from("assistant")
                     private var stopReason: JsonField<StopReason>? = null
                     private var stopSequence: JsonField<String>? = null
-                    private var type: JsonField<Type>? = null
+                    private var type: JsonValue = JsonValue.from("message")
                     private var usage: JsonField<Usage>? = null
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -1066,23 +1062,12 @@ private constructor(
                      * Alias for calling [addContent] with the following:
                      * ```java
                      * Content.RedactedThinking.builder()
-                     *     .type(BatchResultsBetaResponse.Result.Succeeded.Message.Content.RedactedThinking.Type.REDACTED_THINKING)
                      *     .data(data)
                      *     .build()
                      * ```
                      */
                     fun addRedactedThinkingContent(data: String) =
-                        addContent(
-                            Content.RedactedThinking.builder()
-                                .type(
-                                    BatchResultsBetaResponse.Result.Succeeded.Message.Content
-                                        .RedactedThinking
-                                        .Type
-                                        .REDACTED_THINKING
-                                )
-                                .data(data)
-                                .build()
-                        )
+                        addContent(Content.RedactedThinking.builder().data(data).build())
 
                     /** The model that handled the request. */
                     fun model(model: String) = model(JsonField.of(model))
@@ -1097,20 +1082,18 @@ private constructor(
                     fun model(model: JsonField<String>) = apply { this.model = model }
 
                     /**
-                     * Conversational role of the generated message.
+                     * Sets the field to an arbitrary JSON value.
                      *
-                     * This will always be `"assistant"`.
-                     */
-                    fun role(role: Role) = role(JsonField.of(role))
-
-                    /**
-                     * Sets [Builder.role] to an arbitrary JSON value.
+                     * It is usually unnecessary to call this method because the field defaults to
+                     * the following:
+                     * ```java
+                     * JsonValue.from("assistant")
+                     * ```
                      *
-                     * You should usually call [Builder.role] with a well-typed [Role] value
-                     * instead. This method is primarily for setting the field to an undocumented or
-                     * not yet supported value.
+                     * This method is primarily for setting the field to an undocumented or not yet
+                     * supported value.
                      */
-                    fun role(role: JsonField<Role>) = apply { this.role = role }
+                    fun role(role: JsonValue) = apply { this.role = role }
 
                     /**
                      * The reason that we stopped.
@@ -1171,20 +1154,18 @@ private constructor(
                     }
 
                     /**
-                     * Object type.
+                     * Sets the field to an arbitrary JSON value.
                      *
-                     * For Messages, this is always `"message"`.
-                     */
-                    fun type(type: Type) = type(JsonField.of(type))
-
-                    /**
-                     * Sets [Builder.type] to an arbitrary JSON value.
+                     * It is usually unnecessary to call this method because the field defaults to
+                     * the following:
+                     * ```java
+                     * JsonValue.from("message")
+                     * ```
                      *
-                     * You should usually call [Builder.type] with a well-typed [Type] value
-                     * instead. This method is primarily for setting the field to an undocumented or
-                     * not yet supported value.
+                     * This method is primarily for setting the field to an undocumented or not yet
+                     * supported value.
                      */
-                    fun type(type: JsonField<Type>) = apply { this.type = type }
+                    fun type(type: JsonValue) = apply { this.type = type }
 
                     /**
                      * Billing and rate-limit usage.
@@ -1246,10 +1227,8 @@ private constructor(
                      * .id()
                      * .content()
                      * .model()
-                     * .role()
                      * .stopReason()
                      * .stopSequence()
-                     * .type()
                      * .usage()
                      * ```
                      *
@@ -1260,10 +1239,10 @@ private constructor(
                             checkRequired("id", id),
                             checkRequired("content", content).map { it.toImmutable() },
                             checkRequired("model", model),
-                            checkRequired("role", role),
+                            role,
                             checkRequired("stopReason", stopReason),
                             checkRequired("stopSequence", stopSequence),
-                            checkRequired("type", type),
+                            type,
                             checkRequired("usage", usage),
                             additionalProperties.toMutableMap(),
                         )
@@ -1279,10 +1258,18 @@ private constructor(
                     id()
                     content().forEach { it.validate() }
                     model()
-                    role().validate()
+                    _role().let {
+                        if (it != JsonValue.from("assistant")) {
+                            throw SamInvalidDataException("'role' is invalid, received $it")
+                        }
+                    }
                     stopReason().ifPresent { it.validate() }
                     stopSequence()
-                    type().validate()
+                    _type().let {
+                        if (it != JsonValue.from("message")) {
+                            throw SamInvalidDataException("'type' is invalid, received $it")
+                        }
+                    }
                     usage().validate()
                     validated = true
                 }
@@ -1306,10 +1293,10 @@ private constructor(
                     (if (id.asKnown().isPresent) 1 else 0) +
                         (content.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                         (if (model.asKnown().isPresent) 1 else 0) +
-                        (role.asKnown().getOrNull()?.validity() ?: 0) +
+                        role.let { if (it == JsonValue.from("assistant")) 1 else 0 } +
                         (stopReason.asKnown().getOrNull()?.validity() ?: 0) +
                         (if (stopSequence.asKnown().isPresent) 1 else 0) +
-                        (type.asKnown().getOrNull()?.validity() ?: 0) +
+                        type.let { if (it == JsonValue.from("message")) 1 else 0 } +
                         (usage.asKnown().getOrNull()?.validity() ?: 0)
 
                 @JsonDeserialize(using = Content.Deserializer::class)
@@ -1544,7 +1531,7 @@ private constructor(
                     private constructor(
                         private val citations: JsonField<List<Citation>>,
                         private val text: JsonField<String>,
-                        private val type: JsonField<Type>,
+                        private val type: JsonValue,
                         private val additionalProperties: MutableMap<String, JsonValue>,
                     ) {
 
@@ -1556,9 +1543,7 @@ private constructor(
                             @JsonProperty("text")
                             @ExcludeMissing
                             text: JsonField<String> = JsonMissing.of(),
-                            @JsonProperty("type")
-                            @ExcludeMissing
-                            type: JsonField<Type> = JsonMissing.of(),
+                            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
                         ) : this(citations, text, type, mutableMapOf())
 
                         /**
@@ -1583,11 +1568,15 @@ private constructor(
                         fun text(): String = text.getRequired("text")
 
                         /**
-                         * @throws SamInvalidDataException if the JSON field has an unexpected type
-                         *   or is unexpectedly missing or null (e.g. if the server responded with
-                         *   an unexpected value).
+                         * Expected to always return the following:
+                         * ```java
+                         * JsonValue.from("text")
+                         * ```
+                         *
+                         * However, this method can be useful for debugging and logging (e.g. if the
+                         * server responded with an unexpected value).
                          */
-                        fun type(): Type = type.getRequired("type")
+                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
                         /**
                          * Returns the raw JSON value of [citations].
@@ -1606,14 +1595,6 @@ private constructor(
                          * unexpected type.
                          */
                         @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
-
-                        /**
-                         * Returns the raw JSON value of [type].
-                         *
-                         * Unlike [type], this method doesn't throw if the JSON field has an
-                         * unexpected type.
-                         */
-                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                         @JsonAnySetter
                         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -1636,7 +1617,6 @@ private constructor(
                              * ```java
                              * .citations()
                              * .text()
-                             * .type()
                              * ```
                              */
                             @JvmStatic fun builder() = Builder()
@@ -1647,7 +1627,7 @@ private constructor(
 
                             private var citations: JsonField<MutableList<Citation>>? = null
                             private var text: JsonField<String>? = null
-                            private var type: JsonField<Type>? = null
+                            private var type: JsonValue = JsonValue.from("text")
                             private var additionalProperties: MutableMap<String, JsonValue> =
                                 mutableMapOf()
 
@@ -1732,16 +1712,19 @@ private constructor(
                              */
                             fun text(text: JsonField<String>) = apply { this.text = text }
 
-                            fun type(type: Type) = type(JsonField.of(type))
-
                             /**
-                             * Sets [Builder.type] to an arbitrary JSON value.
+                             * Sets the field to an arbitrary JSON value.
                              *
-                             * You should usually call [Builder.type] with a well-typed [Type] value
-                             * instead. This method is primarily for setting the field to an
-                             * undocumented or not yet supported value.
+                             * It is usually unnecessary to call this method because the field
+                             * defaults to the following:
+                             * ```java
+                             * JsonValue.from("text")
+                             * ```
+                             *
+                             * This method is primarily for setting the field to an undocumented or
+                             * not yet supported value.
                              */
-                            fun type(type: JsonField<Type>) = apply { this.type = type }
+                            fun type(type: JsonValue) = apply { this.type = type }
 
                             fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
                                 apply {
@@ -1775,7 +1758,6 @@ private constructor(
                              * ```java
                              * .citations()
                              * .text()
-                             * .type()
                              * ```
                              *
                              * @throws IllegalStateException if any required field is unset.
@@ -1784,7 +1766,7 @@ private constructor(
                                 Text(
                                     checkRequired("citations", citations).map { it.toImmutable() },
                                     checkRequired("text", text),
-                                    checkRequired("type", type),
+                                    type,
                                     additionalProperties.toMutableMap(),
                                 )
                         }
@@ -1798,7 +1780,11 @@ private constructor(
 
                             citations().ifPresent { it.forEach { it.validate() } }
                             text()
-                            type().validate()
+                            _type().let {
+                                if (it != JsonValue.from("text")) {
+                                    throw SamInvalidDataException("'type' is invalid, received $it")
+                                }
+                            }
                             validated = true
                         }
 
@@ -1821,7 +1807,7 @@ private constructor(
                             (citations.asKnown().getOrNull()?.sumOf { it.validity().toInt() }
                                 ?: 0) +
                                 (if (text.asKnown().isPresent) 1 else 0) +
-                                (type.asKnown().getOrNull()?.validity() ?: 0)
+                                type.let { if (it == JsonValue.from("text")) 1 else 0 }
 
                         @JsonDeserialize(using = Citation.Deserializer::class)
                         @JsonSerialize(using = Citation.Serializer::class)
@@ -2067,7 +2053,7 @@ private constructor(
                                 private val documentTitle: JsonField<String>,
                                 private val endCharIndex: JsonField<Long>,
                                 private val startCharIndex: JsonField<Long>,
-                                private val type: JsonField<Type>,
+                                private val type: JsonValue,
                                 private val additionalProperties: MutableMap<String, JsonValue>,
                             ) {
 
@@ -2090,7 +2076,7 @@ private constructor(
                                     startCharIndex: JsonField<Long> = JsonMissing.of(),
                                     @JsonProperty("type")
                                     @ExcludeMissing
-                                    type: JsonField<Type> = JsonMissing.of(),
+                                    type: JsonValue = JsonMissing.of(),
                                 ) : this(
                                     citedText,
                                     documentIndex,
@@ -2141,11 +2127,15 @@ private constructor(
                                     startCharIndex.getRequired("start_char_index")
 
                                 /**
-                                 * @throws SamInvalidDataException if the JSON field has an
-                                 *   unexpected type or is unexpectedly missing or null (e.g. if the
-                                 *   server responded with an unexpected value).
+                                 * Expected to always return the following:
+                                 * ```java
+                                 * JsonValue.from("char_location")
+                                 * ```
+                                 *
+                                 * However, this method can be useful for debugging and logging
+                                 * (e.g. if the server responded with an unexpected value).
                                  */
-                                fun type(): Type = type.getRequired("type")
+                                @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
                                 /**
                                  * Returns the raw JSON value of [citedText].
@@ -2197,16 +2187,6 @@ private constructor(
                                 @ExcludeMissing
                                 fun _startCharIndex(): JsonField<Long> = startCharIndex
 
-                                /**
-                                 * Returns the raw JSON value of [type].
-                                 *
-                                 * Unlike [type], this method doesn't throw if the JSON field has an
-                                 * unexpected type.
-                                 */
-                                @JsonProperty("type")
-                                @ExcludeMissing
-                                fun _type(): JsonField<Type> = type
-
                                 @JsonAnySetter
                                 private fun putAdditionalProperty(key: String, value: JsonValue) {
                                     additionalProperties.put(key, value)
@@ -2232,7 +2212,6 @@ private constructor(
                                      * .documentTitle()
                                      * .endCharIndex()
                                      * .startCharIndex()
-                                     * .type()
                                      * ```
                                      */
                                     @JvmStatic fun builder() = Builder()
@@ -2246,7 +2225,7 @@ private constructor(
                                     private var documentTitle: JsonField<String>? = null
                                     private var endCharIndex: JsonField<Long>? = null
                                     private var startCharIndex: JsonField<Long>? = null
-                                    private var type: JsonField<Type>? = null
+                                    private var type: JsonValue = JsonValue.from("char_location")
                                     private var additionalProperties:
                                         MutableMap<String, JsonValue> =
                                         mutableMapOf()
@@ -2344,16 +2323,19 @@ private constructor(
                                         this.startCharIndex = startCharIndex
                                     }
 
-                                    fun type(type: Type) = type(JsonField.of(type))
-
                                     /**
-                                     * Sets [Builder.type] to an arbitrary JSON value.
+                                     * Sets the field to an arbitrary JSON value.
                                      *
-                                     * You should usually call [Builder.type] with a well-typed
-                                     * [Type] value instead. This method is primarily for setting
-                                     * the field to an undocumented or not yet supported value.
+                                     * It is usually unnecessary to call this method because the
+                                     * field defaults to the following:
+                                     * ```java
+                                     * JsonValue.from("char_location")
+                                     * ```
+                                     *
+                                     * This method is primarily for setting the field to an
+                                     * undocumented or not yet supported value.
                                      */
-                                    fun type(type: JsonField<Type>) = apply { this.type = type }
+                                    fun type(type: JsonValue) = apply { this.type = type }
 
                                     fun additionalProperties(
                                         additionalProperties: Map<String, JsonValue>
@@ -2394,7 +2376,6 @@ private constructor(
                                      * .documentTitle()
                                      * .endCharIndex()
                                      * .startCharIndex()
-                                     * .type()
                                      * ```
                                      *
                                      * @throws IllegalStateException if any required field is unset.
@@ -2406,7 +2387,7 @@ private constructor(
                                             checkRequired("documentTitle", documentTitle),
                                             checkRequired("endCharIndex", endCharIndex),
                                             checkRequired("startCharIndex", startCharIndex),
-                                            checkRequired("type", type),
+                                            type,
                                             additionalProperties.toMutableMap(),
                                         )
                                 }
@@ -2423,7 +2404,13 @@ private constructor(
                                     documentTitle()
                                     endCharIndex()
                                     startCharIndex()
-                                    type().validate()
+                                    _type().let {
+                                        if (it != JsonValue.from("char_location")) {
+                                            throw SamInvalidDataException(
+                                                "'type' is invalid, received $it"
+                                            )
+                                        }
+                                    }
                                     validated = true
                                 }
 
@@ -2448,146 +2435,9 @@ private constructor(
                                         (if (documentTitle.asKnown().isPresent) 1 else 0) +
                                         (if (endCharIndex.asKnown().isPresent) 1 else 0) +
                                         (if (startCharIndex.asKnown().isPresent) 1 else 0) +
-                                        (type.asKnown().getOrNull()?.validity() ?: 0)
-
-                                class Type
-                                @JsonCreator
-                                private constructor(private val value: JsonField<String>) : Enum {
-
-                                    /**
-                                     * Returns this class instance's raw value.
-                                     *
-                                     * This is usually only useful if this instance was deserialized
-                                     * from data that doesn't match any known member, and you want
-                                     * to know that value. For example, if the SDK is on an older
-                                     * version than the API, then the API may respond with new
-                                     * members that the SDK is unaware of.
-                                     */
-                                    @com.fasterxml.jackson.annotation.JsonValue
-                                    fun _value(): JsonField<String> = value
-
-                                    companion object {
-
-                                        @JvmField val CHAR_LOCATION = of("char_location")
-
-                                        @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-                                    }
-
-                                    /** An enum containing [Type]'s known values. */
-                                    enum class Known {
-                                        CHAR_LOCATION
-                                    }
-
-                                    /**
-                                     * An enum containing [Type]'s known values, as well as an
-                                     * [_UNKNOWN] member.
-                                     *
-                                     * An instance of [Type] can contain an unknown value in a
-                                     * couple of cases:
-                                     * - It was deserialized from data that doesn't match any known
-                                     *   member. For example, if the SDK is on an older version than
-                                     *   the API, then the API may respond with new members that the
-                                     *   SDK is unaware of.
-                                     * - It was constructed with an arbitrary value using the [of]
-                                     *   method.
-                                     */
-                                    enum class Value {
-                                        CHAR_LOCATION,
-                                        /**
-                                         * An enum member indicating that [Type] was instantiated
-                                         * with an unknown value.
-                                         */
-                                        _UNKNOWN,
-                                    }
-
-                                    /**
-                                     * Returns an enum member corresponding to this class instance's
-                                     * value, or [Value._UNKNOWN] if the class was instantiated with
-                                     * an unknown value.
-                                     *
-                                     * Use the [known] method instead if you're certain the value is
-                                     * always known or if you want to throw for the unknown case.
-                                     */
-                                    fun value(): Value =
-                                        when (this) {
-                                            CHAR_LOCATION -> Value.CHAR_LOCATION
-                                            else -> Value._UNKNOWN
+                                        type.let {
+                                            if (it == JsonValue.from("char_location")) 1 else 0
                                         }
-
-                                    /**
-                                     * Returns an enum member corresponding to this class instance's
-                                     * value.
-                                     *
-                                     * Use the [value] method instead if you're uncertain the value
-                                     * is always known and don't want to throw for the unknown case.
-                                     *
-                                     * @throws SamInvalidDataException if this class instance's
-                                     *   value is a not a known member.
-                                     */
-                                    fun known(): Known =
-                                        when (this) {
-                                            CHAR_LOCATION -> Known.CHAR_LOCATION
-                                            else ->
-                                                throw SamInvalidDataException(
-                                                    "Unknown Type: $value"
-                                                )
-                                        }
-
-                                    /**
-                                     * Returns this class instance's primitive wire representation.
-                                     *
-                                     * This differs from the [toString] method because that method
-                                     * is primarily for debugging and generally doesn't throw.
-                                     *
-                                     * @throws SamInvalidDataException if this class instance's
-                                     *   value does not have the expected primitive type.
-                                     */
-                                    fun asString(): String =
-                                        _value().asString().orElseThrow {
-                                            SamInvalidDataException("Value is not a String")
-                                        }
-
-                                    private var validated: Boolean = false
-
-                                    fun validate(): Type = apply {
-                                        if (validated) {
-                                            return@apply
-                                        }
-
-                                        known()
-                                        validated = true
-                                    }
-
-                                    fun isValid(): Boolean =
-                                        try {
-                                            validate()
-                                            true
-                                        } catch (e: SamInvalidDataException) {
-                                            false
-                                        }
-
-                                    /**
-                                     * Returns a score indicating how many valid values are
-                                     * contained in this object recursively.
-                                     *
-                                     * Used for best match union deserialization.
-                                     */
-                                    @JvmSynthetic
-                                    internal fun validity(): Int =
-                                        if (value() == Value._UNKNOWN) 0 else 1
-
-                                    override fun equals(other: Any?): Boolean {
-                                        if (this === other) {
-                                            return true
-                                        }
-
-                                        return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-                                    }
-
-                                    override fun hashCode() = value.hashCode()
-
-                                    override fun toString() = value.toString()
-                                }
 
                                 override fun equals(other: Any?): Boolean {
                                     if (this === other) {
@@ -2614,7 +2464,7 @@ private constructor(
                                 private val documentTitle: JsonField<String>,
                                 private val endPageNumber: JsonField<Long>,
                                 private val startPageNumber: JsonField<Long>,
-                                private val type: JsonField<Type>,
+                                private val type: JsonValue,
                                 private val additionalProperties: MutableMap<String, JsonValue>,
                             ) {
 
@@ -2637,7 +2487,7 @@ private constructor(
                                     startPageNumber: JsonField<Long> = JsonMissing.of(),
                                     @JsonProperty("type")
                                     @ExcludeMissing
-                                    type: JsonField<Type> = JsonMissing.of(),
+                                    type: JsonValue = JsonMissing.of(),
                                 ) : this(
                                     citedText,
                                     documentIndex,
@@ -2688,11 +2538,15 @@ private constructor(
                                     startPageNumber.getRequired("start_page_number")
 
                                 /**
-                                 * @throws SamInvalidDataException if the JSON field has an
-                                 *   unexpected type or is unexpectedly missing or null (e.g. if the
-                                 *   server responded with an unexpected value).
+                                 * Expected to always return the following:
+                                 * ```java
+                                 * JsonValue.from("page_location")
+                                 * ```
+                                 *
+                                 * However, this method can be useful for debugging and logging
+                                 * (e.g. if the server responded with an unexpected value).
                                  */
-                                fun type(): Type = type.getRequired("type")
+                                @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
                                 /**
                                  * Returns the raw JSON value of [citedText].
@@ -2744,16 +2598,6 @@ private constructor(
                                 @ExcludeMissing
                                 fun _startPageNumber(): JsonField<Long> = startPageNumber
 
-                                /**
-                                 * Returns the raw JSON value of [type].
-                                 *
-                                 * Unlike [type], this method doesn't throw if the JSON field has an
-                                 * unexpected type.
-                                 */
-                                @JsonProperty("type")
-                                @ExcludeMissing
-                                fun _type(): JsonField<Type> = type
-
                                 @JsonAnySetter
                                 private fun putAdditionalProperty(key: String, value: JsonValue) {
                                     additionalProperties.put(key, value)
@@ -2779,7 +2623,6 @@ private constructor(
                                      * .documentTitle()
                                      * .endPageNumber()
                                      * .startPageNumber()
-                                     * .type()
                                      * ```
                                      */
                                     @JvmStatic fun builder() = Builder()
@@ -2793,7 +2636,7 @@ private constructor(
                                     private var documentTitle: JsonField<String>? = null
                                     private var endPageNumber: JsonField<Long>? = null
                                     private var startPageNumber: JsonField<Long>? = null
-                                    private var type: JsonField<Type>? = null
+                                    private var type: JsonValue = JsonValue.from("page_location")
                                     private var additionalProperties:
                                         MutableMap<String, JsonValue> =
                                         mutableMapOf()
@@ -2891,16 +2734,19 @@ private constructor(
                                         this.startPageNumber = startPageNumber
                                     }
 
-                                    fun type(type: Type) = type(JsonField.of(type))
-
                                     /**
-                                     * Sets [Builder.type] to an arbitrary JSON value.
+                                     * Sets the field to an arbitrary JSON value.
                                      *
-                                     * You should usually call [Builder.type] with a well-typed
-                                     * [Type] value instead. This method is primarily for setting
-                                     * the field to an undocumented or not yet supported value.
+                                     * It is usually unnecessary to call this method because the
+                                     * field defaults to the following:
+                                     * ```java
+                                     * JsonValue.from("page_location")
+                                     * ```
+                                     *
+                                     * This method is primarily for setting the field to an
+                                     * undocumented or not yet supported value.
                                      */
-                                    fun type(type: JsonField<Type>) = apply { this.type = type }
+                                    fun type(type: JsonValue) = apply { this.type = type }
 
                                     fun additionalProperties(
                                         additionalProperties: Map<String, JsonValue>
@@ -2941,7 +2787,6 @@ private constructor(
                                      * .documentTitle()
                                      * .endPageNumber()
                                      * .startPageNumber()
-                                     * .type()
                                      * ```
                                      *
                                      * @throws IllegalStateException if any required field is unset.
@@ -2953,7 +2798,7 @@ private constructor(
                                             checkRequired("documentTitle", documentTitle),
                                             checkRequired("endPageNumber", endPageNumber),
                                             checkRequired("startPageNumber", startPageNumber),
-                                            checkRequired("type", type),
+                                            type,
                                             additionalProperties.toMutableMap(),
                                         )
                                 }
@@ -2970,7 +2815,13 @@ private constructor(
                                     documentTitle()
                                     endPageNumber()
                                     startPageNumber()
-                                    type().validate()
+                                    _type().let {
+                                        if (it != JsonValue.from("page_location")) {
+                                            throw SamInvalidDataException(
+                                                "'type' is invalid, received $it"
+                                            )
+                                        }
+                                    }
                                     validated = true
                                 }
 
@@ -2995,146 +2846,9 @@ private constructor(
                                         (if (documentTitle.asKnown().isPresent) 1 else 0) +
                                         (if (endPageNumber.asKnown().isPresent) 1 else 0) +
                                         (if (startPageNumber.asKnown().isPresent) 1 else 0) +
-                                        (type.asKnown().getOrNull()?.validity() ?: 0)
-
-                                class Type
-                                @JsonCreator
-                                private constructor(private val value: JsonField<String>) : Enum {
-
-                                    /**
-                                     * Returns this class instance's raw value.
-                                     *
-                                     * This is usually only useful if this instance was deserialized
-                                     * from data that doesn't match any known member, and you want
-                                     * to know that value. For example, if the SDK is on an older
-                                     * version than the API, then the API may respond with new
-                                     * members that the SDK is unaware of.
-                                     */
-                                    @com.fasterxml.jackson.annotation.JsonValue
-                                    fun _value(): JsonField<String> = value
-
-                                    companion object {
-
-                                        @JvmField val PAGE_LOCATION = of("page_location")
-
-                                        @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-                                    }
-
-                                    /** An enum containing [Type]'s known values. */
-                                    enum class Known {
-                                        PAGE_LOCATION
-                                    }
-
-                                    /**
-                                     * An enum containing [Type]'s known values, as well as an
-                                     * [_UNKNOWN] member.
-                                     *
-                                     * An instance of [Type] can contain an unknown value in a
-                                     * couple of cases:
-                                     * - It was deserialized from data that doesn't match any known
-                                     *   member. For example, if the SDK is on an older version than
-                                     *   the API, then the API may respond with new members that the
-                                     *   SDK is unaware of.
-                                     * - It was constructed with an arbitrary value using the [of]
-                                     *   method.
-                                     */
-                                    enum class Value {
-                                        PAGE_LOCATION,
-                                        /**
-                                         * An enum member indicating that [Type] was instantiated
-                                         * with an unknown value.
-                                         */
-                                        _UNKNOWN,
-                                    }
-
-                                    /**
-                                     * Returns an enum member corresponding to this class instance's
-                                     * value, or [Value._UNKNOWN] if the class was instantiated with
-                                     * an unknown value.
-                                     *
-                                     * Use the [known] method instead if you're certain the value is
-                                     * always known or if you want to throw for the unknown case.
-                                     */
-                                    fun value(): Value =
-                                        when (this) {
-                                            PAGE_LOCATION -> Value.PAGE_LOCATION
-                                            else -> Value._UNKNOWN
+                                        type.let {
+                                            if (it == JsonValue.from("page_location")) 1 else 0
                                         }
-
-                                    /**
-                                     * Returns an enum member corresponding to this class instance's
-                                     * value.
-                                     *
-                                     * Use the [value] method instead if you're uncertain the value
-                                     * is always known and don't want to throw for the unknown case.
-                                     *
-                                     * @throws SamInvalidDataException if this class instance's
-                                     *   value is a not a known member.
-                                     */
-                                    fun known(): Known =
-                                        when (this) {
-                                            PAGE_LOCATION -> Known.PAGE_LOCATION
-                                            else ->
-                                                throw SamInvalidDataException(
-                                                    "Unknown Type: $value"
-                                                )
-                                        }
-
-                                    /**
-                                     * Returns this class instance's primitive wire representation.
-                                     *
-                                     * This differs from the [toString] method because that method
-                                     * is primarily for debugging and generally doesn't throw.
-                                     *
-                                     * @throws SamInvalidDataException if this class instance's
-                                     *   value does not have the expected primitive type.
-                                     */
-                                    fun asString(): String =
-                                        _value().asString().orElseThrow {
-                                            SamInvalidDataException("Value is not a String")
-                                        }
-
-                                    private var validated: Boolean = false
-
-                                    fun validate(): Type = apply {
-                                        if (validated) {
-                                            return@apply
-                                        }
-
-                                        known()
-                                        validated = true
-                                    }
-
-                                    fun isValid(): Boolean =
-                                        try {
-                                            validate()
-                                            true
-                                        } catch (e: SamInvalidDataException) {
-                                            false
-                                        }
-
-                                    /**
-                                     * Returns a score indicating how many valid values are
-                                     * contained in this object recursively.
-                                     *
-                                     * Used for best match union deserialization.
-                                     */
-                                    @JvmSynthetic
-                                    internal fun validity(): Int =
-                                        if (value() == Value._UNKNOWN) 0 else 1
-
-                                    override fun equals(other: Any?): Boolean {
-                                        if (this === other) {
-                                            return true
-                                        }
-
-                                        return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-                                    }
-
-                                    override fun hashCode() = value.hashCode()
-
-                                    override fun toString() = value.toString()
-                                }
 
                                 override fun equals(other: Any?): Boolean {
                                     if (this === other) {
@@ -3161,7 +2875,7 @@ private constructor(
                                 private val documentTitle: JsonField<String>,
                                 private val endBlockIndex: JsonField<Long>,
                                 private val startBlockIndex: JsonField<Long>,
-                                private val type: JsonField<Type>,
+                                private val type: JsonValue,
                                 private val additionalProperties: MutableMap<String, JsonValue>,
                             ) {
 
@@ -3184,7 +2898,7 @@ private constructor(
                                     startBlockIndex: JsonField<Long> = JsonMissing.of(),
                                     @JsonProperty("type")
                                     @ExcludeMissing
-                                    type: JsonField<Type> = JsonMissing.of(),
+                                    type: JsonValue = JsonMissing.of(),
                                 ) : this(
                                     citedText,
                                     documentIndex,
@@ -3235,11 +2949,15 @@ private constructor(
                                     startBlockIndex.getRequired("start_block_index")
 
                                 /**
-                                 * @throws SamInvalidDataException if the JSON field has an
-                                 *   unexpected type or is unexpectedly missing or null (e.g. if the
-                                 *   server responded with an unexpected value).
+                                 * Expected to always return the following:
+                                 * ```java
+                                 * JsonValue.from("content_block_location")
+                                 * ```
+                                 *
+                                 * However, this method can be useful for debugging and logging
+                                 * (e.g. if the server responded with an unexpected value).
                                  */
-                                fun type(): Type = type.getRequired("type")
+                                @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
                                 /**
                                  * Returns the raw JSON value of [citedText].
@@ -3291,16 +3009,6 @@ private constructor(
                                 @ExcludeMissing
                                 fun _startBlockIndex(): JsonField<Long> = startBlockIndex
 
-                                /**
-                                 * Returns the raw JSON value of [type].
-                                 *
-                                 * Unlike [type], this method doesn't throw if the JSON field has an
-                                 * unexpected type.
-                                 */
-                                @JsonProperty("type")
-                                @ExcludeMissing
-                                fun _type(): JsonField<Type> = type
-
                                 @JsonAnySetter
                                 private fun putAdditionalProperty(key: String, value: JsonValue) {
                                     additionalProperties.put(key, value)
@@ -3326,7 +3034,6 @@ private constructor(
                                      * .documentTitle()
                                      * .endBlockIndex()
                                      * .startBlockIndex()
-                                     * .type()
                                      * ```
                                      */
                                     @JvmStatic fun builder() = Builder()
@@ -3340,7 +3047,8 @@ private constructor(
                                     private var documentTitle: JsonField<String>? = null
                                     private var endBlockIndex: JsonField<Long>? = null
                                     private var startBlockIndex: JsonField<Long>? = null
-                                    private var type: JsonField<Type>? = null
+                                    private var type: JsonValue =
+                                        JsonValue.from("content_block_location")
                                     private var additionalProperties:
                                         MutableMap<String, JsonValue> =
                                         mutableMapOf()
@@ -3440,16 +3148,19 @@ private constructor(
                                         this.startBlockIndex = startBlockIndex
                                     }
 
-                                    fun type(type: Type) = type(JsonField.of(type))
-
                                     /**
-                                     * Sets [Builder.type] to an arbitrary JSON value.
+                                     * Sets the field to an arbitrary JSON value.
                                      *
-                                     * You should usually call [Builder.type] with a well-typed
-                                     * [Type] value instead. This method is primarily for setting
-                                     * the field to an undocumented or not yet supported value.
+                                     * It is usually unnecessary to call this method because the
+                                     * field defaults to the following:
+                                     * ```java
+                                     * JsonValue.from("content_block_location")
+                                     * ```
+                                     *
+                                     * This method is primarily for setting the field to an
+                                     * undocumented or not yet supported value.
                                      */
-                                    fun type(type: JsonField<Type>) = apply { this.type = type }
+                                    fun type(type: JsonValue) = apply { this.type = type }
 
                                     fun additionalProperties(
                                         additionalProperties: Map<String, JsonValue>
@@ -3490,7 +3201,6 @@ private constructor(
                                      * .documentTitle()
                                      * .endBlockIndex()
                                      * .startBlockIndex()
-                                     * .type()
                                      * ```
                                      *
                                      * @throws IllegalStateException if any required field is unset.
@@ -3502,7 +3212,7 @@ private constructor(
                                             checkRequired("documentTitle", documentTitle),
                                             checkRequired("endBlockIndex", endBlockIndex),
                                             checkRequired("startBlockIndex", startBlockIndex),
-                                            checkRequired("type", type),
+                                            type,
                                             additionalProperties.toMutableMap(),
                                         )
                                 }
@@ -3519,7 +3229,13 @@ private constructor(
                                     documentTitle()
                                     endBlockIndex()
                                     startBlockIndex()
-                                    type().validate()
+                                    _type().let {
+                                        if (it != JsonValue.from("content_block_location")) {
+                                            throw SamInvalidDataException(
+                                                "'type' is invalid, received $it"
+                                            )
+                                        }
+                                    }
                                     validated = true
                                 }
 
@@ -3544,147 +3260,10 @@ private constructor(
                                         (if (documentTitle.asKnown().isPresent) 1 else 0) +
                                         (if (endBlockIndex.asKnown().isPresent) 1 else 0) +
                                         (if (startBlockIndex.asKnown().isPresent) 1 else 0) +
-                                        (type.asKnown().getOrNull()?.validity() ?: 0)
-
-                                class Type
-                                @JsonCreator
-                                private constructor(private val value: JsonField<String>) : Enum {
-
-                                    /**
-                                     * Returns this class instance's raw value.
-                                     *
-                                     * This is usually only useful if this instance was deserialized
-                                     * from data that doesn't match any known member, and you want
-                                     * to know that value. For example, if the SDK is on an older
-                                     * version than the API, then the API may respond with new
-                                     * members that the SDK is unaware of.
-                                     */
-                                    @com.fasterxml.jackson.annotation.JsonValue
-                                    fun _value(): JsonField<String> = value
-
-                                    companion object {
-
-                                        @JvmField
-                                        val CONTENT_BLOCK_LOCATION = of("content_block_location")
-
-                                        @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-                                    }
-
-                                    /** An enum containing [Type]'s known values. */
-                                    enum class Known {
-                                        CONTENT_BLOCK_LOCATION
-                                    }
-
-                                    /**
-                                     * An enum containing [Type]'s known values, as well as an
-                                     * [_UNKNOWN] member.
-                                     *
-                                     * An instance of [Type] can contain an unknown value in a
-                                     * couple of cases:
-                                     * - It was deserialized from data that doesn't match any known
-                                     *   member. For example, if the SDK is on an older version than
-                                     *   the API, then the API may respond with new members that the
-                                     *   SDK is unaware of.
-                                     * - It was constructed with an arbitrary value using the [of]
-                                     *   method.
-                                     */
-                                    enum class Value {
-                                        CONTENT_BLOCK_LOCATION,
-                                        /**
-                                         * An enum member indicating that [Type] was instantiated
-                                         * with an unknown value.
-                                         */
-                                        _UNKNOWN,
-                                    }
-
-                                    /**
-                                     * Returns an enum member corresponding to this class instance's
-                                     * value, or [Value._UNKNOWN] if the class was instantiated with
-                                     * an unknown value.
-                                     *
-                                     * Use the [known] method instead if you're certain the value is
-                                     * always known or if you want to throw for the unknown case.
-                                     */
-                                    fun value(): Value =
-                                        when (this) {
-                                            CONTENT_BLOCK_LOCATION -> Value.CONTENT_BLOCK_LOCATION
-                                            else -> Value._UNKNOWN
+                                        type.let {
+                                            if (it == JsonValue.from("content_block_location")) 1
+                                            else 0
                                         }
-
-                                    /**
-                                     * Returns an enum member corresponding to this class instance's
-                                     * value.
-                                     *
-                                     * Use the [value] method instead if you're uncertain the value
-                                     * is always known and don't want to throw for the unknown case.
-                                     *
-                                     * @throws SamInvalidDataException if this class instance's
-                                     *   value is a not a known member.
-                                     */
-                                    fun known(): Known =
-                                        when (this) {
-                                            CONTENT_BLOCK_LOCATION -> Known.CONTENT_BLOCK_LOCATION
-                                            else ->
-                                                throw SamInvalidDataException(
-                                                    "Unknown Type: $value"
-                                                )
-                                        }
-
-                                    /**
-                                     * Returns this class instance's primitive wire representation.
-                                     *
-                                     * This differs from the [toString] method because that method
-                                     * is primarily for debugging and generally doesn't throw.
-                                     *
-                                     * @throws SamInvalidDataException if this class instance's
-                                     *   value does not have the expected primitive type.
-                                     */
-                                    fun asString(): String =
-                                        _value().asString().orElseThrow {
-                                            SamInvalidDataException("Value is not a String")
-                                        }
-
-                                    private var validated: Boolean = false
-
-                                    fun validate(): Type = apply {
-                                        if (validated) {
-                                            return@apply
-                                        }
-
-                                        known()
-                                        validated = true
-                                    }
-
-                                    fun isValid(): Boolean =
-                                        try {
-                                            validate()
-                                            true
-                                        } catch (e: SamInvalidDataException) {
-                                            false
-                                        }
-
-                                    /**
-                                     * Returns a score indicating how many valid values are
-                                     * contained in this object recursively.
-                                     *
-                                     * Used for best match union deserialization.
-                                     */
-                                    @JvmSynthetic
-                                    internal fun validity(): Int =
-                                        if (value() == Value._UNKNOWN) 0 else 1
-
-                                    override fun equals(other: Any?): Boolean {
-                                        if (this === other) {
-                                            return true
-                                        }
-
-                                        return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-                                    }
-
-                                    override fun hashCode() = value.hashCode()
-
-                                    override fun toString() = value.toString()
-                                }
 
                                 override fun equals(other: Any?): Boolean {
                                     if (this === other) {
@@ -3703,137 +3282,6 @@ private constructor(
                                 override fun toString() =
                                     "ContentBlockLocation{citedText=$citedText, documentIndex=$documentIndex, documentTitle=$documentTitle, endBlockIndex=$endBlockIndex, startBlockIndex=$startBlockIndex, type=$type, additionalProperties=$additionalProperties}"
                             }
-                        }
-
-                        class Type
-                        @JsonCreator
-                        private constructor(private val value: JsonField<String>) : Enum {
-
-                            /**
-                             * Returns this class instance's raw value.
-                             *
-                             * This is usually only useful if this instance was deserialized from
-                             * data that doesn't match any known member, and you want to know that
-                             * value. For example, if the SDK is on an older version than the API,
-                             * then the API may respond with new members that the SDK is unaware of.
-                             */
-                            @com.fasterxml.jackson.annotation.JsonValue
-                            fun _value(): JsonField<String> = value
-
-                            companion object {
-
-                                @JvmField val TEXT = of("text")
-
-                                @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-                            }
-
-                            /** An enum containing [Type]'s known values. */
-                            enum class Known {
-                                TEXT
-                            }
-
-                            /**
-                             * An enum containing [Type]'s known values, as well as an [_UNKNOWN]
-                             * member.
-                             *
-                             * An instance of [Type] can contain an unknown value in a couple of
-                             * cases:
-                             * - It was deserialized from data that doesn't match any known member.
-                             *   For example, if the SDK is on an older version than the API, then
-                             *   the API may respond with new members that the SDK is unaware of.
-                             * - It was constructed with an arbitrary value using the [of] method.
-                             */
-                            enum class Value {
-                                TEXT,
-                                /**
-                                 * An enum member indicating that [Type] was instantiated with an
-                                 * unknown value.
-                                 */
-                                _UNKNOWN,
-                            }
-
-                            /**
-                             * Returns an enum member corresponding to this class instance's value,
-                             * or [Value._UNKNOWN] if the class was instantiated with an unknown
-                             * value.
-                             *
-                             * Use the [known] method instead if you're certain the value is always
-                             * known or if you want to throw for the unknown case.
-                             */
-                            fun value(): Value =
-                                when (this) {
-                                    TEXT -> Value.TEXT
-                                    else -> Value._UNKNOWN
-                                }
-
-                            /**
-                             * Returns an enum member corresponding to this class instance's value.
-                             *
-                             * Use the [value] method instead if you're uncertain the value is
-                             * always known and don't want to throw for the unknown case.
-                             *
-                             * @throws SamInvalidDataException if this class instance's value is a
-                             *   not a known member.
-                             */
-                            fun known(): Known =
-                                when (this) {
-                                    TEXT -> Known.TEXT
-                                    else -> throw SamInvalidDataException("Unknown Type: $value")
-                                }
-
-                            /**
-                             * Returns this class instance's primitive wire representation.
-                             *
-                             * This differs from the [toString] method because that method is
-                             * primarily for debugging and generally doesn't throw.
-                             *
-                             * @throws SamInvalidDataException if this class instance's value does
-                             *   not have the expected primitive type.
-                             */
-                            fun asString(): String =
-                                _value().asString().orElseThrow {
-                                    SamInvalidDataException("Value is not a String")
-                                }
-
-                            private var validated: Boolean = false
-
-                            fun validate(): Type = apply {
-                                if (validated) {
-                                    return@apply
-                                }
-
-                                known()
-                                validated = true
-                            }
-
-                            fun isValid(): Boolean =
-                                try {
-                                    validate()
-                                    true
-                                } catch (e: SamInvalidDataException) {
-                                    false
-                                }
-
-                            /**
-                             * Returns a score indicating how many valid values are contained in
-                             * this object recursively.
-                             *
-                             * Used for best match union deserialization.
-                             */
-                            @JvmSynthetic
-                            internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-                            override fun equals(other: Any?): Boolean {
-                                if (this === other) {
-                                    return true
-                                }
-
-                                return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-                            }
-
-                            override fun hashCode() = value.hashCode()
-
-                            override fun toString() = value.toString()
                         }
 
                         override fun equals(other: Any?): Boolean {
@@ -3859,7 +3307,7 @@ private constructor(
                         private val id: JsonField<String>,
                         private val input: JsonValue,
                         private val name: JsonField<String>,
-                        private val type: JsonField<Type>,
+                        private val type: JsonValue,
                         private val additionalProperties: MutableMap<String, JsonValue>,
                     ) {
 
@@ -3874,9 +3322,7 @@ private constructor(
                             @JsonProperty("name")
                             @ExcludeMissing
                             name: JsonField<String> = JsonMissing.of(),
-                            @JsonProperty("type")
-                            @ExcludeMissing
-                            type: JsonField<Type> = JsonMissing.of(),
+                            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
                         ) : this(id, input, name, type, mutableMapOf())
 
                         /**
@@ -3896,11 +3342,15 @@ private constructor(
                         fun name(): String = name.getRequired("name")
 
                         /**
-                         * @throws SamInvalidDataException if the JSON field has an unexpected type
-                         *   or is unexpectedly missing or null (e.g. if the server responded with
-                         *   an unexpected value).
+                         * Expected to always return the following:
+                         * ```java
+                         * JsonValue.from("tool_use")
+                         * ```
+                         *
+                         * However, this method can be useful for debugging and logging (e.g. if the
+                         * server responded with an unexpected value).
                          */
-                        fun type(): Type = type.getRequired("type")
+                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
                         /**
                          * Returns the raw JSON value of [id].
@@ -3917,14 +3367,6 @@ private constructor(
                          * unexpected type.
                          */
                         @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
-
-                        /**
-                         * Returns the raw JSON value of [type].
-                         *
-                         * Unlike [type], this method doesn't throw if the JSON field has an
-                         * unexpected type.
-                         */
-                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                         @JsonAnySetter
                         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -3948,7 +3390,6 @@ private constructor(
                              * .id()
                              * .input()
                              * .name()
-                             * .type()
                              * ```
                              */
                             @JvmStatic fun builder() = Builder()
@@ -3960,7 +3401,7 @@ private constructor(
                             private var id: JsonField<String>? = null
                             private var input: JsonValue? = null
                             private var name: JsonField<String>? = null
-                            private var type: JsonField<Type>? = null
+                            private var type: JsonValue = JsonValue.from("tool_use")
                             private var additionalProperties: MutableMap<String, JsonValue> =
                                 mutableMapOf()
 
@@ -3997,16 +3438,19 @@ private constructor(
                              */
                             fun name(name: JsonField<String>) = apply { this.name = name }
 
-                            fun type(type: Type) = type(JsonField.of(type))
-
                             /**
-                             * Sets [Builder.type] to an arbitrary JSON value.
+                             * Sets the field to an arbitrary JSON value.
                              *
-                             * You should usually call [Builder.type] with a well-typed [Type] value
-                             * instead. This method is primarily for setting the field to an
-                             * undocumented or not yet supported value.
+                             * It is usually unnecessary to call this method because the field
+                             * defaults to the following:
+                             * ```java
+                             * JsonValue.from("tool_use")
+                             * ```
+                             *
+                             * This method is primarily for setting the field to an undocumented or
+                             * not yet supported value.
                              */
-                            fun type(type: JsonField<Type>) = apply { this.type = type }
+                            fun type(type: JsonValue) = apply { this.type = type }
 
                             fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
                                 apply {
@@ -4041,7 +3485,6 @@ private constructor(
                              * .id()
                              * .input()
                              * .name()
-                             * .type()
                              * ```
                              *
                              * @throws IllegalStateException if any required field is unset.
@@ -4051,7 +3494,7 @@ private constructor(
                                     checkRequired("id", id),
                                     checkRequired("input", input),
                                     checkRequired("name", name),
-                                    checkRequired("type", type),
+                                    type,
                                     additionalProperties.toMutableMap(),
                                 )
                         }
@@ -4065,7 +3508,11 @@ private constructor(
 
                             id()
                             name()
-                            type().validate()
+                            _type().let {
+                                if (it != JsonValue.from("tool_use")) {
+                                    throw SamInvalidDataException("'type' is invalid, received $it")
+                                }
+                            }
                             validated = true
                         }
 
@@ -4087,138 +3534,7 @@ private constructor(
                         internal fun validity(): Int =
                             (if (id.asKnown().isPresent) 1 else 0) +
                                 (if (name.asKnown().isPresent) 1 else 0) +
-                                (type.asKnown().getOrNull()?.validity() ?: 0)
-
-                        class Type
-                        @JsonCreator
-                        private constructor(private val value: JsonField<String>) : Enum {
-
-                            /**
-                             * Returns this class instance's raw value.
-                             *
-                             * This is usually only useful if this instance was deserialized from
-                             * data that doesn't match any known member, and you want to know that
-                             * value. For example, if the SDK is on an older version than the API,
-                             * then the API may respond with new members that the SDK is unaware of.
-                             */
-                            @com.fasterxml.jackson.annotation.JsonValue
-                            fun _value(): JsonField<String> = value
-
-                            companion object {
-
-                                @JvmField val TOOL_USE = of("tool_use")
-
-                                @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-                            }
-
-                            /** An enum containing [Type]'s known values. */
-                            enum class Known {
-                                TOOL_USE
-                            }
-
-                            /**
-                             * An enum containing [Type]'s known values, as well as an [_UNKNOWN]
-                             * member.
-                             *
-                             * An instance of [Type] can contain an unknown value in a couple of
-                             * cases:
-                             * - It was deserialized from data that doesn't match any known member.
-                             *   For example, if the SDK is on an older version than the API, then
-                             *   the API may respond with new members that the SDK is unaware of.
-                             * - It was constructed with an arbitrary value using the [of] method.
-                             */
-                            enum class Value {
-                                TOOL_USE,
-                                /**
-                                 * An enum member indicating that [Type] was instantiated with an
-                                 * unknown value.
-                                 */
-                                _UNKNOWN,
-                            }
-
-                            /**
-                             * Returns an enum member corresponding to this class instance's value,
-                             * or [Value._UNKNOWN] if the class was instantiated with an unknown
-                             * value.
-                             *
-                             * Use the [known] method instead if you're certain the value is always
-                             * known or if you want to throw for the unknown case.
-                             */
-                            fun value(): Value =
-                                when (this) {
-                                    TOOL_USE -> Value.TOOL_USE
-                                    else -> Value._UNKNOWN
-                                }
-
-                            /**
-                             * Returns an enum member corresponding to this class instance's value.
-                             *
-                             * Use the [value] method instead if you're uncertain the value is
-                             * always known and don't want to throw for the unknown case.
-                             *
-                             * @throws SamInvalidDataException if this class instance's value is a
-                             *   not a known member.
-                             */
-                            fun known(): Known =
-                                when (this) {
-                                    TOOL_USE -> Known.TOOL_USE
-                                    else -> throw SamInvalidDataException("Unknown Type: $value")
-                                }
-
-                            /**
-                             * Returns this class instance's primitive wire representation.
-                             *
-                             * This differs from the [toString] method because that method is
-                             * primarily for debugging and generally doesn't throw.
-                             *
-                             * @throws SamInvalidDataException if this class instance's value does
-                             *   not have the expected primitive type.
-                             */
-                            fun asString(): String =
-                                _value().asString().orElseThrow {
-                                    SamInvalidDataException("Value is not a String")
-                                }
-
-                            private var validated: Boolean = false
-
-                            fun validate(): Type = apply {
-                                if (validated) {
-                                    return@apply
-                                }
-
-                                known()
-                                validated = true
-                            }
-
-                            fun isValid(): Boolean =
-                                try {
-                                    validate()
-                                    true
-                                } catch (e: SamInvalidDataException) {
-                                    false
-                                }
-
-                            /**
-                             * Returns a score indicating how many valid values are contained in
-                             * this object recursively.
-                             *
-                             * Used for best match union deserialization.
-                             */
-                            @JvmSynthetic
-                            internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-                            override fun equals(other: Any?): Boolean {
-                                if (this === other) {
-                                    return true
-                                }
-
-                                return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-                            }
-
-                            override fun hashCode() = value.hashCode()
-
-                            override fun toString() = value.toString()
-                        }
+                                type.let { if (it == JsonValue.from("tool_use")) 1 else 0 }
 
                         override fun equals(other: Any?): Boolean {
                             if (this === other) {
@@ -4242,7 +3558,7 @@ private constructor(
                     private constructor(
                         private val signature: JsonField<String>,
                         private val thinking: JsonField<String>,
-                        private val type: JsonField<Type>,
+                        private val type: JsonValue,
                         private val additionalProperties: MutableMap<String, JsonValue>,
                     ) {
 
@@ -4254,9 +3570,7 @@ private constructor(
                             @JsonProperty("thinking")
                             @ExcludeMissing
                             thinking: JsonField<String> = JsonMissing.of(),
-                            @JsonProperty("type")
-                            @ExcludeMissing
-                            type: JsonField<Type> = JsonMissing.of(),
+                            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
                         ) : this(signature, thinking, type, mutableMapOf())
 
                         /**
@@ -4274,11 +3588,15 @@ private constructor(
                         fun thinking(): String = thinking.getRequired("thinking")
 
                         /**
-                         * @throws SamInvalidDataException if the JSON field has an unexpected type
-                         *   or is unexpectedly missing or null (e.g. if the server responded with
-                         *   an unexpected value).
+                         * Expected to always return the following:
+                         * ```java
+                         * JsonValue.from("thinking")
+                         * ```
+                         *
+                         * However, this method can be useful for debugging and logging (e.g. if the
+                         * server responded with an unexpected value).
                          */
-                        fun type(): Type = type.getRequired("type")
+                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
                         /**
                          * Returns the raw JSON value of [signature].
@@ -4299,14 +3617,6 @@ private constructor(
                         @JsonProperty("thinking")
                         @ExcludeMissing
                         fun _thinking(): JsonField<String> = thinking
-
-                        /**
-                         * Returns the raw JSON value of [type].
-                         *
-                         * Unlike [type], this method doesn't throw if the JSON field has an
-                         * unexpected type.
-                         */
-                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                         @JsonAnySetter
                         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -4329,7 +3639,6 @@ private constructor(
                              * ```java
                              * .signature()
                              * .thinking()
-                             * .type()
                              * ```
                              */
                             @JvmStatic fun builder() = Builder()
@@ -4340,7 +3649,7 @@ private constructor(
 
                             private var signature: JsonField<String>? = null
                             private var thinking: JsonField<String>? = null
-                            private var type: JsonField<Type>? = null
+                            private var type: JsonValue = JsonValue.from("thinking")
                             private var additionalProperties: MutableMap<String, JsonValue> =
                                 mutableMapOf()
 
@@ -4378,16 +3687,19 @@ private constructor(
                                 this.thinking = thinking
                             }
 
-                            fun type(type: Type) = type(JsonField.of(type))
-
                             /**
-                             * Sets [Builder.type] to an arbitrary JSON value.
+                             * Sets the field to an arbitrary JSON value.
                              *
-                             * You should usually call [Builder.type] with a well-typed [Type] value
-                             * instead. This method is primarily for setting the field to an
-                             * undocumented or not yet supported value.
+                             * It is usually unnecessary to call this method because the field
+                             * defaults to the following:
+                             * ```java
+                             * JsonValue.from("thinking")
+                             * ```
+                             *
+                             * This method is primarily for setting the field to an undocumented or
+                             * not yet supported value.
                              */
-                            fun type(type: JsonField<Type>) = apply { this.type = type }
+                            fun type(type: JsonValue) = apply { this.type = type }
 
                             fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
                                 apply {
@@ -4421,7 +3733,6 @@ private constructor(
                              * ```java
                              * .signature()
                              * .thinking()
-                             * .type()
                              * ```
                              *
                              * @throws IllegalStateException if any required field is unset.
@@ -4430,7 +3741,7 @@ private constructor(
                                 Thinking(
                                     checkRequired("signature", signature),
                                     checkRequired("thinking", thinking),
-                                    checkRequired("type", type),
+                                    type,
                                     additionalProperties.toMutableMap(),
                                 )
                         }
@@ -4444,7 +3755,11 @@ private constructor(
 
                             signature()
                             thinking()
-                            type().validate()
+                            _type().let {
+                                if (it != JsonValue.from("thinking")) {
+                                    throw SamInvalidDataException("'type' is invalid, received $it")
+                                }
+                            }
                             validated = true
                         }
 
@@ -4466,138 +3781,7 @@ private constructor(
                         internal fun validity(): Int =
                             (if (signature.asKnown().isPresent) 1 else 0) +
                                 (if (thinking.asKnown().isPresent) 1 else 0) +
-                                (type.asKnown().getOrNull()?.validity() ?: 0)
-
-                        class Type
-                        @JsonCreator
-                        private constructor(private val value: JsonField<String>) : Enum {
-
-                            /**
-                             * Returns this class instance's raw value.
-                             *
-                             * This is usually only useful if this instance was deserialized from
-                             * data that doesn't match any known member, and you want to know that
-                             * value. For example, if the SDK is on an older version than the API,
-                             * then the API may respond with new members that the SDK is unaware of.
-                             */
-                            @com.fasterxml.jackson.annotation.JsonValue
-                            fun _value(): JsonField<String> = value
-
-                            companion object {
-
-                                @JvmField val THINKING = of("thinking")
-
-                                @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-                            }
-
-                            /** An enum containing [Type]'s known values. */
-                            enum class Known {
-                                THINKING
-                            }
-
-                            /**
-                             * An enum containing [Type]'s known values, as well as an [_UNKNOWN]
-                             * member.
-                             *
-                             * An instance of [Type] can contain an unknown value in a couple of
-                             * cases:
-                             * - It was deserialized from data that doesn't match any known member.
-                             *   For example, if the SDK is on an older version than the API, then
-                             *   the API may respond with new members that the SDK is unaware of.
-                             * - It was constructed with an arbitrary value using the [of] method.
-                             */
-                            enum class Value {
-                                THINKING,
-                                /**
-                                 * An enum member indicating that [Type] was instantiated with an
-                                 * unknown value.
-                                 */
-                                _UNKNOWN,
-                            }
-
-                            /**
-                             * Returns an enum member corresponding to this class instance's value,
-                             * or [Value._UNKNOWN] if the class was instantiated with an unknown
-                             * value.
-                             *
-                             * Use the [known] method instead if you're certain the value is always
-                             * known or if you want to throw for the unknown case.
-                             */
-                            fun value(): Value =
-                                when (this) {
-                                    THINKING -> Value.THINKING
-                                    else -> Value._UNKNOWN
-                                }
-
-                            /**
-                             * Returns an enum member corresponding to this class instance's value.
-                             *
-                             * Use the [value] method instead if you're uncertain the value is
-                             * always known and don't want to throw for the unknown case.
-                             *
-                             * @throws SamInvalidDataException if this class instance's value is a
-                             *   not a known member.
-                             */
-                            fun known(): Known =
-                                when (this) {
-                                    THINKING -> Known.THINKING
-                                    else -> throw SamInvalidDataException("Unknown Type: $value")
-                                }
-
-                            /**
-                             * Returns this class instance's primitive wire representation.
-                             *
-                             * This differs from the [toString] method because that method is
-                             * primarily for debugging and generally doesn't throw.
-                             *
-                             * @throws SamInvalidDataException if this class instance's value does
-                             *   not have the expected primitive type.
-                             */
-                            fun asString(): String =
-                                _value().asString().orElseThrow {
-                                    SamInvalidDataException("Value is not a String")
-                                }
-
-                            private var validated: Boolean = false
-
-                            fun validate(): Type = apply {
-                                if (validated) {
-                                    return@apply
-                                }
-
-                                known()
-                                validated = true
-                            }
-
-                            fun isValid(): Boolean =
-                                try {
-                                    validate()
-                                    true
-                                } catch (e: SamInvalidDataException) {
-                                    false
-                                }
-
-                            /**
-                             * Returns a score indicating how many valid values are contained in
-                             * this object recursively.
-                             *
-                             * Used for best match union deserialization.
-                             */
-                            @JvmSynthetic
-                            internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-                            override fun equals(other: Any?): Boolean {
-                                if (this === other) {
-                                    return true
-                                }
-
-                                return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-                            }
-
-                            override fun hashCode() = value.hashCode()
-
-                            override fun toString() = value.toString()
-                        }
+                                type.let { if (it == JsonValue.from("thinking")) 1 else 0 }
 
                         override fun equals(other: Any?): Boolean {
                             if (this === other) {
@@ -4620,7 +3804,7 @@ private constructor(
                     class RedactedThinking
                     private constructor(
                         private val data: JsonField<String>,
-                        private val type: JsonField<Type>,
+                        private val type: JsonValue,
                         private val additionalProperties: MutableMap<String, JsonValue>,
                     ) {
 
@@ -4629,9 +3813,7 @@ private constructor(
                             @JsonProperty("data")
                             @ExcludeMissing
                             data: JsonField<String> = JsonMissing.of(),
-                            @JsonProperty("type")
-                            @ExcludeMissing
-                            type: JsonField<Type> = JsonMissing.of(),
+                            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
                         ) : this(data, type, mutableMapOf())
 
                         /**
@@ -4642,11 +3824,15 @@ private constructor(
                         fun data(): String = data.getRequired("data")
 
                         /**
-                         * @throws SamInvalidDataException if the JSON field has an unexpected type
-                         *   or is unexpectedly missing or null (e.g. if the server responded with
-                         *   an unexpected value).
+                         * Expected to always return the following:
+                         * ```java
+                         * JsonValue.from("redacted_thinking")
+                         * ```
+                         *
+                         * However, this method can be useful for debugging and logging (e.g. if the
+                         * server responded with an unexpected value).
                          */
-                        fun type(): Type = type.getRequired("type")
+                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
                         /**
                          * Returns the raw JSON value of [data].
@@ -4655,14 +3841,6 @@ private constructor(
                          * unexpected type.
                          */
                         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<String> = data
-
-                        /**
-                         * Returns the raw JSON value of [type].
-                         *
-                         * Unlike [type], this method doesn't throw if the JSON field has an
-                         * unexpected type.
-                         */
-                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                         @JsonAnySetter
                         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -4685,7 +3863,6 @@ private constructor(
                              * The following fields are required:
                              * ```java
                              * .data()
-                             * .type()
                              * ```
                              */
                             @JvmStatic fun builder() = Builder()
@@ -4695,7 +3872,7 @@ private constructor(
                         class Builder internal constructor() {
 
                             private var data: JsonField<String>? = null
-                            private var type: JsonField<Type>? = null
+                            private var type: JsonValue = JsonValue.from("redacted_thinking")
                             private var additionalProperties: MutableMap<String, JsonValue> =
                                 mutableMapOf()
 
@@ -4718,16 +3895,19 @@ private constructor(
                              */
                             fun data(data: JsonField<String>) = apply { this.data = data }
 
-                            fun type(type: Type) = type(JsonField.of(type))
-
                             /**
-                             * Sets [Builder.type] to an arbitrary JSON value.
+                             * Sets the field to an arbitrary JSON value.
                              *
-                             * You should usually call [Builder.type] with a well-typed [Type] value
-                             * instead. This method is primarily for setting the field to an
-                             * undocumented or not yet supported value.
+                             * It is usually unnecessary to call this method because the field
+                             * defaults to the following:
+                             * ```java
+                             * JsonValue.from("redacted_thinking")
+                             * ```
+                             *
+                             * This method is primarily for setting the field to an undocumented or
+                             * not yet supported value.
                              */
-                            fun type(type: JsonField<Type>) = apply { this.type = type }
+                            fun type(type: JsonValue) = apply { this.type = type }
 
                             fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
                                 apply {
@@ -4760,7 +3940,6 @@ private constructor(
                              * The following fields are required:
                              * ```java
                              * .data()
-                             * .type()
                              * ```
                              *
                              * @throws IllegalStateException if any required field is unset.
@@ -4768,7 +3947,7 @@ private constructor(
                             fun build(): RedactedThinking =
                                 RedactedThinking(
                                     checkRequired("data", data),
-                                    checkRequired("type", type),
+                                    type,
                                     additionalProperties.toMutableMap(),
                                 )
                         }
@@ -4781,7 +3960,11 @@ private constructor(
                             }
 
                             data()
-                            type().validate()
+                            _type().let {
+                                if (it != JsonValue.from("redacted_thinking")) {
+                                    throw SamInvalidDataException("'type' is invalid, received $it")
+                                }
+                            }
                             validated = true
                         }
 
@@ -4802,138 +3985,7 @@ private constructor(
                         @JvmSynthetic
                         internal fun validity(): Int =
                             (if (data.asKnown().isPresent) 1 else 0) +
-                                (type.asKnown().getOrNull()?.validity() ?: 0)
-
-                        class Type
-                        @JsonCreator
-                        private constructor(private val value: JsonField<String>) : Enum {
-
-                            /**
-                             * Returns this class instance's raw value.
-                             *
-                             * This is usually only useful if this instance was deserialized from
-                             * data that doesn't match any known member, and you want to know that
-                             * value. For example, if the SDK is on an older version than the API,
-                             * then the API may respond with new members that the SDK is unaware of.
-                             */
-                            @com.fasterxml.jackson.annotation.JsonValue
-                            fun _value(): JsonField<String> = value
-
-                            companion object {
-
-                                @JvmField val REDACTED_THINKING = of("redacted_thinking")
-
-                                @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-                            }
-
-                            /** An enum containing [Type]'s known values. */
-                            enum class Known {
-                                REDACTED_THINKING
-                            }
-
-                            /**
-                             * An enum containing [Type]'s known values, as well as an [_UNKNOWN]
-                             * member.
-                             *
-                             * An instance of [Type] can contain an unknown value in a couple of
-                             * cases:
-                             * - It was deserialized from data that doesn't match any known member.
-                             *   For example, if the SDK is on an older version than the API, then
-                             *   the API may respond with new members that the SDK is unaware of.
-                             * - It was constructed with an arbitrary value using the [of] method.
-                             */
-                            enum class Value {
-                                REDACTED_THINKING,
-                                /**
-                                 * An enum member indicating that [Type] was instantiated with an
-                                 * unknown value.
-                                 */
-                                _UNKNOWN,
-                            }
-
-                            /**
-                             * Returns an enum member corresponding to this class instance's value,
-                             * or [Value._UNKNOWN] if the class was instantiated with an unknown
-                             * value.
-                             *
-                             * Use the [known] method instead if you're certain the value is always
-                             * known or if you want to throw for the unknown case.
-                             */
-                            fun value(): Value =
-                                when (this) {
-                                    REDACTED_THINKING -> Value.REDACTED_THINKING
-                                    else -> Value._UNKNOWN
-                                }
-
-                            /**
-                             * Returns an enum member corresponding to this class instance's value.
-                             *
-                             * Use the [value] method instead if you're uncertain the value is
-                             * always known and don't want to throw for the unknown case.
-                             *
-                             * @throws SamInvalidDataException if this class instance's value is a
-                             *   not a known member.
-                             */
-                            fun known(): Known =
-                                when (this) {
-                                    REDACTED_THINKING -> Known.REDACTED_THINKING
-                                    else -> throw SamInvalidDataException("Unknown Type: $value")
-                                }
-
-                            /**
-                             * Returns this class instance's primitive wire representation.
-                             *
-                             * This differs from the [toString] method because that method is
-                             * primarily for debugging and generally doesn't throw.
-                             *
-                             * @throws SamInvalidDataException if this class instance's value does
-                             *   not have the expected primitive type.
-                             */
-                            fun asString(): String =
-                                _value().asString().orElseThrow {
-                                    SamInvalidDataException("Value is not a String")
-                                }
-
-                            private var validated: Boolean = false
-
-                            fun validate(): Type = apply {
-                                if (validated) {
-                                    return@apply
-                                }
-
-                                known()
-                                validated = true
-                            }
-
-                            fun isValid(): Boolean =
-                                try {
-                                    validate()
-                                    true
-                                } catch (e: SamInvalidDataException) {
-                                    false
-                                }
-
-                            /**
-                             * Returns a score indicating how many valid values are contained in
-                             * this object recursively.
-                             *
-                             * Used for best match union deserialization.
-                             */
-                            @JvmSynthetic
-                            internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-                            override fun equals(other: Any?): Boolean {
-                                if (this === other) {
-                                    return true
-                                }
-
-                                return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-                            }
-
-                            override fun hashCode() = value.hashCode()
-
-                            override fun toString() = value.toString()
-                        }
+                                type.let { if (it == JsonValue.from("redacted_thinking")) 1 else 0 }
 
                         override fun equals(other: Any?): Boolean {
                             if (this === other) {
@@ -4952,138 +4004,6 @@ private constructor(
                         override fun toString() =
                             "RedactedThinking{data=$data, type=$type, additionalProperties=$additionalProperties}"
                     }
-                }
-
-                /**
-                 * Conversational role of the generated message.
-                 *
-                 * This will always be `"assistant"`.
-                 */
-                class Role @JsonCreator private constructor(private val value: JsonField<String>) :
-                    Enum {
-
-                    /**
-                     * Returns this class instance's raw value.
-                     *
-                     * This is usually only useful if this instance was deserialized from data that
-                     * doesn't match any known member, and you want to know that value. For example,
-                     * if the SDK is on an older version than the API, then the API may respond with
-                     * new members that the SDK is unaware of.
-                     */
-                    @com.fasterxml.jackson.annotation.JsonValue
-                    fun _value(): JsonField<String> = value
-
-                    companion object {
-
-                        @JvmField val ASSISTANT = of("assistant")
-
-                        @JvmStatic fun of(value: String) = Role(JsonField.of(value))
-                    }
-
-                    /** An enum containing [Role]'s known values. */
-                    enum class Known {
-                        ASSISTANT
-                    }
-
-                    /**
-                     * An enum containing [Role]'s known values, as well as an [_UNKNOWN] member.
-                     *
-                     * An instance of [Role] can contain an unknown value in a couple of cases:
-                     * - It was deserialized from data that doesn't match any known member. For
-                     *   example, if the SDK is on an older version than the API, then the API may
-                     *   respond with new members that the SDK is unaware of.
-                     * - It was constructed with an arbitrary value using the [of] method.
-                     */
-                    enum class Value {
-                        ASSISTANT,
-                        /**
-                         * An enum member indicating that [Role] was instantiated with an unknown
-                         * value.
-                         */
-                        _UNKNOWN,
-                    }
-
-                    /**
-                     * Returns an enum member corresponding to this class instance's value, or
-                     * [Value._UNKNOWN] if the class was instantiated with an unknown value.
-                     *
-                     * Use the [known] method instead if you're certain the value is always known or
-                     * if you want to throw for the unknown case.
-                     */
-                    fun value(): Value =
-                        when (this) {
-                            ASSISTANT -> Value.ASSISTANT
-                            else -> Value._UNKNOWN
-                        }
-
-                    /**
-                     * Returns an enum member corresponding to this class instance's value.
-                     *
-                     * Use the [value] method instead if you're uncertain the value is always known
-                     * and don't want to throw for the unknown case.
-                     *
-                     * @throws SamInvalidDataException if this class instance's value is a not a
-                     *   known member.
-                     */
-                    fun known(): Known =
-                        when (this) {
-                            ASSISTANT -> Known.ASSISTANT
-                            else -> throw SamInvalidDataException("Unknown Role: $value")
-                        }
-
-                    /**
-                     * Returns this class instance's primitive wire representation.
-                     *
-                     * This differs from the [toString] method because that method is primarily for
-                     * debugging and generally doesn't throw.
-                     *
-                     * @throws SamInvalidDataException if this class instance's value does not have
-                     *   the expected primitive type.
-                     */
-                    fun asString(): String =
-                        _value().asString().orElseThrow {
-                            SamInvalidDataException("Value is not a String")
-                        }
-
-                    private var validated: Boolean = false
-
-                    fun validate(): Role = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        known()
-                        validated = true
-                    }
-
-                    fun isValid(): Boolean =
-                        try {
-                            validate()
-                            true
-                        } catch (e: SamInvalidDataException) {
-                            false
-                        }
-
-                    /**
-                     * Returns a score indicating how many valid values are contained in this object
-                     * recursively.
-                     *
-                     * Used for best match union deserialization.
-                     */
-                    @JvmSynthetic
-                    internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-                    override fun equals(other: Any?): Boolean {
-                        if (this === other) {
-                            return true
-                        }
-
-                        return /* spotless:off */ other is Role && value == other.value /* spotless:on */
-                    }
-
-                    override fun hashCode() = value.hashCode()
-
-                    override fun toString() = value.toString()
                 }
 
                 /**
@@ -5239,138 +4159,6 @@ private constructor(
                         }
 
                         return /* spotless:off */ other is StopReason && value == other.value /* spotless:on */
-                    }
-
-                    override fun hashCode() = value.hashCode()
-
-                    override fun toString() = value.toString()
-                }
-
-                /**
-                 * Object type.
-                 *
-                 * For Messages, this is always `"message"`.
-                 */
-                class Type @JsonCreator private constructor(private val value: JsonField<String>) :
-                    Enum {
-
-                    /**
-                     * Returns this class instance's raw value.
-                     *
-                     * This is usually only useful if this instance was deserialized from data that
-                     * doesn't match any known member, and you want to know that value. For example,
-                     * if the SDK is on an older version than the API, then the API may respond with
-                     * new members that the SDK is unaware of.
-                     */
-                    @com.fasterxml.jackson.annotation.JsonValue
-                    fun _value(): JsonField<String> = value
-
-                    companion object {
-
-                        @JvmField val MESSAGE = of("message")
-
-                        @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-                    }
-
-                    /** An enum containing [Type]'s known values. */
-                    enum class Known {
-                        MESSAGE
-                    }
-
-                    /**
-                     * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
-                     *
-                     * An instance of [Type] can contain an unknown value in a couple of cases:
-                     * - It was deserialized from data that doesn't match any known member. For
-                     *   example, if the SDK is on an older version than the API, then the API may
-                     *   respond with new members that the SDK is unaware of.
-                     * - It was constructed with an arbitrary value using the [of] method.
-                     */
-                    enum class Value {
-                        MESSAGE,
-                        /**
-                         * An enum member indicating that [Type] was instantiated with an unknown
-                         * value.
-                         */
-                        _UNKNOWN,
-                    }
-
-                    /**
-                     * Returns an enum member corresponding to this class instance's value, or
-                     * [Value._UNKNOWN] if the class was instantiated with an unknown value.
-                     *
-                     * Use the [known] method instead if you're certain the value is always known or
-                     * if you want to throw for the unknown case.
-                     */
-                    fun value(): Value =
-                        when (this) {
-                            MESSAGE -> Value.MESSAGE
-                            else -> Value._UNKNOWN
-                        }
-
-                    /**
-                     * Returns an enum member corresponding to this class instance's value.
-                     *
-                     * Use the [value] method instead if you're uncertain the value is always known
-                     * and don't want to throw for the unknown case.
-                     *
-                     * @throws SamInvalidDataException if this class instance's value is a not a
-                     *   known member.
-                     */
-                    fun known(): Known =
-                        when (this) {
-                            MESSAGE -> Known.MESSAGE
-                            else -> throw SamInvalidDataException("Unknown Type: $value")
-                        }
-
-                    /**
-                     * Returns this class instance's primitive wire representation.
-                     *
-                     * This differs from the [toString] method because that method is primarily for
-                     * debugging and generally doesn't throw.
-                     *
-                     * @throws SamInvalidDataException if this class instance's value does not have
-                     *   the expected primitive type.
-                     */
-                    fun asString(): String =
-                        _value().asString().orElseThrow {
-                            SamInvalidDataException("Value is not a String")
-                        }
-
-                    private var validated: Boolean = false
-
-                    fun validate(): Type = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        known()
-                        validated = true
-                    }
-
-                    fun isValid(): Boolean =
-                        try {
-                            validate()
-                            true
-                        } catch (e: SamInvalidDataException) {
-                            false
-                        }
-
-                    /**
-                     * Returns a score indicating how many valid values are contained in this object
-                     * recursively.
-                     *
-                     * Used for best match union deserialization.
-                     */
-                    @JvmSynthetic
-                    internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-                    override fun equals(other: Any?): Boolean {
-                        if (this === other) {
-                            return true
-                        }
-
-                        return /* spotless:off */ other is Type && value == other.value /* spotless:on */
                     }
 
                     override fun hashCode() = value.hashCode()
@@ -5757,130 +4545,6 @@ private constructor(
                     "Message{id=$id, content=$content, model=$model, role=$role, stopReason=$stopReason, stopSequence=$stopSequence, type=$type, usage=$usage, additionalProperties=$additionalProperties}"
             }
 
-            class Type @JsonCreator private constructor(private val value: JsonField<String>) :
-                Enum {
-
-                /**
-                 * Returns this class instance's raw value.
-                 *
-                 * This is usually only useful if this instance was deserialized from data that
-                 * doesn't match any known member, and you want to know that value. For example, if
-                 * the SDK is on an older version than the API, then the API may respond with new
-                 * members that the SDK is unaware of.
-                 */
-                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-                companion object {
-
-                    @JvmField val SUCCEEDED = of("succeeded")
-
-                    @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-                }
-
-                /** An enum containing [Type]'s known values. */
-                enum class Known {
-                    SUCCEEDED
-                }
-
-                /**
-                 * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
-                 *
-                 * An instance of [Type] can contain an unknown value in a couple of cases:
-                 * - It was deserialized from data that doesn't match any known member. For example,
-                 *   if the SDK is on an older version than the API, then the API may respond with
-                 *   new members that the SDK is unaware of.
-                 * - It was constructed with an arbitrary value using the [of] method.
-                 */
-                enum class Value {
-                    SUCCEEDED,
-                    /**
-                     * An enum member indicating that [Type] was instantiated with an unknown value.
-                     */
-                    _UNKNOWN,
-                }
-
-                /**
-                 * Returns an enum member corresponding to this class instance's value, or
-                 * [Value._UNKNOWN] if the class was instantiated with an unknown value.
-                 *
-                 * Use the [known] method instead if you're certain the value is always known or if
-                 * you want to throw for the unknown case.
-                 */
-                fun value(): Value =
-                    when (this) {
-                        SUCCEEDED -> Value.SUCCEEDED
-                        else -> Value._UNKNOWN
-                    }
-
-                /**
-                 * Returns an enum member corresponding to this class instance's value.
-                 *
-                 * Use the [value] method instead if you're uncertain the value is always known and
-                 * don't want to throw for the unknown case.
-                 *
-                 * @throws SamInvalidDataException if this class instance's value is a not a known
-                 *   member.
-                 */
-                fun known(): Known =
-                    when (this) {
-                        SUCCEEDED -> Known.SUCCEEDED
-                        else -> throw SamInvalidDataException("Unknown Type: $value")
-                    }
-
-                /**
-                 * Returns this class instance's primitive wire representation.
-                 *
-                 * This differs from the [toString] method because that method is primarily for
-                 * debugging and generally doesn't throw.
-                 *
-                 * @throws SamInvalidDataException if this class instance's value does not have the
-                 *   expected primitive type.
-                 */
-                fun asString(): String =
-                    _value().asString().orElseThrow {
-                        SamInvalidDataException("Value is not a String")
-                    }
-
-                private var validated: Boolean = false
-
-                fun validate(): Type = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    known()
-                    validated = true
-                }
-
-                fun isValid(): Boolean =
-                    try {
-                        validate()
-                        true
-                    } catch (e: SamInvalidDataException) {
-                        false
-                    }
-
-                /**
-                 * Returns a score indicating how many valid values are contained in this object
-                 * recursively.
-                 *
-                 * Used for best match union deserialization.
-                 */
-                @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-                override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
-
-                    return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-                }
-
-                override fun hashCode() = value.hashCode()
-
-                override fun toString() = value.toString()
-            }
-
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -5902,14 +4566,14 @@ private constructor(
         class Errored
         private constructor(
             private val error: JsonField<Error>,
-            private val type: JsonField<Type>,
+            private val type: JsonValue,
             private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
 
             @JsonCreator
             private constructor(
                 @JsonProperty("error") @ExcludeMissing error: JsonField<Error> = JsonMissing.of(),
-                @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
             ) : this(error, type, mutableMapOf())
 
             /**
@@ -5920,11 +4584,15 @@ private constructor(
             fun error(): Error = error.getRequired("error")
 
             /**
-             * @throws SamInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("errored")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
              */
-            fun type(): Type = type.getRequired("type")
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
             /**
              * Returns the raw JSON value of [error].
@@ -5932,13 +4600,6 @@ private constructor(
              * Unlike [error], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<Error> = error
-
-            /**
-             * Returns the raw JSON value of [type].
-             *
-             * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
-             */
-            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
             @JsonAnySetter
             private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -5960,7 +4621,6 @@ private constructor(
                  * The following fields are required:
                  * ```java
                  * .error()
-                 * .type()
                  * ```
                  */
                 @JvmStatic fun builder() = Builder()
@@ -5970,7 +4630,7 @@ private constructor(
             class Builder internal constructor() {
 
                 private var error: JsonField<Error>? = null
-                private var type: JsonField<Type>? = null
+                private var type: JsonValue = JsonValue.from("errored")
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
@@ -5991,16 +4651,19 @@ private constructor(
                  */
                 fun error(error: JsonField<Error>) = apply { this.error = error }
 
-                fun type(type: Type) = type(JsonField.of(type))
-
                 /**
-                 * Sets [Builder.type] to an arbitrary JSON value.
+                 * Sets the field to an arbitrary JSON value.
                  *
-                 * You should usually call [Builder.type] with a well-typed [Type] value instead.
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("errored")
+                 * ```
+                 *
                  * This method is primarily for setting the field to an undocumented or not yet
                  * supported value.
                  */
-                fun type(type: JsonField<Type>) = apply { this.type = type }
+                fun type(type: JsonValue) = apply { this.type = type }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -6032,7 +4695,6 @@ private constructor(
                  * The following fields are required:
                  * ```java
                  * .error()
-                 * .type()
                  * ```
                  *
                  * @throws IllegalStateException if any required field is unset.
@@ -6040,7 +4702,7 @@ private constructor(
                 fun build(): Errored =
                     Errored(
                         checkRequired("error", error),
-                        checkRequired("type", type),
+                        type,
                         additionalProperties.toMutableMap(),
                     )
             }
@@ -6053,7 +4715,11 @@ private constructor(
                 }
 
                 error().validate()
-                type().validate()
+                _type().let {
+                    if (it != JsonValue.from("errored")) {
+                        throw SamInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
                 validated = true
             }
 
@@ -6074,12 +4740,12 @@ private constructor(
             @JvmSynthetic
             internal fun validity(): Int =
                 (error.asKnown().getOrNull()?.validity() ?: 0) +
-                    (type.asKnown().getOrNull()?.validity() ?: 0)
+                    type.let { if (it == JsonValue.from("errored")) 1 else 0 }
 
             class Error
             private constructor(
                 private val error: JsonField<InnerError>,
-                private val type: JsonField<Type>,
+                private val type: JsonValue,
                 private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
 
@@ -6088,7 +4754,7 @@ private constructor(
                     @JsonProperty("error")
                     @ExcludeMissing
                     error: JsonField<InnerError> = JsonMissing.of(),
-                    @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+                    @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
                 ) : this(error, type, mutableMapOf())
 
                 /**
@@ -6099,11 +4765,15 @@ private constructor(
                 fun error(): InnerError = error.getRequired("error")
 
                 /**
-                 * @throws SamInvalidDataException if the JSON field has an unexpected type or is
-                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-                 *   value).
+                 * Expected to always return the following:
+                 * ```java
+                 * JsonValue.from("error")
+                 * ```
+                 *
+                 * However, this method can be useful for debugging and logging (e.g. if the server
+                 * responded with an unexpected value).
                  */
-                fun type(): Type = type.getRequired("type")
+                @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
                 /**
                  * Returns the raw JSON value of [error].
@@ -6112,14 +4782,6 @@ private constructor(
                  * type.
                  */
                 @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<InnerError> = error
-
-                /**
-                 * Returns the raw JSON value of [type].
-                 *
-                 * Unlike [type], this method doesn't throw if the JSON field has an unexpected
-                 * type.
-                 */
-                @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                 @JsonAnySetter
                 private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -6141,7 +4803,6 @@ private constructor(
                      * The following fields are required:
                      * ```java
                      * .error()
-                     * .type()
                      * ```
                      */
                     @JvmStatic fun builder() = Builder()
@@ -6151,7 +4812,7 @@ private constructor(
                 class Builder internal constructor() {
 
                     private var error: JsonField<InnerError>? = null
-                    private var type: JsonField<Type>? = null
+                    private var type: JsonValue = JsonValue.from("error")
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
@@ -6182,23 +4843,12 @@ private constructor(
                      * Alias for calling [error] with the following:
                      * ```java
                      * InnerError.InvalidRequestError.builder()
-                     *     .type(BatchResultsBetaResponse.Result.Errored.Error.InnerError.InvalidRequestError.Type.INVALID_REQUEST_ERROR)
                      *     .message(message)
                      *     .build()
                      * ```
                      */
                     fun invalidRequestError(message: String) =
-                        error(
-                            InnerError.InvalidRequestError.builder()
-                                .type(
-                                    BatchResultsBetaResponse.Result.Errored.Error.InnerError
-                                        .InvalidRequestError
-                                        .Type
-                                        .INVALID_REQUEST_ERROR
-                                )
-                                .message(message)
-                                .build()
-                        )
+                        error(InnerError.InvalidRequestError.builder().message(message).build())
 
                     /**
                      * Alias for calling [error] with `InnerError.ofAuthentication(authentication)`.
@@ -6210,23 +4860,12 @@ private constructor(
                      * Alias for calling [error] with the following:
                      * ```java
                      * InnerError.AuthenticationError.builder()
-                     *     .type(BatchResultsBetaResponse.Result.Errored.Error.InnerError.AuthenticationError.Type.AUTHENTICATION_ERROR)
                      *     .message(message)
                      *     .build()
                      * ```
                      */
                     fun authenticationError(message: String) =
-                        error(
-                            InnerError.AuthenticationError.builder()
-                                .type(
-                                    BatchResultsBetaResponse.Result.Errored.Error.InnerError
-                                        .AuthenticationError
-                                        .Type
-                                        .AUTHENTICATION_ERROR
-                                )
-                                .message(message)
-                                .build()
-                        )
+                        error(InnerError.AuthenticationError.builder().message(message).build())
 
                     /** Alias for calling [error] with `InnerError.ofBilling(billing)`. */
                     fun error(billing: InnerError.BillingError) =
@@ -6236,23 +4875,12 @@ private constructor(
                      * Alias for calling [error] with the following:
                      * ```java
                      * InnerError.BillingError.builder()
-                     *     .type(BatchResultsBetaResponse.Result.Errored.Error.InnerError.BillingError.Type.BILLING_ERROR)
                      *     .message(message)
                      *     .build()
                      * ```
                      */
                     fun billingError(message: String) =
-                        error(
-                            InnerError.BillingError.builder()
-                                .type(
-                                    BatchResultsBetaResponse.Result.Errored.Error.InnerError
-                                        .BillingError
-                                        .Type
-                                        .BILLING_ERROR
-                                )
-                                .message(message)
-                                .build()
-                        )
+                        error(InnerError.BillingError.builder().message(message).build())
 
                     /** Alias for calling [error] with `InnerError.ofPermission(permission)`. */
                     fun error(permission: InnerError.PermissionError) =
@@ -6262,23 +4890,12 @@ private constructor(
                      * Alias for calling [error] with the following:
                      * ```java
                      * InnerError.PermissionError.builder()
-                     *     .type(BatchResultsBetaResponse.Result.Errored.Error.InnerError.PermissionError.Type.PERMISSION_ERROR)
                      *     .message(message)
                      *     .build()
                      * ```
                      */
                     fun permissionError(message: String) =
-                        error(
-                            InnerError.PermissionError.builder()
-                                .type(
-                                    BatchResultsBetaResponse.Result.Errored.Error.InnerError
-                                        .PermissionError
-                                        .Type
-                                        .PERMISSION_ERROR
-                                )
-                                .message(message)
-                                .build()
-                        )
+                        error(InnerError.PermissionError.builder().message(message).build())
 
                     /** Alias for calling [error] with `InnerError.ofNotFound(notFound)`. */
                     fun error(notFound: InnerError.NotFoundError) =
@@ -6288,23 +4905,12 @@ private constructor(
                      * Alias for calling [error] with the following:
                      * ```java
                      * InnerError.NotFoundError.builder()
-                     *     .type(BatchResultsBetaResponse.Result.Errored.Error.InnerError.NotFoundError.Type.NOT_FOUND_ERROR)
                      *     .message(message)
                      *     .build()
                      * ```
                      */
                     fun notFoundError(message: String) =
-                        error(
-                            InnerError.NotFoundError.builder()
-                                .type(
-                                    BatchResultsBetaResponse.Result.Errored.Error.InnerError
-                                        .NotFoundError
-                                        .Type
-                                        .NOT_FOUND_ERROR
-                                )
-                                .message(message)
-                                .build()
-                        )
+                        error(InnerError.NotFoundError.builder().message(message).build())
 
                     /** Alias for calling [error] with `InnerError.ofRateLimit(rateLimit)`. */
                     fun error(rateLimit: InnerError.RateLimitError) =
@@ -6314,23 +4920,12 @@ private constructor(
                      * Alias for calling [error] with the following:
                      * ```java
                      * InnerError.RateLimitError.builder()
-                     *     .type(BatchResultsBetaResponse.Result.Errored.Error.InnerError.RateLimitError.Type.RATE_LIMIT_ERROR)
                      *     .message(message)
                      *     .build()
                      * ```
                      */
                     fun rateLimitError(message: String) =
-                        error(
-                            InnerError.RateLimitError.builder()
-                                .type(
-                                    BatchResultsBetaResponse.Result.Errored.Error.InnerError
-                                        .RateLimitError
-                                        .Type
-                                        .RATE_LIMIT_ERROR
-                                )
-                                .message(message)
-                                .build()
-                        )
+                        error(InnerError.RateLimitError.builder().message(message).build())
 
                     /** Alias for calling [error] with `InnerError.ofTimeout(timeout)`. */
                     fun error(timeout: InnerError.TimeoutError) =
@@ -6340,23 +4935,12 @@ private constructor(
                      * Alias for calling [error] with the following:
                      * ```java
                      * InnerError.TimeoutError.builder()
-                     *     .type(BatchResultsBetaResponse.Result.Errored.Error.InnerError.TimeoutError.Type.TIMEOUT_ERROR)
                      *     .message(message)
                      *     .build()
                      * ```
                      */
                     fun timeoutError(message: String) =
-                        error(
-                            InnerError.TimeoutError.builder()
-                                .type(
-                                    BatchResultsBetaResponse.Result.Errored.Error.InnerError
-                                        .TimeoutError
-                                        .Type
-                                        .TIMEOUT_ERROR
-                                )
-                                .message(message)
-                                .build()
-                        )
+                        error(InnerError.TimeoutError.builder().message(message).build())
 
                     /** Alias for calling [error] with `InnerError.ofApi(api)`. */
                     fun error(api: InnerError.ApiError) = error(InnerError.ofApi(api))
@@ -6365,23 +4949,12 @@ private constructor(
                      * Alias for calling [error] with the following:
                      * ```java
                      * InnerError.ApiError.builder()
-                     *     .type(BatchResultsBetaResponse.Result.Errored.Error.InnerError.ApiError.Type.API_ERROR)
                      *     .message(message)
                      *     .build()
                      * ```
                      */
                     fun apiError(message: String) =
-                        error(
-                            InnerError.ApiError.builder()
-                                .type(
-                                    BatchResultsBetaResponse.Result.Errored.Error.InnerError
-                                        .ApiError
-                                        .Type
-                                        .API_ERROR
-                                )
-                                .message(message)
-                                .build()
-                        )
+                        error(InnerError.ApiError.builder().message(message).build())
 
                     /** Alias for calling [error] with `InnerError.ofOverloaded(overloaded)`. */
                     fun error(overloaded: InnerError.OverloadedError) =
@@ -6391,34 +4964,26 @@ private constructor(
                      * Alias for calling [error] with the following:
                      * ```java
                      * InnerError.OverloadedError.builder()
-                     *     .type(BatchResultsBetaResponse.Result.Errored.Error.InnerError.OverloadedError.Type.OVERLOADED_ERROR)
                      *     .message(message)
                      *     .build()
                      * ```
                      */
                     fun overloadedError(message: String) =
-                        error(
-                            InnerError.OverloadedError.builder()
-                                .type(
-                                    BatchResultsBetaResponse.Result.Errored.Error.InnerError
-                                        .OverloadedError
-                                        .Type
-                                        .OVERLOADED_ERROR
-                                )
-                                .message(message)
-                                .build()
-                        )
-
-                    fun type(type: Type) = type(JsonField.of(type))
+                        error(InnerError.OverloadedError.builder().message(message).build())
 
                     /**
-                     * Sets [Builder.type] to an arbitrary JSON value.
+                     * Sets the field to an arbitrary JSON value.
                      *
-                     * You should usually call [Builder.type] with a well-typed [Type] value
-                     * instead. This method is primarily for setting the field to an undocumented or
-                     * not yet supported value.
+                     * It is usually unnecessary to call this method because the field defaults to
+                     * the following:
+                     * ```java
+                     * JsonValue.from("error")
+                     * ```
+                     *
+                     * This method is primarily for setting the field to an undocumented or not yet
+                     * supported value.
                      */
-                    fun type(type: JsonField<Type>) = apply { this.type = type }
+                    fun type(type: JsonValue) = apply { this.type = type }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                         this.additionalProperties.clear()
@@ -6450,7 +5015,6 @@ private constructor(
                      * The following fields are required:
                      * ```java
                      * .error()
-                     * .type()
                      * ```
                      *
                      * @throws IllegalStateException if any required field is unset.
@@ -6458,7 +5022,7 @@ private constructor(
                     fun build(): Error =
                         Error(
                             checkRequired("error", error),
-                            checkRequired("type", type),
+                            type,
                             additionalProperties.toMutableMap(),
                         )
                 }
@@ -6471,7 +5035,11 @@ private constructor(
                     }
 
                     error().validate()
-                    type().validate()
+                    _type().let {
+                        if (it != JsonValue.from("error")) {
+                            throw SamInvalidDataException("'type' is invalid, received $it")
+                        }
+                    }
                     validated = true
                 }
 
@@ -6492,7 +5060,7 @@ private constructor(
                 @JvmSynthetic
                 internal fun validity(): Int =
                     (error.asKnown().getOrNull()?.validity() ?: 0) +
-                        (type.asKnown().getOrNull()?.validity() ?: 0)
+                        type.let { if (it == JsonValue.from("error")) 1 else 0 }
 
                 @JsonDeserialize(using = InnerError.Deserializer::class)
                 @JsonSerialize(using = InnerError.Serializer::class)
@@ -6878,7 +5446,7 @@ private constructor(
                     class InvalidRequestError
                     private constructor(
                         private val message: JsonField<String>,
-                        private val type: JsonField<Type>,
+                        private val type: JsonValue,
                         private val additionalProperties: MutableMap<String, JsonValue>,
                     ) {
 
@@ -6887,9 +5455,7 @@ private constructor(
                             @JsonProperty("message")
                             @ExcludeMissing
                             message: JsonField<String> = JsonMissing.of(),
-                            @JsonProperty("type")
-                            @ExcludeMissing
-                            type: JsonField<Type> = JsonMissing.of(),
+                            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
                         ) : this(message, type, mutableMapOf())
 
                         /**
@@ -6900,11 +5466,15 @@ private constructor(
                         fun message(): String = message.getRequired("message")
 
                         /**
-                         * @throws SamInvalidDataException if the JSON field has an unexpected type
-                         *   or is unexpectedly missing or null (e.g. if the server responded with
-                         *   an unexpected value).
+                         * Expected to always return the following:
+                         * ```java
+                         * JsonValue.from("invalid_request_error")
+                         * ```
+                         *
+                         * However, this method can be useful for debugging and logging (e.g. if the
+                         * server responded with an unexpected value).
                          */
-                        fun type(): Type = type.getRequired("type")
+                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
                         /**
                          * Returns the raw JSON value of [message].
@@ -6915,14 +5485,6 @@ private constructor(
                         @JsonProperty("message")
                         @ExcludeMissing
                         fun _message(): JsonField<String> = message
-
-                        /**
-                         * Returns the raw JSON value of [type].
-                         *
-                         * Unlike [type], this method doesn't throw if the JSON field has an
-                         * unexpected type.
-                         */
-                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                         @JsonAnySetter
                         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -6945,7 +5507,6 @@ private constructor(
                              * The following fields are required:
                              * ```java
                              * .message()
-                             * .type()
                              * ```
                              */
                             @JvmStatic fun builder() = Builder()
@@ -6955,7 +5516,7 @@ private constructor(
                         class Builder internal constructor() {
 
                             private var message: JsonField<String>? = null
-                            private var type: JsonField<Type>? = null
+                            private var type: JsonValue = JsonValue.from("invalid_request_error")
                             private var additionalProperties: MutableMap<String, JsonValue> =
                                 mutableMapOf()
 
@@ -6980,16 +5541,19 @@ private constructor(
                                 this.message = message
                             }
 
-                            fun type(type: Type) = type(JsonField.of(type))
-
                             /**
-                             * Sets [Builder.type] to an arbitrary JSON value.
+                             * Sets the field to an arbitrary JSON value.
                              *
-                             * You should usually call [Builder.type] with a well-typed [Type] value
-                             * instead. This method is primarily for setting the field to an
-                             * undocumented or not yet supported value.
+                             * It is usually unnecessary to call this method because the field
+                             * defaults to the following:
+                             * ```java
+                             * JsonValue.from("invalid_request_error")
+                             * ```
+                             *
+                             * This method is primarily for setting the field to an undocumented or
+                             * not yet supported value.
                              */
-                            fun type(type: JsonField<Type>) = apply { this.type = type }
+                            fun type(type: JsonValue) = apply { this.type = type }
 
                             fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
                                 apply {
@@ -7022,7 +5586,6 @@ private constructor(
                              * The following fields are required:
                              * ```java
                              * .message()
-                             * .type()
                              * ```
                              *
                              * @throws IllegalStateException if any required field is unset.
@@ -7030,7 +5593,7 @@ private constructor(
                             fun build(): InvalidRequestError =
                                 InvalidRequestError(
                                     checkRequired("message", message),
-                                    checkRequired("type", type),
+                                    type,
                                     additionalProperties.toMutableMap(),
                                 )
                         }
@@ -7043,7 +5606,11 @@ private constructor(
                             }
 
                             message()
-                            type().validate()
+                            _type().let {
+                                if (it != JsonValue.from("invalid_request_error")) {
+                                    throw SamInvalidDataException("'type' is invalid, received $it")
+                                }
+                            }
                             validated = true
                         }
 
@@ -7064,138 +5631,9 @@ private constructor(
                         @JvmSynthetic
                         internal fun validity(): Int =
                             (if (message.asKnown().isPresent) 1 else 0) +
-                                (type.asKnown().getOrNull()?.validity() ?: 0)
-
-                        class Type
-                        @JsonCreator
-                        private constructor(private val value: JsonField<String>) : Enum {
-
-                            /**
-                             * Returns this class instance's raw value.
-                             *
-                             * This is usually only useful if this instance was deserialized from
-                             * data that doesn't match any known member, and you want to know that
-                             * value. For example, if the SDK is on an older version than the API,
-                             * then the API may respond with new members that the SDK is unaware of.
-                             */
-                            @com.fasterxml.jackson.annotation.JsonValue
-                            fun _value(): JsonField<String> = value
-
-                            companion object {
-
-                                @JvmField val INVALID_REQUEST_ERROR = of("invalid_request_error")
-
-                                @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-                            }
-
-                            /** An enum containing [Type]'s known values. */
-                            enum class Known {
-                                INVALID_REQUEST_ERROR
-                            }
-
-                            /**
-                             * An enum containing [Type]'s known values, as well as an [_UNKNOWN]
-                             * member.
-                             *
-                             * An instance of [Type] can contain an unknown value in a couple of
-                             * cases:
-                             * - It was deserialized from data that doesn't match any known member.
-                             *   For example, if the SDK is on an older version than the API, then
-                             *   the API may respond with new members that the SDK is unaware of.
-                             * - It was constructed with an arbitrary value using the [of] method.
-                             */
-                            enum class Value {
-                                INVALID_REQUEST_ERROR,
-                                /**
-                                 * An enum member indicating that [Type] was instantiated with an
-                                 * unknown value.
-                                 */
-                                _UNKNOWN,
-                            }
-
-                            /**
-                             * Returns an enum member corresponding to this class instance's value,
-                             * or [Value._UNKNOWN] if the class was instantiated with an unknown
-                             * value.
-                             *
-                             * Use the [known] method instead if you're certain the value is always
-                             * known or if you want to throw for the unknown case.
-                             */
-                            fun value(): Value =
-                                when (this) {
-                                    INVALID_REQUEST_ERROR -> Value.INVALID_REQUEST_ERROR
-                                    else -> Value._UNKNOWN
+                                type.let {
+                                    if (it == JsonValue.from("invalid_request_error")) 1 else 0
                                 }
-
-                            /**
-                             * Returns an enum member corresponding to this class instance's value.
-                             *
-                             * Use the [value] method instead if you're uncertain the value is
-                             * always known and don't want to throw for the unknown case.
-                             *
-                             * @throws SamInvalidDataException if this class instance's value is a
-                             *   not a known member.
-                             */
-                            fun known(): Known =
-                                when (this) {
-                                    INVALID_REQUEST_ERROR -> Known.INVALID_REQUEST_ERROR
-                                    else -> throw SamInvalidDataException("Unknown Type: $value")
-                                }
-
-                            /**
-                             * Returns this class instance's primitive wire representation.
-                             *
-                             * This differs from the [toString] method because that method is
-                             * primarily for debugging and generally doesn't throw.
-                             *
-                             * @throws SamInvalidDataException if this class instance's value does
-                             *   not have the expected primitive type.
-                             */
-                            fun asString(): String =
-                                _value().asString().orElseThrow {
-                                    SamInvalidDataException("Value is not a String")
-                                }
-
-                            private var validated: Boolean = false
-
-                            fun validate(): Type = apply {
-                                if (validated) {
-                                    return@apply
-                                }
-
-                                known()
-                                validated = true
-                            }
-
-                            fun isValid(): Boolean =
-                                try {
-                                    validate()
-                                    true
-                                } catch (e: SamInvalidDataException) {
-                                    false
-                                }
-
-                            /**
-                             * Returns a score indicating how many valid values are contained in
-                             * this object recursively.
-                             *
-                             * Used for best match union deserialization.
-                             */
-                            @JvmSynthetic
-                            internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-                            override fun equals(other: Any?): Boolean {
-                                if (this === other) {
-                                    return true
-                                }
-
-                                return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-                            }
-
-                            override fun hashCode() = value.hashCode()
-
-                            override fun toString() = value.toString()
-                        }
 
                         override fun equals(other: Any?): Boolean {
                             if (this === other) {
@@ -7218,7 +5656,7 @@ private constructor(
                     class AuthenticationError
                     private constructor(
                         private val message: JsonField<String>,
-                        private val type: JsonField<Type>,
+                        private val type: JsonValue,
                         private val additionalProperties: MutableMap<String, JsonValue>,
                     ) {
 
@@ -7227,9 +5665,7 @@ private constructor(
                             @JsonProperty("message")
                             @ExcludeMissing
                             message: JsonField<String> = JsonMissing.of(),
-                            @JsonProperty("type")
-                            @ExcludeMissing
-                            type: JsonField<Type> = JsonMissing.of(),
+                            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
                         ) : this(message, type, mutableMapOf())
 
                         /**
@@ -7240,11 +5676,15 @@ private constructor(
                         fun message(): String = message.getRequired("message")
 
                         /**
-                         * @throws SamInvalidDataException if the JSON field has an unexpected type
-                         *   or is unexpectedly missing or null (e.g. if the server responded with
-                         *   an unexpected value).
+                         * Expected to always return the following:
+                         * ```java
+                         * JsonValue.from("authentication_error")
+                         * ```
+                         *
+                         * However, this method can be useful for debugging and logging (e.g. if the
+                         * server responded with an unexpected value).
                          */
-                        fun type(): Type = type.getRequired("type")
+                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
                         /**
                          * Returns the raw JSON value of [message].
@@ -7255,14 +5695,6 @@ private constructor(
                         @JsonProperty("message")
                         @ExcludeMissing
                         fun _message(): JsonField<String> = message
-
-                        /**
-                         * Returns the raw JSON value of [type].
-                         *
-                         * Unlike [type], this method doesn't throw if the JSON field has an
-                         * unexpected type.
-                         */
-                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                         @JsonAnySetter
                         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -7285,7 +5717,6 @@ private constructor(
                              * The following fields are required:
                              * ```java
                              * .message()
-                             * .type()
                              * ```
                              */
                             @JvmStatic fun builder() = Builder()
@@ -7295,7 +5726,7 @@ private constructor(
                         class Builder internal constructor() {
 
                             private var message: JsonField<String>? = null
-                            private var type: JsonField<Type>? = null
+                            private var type: JsonValue = JsonValue.from("authentication_error")
                             private var additionalProperties: MutableMap<String, JsonValue> =
                                 mutableMapOf()
 
@@ -7320,16 +5751,19 @@ private constructor(
                                 this.message = message
                             }
 
-                            fun type(type: Type) = type(JsonField.of(type))
-
                             /**
-                             * Sets [Builder.type] to an arbitrary JSON value.
+                             * Sets the field to an arbitrary JSON value.
                              *
-                             * You should usually call [Builder.type] with a well-typed [Type] value
-                             * instead. This method is primarily for setting the field to an
-                             * undocumented or not yet supported value.
+                             * It is usually unnecessary to call this method because the field
+                             * defaults to the following:
+                             * ```java
+                             * JsonValue.from("authentication_error")
+                             * ```
+                             *
+                             * This method is primarily for setting the field to an undocumented or
+                             * not yet supported value.
                              */
-                            fun type(type: JsonField<Type>) = apply { this.type = type }
+                            fun type(type: JsonValue) = apply { this.type = type }
 
                             fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
                                 apply {
@@ -7362,7 +5796,6 @@ private constructor(
                              * The following fields are required:
                              * ```java
                              * .message()
-                             * .type()
                              * ```
                              *
                              * @throws IllegalStateException if any required field is unset.
@@ -7370,7 +5803,7 @@ private constructor(
                             fun build(): AuthenticationError =
                                 AuthenticationError(
                                     checkRequired("message", message),
-                                    checkRequired("type", type),
+                                    type,
                                     additionalProperties.toMutableMap(),
                                 )
                         }
@@ -7383,7 +5816,11 @@ private constructor(
                             }
 
                             message()
-                            type().validate()
+                            _type().let {
+                                if (it != JsonValue.from("authentication_error")) {
+                                    throw SamInvalidDataException("'type' is invalid, received $it")
+                                }
+                            }
                             validated = true
                         }
 
@@ -7404,138 +5841,9 @@ private constructor(
                         @JvmSynthetic
                         internal fun validity(): Int =
                             (if (message.asKnown().isPresent) 1 else 0) +
-                                (type.asKnown().getOrNull()?.validity() ?: 0)
-
-                        class Type
-                        @JsonCreator
-                        private constructor(private val value: JsonField<String>) : Enum {
-
-                            /**
-                             * Returns this class instance's raw value.
-                             *
-                             * This is usually only useful if this instance was deserialized from
-                             * data that doesn't match any known member, and you want to know that
-                             * value. For example, if the SDK is on an older version than the API,
-                             * then the API may respond with new members that the SDK is unaware of.
-                             */
-                            @com.fasterxml.jackson.annotation.JsonValue
-                            fun _value(): JsonField<String> = value
-
-                            companion object {
-
-                                @JvmField val AUTHENTICATION_ERROR = of("authentication_error")
-
-                                @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-                            }
-
-                            /** An enum containing [Type]'s known values. */
-                            enum class Known {
-                                AUTHENTICATION_ERROR
-                            }
-
-                            /**
-                             * An enum containing [Type]'s known values, as well as an [_UNKNOWN]
-                             * member.
-                             *
-                             * An instance of [Type] can contain an unknown value in a couple of
-                             * cases:
-                             * - It was deserialized from data that doesn't match any known member.
-                             *   For example, if the SDK is on an older version than the API, then
-                             *   the API may respond with new members that the SDK is unaware of.
-                             * - It was constructed with an arbitrary value using the [of] method.
-                             */
-                            enum class Value {
-                                AUTHENTICATION_ERROR,
-                                /**
-                                 * An enum member indicating that [Type] was instantiated with an
-                                 * unknown value.
-                                 */
-                                _UNKNOWN,
-                            }
-
-                            /**
-                             * Returns an enum member corresponding to this class instance's value,
-                             * or [Value._UNKNOWN] if the class was instantiated with an unknown
-                             * value.
-                             *
-                             * Use the [known] method instead if you're certain the value is always
-                             * known or if you want to throw for the unknown case.
-                             */
-                            fun value(): Value =
-                                when (this) {
-                                    AUTHENTICATION_ERROR -> Value.AUTHENTICATION_ERROR
-                                    else -> Value._UNKNOWN
+                                type.let {
+                                    if (it == JsonValue.from("authentication_error")) 1 else 0
                                 }
-
-                            /**
-                             * Returns an enum member corresponding to this class instance's value.
-                             *
-                             * Use the [value] method instead if you're uncertain the value is
-                             * always known and don't want to throw for the unknown case.
-                             *
-                             * @throws SamInvalidDataException if this class instance's value is a
-                             *   not a known member.
-                             */
-                            fun known(): Known =
-                                when (this) {
-                                    AUTHENTICATION_ERROR -> Known.AUTHENTICATION_ERROR
-                                    else -> throw SamInvalidDataException("Unknown Type: $value")
-                                }
-
-                            /**
-                             * Returns this class instance's primitive wire representation.
-                             *
-                             * This differs from the [toString] method because that method is
-                             * primarily for debugging and generally doesn't throw.
-                             *
-                             * @throws SamInvalidDataException if this class instance's value does
-                             *   not have the expected primitive type.
-                             */
-                            fun asString(): String =
-                                _value().asString().orElseThrow {
-                                    SamInvalidDataException("Value is not a String")
-                                }
-
-                            private var validated: Boolean = false
-
-                            fun validate(): Type = apply {
-                                if (validated) {
-                                    return@apply
-                                }
-
-                                known()
-                                validated = true
-                            }
-
-                            fun isValid(): Boolean =
-                                try {
-                                    validate()
-                                    true
-                                } catch (e: SamInvalidDataException) {
-                                    false
-                                }
-
-                            /**
-                             * Returns a score indicating how many valid values are contained in
-                             * this object recursively.
-                             *
-                             * Used for best match union deserialization.
-                             */
-                            @JvmSynthetic
-                            internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-                            override fun equals(other: Any?): Boolean {
-                                if (this === other) {
-                                    return true
-                                }
-
-                                return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-                            }
-
-                            override fun hashCode() = value.hashCode()
-
-                            override fun toString() = value.toString()
-                        }
 
                         override fun equals(other: Any?): Boolean {
                             if (this === other) {
@@ -7558,7 +5866,7 @@ private constructor(
                     class BillingError
                     private constructor(
                         private val message: JsonField<String>,
-                        private val type: JsonField<Type>,
+                        private val type: JsonValue,
                         private val additionalProperties: MutableMap<String, JsonValue>,
                     ) {
 
@@ -7567,9 +5875,7 @@ private constructor(
                             @JsonProperty("message")
                             @ExcludeMissing
                             message: JsonField<String> = JsonMissing.of(),
-                            @JsonProperty("type")
-                            @ExcludeMissing
-                            type: JsonField<Type> = JsonMissing.of(),
+                            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
                         ) : this(message, type, mutableMapOf())
 
                         /**
@@ -7580,11 +5886,15 @@ private constructor(
                         fun message(): String = message.getRequired("message")
 
                         /**
-                         * @throws SamInvalidDataException if the JSON field has an unexpected type
-                         *   or is unexpectedly missing or null (e.g. if the server responded with
-                         *   an unexpected value).
+                         * Expected to always return the following:
+                         * ```java
+                         * JsonValue.from("billing_error")
+                         * ```
+                         *
+                         * However, this method can be useful for debugging and logging (e.g. if the
+                         * server responded with an unexpected value).
                          */
-                        fun type(): Type = type.getRequired("type")
+                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
                         /**
                          * Returns the raw JSON value of [message].
@@ -7595,14 +5905,6 @@ private constructor(
                         @JsonProperty("message")
                         @ExcludeMissing
                         fun _message(): JsonField<String> = message
-
-                        /**
-                         * Returns the raw JSON value of [type].
-                         *
-                         * Unlike [type], this method doesn't throw if the JSON field has an
-                         * unexpected type.
-                         */
-                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                         @JsonAnySetter
                         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -7625,7 +5927,6 @@ private constructor(
                              * The following fields are required:
                              * ```java
                              * .message()
-                             * .type()
                              * ```
                              */
                             @JvmStatic fun builder() = Builder()
@@ -7635,7 +5936,7 @@ private constructor(
                         class Builder internal constructor() {
 
                             private var message: JsonField<String>? = null
-                            private var type: JsonField<Type>? = null
+                            private var type: JsonValue = JsonValue.from("billing_error")
                             private var additionalProperties: MutableMap<String, JsonValue> =
                                 mutableMapOf()
 
@@ -7660,16 +5961,19 @@ private constructor(
                                 this.message = message
                             }
 
-                            fun type(type: Type) = type(JsonField.of(type))
-
                             /**
-                             * Sets [Builder.type] to an arbitrary JSON value.
+                             * Sets the field to an arbitrary JSON value.
                              *
-                             * You should usually call [Builder.type] with a well-typed [Type] value
-                             * instead. This method is primarily for setting the field to an
-                             * undocumented or not yet supported value.
+                             * It is usually unnecessary to call this method because the field
+                             * defaults to the following:
+                             * ```java
+                             * JsonValue.from("billing_error")
+                             * ```
+                             *
+                             * This method is primarily for setting the field to an undocumented or
+                             * not yet supported value.
                              */
-                            fun type(type: JsonField<Type>) = apply { this.type = type }
+                            fun type(type: JsonValue) = apply { this.type = type }
 
                             fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
                                 apply {
@@ -7702,7 +6006,6 @@ private constructor(
                              * The following fields are required:
                              * ```java
                              * .message()
-                             * .type()
                              * ```
                              *
                              * @throws IllegalStateException if any required field is unset.
@@ -7710,7 +6013,7 @@ private constructor(
                             fun build(): BillingError =
                                 BillingError(
                                     checkRequired("message", message),
-                                    checkRequired("type", type),
+                                    type,
                                     additionalProperties.toMutableMap(),
                                 )
                         }
@@ -7723,7 +6026,11 @@ private constructor(
                             }
 
                             message()
-                            type().validate()
+                            _type().let {
+                                if (it != JsonValue.from("billing_error")) {
+                                    throw SamInvalidDataException("'type' is invalid, received $it")
+                                }
+                            }
                             validated = true
                         }
 
@@ -7744,138 +6051,7 @@ private constructor(
                         @JvmSynthetic
                         internal fun validity(): Int =
                             (if (message.asKnown().isPresent) 1 else 0) +
-                                (type.asKnown().getOrNull()?.validity() ?: 0)
-
-                        class Type
-                        @JsonCreator
-                        private constructor(private val value: JsonField<String>) : Enum {
-
-                            /**
-                             * Returns this class instance's raw value.
-                             *
-                             * This is usually only useful if this instance was deserialized from
-                             * data that doesn't match any known member, and you want to know that
-                             * value. For example, if the SDK is on an older version than the API,
-                             * then the API may respond with new members that the SDK is unaware of.
-                             */
-                            @com.fasterxml.jackson.annotation.JsonValue
-                            fun _value(): JsonField<String> = value
-
-                            companion object {
-
-                                @JvmField val BILLING_ERROR = of("billing_error")
-
-                                @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-                            }
-
-                            /** An enum containing [Type]'s known values. */
-                            enum class Known {
-                                BILLING_ERROR
-                            }
-
-                            /**
-                             * An enum containing [Type]'s known values, as well as an [_UNKNOWN]
-                             * member.
-                             *
-                             * An instance of [Type] can contain an unknown value in a couple of
-                             * cases:
-                             * - It was deserialized from data that doesn't match any known member.
-                             *   For example, if the SDK is on an older version than the API, then
-                             *   the API may respond with new members that the SDK is unaware of.
-                             * - It was constructed with an arbitrary value using the [of] method.
-                             */
-                            enum class Value {
-                                BILLING_ERROR,
-                                /**
-                                 * An enum member indicating that [Type] was instantiated with an
-                                 * unknown value.
-                                 */
-                                _UNKNOWN,
-                            }
-
-                            /**
-                             * Returns an enum member corresponding to this class instance's value,
-                             * or [Value._UNKNOWN] if the class was instantiated with an unknown
-                             * value.
-                             *
-                             * Use the [known] method instead if you're certain the value is always
-                             * known or if you want to throw for the unknown case.
-                             */
-                            fun value(): Value =
-                                when (this) {
-                                    BILLING_ERROR -> Value.BILLING_ERROR
-                                    else -> Value._UNKNOWN
-                                }
-
-                            /**
-                             * Returns an enum member corresponding to this class instance's value.
-                             *
-                             * Use the [value] method instead if you're uncertain the value is
-                             * always known and don't want to throw for the unknown case.
-                             *
-                             * @throws SamInvalidDataException if this class instance's value is a
-                             *   not a known member.
-                             */
-                            fun known(): Known =
-                                when (this) {
-                                    BILLING_ERROR -> Known.BILLING_ERROR
-                                    else -> throw SamInvalidDataException("Unknown Type: $value")
-                                }
-
-                            /**
-                             * Returns this class instance's primitive wire representation.
-                             *
-                             * This differs from the [toString] method because that method is
-                             * primarily for debugging and generally doesn't throw.
-                             *
-                             * @throws SamInvalidDataException if this class instance's value does
-                             *   not have the expected primitive type.
-                             */
-                            fun asString(): String =
-                                _value().asString().orElseThrow {
-                                    SamInvalidDataException("Value is not a String")
-                                }
-
-                            private var validated: Boolean = false
-
-                            fun validate(): Type = apply {
-                                if (validated) {
-                                    return@apply
-                                }
-
-                                known()
-                                validated = true
-                            }
-
-                            fun isValid(): Boolean =
-                                try {
-                                    validate()
-                                    true
-                                } catch (e: SamInvalidDataException) {
-                                    false
-                                }
-
-                            /**
-                             * Returns a score indicating how many valid values are contained in
-                             * this object recursively.
-                             *
-                             * Used for best match union deserialization.
-                             */
-                            @JvmSynthetic
-                            internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-                            override fun equals(other: Any?): Boolean {
-                                if (this === other) {
-                                    return true
-                                }
-
-                                return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-                            }
-
-                            override fun hashCode() = value.hashCode()
-
-                            override fun toString() = value.toString()
-                        }
+                                type.let { if (it == JsonValue.from("billing_error")) 1 else 0 }
 
                         override fun equals(other: Any?): Boolean {
                             if (this === other) {
@@ -7898,7 +6074,7 @@ private constructor(
                     class PermissionError
                     private constructor(
                         private val message: JsonField<String>,
-                        private val type: JsonField<Type>,
+                        private val type: JsonValue,
                         private val additionalProperties: MutableMap<String, JsonValue>,
                     ) {
 
@@ -7907,9 +6083,7 @@ private constructor(
                             @JsonProperty("message")
                             @ExcludeMissing
                             message: JsonField<String> = JsonMissing.of(),
-                            @JsonProperty("type")
-                            @ExcludeMissing
-                            type: JsonField<Type> = JsonMissing.of(),
+                            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
                         ) : this(message, type, mutableMapOf())
 
                         /**
@@ -7920,11 +6094,15 @@ private constructor(
                         fun message(): String = message.getRequired("message")
 
                         /**
-                         * @throws SamInvalidDataException if the JSON field has an unexpected type
-                         *   or is unexpectedly missing or null (e.g. if the server responded with
-                         *   an unexpected value).
+                         * Expected to always return the following:
+                         * ```java
+                         * JsonValue.from("permission_error")
+                         * ```
+                         *
+                         * However, this method can be useful for debugging and logging (e.g. if the
+                         * server responded with an unexpected value).
                          */
-                        fun type(): Type = type.getRequired("type")
+                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
                         /**
                          * Returns the raw JSON value of [message].
@@ -7935,14 +6113,6 @@ private constructor(
                         @JsonProperty("message")
                         @ExcludeMissing
                         fun _message(): JsonField<String> = message
-
-                        /**
-                         * Returns the raw JSON value of [type].
-                         *
-                         * Unlike [type], this method doesn't throw if the JSON field has an
-                         * unexpected type.
-                         */
-                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                         @JsonAnySetter
                         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -7965,7 +6135,6 @@ private constructor(
                              * The following fields are required:
                              * ```java
                              * .message()
-                             * .type()
                              * ```
                              */
                             @JvmStatic fun builder() = Builder()
@@ -7975,7 +6144,7 @@ private constructor(
                         class Builder internal constructor() {
 
                             private var message: JsonField<String>? = null
-                            private var type: JsonField<Type>? = null
+                            private var type: JsonValue = JsonValue.from("permission_error")
                             private var additionalProperties: MutableMap<String, JsonValue> =
                                 mutableMapOf()
 
@@ -8000,16 +6169,19 @@ private constructor(
                                 this.message = message
                             }
 
-                            fun type(type: Type) = type(JsonField.of(type))
-
                             /**
-                             * Sets [Builder.type] to an arbitrary JSON value.
+                             * Sets the field to an arbitrary JSON value.
                              *
-                             * You should usually call [Builder.type] with a well-typed [Type] value
-                             * instead. This method is primarily for setting the field to an
-                             * undocumented or not yet supported value.
+                             * It is usually unnecessary to call this method because the field
+                             * defaults to the following:
+                             * ```java
+                             * JsonValue.from("permission_error")
+                             * ```
+                             *
+                             * This method is primarily for setting the field to an undocumented or
+                             * not yet supported value.
                              */
-                            fun type(type: JsonField<Type>) = apply { this.type = type }
+                            fun type(type: JsonValue) = apply { this.type = type }
 
                             fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
                                 apply {
@@ -8042,7 +6214,6 @@ private constructor(
                              * The following fields are required:
                              * ```java
                              * .message()
-                             * .type()
                              * ```
                              *
                              * @throws IllegalStateException if any required field is unset.
@@ -8050,7 +6221,7 @@ private constructor(
                             fun build(): PermissionError =
                                 PermissionError(
                                     checkRequired("message", message),
-                                    checkRequired("type", type),
+                                    type,
                                     additionalProperties.toMutableMap(),
                                 )
                         }
@@ -8063,7 +6234,11 @@ private constructor(
                             }
 
                             message()
-                            type().validate()
+                            _type().let {
+                                if (it != JsonValue.from("permission_error")) {
+                                    throw SamInvalidDataException("'type' is invalid, received $it")
+                                }
+                            }
                             validated = true
                         }
 
@@ -8084,138 +6259,7 @@ private constructor(
                         @JvmSynthetic
                         internal fun validity(): Int =
                             (if (message.asKnown().isPresent) 1 else 0) +
-                                (type.asKnown().getOrNull()?.validity() ?: 0)
-
-                        class Type
-                        @JsonCreator
-                        private constructor(private val value: JsonField<String>) : Enum {
-
-                            /**
-                             * Returns this class instance's raw value.
-                             *
-                             * This is usually only useful if this instance was deserialized from
-                             * data that doesn't match any known member, and you want to know that
-                             * value. For example, if the SDK is on an older version than the API,
-                             * then the API may respond with new members that the SDK is unaware of.
-                             */
-                            @com.fasterxml.jackson.annotation.JsonValue
-                            fun _value(): JsonField<String> = value
-
-                            companion object {
-
-                                @JvmField val PERMISSION_ERROR = of("permission_error")
-
-                                @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-                            }
-
-                            /** An enum containing [Type]'s known values. */
-                            enum class Known {
-                                PERMISSION_ERROR
-                            }
-
-                            /**
-                             * An enum containing [Type]'s known values, as well as an [_UNKNOWN]
-                             * member.
-                             *
-                             * An instance of [Type] can contain an unknown value in a couple of
-                             * cases:
-                             * - It was deserialized from data that doesn't match any known member.
-                             *   For example, if the SDK is on an older version than the API, then
-                             *   the API may respond with new members that the SDK is unaware of.
-                             * - It was constructed with an arbitrary value using the [of] method.
-                             */
-                            enum class Value {
-                                PERMISSION_ERROR,
-                                /**
-                                 * An enum member indicating that [Type] was instantiated with an
-                                 * unknown value.
-                                 */
-                                _UNKNOWN,
-                            }
-
-                            /**
-                             * Returns an enum member corresponding to this class instance's value,
-                             * or [Value._UNKNOWN] if the class was instantiated with an unknown
-                             * value.
-                             *
-                             * Use the [known] method instead if you're certain the value is always
-                             * known or if you want to throw for the unknown case.
-                             */
-                            fun value(): Value =
-                                when (this) {
-                                    PERMISSION_ERROR -> Value.PERMISSION_ERROR
-                                    else -> Value._UNKNOWN
-                                }
-
-                            /**
-                             * Returns an enum member corresponding to this class instance's value.
-                             *
-                             * Use the [value] method instead if you're uncertain the value is
-                             * always known and don't want to throw for the unknown case.
-                             *
-                             * @throws SamInvalidDataException if this class instance's value is a
-                             *   not a known member.
-                             */
-                            fun known(): Known =
-                                when (this) {
-                                    PERMISSION_ERROR -> Known.PERMISSION_ERROR
-                                    else -> throw SamInvalidDataException("Unknown Type: $value")
-                                }
-
-                            /**
-                             * Returns this class instance's primitive wire representation.
-                             *
-                             * This differs from the [toString] method because that method is
-                             * primarily for debugging and generally doesn't throw.
-                             *
-                             * @throws SamInvalidDataException if this class instance's value does
-                             *   not have the expected primitive type.
-                             */
-                            fun asString(): String =
-                                _value().asString().orElseThrow {
-                                    SamInvalidDataException("Value is not a String")
-                                }
-
-                            private var validated: Boolean = false
-
-                            fun validate(): Type = apply {
-                                if (validated) {
-                                    return@apply
-                                }
-
-                                known()
-                                validated = true
-                            }
-
-                            fun isValid(): Boolean =
-                                try {
-                                    validate()
-                                    true
-                                } catch (e: SamInvalidDataException) {
-                                    false
-                                }
-
-                            /**
-                             * Returns a score indicating how many valid values are contained in
-                             * this object recursively.
-                             *
-                             * Used for best match union deserialization.
-                             */
-                            @JvmSynthetic
-                            internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-                            override fun equals(other: Any?): Boolean {
-                                if (this === other) {
-                                    return true
-                                }
-
-                                return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-                            }
-
-                            override fun hashCode() = value.hashCode()
-
-                            override fun toString() = value.toString()
-                        }
+                                type.let { if (it == JsonValue.from("permission_error")) 1 else 0 }
 
                         override fun equals(other: Any?): Boolean {
                             if (this === other) {
@@ -8238,7 +6282,7 @@ private constructor(
                     class NotFoundError
                     private constructor(
                         private val message: JsonField<String>,
-                        private val type: JsonField<Type>,
+                        private val type: JsonValue,
                         private val additionalProperties: MutableMap<String, JsonValue>,
                     ) {
 
@@ -8247,9 +6291,7 @@ private constructor(
                             @JsonProperty("message")
                             @ExcludeMissing
                             message: JsonField<String> = JsonMissing.of(),
-                            @JsonProperty("type")
-                            @ExcludeMissing
-                            type: JsonField<Type> = JsonMissing.of(),
+                            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
                         ) : this(message, type, mutableMapOf())
 
                         /**
@@ -8260,11 +6302,15 @@ private constructor(
                         fun message(): String = message.getRequired("message")
 
                         /**
-                         * @throws SamInvalidDataException if the JSON field has an unexpected type
-                         *   or is unexpectedly missing or null (e.g. if the server responded with
-                         *   an unexpected value).
+                         * Expected to always return the following:
+                         * ```java
+                         * JsonValue.from("not_found_error")
+                         * ```
+                         *
+                         * However, this method can be useful for debugging and logging (e.g. if the
+                         * server responded with an unexpected value).
                          */
-                        fun type(): Type = type.getRequired("type")
+                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
                         /**
                          * Returns the raw JSON value of [message].
@@ -8275,14 +6321,6 @@ private constructor(
                         @JsonProperty("message")
                         @ExcludeMissing
                         fun _message(): JsonField<String> = message
-
-                        /**
-                         * Returns the raw JSON value of [type].
-                         *
-                         * Unlike [type], this method doesn't throw if the JSON field has an
-                         * unexpected type.
-                         */
-                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                         @JsonAnySetter
                         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -8305,7 +6343,6 @@ private constructor(
                              * The following fields are required:
                              * ```java
                              * .message()
-                             * .type()
                              * ```
                              */
                             @JvmStatic fun builder() = Builder()
@@ -8315,7 +6352,7 @@ private constructor(
                         class Builder internal constructor() {
 
                             private var message: JsonField<String>? = null
-                            private var type: JsonField<Type>? = null
+                            private var type: JsonValue = JsonValue.from("not_found_error")
                             private var additionalProperties: MutableMap<String, JsonValue> =
                                 mutableMapOf()
 
@@ -8340,16 +6377,19 @@ private constructor(
                                 this.message = message
                             }
 
-                            fun type(type: Type) = type(JsonField.of(type))
-
                             /**
-                             * Sets [Builder.type] to an arbitrary JSON value.
+                             * Sets the field to an arbitrary JSON value.
                              *
-                             * You should usually call [Builder.type] with a well-typed [Type] value
-                             * instead. This method is primarily for setting the field to an
-                             * undocumented or not yet supported value.
+                             * It is usually unnecessary to call this method because the field
+                             * defaults to the following:
+                             * ```java
+                             * JsonValue.from("not_found_error")
+                             * ```
+                             *
+                             * This method is primarily for setting the field to an undocumented or
+                             * not yet supported value.
                              */
-                            fun type(type: JsonField<Type>) = apply { this.type = type }
+                            fun type(type: JsonValue) = apply { this.type = type }
 
                             fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
                                 apply {
@@ -8382,7 +6422,6 @@ private constructor(
                              * The following fields are required:
                              * ```java
                              * .message()
-                             * .type()
                              * ```
                              *
                              * @throws IllegalStateException if any required field is unset.
@@ -8390,7 +6429,7 @@ private constructor(
                             fun build(): NotFoundError =
                                 NotFoundError(
                                     checkRequired("message", message),
-                                    checkRequired("type", type),
+                                    type,
                                     additionalProperties.toMutableMap(),
                                 )
                         }
@@ -8403,7 +6442,11 @@ private constructor(
                             }
 
                             message()
-                            type().validate()
+                            _type().let {
+                                if (it != JsonValue.from("not_found_error")) {
+                                    throw SamInvalidDataException("'type' is invalid, received $it")
+                                }
+                            }
                             validated = true
                         }
 
@@ -8424,138 +6467,7 @@ private constructor(
                         @JvmSynthetic
                         internal fun validity(): Int =
                             (if (message.asKnown().isPresent) 1 else 0) +
-                                (type.asKnown().getOrNull()?.validity() ?: 0)
-
-                        class Type
-                        @JsonCreator
-                        private constructor(private val value: JsonField<String>) : Enum {
-
-                            /**
-                             * Returns this class instance's raw value.
-                             *
-                             * This is usually only useful if this instance was deserialized from
-                             * data that doesn't match any known member, and you want to know that
-                             * value. For example, if the SDK is on an older version than the API,
-                             * then the API may respond with new members that the SDK is unaware of.
-                             */
-                            @com.fasterxml.jackson.annotation.JsonValue
-                            fun _value(): JsonField<String> = value
-
-                            companion object {
-
-                                @JvmField val NOT_FOUND_ERROR = of("not_found_error")
-
-                                @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-                            }
-
-                            /** An enum containing [Type]'s known values. */
-                            enum class Known {
-                                NOT_FOUND_ERROR
-                            }
-
-                            /**
-                             * An enum containing [Type]'s known values, as well as an [_UNKNOWN]
-                             * member.
-                             *
-                             * An instance of [Type] can contain an unknown value in a couple of
-                             * cases:
-                             * - It was deserialized from data that doesn't match any known member.
-                             *   For example, if the SDK is on an older version than the API, then
-                             *   the API may respond with new members that the SDK is unaware of.
-                             * - It was constructed with an arbitrary value using the [of] method.
-                             */
-                            enum class Value {
-                                NOT_FOUND_ERROR,
-                                /**
-                                 * An enum member indicating that [Type] was instantiated with an
-                                 * unknown value.
-                                 */
-                                _UNKNOWN,
-                            }
-
-                            /**
-                             * Returns an enum member corresponding to this class instance's value,
-                             * or [Value._UNKNOWN] if the class was instantiated with an unknown
-                             * value.
-                             *
-                             * Use the [known] method instead if you're certain the value is always
-                             * known or if you want to throw for the unknown case.
-                             */
-                            fun value(): Value =
-                                when (this) {
-                                    NOT_FOUND_ERROR -> Value.NOT_FOUND_ERROR
-                                    else -> Value._UNKNOWN
-                                }
-
-                            /**
-                             * Returns an enum member corresponding to this class instance's value.
-                             *
-                             * Use the [value] method instead if you're uncertain the value is
-                             * always known and don't want to throw for the unknown case.
-                             *
-                             * @throws SamInvalidDataException if this class instance's value is a
-                             *   not a known member.
-                             */
-                            fun known(): Known =
-                                when (this) {
-                                    NOT_FOUND_ERROR -> Known.NOT_FOUND_ERROR
-                                    else -> throw SamInvalidDataException("Unknown Type: $value")
-                                }
-
-                            /**
-                             * Returns this class instance's primitive wire representation.
-                             *
-                             * This differs from the [toString] method because that method is
-                             * primarily for debugging and generally doesn't throw.
-                             *
-                             * @throws SamInvalidDataException if this class instance's value does
-                             *   not have the expected primitive type.
-                             */
-                            fun asString(): String =
-                                _value().asString().orElseThrow {
-                                    SamInvalidDataException("Value is not a String")
-                                }
-
-                            private var validated: Boolean = false
-
-                            fun validate(): Type = apply {
-                                if (validated) {
-                                    return@apply
-                                }
-
-                                known()
-                                validated = true
-                            }
-
-                            fun isValid(): Boolean =
-                                try {
-                                    validate()
-                                    true
-                                } catch (e: SamInvalidDataException) {
-                                    false
-                                }
-
-                            /**
-                             * Returns a score indicating how many valid values are contained in
-                             * this object recursively.
-                             *
-                             * Used for best match union deserialization.
-                             */
-                            @JvmSynthetic
-                            internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-                            override fun equals(other: Any?): Boolean {
-                                if (this === other) {
-                                    return true
-                                }
-
-                                return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-                            }
-
-                            override fun hashCode() = value.hashCode()
-
-                            override fun toString() = value.toString()
-                        }
+                                type.let { if (it == JsonValue.from("not_found_error")) 1 else 0 }
 
                         override fun equals(other: Any?): Boolean {
                             if (this === other) {
@@ -8578,7 +6490,7 @@ private constructor(
                     class RateLimitError
                     private constructor(
                         private val message: JsonField<String>,
-                        private val type: JsonField<Type>,
+                        private val type: JsonValue,
                         private val additionalProperties: MutableMap<String, JsonValue>,
                     ) {
 
@@ -8587,9 +6499,7 @@ private constructor(
                             @JsonProperty("message")
                             @ExcludeMissing
                             message: JsonField<String> = JsonMissing.of(),
-                            @JsonProperty("type")
-                            @ExcludeMissing
-                            type: JsonField<Type> = JsonMissing.of(),
+                            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
                         ) : this(message, type, mutableMapOf())
 
                         /**
@@ -8600,11 +6510,15 @@ private constructor(
                         fun message(): String = message.getRequired("message")
 
                         /**
-                         * @throws SamInvalidDataException if the JSON field has an unexpected type
-                         *   or is unexpectedly missing or null (e.g. if the server responded with
-                         *   an unexpected value).
+                         * Expected to always return the following:
+                         * ```java
+                         * JsonValue.from("rate_limit_error")
+                         * ```
+                         *
+                         * However, this method can be useful for debugging and logging (e.g. if the
+                         * server responded with an unexpected value).
                          */
-                        fun type(): Type = type.getRequired("type")
+                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
                         /**
                          * Returns the raw JSON value of [message].
@@ -8615,14 +6529,6 @@ private constructor(
                         @JsonProperty("message")
                         @ExcludeMissing
                         fun _message(): JsonField<String> = message
-
-                        /**
-                         * Returns the raw JSON value of [type].
-                         *
-                         * Unlike [type], this method doesn't throw if the JSON field has an
-                         * unexpected type.
-                         */
-                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                         @JsonAnySetter
                         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -8645,7 +6551,6 @@ private constructor(
                              * The following fields are required:
                              * ```java
                              * .message()
-                             * .type()
                              * ```
                              */
                             @JvmStatic fun builder() = Builder()
@@ -8655,7 +6560,7 @@ private constructor(
                         class Builder internal constructor() {
 
                             private var message: JsonField<String>? = null
-                            private var type: JsonField<Type>? = null
+                            private var type: JsonValue = JsonValue.from("rate_limit_error")
                             private var additionalProperties: MutableMap<String, JsonValue> =
                                 mutableMapOf()
 
@@ -8680,16 +6585,19 @@ private constructor(
                                 this.message = message
                             }
 
-                            fun type(type: Type) = type(JsonField.of(type))
-
                             /**
-                             * Sets [Builder.type] to an arbitrary JSON value.
+                             * Sets the field to an arbitrary JSON value.
                              *
-                             * You should usually call [Builder.type] with a well-typed [Type] value
-                             * instead. This method is primarily for setting the field to an
-                             * undocumented or not yet supported value.
+                             * It is usually unnecessary to call this method because the field
+                             * defaults to the following:
+                             * ```java
+                             * JsonValue.from("rate_limit_error")
+                             * ```
+                             *
+                             * This method is primarily for setting the field to an undocumented or
+                             * not yet supported value.
                              */
-                            fun type(type: JsonField<Type>) = apply { this.type = type }
+                            fun type(type: JsonValue) = apply { this.type = type }
 
                             fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
                                 apply {
@@ -8722,7 +6630,6 @@ private constructor(
                              * The following fields are required:
                              * ```java
                              * .message()
-                             * .type()
                              * ```
                              *
                              * @throws IllegalStateException if any required field is unset.
@@ -8730,7 +6637,7 @@ private constructor(
                             fun build(): RateLimitError =
                                 RateLimitError(
                                     checkRequired("message", message),
-                                    checkRequired("type", type),
+                                    type,
                                     additionalProperties.toMutableMap(),
                                 )
                         }
@@ -8743,7 +6650,11 @@ private constructor(
                             }
 
                             message()
-                            type().validate()
+                            _type().let {
+                                if (it != JsonValue.from("rate_limit_error")) {
+                                    throw SamInvalidDataException("'type' is invalid, received $it")
+                                }
+                            }
                             validated = true
                         }
 
@@ -8764,138 +6675,7 @@ private constructor(
                         @JvmSynthetic
                         internal fun validity(): Int =
                             (if (message.asKnown().isPresent) 1 else 0) +
-                                (type.asKnown().getOrNull()?.validity() ?: 0)
-
-                        class Type
-                        @JsonCreator
-                        private constructor(private val value: JsonField<String>) : Enum {
-
-                            /**
-                             * Returns this class instance's raw value.
-                             *
-                             * This is usually only useful if this instance was deserialized from
-                             * data that doesn't match any known member, and you want to know that
-                             * value. For example, if the SDK is on an older version than the API,
-                             * then the API may respond with new members that the SDK is unaware of.
-                             */
-                            @com.fasterxml.jackson.annotation.JsonValue
-                            fun _value(): JsonField<String> = value
-
-                            companion object {
-
-                                @JvmField val RATE_LIMIT_ERROR = of("rate_limit_error")
-
-                                @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-                            }
-
-                            /** An enum containing [Type]'s known values. */
-                            enum class Known {
-                                RATE_LIMIT_ERROR
-                            }
-
-                            /**
-                             * An enum containing [Type]'s known values, as well as an [_UNKNOWN]
-                             * member.
-                             *
-                             * An instance of [Type] can contain an unknown value in a couple of
-                             * cases:
-                             * - It was deserialized from data that doesn't match any known member.
-                             *   For example, if the SDK is on an older version than the API, then
-                             *   the API may respond with new members that the SDK is unaware of.
-                             * - It was constructed with an arbitrary value using the [of] method.
-                             */
-                            enum class Value {
-                                RATE_LIMIT_ERROR,
-                                /**
-                                 * An enum member indicating that [Type] was instantiated with an
-                                 * unknown value.
-                                 */
-                                _UNKNOWN,
-                            }
-
-                            /**
-                             * Returns an enum member corresponding to this class instance's value,
-                             * or [Value._UNKNOWN] if the class was instantiated with an unknown
-                             * value.
-                             *
-                             * Use the [known] method instead if you're certain the value is always
-                             * known or if you want to throw for the unknown case.
-                             */
-                            fun value(): Value =
-                                when (this) {
-                                    RATE_LIMIT_ERROR -> Value.RATE_LIMIT_ERROR
-                                    else -> Value._UNKNOWN
-                                }
-
-                            /**
-                             * Returns an enum member corresponding to this class instance's value.
-                             *
-                             * Use the [value] method instead if you're uncertain the value is
-                             * always known and don't want to throw for the unknown case.
-                             *
-                             * @throws SamInvalidDataException if this class instance's value is a
-                             *   not a known member.
-                             */
-                            fun known(): Known =
-                                when (this) {
-                                    RATE_LIMIT_ERROR -> Known.RATE_LIMIT_ERROR
-                                    else -> throw SamInvalidDataException("Unknown Type: $value")
-                                }
-
-                            /**
-                             * Returns this class instance's primitive wire representation.
-                             *
-                             * This differs from the [toString] method because that method is
-                             * primarily for debugging and generally doesn't throw.
-                             *
-                             * @throws SamInvalidDataException if this class instance's value does
-                             *   not have the expected primitive type.
-                             */
-                            fun asString(): String =
-                                _value().asString().orElseThrow {
-                                    SamInvalidDataException("Value is not a String")
-                                }
-
-                            private var validated: Boolean = false
-
-                            fun validate(): Type = apply {
-                                if (validated) {
-                                    return@apply
-                                }
-
-                                known()
-                                validated = true
-                            }
-
-                            fun isValid(): Boolean =
-                                try {
-                                    validate()
-                                    true
-                                } catch (e: SamInvalidDataException) {
-                                    false
-                                }
-
-                            /**
-                             * Returns a score indicating how many valid values are contained in
-                             * this object recursively.
-                             *
-                             * Used for best match union deserialization.
-                             */
-                            @JvmSynthetic
-                            internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-                            override fun equals(other: Any?): Boolean {
-                                if (this === other) {
-                                    return true
-                                }
-
-                                return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-                            }
-
-                            override fun hashCode() = value.hashCode()
-
-                            override fun toString() = value.toString()
-                        }
+                                type.let { if (it == JsonValue.from("rate_limit_error")) 1 else 0 }
 
                         override fun equals(other: Any?): Boolean {
                             if (this === other) {
@@ -8918,7 +6698,7 @@ private constructor(
                     class TimeoutError
                     private constructor(
                         private val message: JsonField<String>,
-                        private val type: JsonField<Type>,
+                        private val type: JsonValue,
                         private val additionalProperties: MutableMap<String, JsonValue>,
                     ) {
 
@@ -8927,9 +6707,7 @@ private constructor(
                             @JsonProperty("message")
                             @ExcludeMissing
                             message: JsonField<String> = JsonMissing.of(),
-                            @JsonProperty("type")
-                            @ExcludeMissing
-                            type: JsonField<Type> = JsonMissing.of(),
+                            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
                         ) : this(message, type, mutableMapOf())
 
                         /**
@@ -8940,11 +6718,15 @@ private constructor(
                         fun message(): String = message.getRequired("message")
 
                         /**
-                         * @throws SamInvalidDataException if the JSON field has an unexpected type
-                         *   or is unexpectedly missing or null (e.g. if the server responded with
-                         *   an unexpected value).
+                         * Expected to always return the following:
+                         * ```java
+                         * JsonValue.from("timeout_error")
+                         * ```
+                         *
+                         * However, this method can be useful for debugging and logging (e.g. if the
+                         * server responded with an unexpected value).
                          */
-                        fun type(): Type = type.getRequired("type")
+                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
                         /**
                          * Returns the raw JSON value of [message].
@@ -8955,14 +6737,6 @@ private constructor(
                         @JsonProperty("message")
                         @ExcludeMissing
                         fun _message(): JsonField<String> = message
-
-                        /**
-                         * Returns the raw JSON value of [type].
-                         *
-                         * Unlike [type], this method doesn't throw if the JSON field has an
-                         * unexpected type.
-                         */
-                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                         @JsonAnySetter
                         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -8985,7 +6759,6 @@ private constructor(
                              * The following fields are required:
                              * ```java
                              * .message()
-                             * .type()
                              * ```
                              */
                             @JvmStatic fun builder() = Builder()
@@ -8995,7 +6768,7 @@ private constructor(
                         class Builder internal constructor() {
 
                             private var message: JsonField<String>? = null
-                            private var type: JsonField<Type>? = null
+                            private var type: JsonValue = JsonValue.from("timeout_error")
                             private var additionalProperties: MutableMap<String, JsonValue> =
                                 mutableMapOf()
 
@@ -9020,16 +6793,19 @@ private constructor(
                                 this.message = message
                             }
 
-                            fun type(type: Type) = type(JsonField.of(type))
-
                             /**
-                             * Sets [Builder.type] to an arbitrary JSON value.
+                             * Sets the field to an arbitrary JSON value.
                              *
-                             * You should usually call [Builder.type] with a well-typed [Type] value
-                             * instead. This method is primarily for setting the field to an
-                             * undocumented or not yet supported value.
+                             * It is usually unnecessary to call this method because the field
+                             * defaults to the following:
+                             * ```java
+                             * JsonValue.from("timeout_error")
+                             * ```
+                             *
+                             * This method is primarily for setting the field to an undocumented or
+                             * not yet supported value.
                              */
-                            fun type(type: JsonField<Type>) = apply { this.type = type }
+                            fun type(type: JsonValue) = apply { this.type = type }
 
                             fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
                                 apply {
@@ -9062,7 +6838,6 @@ private constructor(
                              * The following fields are required:
                              * ```java
                              * .message()
-                             * .type()
                              * ```
                              *
                              * @throws IllegalStateException if any required field is unset.
@@ -9070,7 +6845,7 @@ private constructor(
                             fun build(): TimeoutError =
                                 TimeoutError(
                                     checkRequired("message", message),
-                                    checkRequired("type", type),
+                                    type,
                                     additionalProperties.toMutableMap(),
                                 )
                         }
@@ -9083,7 +6858,11 @@ private constructor(
                             }
 
                             message()
-                            type().validate()
+                            _type().let {
+                                if (it != JsonValue.from("timeout_error")) {
+                                    throw SamInvalidDataException("'type' is invalid, received $it")
+                                }
+                            }
                             validated = true
                         }
 
@@ -9104,138 +6883,7 @@ private constructor(
                         @JvmSynthetic
                         internal fun validity(): Int =
                             (if (message.asKnown().isPresent) 1 else 0) +
-                                (type.asKnown().getOrNull()?.validity() ?: 0)
-
-                        class Type
-                        @JsonCreator
-                        private constructor(private val value: JsonField<String>) : Enum {
-
-                            /**
-                             * Returns this class instance's raw value.
-                             *
-                             * This is usually only useful if this instance was deserialized from
-                             * data that doesn't match any known member, and you want to know that
-                             * value. For example, if the SDK is on an older version than the API,
-                             * then the API may respond with new members that the SDK is unaware of.
-                             */
-                            @com.fasterxml.jackson.annotation.JsonValue
-                            fun _value(): JsonField<String> = value
-
-                            companion object {
-
-                                @JvmField val TIMEOUT_ERROR = of("timeout_error")
-
-                                @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-                            }
-
-                            /** An enum containing [Type]'s known values. */
-                            enum class Known {
-                                TIMEOUT_ERROR
-                            }
-
-                            /**
-                             * An enum containing [Type]'s known values, as well as an [_UNKNOWN]
-                             * member.
-                             *
-                             * An instance of [Type] can contain an unknown value in a couple of
-                             * cases:
-                             * - It was deserialized from data that doesn't match any known member.
-                             *   For example, if the SDK is on an older version than the API, then
-                             *   the API may respond with new members that the SDK is unaware of.
-                             * - It was constructed with an arbitrary value using the [of] method.
-                             */
-                            enum class Value {
-                                TIMEOUT_ERROR,
-                                /**
-                                 * An enum member indicating that [Type] was instantiated with an
-                                 * unknown value.
-                                 */
-                                _UNKNOWN,
-                            }
-
-                            /**
-                             * Returns an enum member corresponding to this class instance's value,
-                             * or [Value._UNKNOWN] if the class was instantiated with an unknown
-                             * value.
-                             *
-                             * Use the [known] method instead if you're certain the value is always
-                             * known or if you want to throw for the unknown case.
-                             */
-                            fun value(): Value =
-                                when (this) {
-                                    TIMEOUT_ERROR -> Value.TIMEOUT_ERROR
-                                    else -> Value._UNKNOWN
-                                }
-
-                            /**
-                             * Returns an enum member corresponding to this class instance's value.
-                             *
-                             * Use the [value] method instead if you're uncertain the value is
-                             * always known and don't want to throw for the unknown case.
-                             *
-                             * @throws SamInvalidDataException if this class instance's value is a
-                             *   not a known member.
-                             */
-                            fun known(): Known =
-                                when (this) {
-                                    TIMEOUT_ERROR -> Known.TIMEOUT_ERROR
-                                    else -> throw SamInvalidDataException("Unknown Type: $value")
-                                }
-
-                            /**
-                             * Returns this class instance's primitive wire representation.
-                             *
-                             * This differs from the [toString] method because that method is
-                             * primarily for debugging and generally doesn't throw.
-                             *
-                             * @throws SamInvalidDataException if this class instance's value does
-                             *   not have the expected primitive type.
-                             */
-                            fun asString(): String =
-                                _value().asString().orElseThrow {
-                                    SamInvalidDataException("Value is not a String")
-                                }
-
-                            private var validated: Boolean = false
-
-                            fun validate(): Type = apply {
-                                if (validated) {
-                                    return@apply
-                                }
-
-                                known()
-                                validated = true
-                            }
-
-                            fun isValid(): Boolean =
-                                try {
-                                    validate()
-                                    true
-                                } catch (e: SamInvalidDataException) {
-                                    false
-                                }
-
-                            /**
-                             * Returns a score indicating how many valid values are contained in
-                             * this object recursively.
-                             *
-                             * Used for best match union deserialization.
-                             */
-                            @JvmSynthetic
-                            internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-                            override fun equals(other: Any?): Boolean {
-                                if (this === other) {
-                                    return true
-                                }
-
-                                return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-                            }
-
-                            override fun hashCode() = value.hashCode()
-
-                            override fun toString() = value.toString()
-                        }
+                                type.let { if (it == JsonValue.from("timeout_error")) 1 else 0 }
 
                         override fun equals(other: Any?): Boolean {
                             if (this === other) {
@@ -9258,7 +6906,7 @@ private constructor(
                     class ApiError
                     private constructor(
                         private val message: JsonField<String>,
-                        private val type: JsonField<Type>,
+                        private val type: JsonValue,
                         private val additionalProperties: MutableMap<String, JsonValue>,
                     ) {
 
@@ -9267,9 +6915,7 @@ private constructor(
                             @JsonProperty("message")
                             @ExcludeMissing
                             message: JsonField<String> = JsonMissing.of(),
-                            @JsonProperty("type")
-                            @ExcludeMissing
-                            type: JsonField<Type> = JsonMissing.of(),
+                            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
                         ) : this(message, type, mutableMapOf())
 
                         /**
@@ -9280,11 +6926,15 @@ private constructor(
                         fun message(): String = message.getRequired("message")
 
                         /**
-                         * @throws SamInvalidDataException if the JSON field has an unexpected type
-                         *   or is unexpectedly missing or null (e.g. if the server responded with
-                         *   an unexpected value).
+                         * Expected to always return the following:
+                         * ```java
+                         * JsonValue.from("api_error")
+                         * ```
+                         *
+                         * However, this method can be useful for debugging and logging (e.g. if the
+                         * server responded with an unexpected value).
                          */
-                        fun type(): Type = type.getRequired("type")
+                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
                         /**
                          * Returns the raw JSON value of [message].
@@ -9295,14 +6945,6 @@ private constructor(
                         @JsonProperty("message")
                         @ExcludeMissing
                         fun _message(): JsonField<String> = message
-
-                        /**
-                         * Returns the raw JSON value of [type].
-                         *
-                         * Unlike [type], this method doesn't throw if the JSON field has an
-                         * unexpected type.
-                         */
-                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                         @JsonAnySetter
                         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -9324,7 +6966,6 @@ private constructor(
                              * The following fields are required:
                              * ```java
                              * .message()
-                             * .type()
                              * ```
                              */
                             @JvmStatic fun builder() = Builder()
@@ -9334,7 +6975,7 @@ private constructor(
                         class Builder internal constructor() {
 
                             private var message: JsonField<String>? = null
-                            private var type: JsonField<Type>? = null
+                            private var type: JsonValue = JsonValue.from("api_error")
                             private var additionalProperties: MutableMap<String, JsonValue> =
                                 mutableMapOf()
 
@@ -9358,16 +6999,19 @@ private constructor(
                                 this.message = message
                             }
 
-                            fun type(type: Type) = type(JsonField.of(type))
-
                             /**
-                             * Sets [Builder.type] to an arbitrary JSON value.
+                             * Sets the field to an arbitrary JSON value.
                              *
-                             * You should usually call [Builder.type] with a well-typed [Type] value
-                             * instead. This method is primarily for setting the field to an
-                             * undocumented or not yet supported value.
+                             * It is usually unnecessary to call this method because the field
+                             * defaults to the following:
+                             * ```java
+                             * JsonValue.from("api_error")
+                             * ```
+                             *
+                             * This method is primarily for setting the field to an undocumented or
+                             * not yet supported value.
                              */
-                            fun type(type: JsonField<Type>) = apply { this.type = type }
+                            fun type(type: JsonValue) = apply { this.type = type }
 
                             fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
                                 apply {
@@ -9400,7 +7044,6 @@ private constructor(
                              * The following fields are required:
                              * ```java
                              * .message()
-                             * .type()
                              * ```
                              *
                              * @throws IllegalStateException if any required field is unset.
@@ -9408,7 +7051,7 @@ private constructor(
                             fun build(): ApiError =
                                 ApiError(
                                     checkRequired("message", message),
-                                    checkRequired("type", type),
+                                    type,
                                     additionalProperties.toMutableMap(),
                                 )
                         }
@@ -9421,7 +7064,11 @@ private constructor(
                             }
 
                             message()
-                            type().validate()
+                            _type().let {
+                                if (it != JsonValue.from("api_error")) {
+                                    throw SamInvalidDataException("'type' is invalid, received $it")
+                                }
+                            }
                             validated = true
                         }
 
@@ -9442,138 +7089,7 @@ private constructor(
                         @JvmSynthetic
                         internal fun validity(): Int =
                             (if (message.asKnown().isPresent) 1 else 0) +
-                                (type.asKnown().getOrNull()?.validity() ?: 0)
-
-                        class Type
-                        @JsonCreator
-                        private constructor(private val value: JsonField<String>) : Enum {
-
-                            /**
-                             * Returns this class instance's raw value.
-                             *
-                             * This is usually only useful if this instance was deserialized from
-                             * data that doesn't match any known member, and you want to know that
-                             * value. For example, if the SDK is on an older version than the API,
-                             * then the API may respond with new members that the SDK is unaware of.
-                             */
-                            @com.fasterxml.jackson.annotation.JsonValue
-                            fun _value(): JsonField<String> = value
-
-                            companion object {
-
-                                @JvmField val API_ERROR = of("api_error")
-
-                                @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-                            }
-
-                            /** An enum containing [Type]'s known values. */
-                            enum class Known {
-                                API_ERROR
-                            }
-
-                            /**
-                             * An enum containing [Type]'s known values, as well as an [_UNKNOWN]
-                             * member.
-                             *
-                             * An instance of [Type] can contain an unknown value in a couple of
-                             * cases:
-                             * - It was deserialized from data that doesn't match any known member.
-                             *   For example, if the SDK is on an older version than the API, then
-                             *   the API may respond with new members that the SDK is unaware of.
-                             * - It was constructed with an arbitrary value using the [of] method.
-                             */
-                            enum class Value {
-                                API_ERROR,
-                                /**
-                                 * An enum member indicating that [Type] was instantiated with an
-                                 * unknown value.
-                                 */
-                                _UNKNOWN,
-                            }
-
-                            /**
-                             * Returns an enum member corresponding to this class instance's value,
-                             * or [Value._UNKNOWN] if the class was instantiated with an unknown
-                             * value.
-                             *
-                             * Use the [known] method instead if you're certain the value is always
-                             * known or if you want to throw for the unknown case.
-                             */
-                            fun value(): Value =
-                                when (this) {
-                                    API_ERROR -> Value.API_ERROR
-                                    else -> Value._UNKNOWN
-                                }
-
-                            /**
-                             * Returns an enum member corresponding to this class instance's value.
-                             *
-                             * Use the [value] method instead if you're uncertain the value is
-                             * always known and don't want to throw for the unknown case.
-                             *
-                             * @throws SamInvalidDataException if this class instance's value is a
-                             *   not a known member.
-                             */
-                            fun known(): Known =
-                                when (this) {
-                                    API_ERROR -> Known.API_ERROR
-                                    else -> throw SamInvalidDataException("Unknown Type: $value")
-                                }
-
-                            /**
-                             * Returns this class instance's primitive wire representation.
-                             *
-                             * This differs from the [toString] method because that method is
-                             * primarily for debugging and generally doesn't throw.
-                             *
-                             * @throws SamInvalidDataException if this class instance's value does
-                             *   not have the expected primitive type.
-                             */
-                            fun asString(): String =
-                                _value().asString().orElseThrow {
-                                    SamInvalidDataException("Value is not a String")
-                                }
-
-                            private var validated: Boolean = false
-
-                            fun validate(): Type = apply {
-                                if (validated) {
-                                    return@apply
-                                }
-
-                                known()
-                                validated = true
-                            }
-
-                            fun isValid(): Boolean =
-                                try {
-                                    validate()
-                                    true
-                                } catch (e: SamInvalidDataException) {
-                                    false
-                                }
-
-                            /**
-                             * Returns a score indicating how many valid values are contained in
-                             * this object recursively.
-                             *
-                             * Used for best match union deserialization.
-                             */
-                            @JvmSynthetic
-                            internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-                            override fun equals(other: Any?): Boolean {
-                                if (this === other) {
-                                    return true
-                                }
-
-                                return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-                            }
-
-                            override fun hashCode() = value.hashCode()
-
-                            override fun toString() = value.toString()
-                        }
+                                type.let { if (it == JsonValue.from("api_error")) 1 else 0 }
 
                         override fun equals(other: Any?): Boolean {
                             if (this === other) {
@@ -9596,7 +7112,7 @@ private constructor(
                     class OverloadedError
                     private constructor(
                         private val message: JsonField<String>,
-                        private val type: JsonField<Type>,
+                        private val type: JsonValue,
                         private val additionalProperties: MutableMap<String, JsonValue>,
                     ) {
 
@@ -9605,9 +7121,7 @@ private constructor(
                             @JsonProperty("message")
                             @ExcludeMissing
                             message: JsonField<String> = JsonMissing.of(),
-                            @JsonProperty("type")
-                            @ExcludeMissing
-                            type: JsonField<Type> = JsonMissing.of(),
+                            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
                         ) : this(message, type, mutableMapOf())
 
                         /**
@@ -9618,11 +7132,15 @@ private constructor(
                         fun message(): String = message.getRequired("message")
 
                         /**
-                         * @throws SamInvalidDataException if the JSON field has an unexpected type
-                         *   or is unexpectedly missing or null (e.g. if the server responded with
-                         *   an unexpected value).
+                         * Expected to always return the following:
+                         * ```java
+                         * JsonValue.from("overloaded_error")
+                         * ```
+                         *
+                         * However, this method can be useful for debugging and logging (e.g. if the
+                         * server responded with an unexpected value).
                          */
-                        fun type(): Type = type.getRequired("type")
+                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
                         /**
                          * Returns the raw JSON value of [message].
@@ -9633,14 +7151,6 @@ private constructor(
                         @JsonProperty("message")
                         @ExcludeMissing
                         fun _message(): JsonField<String> = message
-
-                        /**
-                         * Returns the raw JSON value of [type].
-                         *
-                         * Unlike [type], this method doesn't throw if the JSON field has an
-                         * unexpected type.
-                         */
-                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                         @JsonAnySetter
                         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -9663,7 +7173,6 @@ private constructor(
                              * The following fields are required:
                              * ```java
                              * .message()
-                             * .type()
                              * ```
                              */
                             @JvmStatic fun builder() = Builder()
@@ -9673,7 +7182,7 @@ private constructor(
                         class Builder internal constructor() {
 
                             private var message: JsonField<String>? = null
-                            private var type: JsonField<Type>? = null
+                            private var type: JsonValue = JsonValue.from("overloaded_error")
                             private var additionalProperties: MutableMap<String, JsonValue> =
                                 mutableMapOf()
 
@@ -9698,16 +7207,19 @@ private constructor(
                                 this.message = message
                             }
 
-                            fun type(type: Type) = type(JsonField.of(type))
-
                             /**
-                             * Sets [Builder.type] to an arbitrary JSON value.
+                             * Sets the field to an arbitrary JSON value.
                              *
-                             * You should usually call [Builder.type] with a well-typed [Type] value
-                             * instead. This method is primarily for setting the field to an
-                             * undocumented or not yet supported value.
+                             * It is usually unnecessary to call this method because the field
+                             * defaults to the following:
+                             * ```java
+                             * JsonValue.from("overloaded_error")
+                             * ```
+                             *
+                             * This method is primarily for setting the field to an undocumented or
+                             * not yet supported value.
                              */
-                            fun type(type: JsonField<Type>) = apply { this.type = type }
+                            fun type(type: JsonValue) = apply { this.type = type }
 
                             fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
                                 apply {
@@ -9740,7 +7252,6 @@ private constructor(
                              * The following fields are required:
                              * ```java
                              * .message()
-                             * .type()
                              * ```
                              *
                              * @throws IllegalStateException if any required field is unset.
@@ -9748,7 +7259,7 @@ private constructor(
                             fun build(): OverloadedError =
                                 OverloadedError(
                                     checkRequired("message", message),
-                                    checkRequired("type", type),
+                                    type,
                                     additionalProperties.toMutableMap(),
                                 )
                         }
@@ -9761,7 +7272,11 @@ private constructor(
                             }
 
                             message()
-                            type().validate()
+                            _type().let {
+                                if (it != JsonValue.from("overloaded_error")) {
+                                    throw SamInvalidDataException("'type' is invalid, received $it")
+                                }
+                            }
                             validated = true
                         }
 
@@ -9782,138 +7297,7 @@ private constructor(
                         @JvmSynthetic
                         internal fun validity(): Int =
                             (if (message.asKnown().isPresent) 1 else 0) +
-                                (type.asKnown().getOrNull()?.validity() ?: 0)
-
-                        class Type
-                        @JsonCreator
-                        private constructor(private val value: JsonField<String>) : Enum {
-
-                            /**
-                             * Returns this class instance's raw value.
-                             *
-                             * This is usually only useful if this instance was deserialized from
-                             * data that doesn't match any known member, and you want to know that
-                             * value. For example, if the SDK is on an older version than the API,
-                             * then the API may respond with new members that the SDK is unaware of.
-                             */
-                            @com.fasterxml.jackson.annotation.JsonValue
-                            fun _value(): JsonField<String> = value
-
-                            companion object {
-
-                                @JvmField val OVERLOADED_ERROR = of("overloaded_error")
-
-                                @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-                            }
-
-                            /** An enum containing [Type]'s known values. */
-                            enum class Known {
-                                OVERLOADED_ERROR
-                            }
-
-                            /**
-                             * An enum containing [Type]'s known values, as well as an [_UNKNOWN]
-                             * member.
-                             *
-                             * An instance of [Type] can contain an unknown value in a couple of
-                             * cases:
-                             * - It was deserialized from data that doesn't match any known member.
-                             *   For example, if the SDK is on an older version than the API, then
-                             *   the API may respond with new members that the SDK is unaware of.
-                             * - It was constructed with an arbitrary value using the [of] method.
-                             */
-                            enum class Value {
-                                OVERLOADED_ERROR,
-                                /**
-                                 * An enum member indicating that [Type] was instantiated with an
-                                 * unknown value.
-                                 */
-                                _UNKNOWN,
-                            }
-
-                            /**
-                             * Returns an enum member corresponding to this class instance's value,
-                             * or [Value._UNKNOWN] if the class was instantiated with an unknown
-                             * value.
-                             *
-                             * Use the [known] method instead if you're certain the value is always
-                             * known or if you want to throw for the unknown case.
-                             */
-                            fun value(): Value =
-                                when (this) {
-                                    OVERLOADED_ERROR -> Value.OVERLOADED_ERROR
-                                    else -> Value._UNKNOWN
-                                }
-
-                            /**
-                             * Returns an enum member corresponding to this class instance's value.
-                             *
-                             * Use the [value] method instead if you're uncertain the value is
-                             * always known and don't want to throw for the unknown case.
-                             *
-                             * @throws SamInvalidDataException if this class instance's value is a
-                             *   not a known member.
-                             */
-                            fun known(): Known =
-                                when (this) {
-                                    OVERLOADED_ERROR -> Known.OVERLOADED_ERROR
-                                    else -> throw SamInvalidDataException("Unknown Type: $value")
-                                }
-
-                            /**
-                             * Returns this class instance's primitive wire representation.
-                             *
-                             * This differs from the [toString] method because that method is
-                             * primarily for debugging and generally doesn't throw.
-                             *
-                             * @throws SamInvalidDataException if this class instance's value does
-                             *   not have the expected primitive type.
-                             */
-                            fun asString(): String =
-                                _value().asString().orElseThrow {
-                                    SamInvalidDataException("Value is not a String")
-                                }
-
-                            private var validated: Boolean = false
-
-                            fun validate(): Type = apply {
-                                if (validated) {
-                                    return@apply
-                                }
-
-                                known()
-                                validated = true
-                            }
-
-                            fun isValid(): Boolean =
-                                try {
-                                    validate()
-                                    true
-                                } catch (e: SamInvalidDataException) {
-                                    false
-                                }
-
-                            /**
-                             * Returns a score indicating how many valid values are contained in
-                             * this object recursively.
-                             *
-                             * Used for best match union deserialization.
-                             */
-                            @JvmSynthetic
-                            internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-                            override fun equals(other: Any?): Boolean {
-                                if (this === other) {
-                                    return true
-                                }
-
-                                return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-                            }
-
-                            override fun hashCode() = value.hashCode()
-
-                            override fun toString() = value.toString()
-                        }
+                                type.let { if (it == JsonValue.from("overloaded_error")) 1 else 0 }
 
                         override fun equals(other: Any?): Boolean {
                             if (this === other) {
@@ -9934,133 +7318,6 @@ private constructor(
                     }
                 }
 
-                class Type @JsonCreator private constructor(private val value: JsonField<String>) :
-                    Enum {
-
-                    /**
-                     * Returns this class instance's raw value.
-                     *
-                     * This is usually only useful if this instance was deserialized from data that
-                     * doesn't match any known member, and you want to know that value. For example,
-                     * if the SDK is on an older version than the API, then the API may respond with
-                     * new members that the SDK is unaware of.
-                     */
-                    @com.fasterxml.jackson.annotation.JsonValue
-                    fun _value(): JsonField<String> = value
-
-                    companion object {
-
-                        @JvmField val ERROR = of("error")
-
-                        @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-                    }
-
-                    /** An enum containing [Type]'s known values. */
-                    enum class Known {
-                        ERROR
-                    }
-
-                    /**
-                     * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
-                     *
-                     * An instance of [Type] can contain an unknown value in a couple of cases:
-                     * - It was deserialized from data that doesn't match any known member. For
-                     *   example, if the SDK is on an older version than the API, then the API may
-                     *   respond with new members that the SDK is unaware of.
-                     * - It was constructed with an arbitrary value using the [of] method.
-                     */
-                    enum class Value {
-                        ERROR,
-                        /**
-                         * An enum member indicating that [Type] was instantiated with an unknown
-                         * value.
-                         */
-                        _UNKNOWN,
-                    }
-
-                    /**
-                     * Returns an enum member corresponding to this class instance's value, or
-                     * [Value._UNKNOWN] if the class was instantiated with an unknown value.
-                     *
-                     * Use the [known] method instead if you're certain the value is always known or
-                     * if you want to throw for the unknown case.
-                     */
-                    fun value(): Value =
-                        when (this) {
-                            ERROR -> Value.ERROR
-                            else -> Value._UNKNOWN
-                        }
-
-                    /**
-                     * Returns an enum member corresponding to this class instance's value.
-                     *
-                     * Use the [value] method instead if you're uncertain the value is always known
-                     * and don't want to throw for the unknown case.
-                     *
-                     * @throws SamInvalidDataException if this class instance's value is a not a
-                     *   known member.
-                     */
-                    fun known(): Known =
-                        when (this) {
-                            ERROR -> Known.ERROR
-                            else -> throw SamInvalidDataException("Unknown Type: $value")
-                        }
-
-                    /**
-                     * Returns this class instance's primitive wire representation.
-                     *
-                     * This differs from the [toString] method because that method is primarily for
-                     * debugging and generally doesn't throw.
-                     *
-                     * @throws SamInvalidDataException if this class instance's value does not have
-                     *   the expected primitive type.
-                     */
-                    fun asString(): String =
-                        _value().asString().orElseThrow {
-                            SamInvalidDataException("Value is not a String")
-                        }
-
-                    private var validated: Boolean = false
-
-                    fun validate(): Type = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        known()
-                        validated = true
-                    }
-
-                    fun isValid(): Boolean =
-                        try {
-                            validate()
-                            true
-                        } catch (e: SamInvalidDataException) {
-                            false
-                        }
-
-                    /**
-                     * Returns a score indicating how many valid values are contained in this object
-                     * recursively.
-                     *
-                     * Used for best match union deserialization.
-                     */
-                    @JvmSynthetic
-                    internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-                    override fun equals(other: Any?): Boolean {
-                        if (this === other) {
-                            return true
-                        }
-
-                        return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-                    }
-
-                    override fun hashCode() = value.hashCode()
-
-                    override fun toString() = value.toString()
-                }
-
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
                         return true
@@ -10079,130 +7336,6 @@ private constructor(
                     "Error{error=$error, type=$type, additionalProperties=$additionalProperties}"
             }
 
-            class Type @JsonCreator private constructor(private val value: JsonField<String>) :
-                Enum {
-
-                /**
-                 * Returns this class instance's raw value.
-                 *
-                 * This is usually only useful if this instance was deserialized from data that
-                 * doesn't match any known member, and you want to know that value. For example, if
-                 * the SDK is on an older version than the API, then the API may respond with new
-                 * members that the SDK is unaware of.
-                 */
-                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-                companion object {
-
-                    @JvmField val ERRORED = of("errored")
-
-                    @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-                }
-
-                /** An enum containing [Type]'s known values. */
-                enum class Known {
-                    ERRORED
-                }
-
-                /**
-                 * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
-                 *
-                 * An instance of [Type] can contain an unknown value in a couple of cases:
-                 * - It was deserialized from data that doesn't match any known member. For example,
-                 *   if the SDK is on an older version than the API, then the API may respond with
-                 *   new members that the SDK is unaware of.
-                 * - It was constructed with an arbitrary value using the [of] method.
-                 */
-                enum class Value {
-                    ERRORED,
-                    /**
-                     * An enum member indicating that [Type] was instantiated with an unknown value.
-                     */
-                    _UNKNOWN,
-                }
-
-                /**
-                 * Returns an enum member corresponding to this class instance's value, or
-                 * [Value._UNKNOWN] if the class was instantiated with an unknown value.
-                 *
-                 * Use the [known] method instead if you're certain the value is always known or if
-                 * you want to throw for the unknown case.
-                 */
-                fun value(): Value =
-                    when (this) {
-                        ERRORED -> Value.ERRORED
-                        else -> Value._UNKNOWN
-                    }
-
-                /**
-                 * Returns an enum member corresponding to this class instance's value.
-                 *
-                 * Use the [value] method instead if you're uncertain the value is always known and
-                 * don't want to throw for the unknown case.
-                 *
-                 * @throws SamInvalidDataException if this class instance's value is a not a known
-                 *   member.
-                 */
-                fun known(): Known =
-                    when (this) {
-                        ERRORED -> Known.ERRORED
-                        else -> throw SamInvalidDataException("Unknown Type: $value")
-                    }
-
-                /**
-                 * Returns this class instance's primitive wire representation.
-                 *
-                 * This differs from the [toString] method because that method is primarily for
-                 * debugging and generally doesn't throw.
-                 *
-                 * @throws SamInvalidDataException if this class instance's value does not have the
-                 *   expected primitive type.
-                 */
-                fun asString(): String =
-                    _value().asString().orElseThrow {
-                        SamInvalidDataException("Value is not a String")
-                    }
-
-                private var validated: Boolean = false
-
-                fun validate(): Type = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    known()
-                    validated = true
-                }
-
-                fun isValid(): Boolean =
-                    try {
-                        validate()
-                        true
-                    } catch (e: SamInvalidDataException) {
-                        false
-                    }
-
-                /**
-                 * Returns a score indicating how many valid values are contained in this object
-                 * recursively.
-                 *
-                 * Used for best match union deserialization.
-                 */
-                @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-                override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
-
-                    return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-                }
-
-                override fun hashCode() = value.hashCode()
-
-                override fun toString() = value.toString()
-            }
-
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -10219,568 +7352,6 @@ private constructor(
 
             override fun toString() =
                 "Errored{error=$error, type=$type, additionalProperties=$additionalProperties}"
-        }
-
-        class Canceled
-        private constructor(
-            private val type: JsonField<Type>,
-            private val additionalProperties: MutableMap<String, JsonValue>,
-        ) {
-
-            @JsonCreator
-            private constructor(
-                @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of()
-            ) : this(type, mutableMapOf())
-
-            /**
-             * @throws SamInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
-             */
-            fun type(): Type = type.getRequired("type")
-
-            /**
-             * Returns the raw JSON value of [type].
-             *
-             * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
-             */
-            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
-
-            @JsonAnySetter
-            private fun putAdditionalProperty(key: String, value: JsonValue) {
-                additionalProperties.put(key, value)
-            }
-
-            @JsonAnyGetter
-            @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> =
-                Collections.unmodifiableMap(additionalProperties)
-
-            fun toBuilder() = Builder().from(this)
-
-            companion object {
-
-                /**
-                 * Returns a mutable builder for constructing an instance of [Canceled].
-                 *
-                 * The following fields are required:
-                 * ```java
-                 * .type()
-                 * ```
-                 */
-                @JvmStatic fun builder() = Builder()
-            }
-
-            /** A builder for [Canceled]. */
-            class Builder internal constructor() {
-
-                private var type: JsonField<Type>? = null
-                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                @JvmSynthetic
-                internal fun from(canceled: Canceled) = apply {
-                    type = canceled.type
-                    additionalProperties = canceled.additionalProperties.toMutableMap()
-                }
-
-                fun type(type: Type) = type(JsonField.of(type))
-
-                /**
-                 * Sets [Builder.type] to an arbitrary JSON value.
-                 *
-                 * You should usually call [Builder.type] with a well-typed [Type] value instead.
-                 * This method is primarily for setting the field to an undocumented or not yet
-                 * supported value.
-                 */
-                fun type(type: JsonField<Type>) = apply { this.type = type }
-
-                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.clear()
-                    putAllAdditionalProperties(additionalProperties)
-                }
-
-                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    additionalProperties.put(key, value)
-                }
-
-                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                    apply {
-                        this.additionalProperties.putAll(additionalProperties)
-                    }
-
-                fun removeAdditionalProperty(key: String) = apply {
-                    additionalProperties.remove(key)
-                }
-
-                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                    keys.forEach(::removeAdditionalProperty)
-                }
-
-                /**
-                 * Returns an immutable instance of [Canceled].
-                 *
-                 * Further updates to this [Builder] will not mutate the returned instance.
-                 *
-                 * The following fields are required:
-                 * ```java
-                 * .type()
-                 * ```
-                 *
-                 * @throws IllegalStateException if any required field is unset.
-                 */
-                fun build(): Canceled =
-                    Canceled(checkRequired("type", type), additionalProperties.toMutableMap())
-            }
-
-            private var validated: Boolean = false
-
-            fun validate(): Canceled = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                type().validate()
-                validated = true
-            }
-
-            fun isValid(): Boolean =
-                try {
-                    validate()
-                    true
-                } catch (e: SamInvalidDataException) {
-                    false
-                }
-
-            /**
-             * Returns a score indicating how many valid values are contained in this object
-             * recursively.
-             *
-             * Used for best match union deserialization.
-             */
-            @JvmSynthetic
-            internal fun validity(): Int = (type.asKnown().getOrNull()?.validity() ?: 0)
-
-            class Type @JsonCreator private constructor(private val value: JsonField<String>) :
-                Enum {
-
-                /**
-                 * Returns this class instance's raw value.
-                 *
-                 * This is usually only useful if this instance was deserialized from data that
-                 * doesn't match any known member, and you want to know that value. For example, if
-                 * the SDK is on an older version than the API, then the API may respond with new
-                 * members that the SDK is unaware of.
-                 */
-                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-                companion object {
-
-                    @JvmField val CANCELED = of("canceled")
-
-                    @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-                }
-
-                /** An enum containing [Type]'s known values. */
-                enum class Known {
-                    CANCELED
-                }
-
-                /**
-                 * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
-                 *
-                 * An instance of [Type] can contain an unknown value in a couple of cases:
-                 * - It was deserialized from data that doesn't match any known member. For example,
-                 *   if the SDK is on an older version than the API, then the API may respond with
-                 *   new members that the SDK is unaware of.
-                 * - It was constructed with an arbitrary value using the [of] method.
-                 */
-                enum class Value {
-                    CANCELED,
-                    /**
-                     * An enum member indicating that [Type] was instantiated with an unknown value.
-                     */
-                    _UNKNOWN,
-                }
-
-                /**
-                 * Returns an enum member corresponding to this class instance's value, or
-                 * [Value._UNKNOWN] if the class was instantiated with an unknown value.
-                 *
-                 * Use the [known] method instead if you're certain the value is always known or if
-                 * you want to throw for the unknown case.
-                 */
-                fun value(): Value =
-                    when (this) {
-                        CANCELED -> Value.CANCELED
-                        else -> Value._UNKNOWN
-                    }
-
-                /**
-                 * Returns an enum member corresponding to this class instance's value.
-                 *
-                 * Use the [value] method instead if you're uncertain the value is always known and
-                 * don't want to throw for the unknown case.
-                 *
-                 * @throws SamInvalidDataException if this class instance's value is a not a known
-                 *   member.
-                 */
-                fun known(): Known =
-                    when (this) {
-                        CANCELED -> Known.CANCELED
-                        else -> throw SamInvalidDataException("Unknown Type: $value")
-                    }
-
-                /**
-                 * Returns this class instance's primitive wire representation.
-                 *
-                 * This differs from the [toString] method because that method is primarily for
-                 * debugging and generally doesn't throw.
-                 *
-                 * @throws SamInvalidDataException if this class instance's value does not have the
-                 *   expected primitive type.
-                 */
-                fun asString(): String =
-                    _value().asString().orElseThrow {
-                        SamInvalidDataException("Value is not a String")
-                    }
-
-                private var validated: Boolean = false
-
-                fun validate(): Type = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    known()
-                    validated = true
-                }
-
-                fun isValid(): Boolean =
-                    try {
-                        validate()
-                        true
-                    } catch (e: SamInvalidDataException) {
-                        false
-                    }
-
-                /**
-                 * Returns a score indicating how many valid values are contained in this object
-                 * recursively.
-                 *
-                 * Used for best match union deserialization.
-                 */
-                @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-                override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
-
-                    return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-                }
-
-                override fun hashCode() = value.hashCode()
-
-                override fun toString() = value.toString()
-            }
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is Canceled && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
-            }
-
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(type, additionalProperties) }
-            /* spotless:on */
-
-            override fun hashCode(): Int = hashCode
-
-            override fun toString() =
-                "Canceled{type=$type, additionalProperties=$additionalProperties}"
-        }
-
-        class Expired
-        private constructor(
-            private val type: JsonField<Type>,
-            private val additionalProperties: MutableMap<String, JsonValue>,
-        ) {
-
-            @JsonCreator
-            private constructor(
-                @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of()
-            ) : this(type, mutableMapOf())
-
-            /**
-             * @throws SamInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
-             */
-            fun type(): Type = type.getRequired("type")
-
-            /**
-             * Returns the raw JSON value of [type].
-             *
-             * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
-             */
-            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
-
-            @JsonAnySetter
-            private fun putAdditionalProperty(key: String, value: JsonValue) {
-                additionalProperties.put(key, value)
-            }
-
-            @JsonAnyGetter
-            @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> =
-                Collections.unmodifiableMap(additionalProperties)
-
-            fun toBuilder() = Builder().from(this)
-
-            companion object {
-
-                /**
-                 * Returns a mutable builder for constructing an instance of [Expired].
-                 *
-                 * The following fields are required:
-                 * ```java
-                 * .type()
-                 * ```
-                 */
-                @JvmStatic fun builder() = Builder()
-            }
-
-            /** A builder for [Expired]. */
-            class Builder internal constructor() {
-
-                private var type: JsonField<Type>? = null
-                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                @JvmSynthetic
-                internal fun from(expired: Expired) = apply {
-                    type = expired.type
-                    additionalProperties = expired.additionalProperties.toMutableMap()
-                }
-
-                fun type(type: Type) = type(JsonField.of(type))
-
-                /**
-                 * Sets [Builder.type] to an arbitrary JSON value.
-                 *
-                 * You should usually call [Builder.type] with a well-typed [Type] value instead.
-                 * This method is primarily for setting the field to an undocumented or not yet
-                 * supported value.
-                 */
-                fun type(type: JsonField<Type>) = apply { this.type = type }
-
-                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.clear()
-                    putAllAdditionalProperties(additionalProperties)
-                }
-
-                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    additionalProperties.put(key, value)
-                }
-
-                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                    apply {
-                        this.additionalProperties.putAll(additionalProperties)
-                    }
-
-                fun removeAdditionalProperty(key: String) = apply {
-                    additionalProperties.remove(key)
-                }
-
-                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                    keys.forEach(::removeAdditionalProperty)
-                }
-
-                /**
-                 * Returns an immutable instance of [Expired].
-                 *
-                 * Further updates to this [Builder] will not mutate the returned instance.
-                 *
-                 * The following fields are required:
-                 * ```java
-                 * .type()
-                 * ```
-                 *
-                 * @throws IllegalStateException if any required field is unset.
-                 */
-                fun build(): Expired =
-                    Expired(checkRequired("type", type), additionalProperties.toMutableMap())
-            }
-
-            private var validated: Boolean = false
-
-            fun validate(): Expired = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                type().validate()
-                validated = true
-            }
-
-            fun isValid(): Boolean =
-                try {
-                    validate()
-                    true
-                } catch (e: SamInvalidDataException) {
-                    false
-                }
-
-            /**
-             * Returns a score indicating how many valid values are contained in this object
-             * recursively.
-             *
-             * Used for best match union deserialization.
-             */
-            @JvmSynthetic
-            internal fun validity(): Int = (type.asKnown().getOrNull()?.validity() ?: 0)
-
-            class Type @JsonCreator private constructor(private val value: JsonField<String>) :
-                Enum {
-
-                /**
-                 * Returns this class instance's raw value.
-                 *
-                 * This is usually only useful if this instance was deserialized from data that
-                 * doesn't match any known member, and you want to know that value. For example, if
-                 * the SDK is on an older version than the API, then the API may respond with new
-                 * members that the SDK is unaware of.
-                 */
-                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-                companion object {
-
-                    @JvmField val EXPIRED = of("expired")
-
-                    @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-                }
-
-                /** An enum containing [Type]'s known values. */
-                enum class Known {
-                    EXPIRED
-                }
-
-                /**
-                 * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
-                 *
-                 * An instance of [Type] can contain an unknown value in a couple of cases:
-                 * - It was deserialized from data that doesn't match any known member. For example,
-                 *   if the SDK is on an older version than the API, then the API may respond with
-                 *   new members that the SDK is unaware of.
-                 * - It was constructed with an arbitrary value using the [of] method.
-                 */
-                enum class Value {
-                    EXPIRED,
-                    /**
-                     * An enum member indicating that [Type] was instantiated with an unknown value.
-                     */
-                    _UNKNOWN,
-                }
-
-                /**
-                 * Returns an enum member corresponding to this class instance's value, or
-                 * [Value._UNKNOWN] if the class was instantiated with an unknown value.
-                 *
-                 * Use the [known] method instead if you're certain the value is always known or if
-                 * you want to throw for the unknown case.
-                 */
-                fun value(): Value =
-                    when (this) {
-                        EXPIRED -> Value.EXPIRED
-                        else -> Value._UNKNOWN
-                    }
-
-                /**
-                 * Returns an enum member corresponding to this class instance's value.
-                 *
-                 * Use the [value] method instead if you're uncertain the value is always known and
-                 * don't want to throw for the unknown case.
-                 *
-                 * @throws SamInvalidDataException if this class instance's value is a not a known
-                 *   member.
-                 */
-                fun known(): Known =
-                    when (this) {
-                        EXPIRED -> Known.EXPIRED
-                        else -> throw SamInvalidDataException("Unknown Type: $value")
-                    }
-
-                /**
-                 * Returns this class instance's primitive wire representation.
-                 *
-                 * This differs from the [toString] method because that method is primarily for
-                 * debugging and generally doesn't throw.
-                 *
-                 * @throws SamInvalidDataException if this class instance's value does not have the
-                 *   expected primitive type.
-                 */
-                fun asString(): String =
-                    _value().asString().orElseThrow {
-                        SamInvalidDataException("Value is not a String")
-                    }
-
-                private var validated: Boolean = false
-
-                fun validate(): Type = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    known()
-                    validated = true
-                }
-
-                fun isValid(): Boolean =
-                    try {
-                        validate()
-                        true
-                    } catch (e: SamInvalidDataException) {
-                        false
-                    }
-
-                /**
-                 * Returns a score indicating how many valid values are contained in this object
-                 * recursively.
-                 *
-                 * Used for best match union deserialization.
-                 */
-                @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-                override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
-
-                    return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-                }
-
-                override fun hashCode() = value.hashCode()
-
-                override fun toString() = value.toString()
-            }
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is Expired && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
-            }
-
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(type, additionalProperties) }
-            /* spotless:on */
-
-            override fun hashCode(): Int = hashCode
-
-            override fun toString() =
-                "Expired{type=$type, additionalProperties=$additionalProperties}"
         }
     }
 

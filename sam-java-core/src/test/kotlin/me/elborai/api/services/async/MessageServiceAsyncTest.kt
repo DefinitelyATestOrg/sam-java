@@ -48,15 +48,9 @@ internal class MessageServiceAsyncTest {
                         listOf(
                             MessageCreateParams.System.RequestTextBlock.builder()
                                 .text("Today's date is 2024-06-01.")
-                                .type(MessageCreateParams.System.RequestTextBlock.Type.TEXT)
                                 .cacheControl(
                                     MessageCreateParams.System.RequestTextBlock.CacheControl
                                         .builder()
-                                        .type(
-                                            MessageCreateParams.System.RequestTextBlock.CacheControl
-                                                .Type
-                                                .EPHEMERAL
-                                        )
                                         .build()
                                 )
                                 .addCitation(
@@ -68,12 +62,6 @@ internal class MessageServiceAsyncTest {
                                         .documentTitle("x")
                                         .endCharIndex(0L)
                                         .startCharIndex(0L)
-                                        .type(
-                                            MessageCreateParams.System.RequestTextBlock.Citation
-                                                .CharLocation
-                                                .Type
-                                                .CHAR_LOCATION
-                                        )
                                         .build()
                                 )
                                 .build()
@@ -83,7 +71,6 @@ internal class MessageServiceAsyncTest {
                     .enabledThinking(1024L)
                     .toolChoice(
                         MessageCreateParams.ToolChoice.Auto.builder()
-                            .type(MessageCreateParams.ToolChoice.Auto.Type.AUTO)
                             .disableParallelToolUse(true)
                             .build()
                     )
@@ -91,9 +78,6 @@ internal class MessageServiceAsyncTest {
                         MessageCreateParams.Tool.InnerTool.builder()
                             .inputSchema(
                                 MessageCreateParams.Tool.InnerTool.InputSchema.builder()
-                                    .type(
-                                        MessageCreateParams.Tool.InnerTool.InputSchema.Type.OBJECT
-                                    )
                                     .properties(
                                         JsonValue.from(
                                             mapOf(
@@ -116,12 +100,7 @@ internal class MessageServiceAsyncTest {
                             )
                             .name("name")
                             .cacheControl(
-                                MessageCreateParams.Tool.InnerTool.CacheControl.builder()
-                                    .type(
-                                        MessageCreateParams.Tool.InnerTool.CacheControl.Type
-                                            .EPHEMERAL
-                                    )
-                                    .build()
+                                MessageCreateParams.Tool.InnerTool.CacheControl.builder().build()
                             )
                             .description("Get the current weather in a given location")
                             .build()
@@ -161,16 +140,9 @@ internal class MessageServiceAsyncTest {
                         listOf(
                             MessageCountTokensParams.System.RequestTextBlock.builder()
                                 .text("Today's date is 2024-06-01.")
-                                .type(MessageCountTokensParams.System.RequestTextBlock.Type.TEXT)
                                 .cacheControl(
                                     MessageCountTokensParams.System.RequestTextBlock.CacheControl
                                         .builder()
-                                        .type(
-                                            MessageCountTokensParams.System.RequestTextBlock
-                                                .CacheControl
-                                                .Type
-                                                .EPHEMERAL
-                                        )
                                         .build()
                                 )
                                 .addCitation(
@@ -182,13 +154,6 @@ internal class MessageServiceAsyncTest {
                                         .documentTitle("x")
                                         .endCharIndex(0L)
                                         .startCharIndex(0L)
-                                        .type(
-                                            MessageCountTokensParams.System.RequestTextBlock
-                                                .Citation
-                                                .CharLocation
-                                                .Type
-                                                .CHAR_LOCATION
-                                        )
                                         .build()
                                 )
                                 .build()
@@ -197,7 +162,6 @@ internal class MessageServiceAsyncTest {
                     .enabledThinking(1024L)
                     .toolChoice(
                         MessageCountTokensParams.ToolChoice.Auto.builder()
-                            .type(MessageCountTokensParams.ToolChoice.Auto.Type.AUTO)
                             .disableParallelToolUse(true)
                             .build()
                     )
@@ -205,10 +169,6 @@ internal class MessageServiceAsyncTest {
                         MessageCountTokensParams.Tool.InnerTool.builder()
                             .inputSchema(
                                 MessageCountTokensParams.Tool.InnerTool.InputSchema.builder()
-                                    .type(
-                                        MessageCountTokensParams.Tool.InnerTool.InputSchema.Type
-                                            .OBJECT
-                                    )
                                     .properties(
                                         JsonValue.from(
                                             mapOf(
@@ -232,10 +192,6 @@ internal class MessageServiceAsyncTest {
                             .name("name")
                             .cacheControl(
                                 MessageCountTokensParams.Tool.InnerTool.CacheControl.builder()
-                                    .type(
-                                        MessageCountTokensParams.Tool.InnerTool.CacheControl.Type
-                                            .EPHEMERAL
-                                    )
                                     .build()
                             )
                             .description("Get the current weather in a given location")
@@ -274,20 +230,10 @@ internal class MessageServiceAsyncTest {
                         listOf(
                             MessageCountTokensBetaParams.System.BetaRequestTextBlock.builder()
                                 .text("Today's date is 2024-06-01.")
-                                .type(
-                                    MessageCountTokensBetaParams.System.BetaRequestTextBlock.Type
-                                        .TEXT
-                                )
                                 .cacheControl(
                                     MessageCountTokensBetaParams.System.BetaRequestTextBlock
                                         .CacheControl
                                         .builder()
-                                        .type(
-                                            MessageCountTokensBetaParams.System.BetaRequestTextBlock
-                                                .CacheControl
-                                                .Type
-                                                .EPHEMERAL
-                                        )
                                         .build()
                                 )
                                 .addCitation(
@@ -300,13 +246,6 @@ internal class MessageServiceAsyncTest {
                                         .documentTitle("x")
                                         .endCharIndex(0L)
                                         .startCharIndex(0L)
-                                        .type(
-                                            MessageCountTokensBetaParams.System.BetaRequestTextBlock
-                                                .Citation
-                                                .CharLocation
-                                                .Type
-                                                .CHAR_LOCATION
-                                        )
                                         .build()
                                 )
                                 .build()
@@ -315,7 +254,6 @@ internal class MessageServiceAsyncTest {
                     .enabledThinking(1024L)
                     .toolChoice(
                         MessageCountTokensBetaParams.ToolChoice.Auto.builder()
-                            .type(MessageCountTokensBetaParams.ToolChoice.Auto.Type.AUTO)
                             .disableParallelToolUse(true)
                             .build()
                     )
@@ -323,10 +261,6 @@ internal class MessageServiceAsyncTest {
                         MessageCountTokensBetaParams.Tool.BetaTool.builder()
                             .inputSchema(
                                 MessageCountTokensBetaParams.Tool.BetaTool.InputSchema.builder()
-                                    .type(
-                                        MessageCountTokensBetaParams.Tool.BetaTool.InputSchema.Type
-                                            .OBJECT
-                                    )
                                     .properties(
                                         JsonValue.from(
                                             mapOf(
@@ -350,10 +284,6 @@ internal class MessageServiceAsyncTest {
                             .name("name")
                             .cacheControl(
                                 MessageCountTokensBetaParams.Tool.BetaTool.CacheControl.builder()
-                                    .type(
-                                        MessageCountTokensBetaParams.Tool.BetaTool.CacheControl.Type
-                                            .EPHEMERAL
-                                    )
                                     .build()
                             )
                             .description("Get the current weather in a given location")
