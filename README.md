@@ -51,7 +51,8 @@ import me.elborai.api.client.okhttp.SamOkHttpClient;
 import me.elborai.api.models.messages.MessageCreateParams;
 import me.elborai.api.models.messages.MessageCreateResponse;
 
-// Configures using the `API_KEY` and `SAM_BASE_URL` environment variables
+// Configures using the `sam.apiKey` and `sam.baseUrl` system properties
+// Or configures using the `API_KEY` and `SAM_BASE_URL` environment variables
 SamClient client = SamOkHttpClient.fromEnv();
 
 MessageCreateParams params = MessageCreateParams.builder()
@@ -67,13 +68,14 @@ MessageCreateResponse message = client.messages().create(params);
 
 ## Client configuration
 
-Configure the client using environment variables:
+Configure the client using system properties or environment variables:
 
 ```java
 import me.elborai.api.client.SamClient;
 import me.elborai.api.client.okhttp.SamOkHttpClient;
 
-// Configures using the `API_KEY` and `SAM_BASE_URL` environment variables
+// Configures using the `sam.apiKey` and `sam.baseUrl` system properties
+// Or configures using the `API_KEY` and `SAM_BASE_URL` environment variables
 SamClient client = SamOkHttpClient.fromEnv();
 ```
 
@@ -95,7 +97,8 @@ import me.elborai.api.client.SamClient;
 import me.elborai.api.client.okhttp.SamOkHttpClient;
 
 SamClient client = SamOkHttpClient.builder()
-    // Configures using the `API_KEY` and `SAM_BASE_URL` environment variables
+    // Configures using the `sam.apiKey` and `sam.baseUrl` system properties
+    Or configures using the `API_KEY` and `SAM_BASE_URL` environment variables
     .fromEnv()
     .apiKey("My API Key")
     .build();
@@ -103,10 +106,12 @@ SamClient client = SamOkHttpClient.builder()
 
 See this table for the available options:
 
-| Setter    | Environment variable | Required | Default value |
-| --------- | -------------------- | -------- | ------------- |
-| `apiKey`  | `API_KEY`            | true     | -             |
-| `baseUrl` | `SAM_BASE_URL`       | true     | `"/api/v3"`   |
+| Setter    | System property | Environment variable | Required | Default value |
+| --------- | --------------- | -------------------- | -------- | ------------- |
+| `apiKey`  | `sam.apiKey`    | `API_KEY`            | true     | -             |
+| `baseUrl` | `sam.baseUrl`   | `SAM_BASE_URL`       | true     | `"/api/v3"`   |
+
+System properties take precedence over environment variables.
 
 > [!TIP]
 > Don't create more than one client in the same application. Each client has a connection pool and
@@ -152,7 +157,8 @@ import me.elborai.api.client.okhttp.SamOkHttpClient;
 import me.elborai.api.models.messages.MessageCreateParams;
 import me.elborai.api.models.messages.MessageCreateResponse;
 
-// Configures using the `API_KEY` and `SAM_BASE_URL` environment variables
+// Configures using the `sam.apiKey` and `sam.baseUrl` system properties
+// Or configures using the `API_KEY` and `SAM_BASE_URL` environment variables
 SamClient client = SamOkHttpClient.fromEnv();
 
 MessageCreateParams params = MessageCreateParams.builder()
@@ -175,7 +181,8 @@ import me.elborai.api.client.okhttp.SamOkHttpClientAsync;
 import me.elborai.api.models.messages.MessageCreateParams;
 import me.elborai.api.models.messages.MessageCreateResponse;
 
-// Configures using the `API_KEY` and `SAM_BASE_URL` environment variables
+// Configures using the `sam.apiKey` and `sam.baseUrl` system properties
+// Or configures using the `API_KEY` and `SAM_BASE_URL` environment variables
 SamClientAsync client = SamOkHttpClientAsync.fromEnv();
 
 MessageCreateParams params = MessageCreateParams.builder()
