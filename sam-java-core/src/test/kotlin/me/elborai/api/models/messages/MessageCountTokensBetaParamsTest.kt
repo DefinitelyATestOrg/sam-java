@@ -27,16 +27,9 @@ internal class MessageCountTokensBetaParamsTest {
                 listOf(
                     MessageCountTokensBetaParams.System.BetaRequestTextBlock.builder()
                         .text("Today's date is 2024-06-01.")
-                        .type(MessageCountTokensBetaParams.System.BetaRequestTextBlock.Type.TEXT)
                         .cacheControl(
                             MessageCountTokensBetaParams.System.BetaRequestTextBlock.CacheControl
                                 .builder()
-                                .type(
-                                    MessageCountTokensBetaParams.System.BetaRequestTextBlock
-                                        .CacheControl
-                                        .Type
-                                        .EPHEMERAL
-                                )
                                 .build()
                         )
                         .addCitation(
@@ -48,13 +41,6 @@ internal class MessageCountTokensBetaParamsTest {
                                 .documentTitle("x")
                                 .endCharIndex(0L)
                                 .startCharIndex(0L)
-                                .type(
-                                    MessageCountTokensBetaParams.System.BetaRequestTextBlock
-                                        .Citation
-                                        .CharLocation
-                                        .Type
-                                        .CHAR_LOCATION
-                                )
                                 .build()
                         )
                         .build()
@@ -63,7 +49,6 @@ internal class MessageCountTokensBetaParamsTest {
             .enabledThinking(1024L)
             .toolChoice(
                 MessageCountTokensBetaParams.ToolChoice.Auto.builder()
-                    .type(MessageCountTokensBetaParams.ToolChoice.Auto.Type.AUTO)
                     .disableParallelToolUse(true)
                     .build()
             )
@@ -71,9 +56,6 @@ internal class MessageCountTokensBetaParamsTest {
                 MessageCountTokensBetaParams.Tool.BetaTool.builder()
                     .inputSchema(
                         MessageCountTokensBetaParams.Tool.BetaTool.InputSchema.builder()
-                            .type(
-                                MessageCountTokensBetaParams.Tool.BetaTool.InputSchema.Type.OBJECT
-                            )
                             .properties(
                                 JsonValue.from(
                                     mapOf(
@@ -96,12 +78,7 @@ internal class MessageCountTokensBetaParamsTest {
                     )
                     .name("name")
                     .cacheControl(
-                        MessageCountTokensBetaParams.Tool.BetaTool.CacheControl.builder()
-                            .type(
-                                MessageCountTokensBetaParams.Tool.BetaTool.CacheControl.Type
-                                    .EPHEMERAL
-                            )
-                            .build()
+                        MessageCountTokensBetaParams.Tool.BetaTool.CacheControl.builder().build()
                     )
                     .description("Get the current weather in a given location")
                     .type(MessageCountTokensBetaParams.Tool.BetaTool.Type.CUSTOM)
@@ -128,19 +105,10 @@ internal class MessageCountTokensBetaParamsTest {
                     listOf(
                         MessageCountTokensBetaParams.System.BetaRequestTextBlock.builder()
                             .text("Today's date is 2024-06-01.")
-                            .type(
-                                MessageCountTokensBetaParams.System.BetaRequestTextBlock.Type.TEXT
-                            )
                             .cacheControl(
                                 MessageCountTokensBetaParams.System.BetaRequestTextBlock
                                     .CacheControl
                                     .builder()
-                                    .type(
-                                        MessageCountTokensBetaParams.System.BetaRequestTextBlock
-                                            .CacheControl
-                                            .Type
-                                            .EPHEMERAL
-                                    )
                                     .build()
                             )
                             .addCitation(
@@ -152,13 +120,6 @@ internal class MessageCountTokensBetaParamsTest {
                                     .documentTitle("x")
                                     .endCharIndex(0L)
                                     .startCharIndex(0L)
-                                    .type(
-                                        MessageCountTokensBetaParams.System.BetaRequestTextBlock
-                                            .Citation
-                                            .CharLocation
-                                            .Type
-                                            .CHAR_LOCATION
-                                    )
                                     .build()
                             )
                             .build()
@@ -167,7 +128,6 @@ internal class MessageCountTokensBetaParamsTest {
                 .enabledThinking(1024L)
                 .toolChoice(
                     MessageCountTokensBetaParams.ToolChoice.Auto.builder()
-                        .type(MessageCountTokensBetaParams.ToolChoice.Auto.Type.AUTO)
                         .disableParallelToolUse(true)
                         .build()
                 )
@@ -175,10 +135,6 @@ internal class MessageCountTokensBetaParamsTest {
                     MessageCountTokensBetaParams.Tool.BetaTool.builder()
                         .inputSchema(
                             MessageCountTokensBetaParams.Tool.BetaTool.InputSchema.builder()
-                                .type(
-                                    MessageCountTokensBetaParams.Tool.BetaTool.InputSchema.Type
-                                        .OBJECT
-                                )
                                 .properties(
                                     JsonValue.from(
                                         mapOf(
@@ -202,10 +158,6 @@ internal class MessageCountTokensBetaParamsTest {
                         .name("name")
                         .cacheControl(
                             MessageCountTokensBetaParams.Tool.BetaTool.CacheControl.builder()
-                                .type(
-                                    MessageCountTokensBetaParams.Tool.BetaTool.CacheControl.Type
-                                        .EPHEMERAL
-                                )
                                 .build()
                         )
                         .description("Get the current weather in a given location")
@@ -262,19 +214,10 @@ internal class MessageCountTokensBetaParamsTest {
                     listOf(
                         MessageCountTokensBetaParams.System.BetaRequestTextBlock.builder()
                             .text("Today's date is 2024-06-01.")
-                            .type(
-                                MessageCountTokensBetaParams.System.BetaRequestTextBlock.Type.TEXT
-                            )
                             .cacheControl(
                                 MessageCountTokensBetaParams.System.BetaRequestTextBlock
                                     .CacheControl
                                     .builder()
-                                    .type(
-                                        MessageCountTokensBetaParams.System.BetaRequestTextBlock
-                                            .CacheControl
-                                            .Type
-                                            .EPHEMERAL
-                                    )
                                     .build()
                             )
                             .addCitation(
@@ -286,13 +229,6 @@ internal class MessageCountTokensBetaParamsTest {
                                     .documentTitle("x")
                                     .endCharIndex(0L)
                                     .startCharIndex(0L)
-                                    .type(
-                                        MessageCountTokensBetaParams.System.BetaRequestTextBlock
-                                            .Citation
-                                            .CharLocation
-                                            .Type
-                                            .CHAR_LOCATION
-                                    )
                                     .build()
                             )
                             .build()
@@ -301,7 +237,6 @@ internal class MessageCountTokensBetaParamsTest {
                 .enabledThinking(1024L)
                 .toolChoice(
                     MessageCountTokensBetaParams.ToolChoice.Auto.builder()
-                        .type(MessageCountTokensBetaParams.ToolChoice.Auto.Type.AUTO)
                         .disableParallelToolUse(true)
                         .build()
                 )
@@ -309,10 +244,6 @@ internal class MessageCountTokensBetaParamsTest {
                     MessageCountTokensBetaParams.Tool.BetaTool.builder()
                         .inputSchema(
                             MessageCountTokensBetaParams.Tool.BetaTool.InputSchema.builder()
-                                .type(
-                                    MessageCountTokensBetaParams.Tool.BetaTool.InputSchema.Type
-                                        .OBJECT
-                                )
                                 .properties(
                                     JsonValue.from(
                                         mapOf(
@@ -336,10 +267,6 @@ internal class MessageCountTokensBetaParamsTest {
                         .name("name")
                         .cacheControl(
                             MessageCountTokensBetaParams.Tool.BetaTool.CacheControl.builder()
-                                .type(
-                                    MessageCountTokensBetaParams.Tool.BetaTool.CacheControl.Type
-                                        .EPHEMERAL
-                                )
                                 .build()
                         )
                         .description("Get the current weather in a given location")
@@ -364,19 +291,10 @@ internal class MessageCountTokensBetaParamsTest {
                     listOf(
                         MessageCountTokensBetaParams.System.BetaRequestTextBlock.builder()
                             .text("Today's date is 2024-06-01.")
-                            .type(
-                                MessageCountTokensBetaParams.System.BetaRequestTextBlock.Type.TEXT
-                            )
                             .cacheControl(
                                 MessageCountTokensBetaParams.System.BetaRequestTextBlock
                                     .CacheControl
                                     .builder()
-                                    .type(
-                                        MessageCountTokensBetaParams.System.BetaRequestTextBlock
-                                            .CacheControl
-                                            .Type
-                                            .EPHEMERAL
-                                    )
                                     .build()
                             )
                             .addCitation(
@@ -388,13 +306,6 @@ internal class MessageCountTokensBetaParamsTest {
                                     .documentTitle("x")
                                     .endCharIndex(0L)
                                     .startCharIndex(0L)
-                                    .type(
-                                        MessageCountTokensBetaParams.System.BetaRequestTextBlock
-                                            .Citation
-                                            .CharLocation
-                                            .Type
-                                            .CHAR_LOCATION
-                                    )
                                     .build()
                             )
                             .build()
@@ -406,7 +317,6 @@ internal class MessageCountTokensBetaParamsTest {
                 MessageCountTokensBetaParams.Thinking.ofEnabled(
                     MessageCountTokensBetaParams.Thinking.Enabled.builder()
                         .budgetTokens(1024L)
-                        .type(MessageCountTokensBetaParams.Thinking.Enabled.Type.ENABLED)
                         .build()
                 )
             )
@@ -414,7 +324,6 @@ internal class MessageCountTokensBetaParamsTest {
             .contains(
                 MessageCountTokensBetaParams.ToolChoice.ofAuto(
                     MessageCountTokensBetaParams.ToolChoice.Auto.builder()
-                        .type(MessageCountTokensBetaParams.ToolChoice.Auto.Type.AUTO)
                         .disableParallelToolUse(true)
                         .build()
                 )
@@ -425,10 +334,6 @@ internal class MessageCountTokensBetaParamsTest {
                     MessageCountTokensBetaParams.Tool.BetaTool.builder()
                         .inputSchema(
                             MessageCountTokensBetaParams.Tool.BetaTool.InputSchema.builder()
-                                .type(
-                                    MessageCountTokensBetaParams.Tool.BetaTool.InputSchema.Type
-                                        .OBJECT
-                                )
                                 .properties(
                                     JsonValue.from(
                                         mapOf(
@@ -452,10 +357,6 @@ internal class MessageCountTokensBetaParamsTest {
                         .name("name")
                         .cacheControl(
                             MessageCountTokensBetaParams.Tool.BetaTool.CacheControl.builder()
-                                .type(
-                                    MessageCountTokensBetaParams.Tool.BetaTool.CacheControl.Type
-                                        .EPHEMERAL
-                                )
                                 .build()
                         )
                         .description("Get the current weather in a given location")
