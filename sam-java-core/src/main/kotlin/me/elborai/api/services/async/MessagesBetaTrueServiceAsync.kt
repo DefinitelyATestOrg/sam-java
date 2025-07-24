@@ -36,7 +36,7 @@ interface MessagesBetaTrueServiceAsync {
         params: MessagesBetaTrueCreateParams
     ): CompletableFuture<MessagesBetaTrueCreateResponse> = create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: MessagesBetaTrueCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -66,7 +66,7 @@ interface MessagesBetaTrueServiceAsync {
         ): CompletableFuture<HttpResponseFor<MessagesBetaTrueCreateResponse>> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             params: MessagesBetaTrueCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),

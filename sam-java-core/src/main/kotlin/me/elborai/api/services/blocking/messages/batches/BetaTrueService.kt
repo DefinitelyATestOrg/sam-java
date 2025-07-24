@@ -36,7 +36,7 @@ interface BetaTrueService {
     fun retrieve(messageBatchId: String): BetaTrueRetrieveResponse =
         retrieve(messageBatchId, BetaTrueRetrieveParams.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         messageBatchId: String,
         params: BetaTrueRetrieveParams = BetaTrueRetrieveParams.none(),
@@ -44,23 +44,23 @@ interface BetaTrueService {
     ): BetaTrueRetrieveResponse =
         retrieve(params.toBuilder().messageBatchId(messageBatchId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         messageBatchId: String,
         params: BetaTrueRetrieveParams = BetaTrueRetrieveParams.none(),
     ): BetaTrueRetrieveResponse = retrieve(messageBatchId, params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: BetaTrueRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): BetaTrueRetrieveResponse
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(params: BetaTrueRetrieveParams): BetaTrueRetrieveResponse =
         retrieve(params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(messageBatchId: String, requestOptions: RequestOptions): BetaTrueRetrieveResponse =
         retrieve(messageBatchId, BetaTrueRetrieveParams.none(), requestOptions)
 
@@ -76,7 +76,7 @@ interface BetaTrueService {
     fun delete(messageBatchId: String): BetaTrueDeleteResponse =
         delete(messageBatchId, BetaTrueDeleteParams.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         messageBatchId: String,
         params: BetaTrueDeleteParams = BetaTrueDeleteParams.none(),
@@ -84,23 +84,23 @@ interface BetaTrueService {
     ): BetaTrueDeleteResponse =
         delete(params.toBuilder().messageBatchId(messageBatchId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         messageBatchId: String,
         params: BetaTrueDeleteParams = BetaTrueDeleteParams.none(),
     ): BetaTrueDeleteResponse = delete(messageBatchId, params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         params: BetaTrueDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): BetaTrueDeleteResponse
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(params: BetaTrueDeleteParams): BetaTrueDeleteResponse =
         delete(params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(messageBatchId: String, requestOptions: RequestOptions): BetaTrueDeleteResponse =
         delete(messageBatchId, BetaTrueDeleteParams.none(), requestOptions)
 
@@ -122,7 +122,7 @@ interface BetaTrueService {
         fun retrieve(messageBatchId: String): HttpResponseFor<BetaTrueRetrieveResponse> =
             retrieve(messageBatchId, BetaTrueRetrieveParams.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             messageBatchId: String,
@@ -131,7 +131,7 @@ interface BetaTrueService {
         ): HttpResponseFor<BetaTrueRetrieveResponse> =
             retrieve(params.toBuilder().messageBatchId(messageBatchId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             messageBatchId: String,
@@ -139,19 +139,19 @@ interface BetaTrueService {
         ): HttpResponseFor<BetaTrueRetrieveResponse> =
             retrieve(messageBatchId, params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: BetaTrueRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<BetaTrueRetrieveResponse>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(params: BetaTrueRetrieveParams): HttpResponseFor<BetaTrueRetrieveResponse> =
             retrieve(params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             messageBatchId: String,
@@ -168,7 +168,7 @@ interface BetaTrueService {
         fun delete(messageBatchId: String): HttpResponseFor<BetaTrueDeleteResponse> =
             delete(messageBatchId, BetaTrueDeleteParams.none())
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             messageBatchId: String,
@@ -177,7 +177,7 @@ interface BetaTrueService {
         ): HttpResponseFor<BetaTrueDeleteResponse> =
             delete(params.toBuilder().messageBatchId(messageBatchId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             messageBatchId: String,
@@ -185,19 +185,19 @@ interface BetaTrueService {
         ): HttpResponseFor<BetaTrueDeleteResponse> =
             delete(messageBatchId, params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             params: BetaTrueDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<BetaTrueDeleteResponse>
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(params: BetaTrueDeleteParams): HttpResponseFor<BetaTrueDeleteResponse> =
             delete(params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             messageBatchId: String,

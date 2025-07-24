@@ -37,7 +37,7 @@ interface ModelServiceAsync {
     fun retrieve(modelId: String): CompletableFuture<ModelRetrieveResponse> =
         retrieve(modelId, ModelRetrieveParams.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         modelId: String,
         params: ModelRetrieveParams = ModelRetrieveParams.none(),
@@ -45,23 +45,23 @@ interface ModelServiceAsync {
     ): CompletableFuture<ModelRetrieveResponse> =
         retrieve(params.toBuilder().modelId(modelId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         modelId: String,
         params: ModelRetrieveParams = ModelRetrieveParams.none(),
     ): CompletableFuture<ModelRetrieveResponse> = retrieve(modelId, params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: ModelRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ModelRetrieveResponse>
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(params: ModelRetrieveParams): CompletableFuture<ModelRetrieveResponse> =
         retrieve(params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         modelId: String,
         requestOptions: RequestOptions,
@@ -76,18 +76,18 @@ interface ModelServiceAsync {
      */
     fun list(): CompletableFuture<ModelListResponse> = list(ModelListParams.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: ModelListParams = ModelListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ModelListResponse>
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: ModelListParams = ModelListParams.none()
     ): CompletableFuture<ModelListResponse> = list(params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(requestOptions: RequestOptions): CompletableFuture<ModelListResponse> =
         list(ModelListParams.none(), requestOptions)
 
@@ -100,7 +100,7 @@ interface ModelServiceAsync {
     fun retrieveBeta(modelId: String): CompletableFuture<ModelRetrieveBetaResponse> =
         retrieveBeta(modelId, ModelRetrieveBetaParams.none())
 
-    /** @see [retrieveBeta] */
+    /** @see retrieveBeta */
     fun retrieveBeta(
         modelId: String,
         params: ModelRetrieveBetaParams = ModelRetrieveBetaParams.none(),
@@ -108,25 +108,25 @@ interface ModelServiceAsync {
     ): CompletableFuture<ModelRetrieveBetaResponse> =
         retrieveBeta(params.toBuilder().modelId(modelId).build(), requestOptions)
 
-    /** @see [retrieveBeta] */
+    /** @see retrieveBeta */
     fun retrieveBeta(
         modelId: String,
         params: ModelRetrieveBetaParams = ModelRetrieveBetaParams.none(),
     ): CompletableFuture<ModelRetrieveBetaResponse> =
         retrieveBeta(modelId, params, RequestOptions.none())
 
-    /** @see [retrieveBeta] */
+    /** @see retrieveBeta */
     fun retrieveBeta(
         params: ModelRetrieveBetaParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ModelRetrieveBetaResponse>
 
-    /** @see [retrieveBeta] */
+    /** @see retrieveBeta */
     fun retrieveBeta(
         params: ModelRetrieveBetaParams
     ): CompletableFuture<ModelRetrieveBetaResponse> = retrieveBeta(params, RequestOptions.none())
 
-    /** @see [retrieveBeta] */
+    /** @see retrieveBeta */
     fun retrieveBeta(
         modelId: String,
         requestOptions: RequestOptions,
@@ -152,7 +152,7 @@ interface ModelServiceAsync {
         fun retrieve(modelId: String): CompletableFuture<HttpResponseFor<ModelRetrieveResponse>> =
             retrieve(modelId, ModelRetrieveParams.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             modelId: String,
             params: ModelRetrieveParams = ModelRetrieveParams.none(),
@@ -160,26 +160,26 @@ interface ModelServiceAsync {
         ): CompletableFuture<HttpResponseFor<ModelRetrieveResponse>> =
             retrieve(params.toBuilder().modelId(modelId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             modelId: String,
             params: ModelRetrieveParams = ModelRetrieveParams.none(),
         ): CompletableFuture<HttpResponseFor<ModelRetrieveResponse>> =
             retrieve(modelId, params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             params: ModelRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ModelRetrieveResponse>>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             params: ModelRetrieveParams
         ): CompletableFuture<HttpResponseFor<ModelRetrieveResponse>> =
             retrieve(params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             modelId: String,
             requestOptions: RequestOptions,
@@ -193,19 +193,19 @@ interface ModelServiceAsync {
         fun list(): CompletableFuture<HttpResponseFor<ModelListResponse>> =
             list(ModelListParams.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             params: ModelListParams = ModelListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ModelListResponse>>
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             params: ModelListParams = ModelListParams.none()
         ): CompletableFuture<HttpResponseFor<ModelListResponse>> =
             list(params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<ModelListResponse>> =
@@ -220,7 +220,7 @@ interface ModelServiceAsync {
         ): CompletableFuture<HttpResponseFor<ModelRetrieveBetaResponse>> =
             retrieveBeta(modelId, ModelRetrieveBetaParams.none())
 
-        /** @see [retrieveBeta] */
+        /** @see retrieveBeta */
         fun retrieveBeta(
             modelId: String,
             params: ModelRetrieveBetaParams = ModelRetrieveBetaParams.none(),
@@ -228,26 +228,26 @@ interface ModelServiceAsync {
         ): CompletableFuture<HttpResponseFor<ModelRetrieveBetaResponse>> =
             retrieveBeta(params.toBuilder().modelId(modelId).build(), requestOptions)
 
-        /** @see [retrieveBeta] */
+        /** @see retrieveBeta */
         fun retrieveBeta(
             modelId: String,
             params: ModelRetrieveBetaParams = ModelRetrieveBetaParams.none(),
         ): CompletableFuture<HttpResponseFor<ModelRetrieveBetaResponse>> =
             retrieveBeta(modelId, params, RequestOptions.none())
 
-        /** @see [retrieveBeta] */
+        /** @see retrieveBeta */
         fun retrieveBeta(
             params: ModelRetrieveBetaParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ModelRetrieveBetaResponse>>
 
-        /** @see [retrieveBeta] */
+        /** @see retrieveBeta */
         fun retrieveBeta(
             params: ModelRetrieveBetaParams
         ): CompletableFuture<HttpResponseFor<ModelRetrieveBetaResponse>> =
             retrieveBeta(params, RequestOptions.none())
 
-        /** @see [retrieveBeta] */
+        /** @see retrieveBeta */
         fun retrieveBeta(
             modelId: String,
             requestOptions: RequestOptions,

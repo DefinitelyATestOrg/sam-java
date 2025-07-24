@@ -39,7 +39,7 @@ interface BatchesBetaTrueService {
     fun create(params: BatchesBetaTrueCreateParams): BatchesBetaTrueCreateResponse =
         create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: BatchesBetaTrueCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -54,18 +54,18 @@ interface BatchesBetaTrueService {
      */
     fun list(): BatchesBetaTrueListResponse = list(BatchesBetaTrueListParams.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: BatchesBetaTrueListParams = BatchesBetaTrueListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): BatchesBetaTrueListResponse
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: BatchesBetaTrueListParams = BatchesBetaTrueListParams.none()
     ): BatchesBetaTrueListResponse = list(params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(requestOptions: RequestOptions): BatchesBetaTrueListResponse =
         list(BatchesBetaTrueListParams.none(), requestOptions)
 
@@ -93,7 +93,7 @@ interface BatchesBetaTrueService {
             params: BatchesBetaTrueCreateParams
         ): HttpResponseFor<BatchesBetaTrueCreateResponse> = create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             params: BatchesBetaTrueCreateParams,
@@ -108,20 +108,20 @@ interface BatchesBetaTrueService {
         fun list(): HttpResponseFor<BatchesBetaTrueListResponse> =
             list(BatchesBetaTrueListParams.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             params: BatchesBetaTrueListParams = BatchesBetaTrueListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<BatchesBetaTrueListResponse>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             params: BatchesBetaTrueListParams = BatchesBetaTrueListParams.none()
         ): HttpResponseFor<BatchesBetaTrueListResponse> = list(params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<BatchesBetaTrueListResponse> =
             list(BatchesBetaTrueListParams.none(), requestOptions)

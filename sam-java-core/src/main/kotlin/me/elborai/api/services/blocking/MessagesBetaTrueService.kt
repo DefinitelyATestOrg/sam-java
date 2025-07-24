@@ -35,7 +35,7 @@ interface MessagesBetaTrueService {
     fun create(params: MessagesBetaTrueCreateParams): MessagesBetaTrueCreateResponse =
         create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: MessagesBetaTrueCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -65,7 +65,7 @@ interface MessagesBetaTrueService {
             params: MessagesBetaTrueCreateParams
         ): HttpResponseFor<MessagesBetaTrueCreateResponse> = create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             params: MessagesBetaTrueCreateParams,

@@ -45,7 +45,7 @@ interface MessageService {
     fun create(params: MessageCreateParams): MessageCreateResponse =
         create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: MessageCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -63,7 +63,7 @@ interface MessageService {
     fun countTokens(params: MessageCountTokensParams): MessageCountTokensResponse =
         countTokens(params, RequestOptions.none())
 
-    /** @see [countTokens] */
+    /** @see countTokens */
     fun countTokens(
         params: MessageCountTokensParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -81,7 +81,7 @@ interface MessageService {
     fun countTokensBeta(params: MessageCountTokensBetaParams): MessageCountTokensBetaResponse =
         countTokensBeta(params, RequestOptions.none())
 
-    /** @see [countTokensBeta] */
+    /** @see countTokensBeta */
     fun countTokensBeta(
         params: MessageCountTokensBetaParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -109,7 +109,7 @@ interface MessageService {
         fun create(params: MessageCreateParams): HttpResponseFor<MessageCreateResponse> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             params: MessageCreateParams,
@@ -125,7 +125,7 @@ interface MessageService {
             params: MessageCountTokensParams
         ): HttpResponseFor<MessageCountTokensResponse> = countTokens(params, RequestOptions.none())
 
-        /** @see [countTokens] */
+        /** @see countTokens */
         @MustBeClosed
         fun countTokens(
             params: MessageCountTokensParams,
@@ -142,7 +142,7 @@ interface MessageService {
         ): HttpResponseFor<MessageCountTokensBetaResponse> =
             countTokensBeta(params, RequestOptions.none())
 
-        /** @see [countTokensBeta] */
+        /** @see countTokensBeta */
         @MustBeClosed
         fun countTokensBeta(
             params: MessageCountTokensBetaParams,
