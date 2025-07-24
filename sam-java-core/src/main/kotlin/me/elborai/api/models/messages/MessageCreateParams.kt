@@ -2576,7 +2576,11 @@ private constructor(
                 @JvmStatic
                 fun ofUnnamedSchemaWithArrayParent0s(
                     unnamedSchemaWithArrayParent0s: List<UnnamedSchemaWithArrayParent0>
-                ) = Content(unnamedSchemaWithArrayParent0s = unnamedSchemaWithArrayParent0s)
+                ) =
+                    Content(
+                        unnamedSchemaWithArrayParent0s =
+                            unnamedSchemaWithArrayParent0s.toImmutable()
+                    )
             }
 
             /**
@@ -7148,7 +7152,8 @@ private constructor(
                                 unnamedSchemaWithArrayParent1s: List<UnnamedSchemaWithArrayParent1>
                             ) =
                                 InnerContent(
-                                    unnamedSchemaWithArrayParent1s = unnamedSchemaWithArrayParent1s
+                                    unnamedSchemaWithArrayParent1s =
+                                        unnamedSchemaWithArrayParent1s.toImmutable()
                                 )
                         }
 
@@ -12422,7 +12427,7 @@ private constructor(
                                     ) =
                                         InnerInnerContent(
                                             unnamedSchemaWithArrayParent2s =
-                                                unnamedSchemaWithArrayParent2s
+                                                unnamedSchemaWithArrayParent2s.toImmutable()
                                         )
                                 }
 
@@ -17972,7 +17977,7 @@ private constructor(
 
             @JvmStatic
             fun ofRequestTextBlocks(requestTextBlocks: List<RequestTextBlock>) =
-                System(requestTextBlocks = requestTextBlocks)
+                System(requestTextBlocks = requestTextBlocks.toImmutable())
         }
 
         /** An interface that defines how to map each variant of [System] to a value of type [T]. */

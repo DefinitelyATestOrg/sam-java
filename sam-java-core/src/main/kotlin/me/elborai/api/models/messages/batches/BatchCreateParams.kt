@@ -2205,7 +2205,11 @@ private constructor(
                         @JvmStatic
                         fun ofUnnamedSchemaWithArrayParent9s(
                             unnamedSchemaWithArrayParent9s: List<UnnamedSchemaWithArrayParent9>
-                        ) = Content(unnamedSchemaWithArrayParent9s = unnamedSchemaWithArrayParent9s)
+                        ) =
+                            Content(
+                                unnamedSchemaWithArrayParent9s =
+                                    unnamedSchemaWithArrayParent9s.toImmutable()
+                            )
                     }
 
                     /**
@@ -7078,7 +7082,7 @@ private constructor(
                                     ) =
                                         InnerContent(
                                             unnamedSchemaWithArrayParent10s =
-                                                unnamedSchemaWithArrayParent10s
+                                                unnamedSchemaWithArrayParent10s.toImmutable()
                                         )
                                 }
 
@@ -12838,6 +12842,7 @@ private constructor(
                                                 InnerInnerContent(
                                                     unnamedSchemaWithArrayParent11s =
                                                         unnamedSchemaWithArrayParent11s
+                                                            .toImmutable()
                                                 )
                                         }
 
@@ -19054,7 +19059,7 @@ private constructor(
 
                     @JvmStatic
                     fun ofRequestTextBlocks(requestTextBlocks: List<RequestTextBlock>) =
-                        System(requestTextBlocks = requestTextBlocks)
+                        System(requestTextBlocks = requestTextBlocks.toImmutable())
                 }
 
                 /**

@@ -2648,7 +2648,11 @@ private constructor(
                 @JvmStatic
                 fun ofUnnamedSchemaWithArrayParent15s(
                     unnamedSchemaWithArrayParent15s: List<UnnamedSchemaWithArrayParent15>
-                ) = Content(unnamedSchemaWithArrayParent15s = unnamedSchemaWithArrayParent15s)
+                ) =
+                    Content(
+                        unnamedSchemaWithArrayParent15s =
+                            unnamedSchemaWithArrayParent15s.toImmutable()
+                    )
             }
 
             /**
@@ -7225,7 +7229,7 @@ private constructor(
                             ) =
                                 InnerContent(
                                     unnamedSchemaWithArrayParent16s =
-                                        unnamedSchemaWithArrayParent16s
+                                        unnamedSchemaWithArrayParent16s.toImmutable()
                                 )
                         }
 
@@ -12500,7 +12504,7 @@ private constructor(
                                     ) =
                                         InnerInnerContent(
                                             unnamedSchemaWithArrayParent17s =
-                                                unnamedSchemaWithArrayParent17s
+                                                unnamedSchemaWithArrayParent17s.toImmutable()
                                         )
                                 }
 
@@ -18056,7 +18060,7 @@ private constructor(
 
             @JvmStatic
             fun ofBetaRequestTextBlocks(betaRequestTextBlocks: List<BetaRequestTextBlock>) =
-                System(betaRequestTextBlocks = betaRequestTextBlocks)
+                System(betaRequestTextBlocks = betaRequestTextBlocks.toImmutable())
         }
 
         /** An interface that defines how to map each variant of [System] to a value of type [T]. */
