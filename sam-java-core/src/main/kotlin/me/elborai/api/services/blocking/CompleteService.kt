@@ -37,7 +37,7 @@ interface CompleteService {
     fun create(params: CompleteCreateParams): CompleteCreateResponse =
         create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: CompleteCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -61,7 +61,7 @@ interface CompleteService {
         fun create(params: CompleteCreateParams): HttpResponseFor<CompleteCreateResponse> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             params: CompleteCreateParams,

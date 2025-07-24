@@ -32,18 +32,18 @@ interface ModelsBetaTrueService {
      */
     fun list(): ModelsBetaTrueListResponse = list(ModelsBetaTrueListParams.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: ModelsBetaTrueListParams = ModelsBetaTrueListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ModelsBetaTrueListResponse
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: ModelsBetaTrueListParams = ModelsBetaTrueListParams.none()
     ): ModelsBetaTrueListResponse = list(params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(requestOptions: RequestOptions): ModelsBetaTrueListResponse =
         list(ModelsBetaTrueListParams.none(), requestOptions)
 
@@ -69,20 +69,20 @@ interface ModelsBetaTrueService {
         fun list(): HttpResponseFor<ModelsBetaTrueListResponse> =
             list(ModelsBetaTrueListParams.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             params: ModelsBetaTrueListParams = ModelsBetaTrueListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ModelsBetaTrueListResponse>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             params: ModelsBetaTrueListParams = ModelsBetaTrueListParams.none()
         ): HttpResponseFor<ModelsBetaTrueListResponse> = list(params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<ModelsBetaTrueListResponse> =
             list(ModelsBetaTrueListParams.none(), requestOptions)

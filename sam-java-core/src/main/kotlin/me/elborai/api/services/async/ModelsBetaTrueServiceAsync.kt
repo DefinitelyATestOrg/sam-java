@@ -33,18 +33,18 @@ interface ModelsBetaTrueServiceAsync {
     fun list(): CompletableFuture<ModelsBetaTrueListResponse> =
         list(ModelsBetaTrueListParams.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: ModelsBetaTrueListParams = ModelsBetaTrueListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ModelsBetaTrueListResponse>
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: ModelsBetaTrueListParams = ModelsBetaTrueListParams.none()
     ): CompletableFuture<ModelsBetaTrueListResponse> = list(params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(requestOptions: RequestOptions): CompletableFuture<ModelsBetaTrueListResponse> =
         list(ModelsBetaTrueListParams.none(), requestOptions)
 
@@ -70,19 +70,19 @@ interface ModelsBetaTrueServiceAsync {
         fun list(): CompletableFuture<HttpResponseFor<ModelsBetaTrueListResponse>> =
             list(ModelsBetaTrueListParams.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             params: ModelsBetaTrueListParams = ModelsBetaTrueListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ModelsBetaTrueListResponse>>
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             params: ModelsBetaTrueListParams = ModelsBetaTrueListParams.none()
         ): CompletableFuture<HttpResponseFor<ModelsBetaTrueListResponse>> =
             list(params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<ModelsBetaTrueListResponse>> =

@@ -36,7 +36,7 @@ interface BetaTrueServiceAsync {
     fun retrieve(messageBatchId: String): CompletableFuture<BetaTrueRetrieveResponse> =
         retrieve(messageBatchId, BetaTrueRetrieveParams.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         messageBatchId: String,
         params: BetaTrueRetrieveParams = BetaTrueRetrieveParams.none(),
@@ -44,24 +44,24 @@ interface BetaTrueServiceAsync {
     ): CompletableFuture<BetaTrueRetrieveResponse> =
         retrieve(params.toBuilder().messageBatchId(messageBatchId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         messageBatchId: String,
         params: BetaTrueRetrieveParams = BetaTrueRetrieveParams.none(),
     ): CompletableFuture<BetaTrueRetrieveResponse> =
         retrieve(messageBatchId, params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: BetaTrueRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<BetaTrueRetrieveResponse>
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(params: BetaTrueRetrieveParams): CompletableFuture<BetaTrueRetrieveResponse> =
         retrieve(params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         messageBatchId: String,
         requestOptions: RequestOptions,
@@ -80,7 +80,7 @@ interface BetaTrueServiceAsync {
     fun delete(messageBatchId: String): CompletableFuture<BetaTrueDeleteResponse> =
         delete(messageBatchId, BetaTrueDeleteParams.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         messageBatchId: String,
         params: BetaTrueDeleteParams = BetaTrueDeleteParams.none(),
@@ -88,24 +88,24 @@ interface BetaTrueServiceAsync {
     ): CompletableFuture<BetaTrueDeleteResponse> =
         delete(params.toBuilder().messageBatchId(messageBatchId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         messageBatchId: String,
         params: BetaTrueDeleteParams = BetaTrueDeleteParams.none(),
     ): CompletableFuture<BetaTrueDeleteResponse> =
         delete(messageBatchId, params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         params: BetaTrueDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<BetaTrueDeleteResponse>
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(params: BetaTrueDeleteParams): CompletableFuture<BetaTrueDeleteResponse> =
         delete(params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         messageBatchId: String,
         requestOptions: RequestOptions,
@@ -135,7 +135,7 @@ interface BetaTrueServiceAsync {
         ): CompletableFuture<HttpResponseFor<BetaTrueRetrieveResponse>> =
             retrieve(messageBatchId, BetaTrueRetrieveParams.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             messageBatchId: String,
             params: BetaTrueRetrieveParams = BetaTrueRetrieveParams.none(),
@@ -143,26 +143,26 @@ interface BetaTrueServiceAsync {
         ): CompletableFuture<HttpResponseFor<BetaTrueRetrieveResponse>> =
             retrieve(params.toBuilder().messageBatchId(messageBatchId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             messageBatchId: String,
             params: BetaTrueRetrieveParams = BetaTrueRetrieveParams.none(),
         ): CompletableFuture<HttpResponseFor<BetaTrueRetrieveResponse>> =
             retrieve(messageBatchId, params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             params: BetaTrueRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<BetaTrueRetrieveResponse>>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             params: BetaTrueRetrieveParams
         ): CompletableFuture<HttpResponseFor<BetaTrueRetrieveResponse>> =
             retrieve(params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             messageBatchId: String,
             requestOptions: RequestOptions,
@@ -179,7 +179,7 @@ interface BetaTrueServiceAsync {
         ): CompletableFuture<HttpResponseFor<BetaTrueDeleteResponse>> =
             delete(messageBatchId, BetaTrueDeleteParams.none())
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             messageBatchId: String,
             params: BetaTrueDeleteParams = BetaTrueDeleteParams.none(),
@@ -187,26 +187,26 @@ interface BetaTrueServiceAsync {
         ): CompletableFuture<HttpResponseFor<BetaTrueDeleteResponse>> =
             delete(params.toBuilder().messageBatchId(messageBatchId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             messageBatchId: String,
             params: BetaTrueDeleteParams = BetaTrueDeleteParams.none(),
         ): CompletableFuture<HttpResponseFor<BetaTrueDeleteResponse>> =
             delete(messageBatchId, params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             params: BetaTrueDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<BetaTrueDeleteResponse>>
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             params: BetaTrueDeleteParams
         ): CompletableFuture<HttpResponseFor<BetaTrueDeleteResponse>> =
             delete(params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             messageBatchId: String,
             requestOptions: RequestOptions,

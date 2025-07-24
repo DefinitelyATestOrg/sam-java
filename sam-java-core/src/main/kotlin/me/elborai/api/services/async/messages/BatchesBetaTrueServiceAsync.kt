@@ -40,7 +40,7 @@ interface BatchesBetaTrueServiceAsync {
         params: BatchesBetaTrueCreateParams
     ): CompletableFuture<BatchesBetaTrueCreateResponse> = create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: BatchesBetaTrueCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -56,18 +56,18 @@ interface BatchesBetaTrueServiceAsync {
     fun list(): CompletableFuture<BatchesBetaTrueListResponse> =
         list(BatchesBetaTrueListParams.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: BatchesBetaTrueListParams = BatchesBetaTrueListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<BatchesBetaTrueListResponse>
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: BatchesBetaTrueListParams = BatchesBetaTrueListParams.none()
     ): CompletableFuture<BatchesBetaTrueListResponse> = list(params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(requestOptions: RequestOptions): CompletableFuture<BatchesBetaTrueListResponse> =
         list(BatchesBetaTrueListParams.none(), requestOptions)
 
@@ -95,7 +95,7 @@ interface BatchesBetaTrueServiceAsync {
         ): CompletableFuture<HttpResponseFor<BatchesBetaTrueCreateResponse>> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             params: BatchesBetaTrueCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -108,19 +108,19 @@ interface BatchesBetaTrueServiceAsync {
         fun list(): CompletableFuture<HttpResponseFor<BatchesBetaTrueListResponse>> =
             list(BatchesBetaTrueListParams.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             params: BatchesBetaTrueListParams = BatchesBetaTrueListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<BatchesBetaTrueListResponse>>
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             params: BatchesBetaTrueListParams = BatchesBetaTrueListParams.none()
         ): CompletableFuture<HttpResponseFor<BatchesBetaTrueListResponse>> =
             list(params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<BatchesBetaTrueListResponse>> =

@@ -37,7 +37,7 @@ interface CompleteServiceAsync {
     fun create(params: CompleteCreateParams): CompletableFuture<CompleteCreateResponse> =
         create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: CompleteCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -66,7 +66,7 @@ interface CompleteServiceAsync {
         ): CompletableFuture<HttpResponseFor<CompleteCreateResponse>> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             params: CompleteCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
