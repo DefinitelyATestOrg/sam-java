@@ -251,6 +251,8 @@ The SDK throws custom unchecked exception types:
 
 - [`SamIoException`](sam-java-core/src/main/kotlin/me/elborai/api/errors/SamIoException.kt): I/O networking errors.
 
+- [`SamRetryableException`](sam-java-core/src/main/kotlin/me/elborai/api/errors/SamRetryableException.kt): Generic error indicating a failure that could be retried by the client.
+
 - [`SamInvalidDataException`](sam-java-core/src/main/kotlin/me/elborai/api/errors/SamInvalidDataException.kt): Failure to interpret successfully parsed data. For example, when accessing a property that's supposed to be required, but the API unexpectedly omitted it from the response.
 
 - [`SamException`](sam-java-core/src/main/kotlin/me/elborai/api/errors/SamException.kt): Base class for all exceptions. Most errors will result in one of the previously mentioned ones, but completely generic errors may be thrown using the base class.
