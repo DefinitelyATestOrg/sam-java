@@ -1014,7 +1014,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is ProcessingStatus && value == other.value /* spotless:on */
+                return other is ProcessingStatus && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -1367,12 +1367,25 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is RequestCounts && canceled == other.canceled && errored == other.errored && expired == other.expired && processing == other.processing && succeeded == other.succeeded && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is RequestCounts &&
+                    canceled == other.canceled &&
+                    errored == other.errored &&
+                    expired == other.expired &&
+                    processing == other.processing &&
+                    succeeded == other.succeeded &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(canceled, errored, expired, processing, succeeded, additionalProperties) }
-            /* spotless:on */
+            private val hashCode: Int by lazy {
+                Objects.hash(
+                    canceled,
+                    errored,
+                    expired,
+                    processing,
+                    succeeded,
+                    additionalProperties,
+                )
+            }
 
             override fun hashCode(): Int = hashCode
 
@@ -1385,12 +1398,35 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Data && id == other.id && archivedAt == other.archivedAt && cancelInitiatedAt == other.cancelInitiatedAt && createdAt == other.createdAt && endedAt == other.endedAt && expiresAt == other.expiresAt && processingStatus == other.processingStatus && requestCounts == other.requestCounts && resultsUrl == other.resultsUrl && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Data &&
+                id == other.id &&
+                archivedAt == other.archivedAt &&
+                cancelInitiatedAt == other.cancelInitiatedAt &&
+                createdAt == other.createdAt &&
+                endedAt == other.endedAt &&
+                expiresAt == other.expiresAt &&
+                processingStatus == other.processingStatus &&
+                requestCounts == other.requestCounts &&
+                resultsUrl == other.resultsUrl &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(id, archivedAt, cancelInitiatedAt, createdAt, endedAt, expiresAt, processingStatus, requestCounts, resultsUrl, type, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                id,
+                archivedAt,
+                cancelInitiatedAt,
+                createdAt,
+                endedAt,
+                expiresAt,
+                processingStatus,
+                requestCounts,
+                resultsUrl,
+                type,
+                additionalProperties,
+            )
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -1403,12 +1439,17 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is BatchListResponse && data == other.data && firstId == other.firstId && hasMore == other.hasMore && lastId == other.lastId && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is BatchListResponse &&
+            data == other.data &&
+            firstId == other.firstId &&
+            hasMore == other.hasMore &&
+            lastId == other.lastId &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(data, firstId, hasMore, lastId, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(data, firstId, hasMore, lastId, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 
