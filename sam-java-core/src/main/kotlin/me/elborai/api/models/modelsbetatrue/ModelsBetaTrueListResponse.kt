@@ -557,12 +557,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Data && id == other.id && createdAt == other.createdAt && displayName == other.displayName && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Data &&
+                id == other.id &&
+                createdAt == other.createdAt &&
+                displayName == other.displayName &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(id, createdAt, displayName, type, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(id, createdAt, displayName, type, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -575,12 +580,17 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ModelsBetaTrueListResponse && data == other.data && firstId == other.firstId && hasMore == other.hasMore && lastId == other.lastId && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ModelsBetaTrueListResponse &&
+            data == other.data &&
+            firstId == other.firstId &&
+            hasMore == other.hasMore &&
+            lastId == other.lastId &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(data, firstId, hasMore, lastId, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(data, firstId, hasMore, lastId, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 
