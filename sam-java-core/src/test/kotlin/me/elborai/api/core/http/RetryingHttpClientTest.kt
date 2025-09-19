@@ -9,6 +9,7 @@ import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import me.elborai.api.client.okhttp.OkHttpClient
 import me.elborai.api.core.RequestOptions
+import me.elborai.api.core.Sleeper
 import me.elborai.api.errors.SamRetryableException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -294,12 +295,14 @@ internal class RetryingHttpClientTest {
                 .httpClient(failingHttpClient)
                 .maxRetries(2)
                 .sleeper(
-                    object : RetryingHttpClient.Sleeper {
+                    object : Sleeper {
 
                         override fun sleep(duration: Duration) {}
 
                         override fun sleepAsync(duration: Duration): CompletableFuture<Void> =
                             CompletableFuture.completedFuture(null)
+
+                        override fun close() {}
                     }
                 )
                 .build()
@@ -333,12 +336,14 @@ internal class RetryingHttpClientTest {
             .httpClient(httpClient)
             // Use a no-op `Sleeper` to make the test fast.
             .sleeper(
-                object : RetryingHttpClient.Sleeper {
+                object : Sleeper {
 
                     override fun sleep(duration: Duration) {}
 
                     override fun sleepAsync(duration: Duration): CompletableFuture<Void> =
                         CompletableFuture.completedFuture(null)
+
+                    override fun close() {}
                 }
             )
 

@@ -15,6 +15,7 @@ import kotlin.jvm.optionals.getOrNull
 import me.elborai.api.client.SamClientAsync
 import me.elborai.api.client.SamClientAsyncImpl
 import me.elborai.api.core.ClientOptions
+import me.elborai.api.core.Sleeper
 import me.elborai.api.core.Timeout
 import me.elborai.api.core.http.AsyncStreamResponse
 import me.elborai.api.core.http.Headers
@@ -132,6 +133,17 @@ class SamOkHttpClientAsync private constructor() {
         fun streamHandlerExecutor(streamHandlerExecutor: Executor) = apply {
             clientOptions.streamHandlerExecutor(streamHandlerExecutor)
         }
+
+        /**
+         * The interface to use for delaying execution, like during retries.
+         *
+         * This is primarily useful for using fake delays in tests.
+         *
+         * Defaults to real execution delays.
+         *
+         * This class takes ownership of the sleeper and closes it when closed.
+         */
+        fun sleeper(sleeper: Sleeper) = apply { clientOptions.sleeper(sleeper) }
 
         /**
          * The clock to use for operations that require timing, like retries.
