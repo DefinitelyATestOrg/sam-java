@@ -94,26 +94,23 @@ private constructor(
      *
      * Example with a single `user` message:
      * ```json
-     * [{ "role": "user", "content": "Hello, Claude" }]
+     * [{"role": "user", "content": "Hello, Claude"}]
      * ```
      *
      * Example with multiple conversational turns:
      * ```json
      * [
-     *   { "role": "user", "content": "Hello there." },
-     *   { "role": "assistant", "content": "Hi, I'm Claude. How can I help you?" },
-     *   { "role": "user", "content": "Can you explain LLMs in plain English?" }
+     *   {"role": "user", "content": "Hello there."},
+     *   {"role": "assistant", "content": "Hi, I'm Claude. How can I help you?"},
+     *   {"role": "user", "content": "Can you explain LLMs in plain English?"},
      * ]
      * ```
      *
      * Example with a partially-filled response from Claude:
      * ```json
      * [
-     *   {
-     *     "role": "user",
-     *     "content": "What's the Greek name for Sun? (A) Sol (B) Helios (C) Sun"
-     *   },
-     *   { "role": "assistant", "content": "The best answer is (" }
+     *   {"role": "user", "content": "What's the Greek name for Sun? (A) Sol (B) Helios (C) Sun"},
+     *   {"role": "assistant", "content": "The best answer is ("},
      * ]
      * ```
      *
@@ -121,28 +118,25 @@ private constructor(
      * where each block has a specific `type`. Using a `string` for `content` is shorthand for an
      * array of one content block of type `"text"`. The following input messages are equivalent:
      * ```json
-     * { "role": "user", "content": "Hello, Claude" }
+     * {"role": "user", "content": "Hello, Claude"}
      * ```
      * ```json
-     * { "role": "user", "content": [{ "type": "text", "text": "Hello, Claude" }] }
+     * {"role": "user", "content": [{"type": "text", "text": "Hello, Claude"}]}
      * ```
      *
      * Starting with Claude 3 models, you can also send image content blocks:
      * ```json
-     * {
-     *   "role": "user",
-     *   "content": [
-     *     {
-     *       "type": "image",
-     *       "source": {
-     *         "type": "base64",
-     *         "media_type": "image/jpeg",
-     *         "data": "/9j/4AAQSkZJRg..."
-     *       }
-     *     },
-     *     { "type": "text", "text": "What is in this image?" }
-     *   ]
-     * }
+     * {"role": "user", "content": [
+     *   {
+     *     "type": "image",
+     *     "source": {
+     *       "type": "base64",
+     *       "media_type": "image/jpeg",
+     *       "data": "/9j/4AAQSkZJRg...",
+     *     }
+     *   },
+     *   {"type": "text", "text": "What is in this image?"}
+     * ]}
      * ```
      *
      * We currently support the `base64` source type for images, and the `image/jpeg`, `image/png`,
@@ -217,9 +211,9 @@ private constructor(
      * `tool_result` content blocks.
      *
      * Each tool definition includes:
-     * - `name`: Name of the tool.
-     * - `description`: Optional, but strongly-recommended description of the tool.
-     * - `input_schema`: [JSON schema](https://json-schema.org/draft/2020-12) for the tool `input`
+     * * `name`: Name of the tool.
+     * * `description`: Optional, but strongly-recommended description of the tool.
+     * * `input_schema`: [JSON schema](https://json-schema.org/draft/2020-12) for the tool `input`
      *   shape that the model will produce in `tool_use` output content blocks.
      *
      * For example, if you defined `tools` as:
@@ -446,26 +440,23 @@ private constructor(
          *
          * Example with a single `user` message:
          * ```json
-         * [{ "role": "user", "content": "Hello, Claude" }]
+         * [{"role": "user", "content": "Hello, Claude"}]
          * ```
          *
          * Example with multiple conversational turns:
          * ```json
          * [
-         *   { "role": "user", "content": "Hello there." },
-         *   { "role": "assistant", "content": "Hi, I'm Claude. How can I help you?" },
-         *   { "role": "user", "content": "Can you explain LLMs in plain English?" }
+         *   {"role": "user", "content": "Hello there."},
+         *   {"role": "assistant", "content": "Hi, I'm Claude. How can I help you?"},
+         *   {"role": "user", "content": "Can you explain LLMs in plain English?"},
          * ]
          * ```
          *
          * Example with a partially-filled response from Claude:
          * ```json
          * [
-         *   {
-         *     "role": "user",
-         *     "content": "What's the Greek name for Sun? (A) Sol (B) Helios (C) Sun"
-         *   },
-         *   { "role": "assistant", "content": "The best answer is (" }
+         *   {"role": "user", "content": "What's the Greek name for Sun? (A) Sol (B) Helios (C) Sun"},
+         *   {"role": "assistant", "content": "The best answer is ("},
          * ]
          * ```
          *
@@ -474,28 +465,25 @@ private constructor(
          * shorthand for an array of one content block of type `"text"`. The following input
          * messages are equivalent:
          * ```json
-         * { "role": "user", "content": "Hello, Claude" }
+         * {"role": "user", "content": "Hello, Claude"}
          * ```
          * ```json
-         * { "role": "user", "content": [{ "type": "text", "text": "Hello, Claude" }] }
+         * {"role": "user", "content": [{"type": "text", "text": "Hello, Claude"}]}
          * ```
          *
          * Starting with Claude 3 models, you can also send image content blocks:
          * ```json
-         * {
-         *   "role": "user",
-         *   "content": [
-         *     {
-         *       "type": "image",
-         *       "source": {
-         *         "type": "base64",
-         *         "media_type": "image/jpeg",
-         *         "data": "/9j/4AAQSkZJRg..."
-         *       }
-         *     },
-         *     { "type": "text", "text": "What is in this image?" }
-         *   ]
-         * }
+         * {"role": "user", "content": [
+         *   {
+         *     "type": "image",
+         *     "source": {
+         *       "type": "base64",
+         *       "media_type": "image/jpeg",
+         *       "data": "/9j/4AAQSkZJRg...",
+         *     }
+         *   },
+         *   {"type": "text", "text": "What is in this image?"}
+         * ]}
          * ```
          *
          * We currently support the `base64` source type for images, and the `image/jpeg`,
@@ -654,9 +642,9 @@ private constructor(
          * model using `tool_result` content blocks.
          *
          * Each tool definition includes:
-         * - `name`: Name of the tool.
-         * - `description`: Optional, but strongly-recommended description of the tool.
-         * - `input_schema`: [JSON schema](https://json-schema.org/draft/2020-12) for the tool
+         * * `name`: Name of the tool.
+         * * `description`: Optional, but strongly-recommended description of the tool.
+         * * `input_schema`: [JSON schema](https://json-schema.org/draft/2020-12) for the tool
          *   `input` shape that the model will produce in `tool_use` output content blocks.
          *
          * For example, if you defined `tools` as:
@@ -971,26 +959,23 @@ private constructor(
          *
          * Example with a single `user` message:
          * ```json
-         * [{ "role": "user", "content": "Hello, Claude" }]
+         * [{"role": "user", "content": "Hello, Claude"}]
          * ```
          *
          * Example with multiple conversational turns:
          * ```json
          * [
-         *   { "role": "user", "content": "Hello there." },
-         *   { "role": "assistant", "content": "Hi, I'm Claude. How can I help you?" },
-         *   { "role": "user", "content": "Can you explain LLMs in plain English?" }
+         *   {"role": "user", "content": "Hello there."},
+         *   {"role": "assistant", "content": "Hi, I'm Claude. How can I help you?"},
+         *   {"role": "user", "content": "Can you explain LLMs in plain English?"},
          * ]
          * ```
          *
          * Example with a partially-filled response from Claude:
          * ```json
          * [
-         *   {
-         *     "role": "user",
-         *     "content": "What's the Greek name for Sun? (A) Sol (B) Helios (C) Sun"
-         *   },
-         *   { "role": "assistant", "content": "The best answer is (" }
+         *   {"role": "user", "content": "What's the Greek name for Sun? (A) Sol (B) Helios (C) Sun"},
+         *   {"role": "assistant", "content": "The best answer is ("},
          * ]
          * ```
          *
@@ -999,28 +984,25 @@ private constructor(
          * shorthand for an array of one content block of type `"text"`. The following input
          * messages are equivalent:
          * ```json
-         * { "role": "user", "content": "Hello, Claude" }
+         * {"role": "user", "content": "Hello, Claude"}
          * ```
          * ```json
-         * { "role": "user", "content": [{ "type": "text", "text": "Hello, Claude" }] }
+         * {"role": "user", "content": [{"type": "text", "text": "Hello, Claude"}]}
          * ```
          *
          * Starting with Claude 3 models, you can also send image content blocks:
          * ```json
-         * {
-         *   "role": "user",
-         *   "content": [
-         *     {
-         *       "type": "image",
-         *       "source": {
-         *         "type": "base64",
-         *         "media_type": "image/jpeg",
-         *         "data": "/9j/4AAQSkZJRg..."
-         *       }
-         *     },
-         *     { "type": "text", "text": "What is in this image?" }
-         *   ]
-         * }
+         * {"role": "user", "content": [
+         *   {
+         *     "type": "image",
+         *     "source": {
+         *       "type": "base64",
+         *       "media_type": "image/jpeg",
+         *       "data": "/9j/4AAQSkZJRg...",
+         *     }
+         *   },
+         *   {"type": "text", "text": "What is in this image?"}
+         * ]}
          * ```
          *
          * We currently support the `base64` source type for images, and the `image/jpeg`,
@@ -1096,9 +1078,9 @@ private constructor(
          * model using `tool_result` content blocks.
          *
          * Each tool definition includes:
-         * - `name`: Name of the tool.
-         * - `description`: Optional, but strongly-recommended description of the tool.
-         * - `input_schema`: [JSON schema](https://json-schema.org/draft/2020-12) for the tool
+         * * `name`: Name of the tool.
+         * * `description`: Optional, but strongly-recommended description of the tool.
+         * * `input_schema`: [JSON schema](https://json-schema.org/draft/2020-12) for the tool
          *   `input` shape that the model will produce in `tool_use` output content blocks.
          *
          * For example, if you defined `tools` as:
@@ -1270,26 +1252,23 @@ private constructor(
              *
              * Example with a single `user` message:
              * ```json
-             * [{ "role": "user", "content": "Hello, Claude" }]
+             * [{"role": "user", "content": "Hello, Claude"}]
              * ```
              *
              * Example with multiple conversational turns:
              * ```json
              * [
-             *   { "role": "user", "content": "Hello there." },
-             *   { "role": "assistant", "content": "Hi, I'm Claude. How can I help you?" },
-             *   { "role": "user", "content": "Can you explain LLMs in plain English?" }
+             *   {"role": "user", "content": "Hello there."},
+             *   {"role": "assistant", "content": "Hi, I'm Claude. How can I help you?"},
+             *   {"role": "user", "content": "Can you explain LLMs in plain English?"},
              * ]
              * ```
              *
              * Example with a partially-filled response from Claude:
              * ```json
              * [
-             *   {
-             *     "role": "user",
-             *     "content": "What's the Greek name for Sun? (A) Sol (B) Helios (C) Sun"
-             *   },
-             *   { "role": "assistant", "content": "The best answer is (" }
+             *   {"role": "user", "content": "What's the Greek name for Sun? (A) Sol (B) Helios (C) Sun"},
+             *   {"role": "assistant", "content": "The best answer is ("},
              * ]
              * ```
              *
@@ -1298,28 +1277,25 @@ private constructor(
              * shorthand for an array of one content block of type `"text"`. The following input
              * messages are equivalent:
              * ```json
-             * { "role": "user", "content": "Hello, Claude" }
+             * {"role": "user", "content": "Hello, Claude"}
              * ```
              * ```json
-             * { "role": "user", "content": [{ "type": "text", "text": "Hello, Claude" }] }
+             * {"role": "user", "content": [{"type": "text", "text": "Hello, Claude"}]}
              * ```
              *
              * Starting with Claude 3 models, you can also send image content blocks:
              * ```json
-             * {
-             *   "role": "user",
-             *   "content": [
-             *     {
-             *       "type": "image",
-             *       "source": {
-             *         "type": "base64",
-             *         "media_type": "image/jpeg",
-             *         "data": "/9j/4AAQSkZJRg..."
-             *       }
-             *     },
-             *     { "type": "text", "text": "What is in this image?" }
-             *   ]
-             * }
+             * {"role": "user", "content": [
+             *   {
+             *     "type": "image",
+             *     "source": {
+             *       "type": "base64",
+             *       "media_type": "image/jpeg",
+             *       "data": "/9j/4AAQSkZJRg...",
+             *     }
+             *   },
+             *   {"type": "text", "text": "What is in this image?"}
+             * ]}
              * ```
              *
              * We currently support the `base64` source type for images, and the `image/jpeg`,
@@ -1492,9 +1468,9 @@ private constructor(
              * to the model using `tool_result` content blocks.
              *
              * Each tool definition includes:
-             * - `name`: Name of the tool.
-             * - `description`: Optional, but strongly-recommended description of the tool.
-             * - `input_schema`: [JSON schema](https://json-schema.org/draft/2020-12) for the tool
+             * * `name`: Name of the tool.
+             * * `description`: Optional, but strongly-recommended description of the tool.
+             * * `input_schema`: [JSON schema](https://json-schema.org/draft/2020-12) for the tool
              *   `input` shape that the model will produce in `tool_use` output content blocks.
              *
              * For example, if you defined `tools` as:
