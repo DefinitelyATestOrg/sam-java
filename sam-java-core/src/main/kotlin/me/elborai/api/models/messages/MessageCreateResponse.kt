@@ -78,7 +78,7 @@ private constructor(
      *
      * Example:
      * ```json
-     * [{ "type": "text", "text": "Hi, I'm Claude." }]
+     * [{"type": "text", "text": "Hi, I'm Claude."}]
      * ```
      *
      * If the request input `messages` ended with an `assistant` turn, then the response `content`
@@ -87,17 +87,14 @@ private constructor(
      * For example, if the input `messages` were:
      * ```json
      * [
-     *   {
-     *     "role": "user",
-     *     "content": "What's the Greek name for Sun? (A) Sol (B) Helios (C) Sun"
-     *   },
-     *   { "role": "assistant", "content": "The best answer is (" }
+     *   {"role": "user", "content": "What's the Greek name for Sun? (A) Sol (B) Helios (C) Sun"},
+     *   {"role": "assistant", "content": "The best answer is ("}
      * ]
      * ```
      *
      * Then the response `content` might be:
      * ```json
-     * [{ "type": "text", "text": "B)" }]
+     * [{"type": "text", "text": "B)"}]
      * ```
      *
      * @throws SamInvalidDataException if the JSON field has an unexpected type or is unexpectedly
@@ -132,10 +129,10 @@ private constructor(
      * The reason that we stopped.
      *
      * This may be one the following values:
-     * - `"end_turn"`: the model reached a natural stopping point
-     * - `"max_tokens"`: we exceeded the requested `max_tokens` or the model's maximum
-     * - `"stop_sequence"`: one of your provided custom `stop_sequences` was generated
-     * - `"tool_use"`: the model invoked one or more tools
+     * * `"end_turn"`: the model reached a natural stopping point
+     * * `"max_tokens"`: we exceeded the requested `max_tokens` or the model's maximum
+     * * `"stop_sequence"`: one of your provided custom `stop_sequences` was generated
+     * * `"tool_use"`: the model invoked one or more tools
      *
      * In non-streaming mode this value is always non-null. In streaming mode, it is null in the
      * `message_start` event and non-null otherwise.
@@ -315,7 +312,7 @@ private constructor(
          *
          * Example:
          * ```json
-         * [{ "type": "text", "text": "Hi, I'm Claude." }]
+         * [{"type": "text", "text": "Hi, I'm Claude."}]
          * ```
          *
          * If the request input `messages` ended with an `assistant` turn, then the response
@@ -325,17 +322,14 @@ private constructor(
          * For example, if the input `messages` were:
          * ```json
          * [
-         *   {
-         *     "role": "user",
-         *     "content": "What's the Greek name for Sun? (A) Sol (B) Helios (C) Sun"
-         *   },
-         *   { "role": "assistant", "content": "The best answer is (" }
+         *   {"role": "user", "content": "What's the Greek name for Sun? (A) Sol (B) Helios (C) Sun"},
+         *   {"role": "assistant", "content": "The best answer is ("}
          * ]
          * ```
          *
          * Then the response `content` might be:
          * ```json
-         * [{ "type": "text", "text": "B)" }]
+         * [{"type": "text", "text": "B)"}]
          * ```
          */
         fun content(content: List<Content>) = content(JsonField.of(content))
@@ -416,10 +410,10 @@ private constructor(
          * The reason that we stopped.
          *
          * This may be one the following values:
-         * - `"end_turn"`: the model reached a natural stopping point
-         * - `"max_tokens"`: we exceeded the requested `max_tokens` or the model's maximum
-         * - `"stop_sequence"`: one of your provided custom `stop_sequences` was generated
-         * - `"tool_use"`: the model invoked one or more tools
+         * * `"end_turn"`: the model reached a natural stopping point
+         * * `"max_tokens"`: we exceeded the requested `max_tokens` or the model's maximum
+         * * `"stop_sequence"`: one of your provided custom `stop_sequences` was generated
+         * * `"tool_use"`: the model invoked one or more tools
          *
          * In non-streaming mode this value is always non-null. In streaming mode, it is null in the
          * `message_start` event and non-null otherwise.
@@ -3227,10 +3221,10 @@ private constructor(
      * The reason that we stopped.
      *
      * This may be one the following values:
-     * - `"end_turn"`: the model reached a natural stopping point
-     * - `"max_tokens"`: we exceeded the requested `max_tokens` or the model's maximum
-     * - `"stop_sequence"`: one of your provided custom `stop_sequences` was generated
-     * - `"tool_use"`: the model invoked one or more tools
+     * * `"end_turn"`: the model reached a natural stopping point
+     * * `"max_tokens"`: we exceeded the requested `max_tokens` or the model's maximum
+     * * `"stop_sequence"`: one of your provided custom `stop_sequences` was generated
+     * * `"tool_use"`: the model invoked one or more tools
      *
      * In non-streaming mode this value is always non-null. In streaming mode, it is null in the
      * `message_start` event and non-null otherwise.
