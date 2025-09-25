@@ -21,6 +21,7 @@ import me.elborai.api.core.toImmutable
 import me.elborai.api.errors.SamInvalidDataException
 
 class ModelListResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val data: JsonField<List<Data>>,
     private val firstId: JsonField<String>,
@@ -283,6 +284,7 @@ private constructor(
             (if (lastId.asKnown().isPresent) 1 else 0)
 
     class Data
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val id: JsonField<String>,
         private val createdAt: JsonField<OffsetDateTime>,

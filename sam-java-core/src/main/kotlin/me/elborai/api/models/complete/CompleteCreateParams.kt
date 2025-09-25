@@ -642,6 +642,7 @@ private constructor(
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val maxTokensToSample: JsonField<Long>,
         private val model: JsonField<String>,
@@ -1242,6 +1243,7 @@ private constructor(
 
     /** An object describing metadata about the request. */
     class Metadata
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val userId: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
