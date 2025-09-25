@@ -35,6 +35,7 @@ import me.elborai.api.errors.SamInvalidDataException
  * whole.
  */
 class BatchResultsBetaResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val customId: JsonField<String>,
     private val result: JsonField<Result>,
@@ -500,6 +501,7 @@ private constructor(
         }
 
         class Succeeded
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val message: JsonField<Message>,
             private val type: JsonValue,
@@ -681,6 +683,7 @@ private constructor(
                     type.let { if (it == JsonValue.from("succeeded")) 1 else 0 }
 
             class Message
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
             private constructor(
                 private val id: JsonField<String>,
                 private val content: JsonField<List<Content>>,
@@ -1531,6 +1534,7 @@ private constructor(
                     }
 
                     class Text
+                    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                     private constructor(
                         private val citations: JsonField<List<Citation>>,
                         private val text: JsonField<String>,
@@ -2054,6 +2058,7 @@ private constructor(
                             }
 
                             class CharLocation
+                            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                             private constructor(
                                 private val citedText: JsonField<String>,
                                 private val documentIndex: JsonField<Long>,
@@ -2480,6 +2485,7 @@ private constructor(
                             }
 
                             class PageLocation
+                            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                             private constructor(
                                 private val citedText: JsonField<String>,
                                 private val documentIndex: JsonField<Long>,
@@ -2906,6 +2912,7 @@ private constructor(
                             }
 
                             class ContentBlockLocation
+                            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                             private constructor(
                                 private val citedText: JsonField<String>,
                                 private val documentIndex: JsonField<Long>,
@@ -3359,6 +3366,7 @@ private constructor(
                     }
 
                     class ToolUse
+                    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                     private constructor(
                         private val id: JsonField<String>,
                         private val input: JsonValue,
@@ -3616,6 +3624,7 @@ private constructor(
                     }
 
                     class Thinking
+                    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                     private constructor(
                         private val signature: JsonField<String>,
                         private val thinking: JsonField<String>,
@@ -3867,6 +3876,7 @@ private constructor(
                     }
 
                     class RedactedThinking
+                    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                     private constructor(
                         private val data: JsonField<String>,
                         private val type: JsonValue,
@@ -4252,6 +4262,7 @@ private constructor(
                  * `cache_creation_input_tokens`, and `cache_read_input_tokens`.
                  */
                 class Usage
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val cacheCreationInputTokens: JsonField<Long>,
                     private val cacheReadInputTokens: JsonField<Long>,
@@ -4663,6 +4674,7 @@ private constructor(
         }
 
         class Errored
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val error: JsonField<Error>,
             private val type: JsonValue,
@@ -4842,6 +4854,7 @@ private constructor(
                     type.let { if (it == JsonValue.from("errored")) 1 else 0 }
 
             class Error
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
             private constructor(
                 private val error: JsonField<InnerError>,
                 private val type: JsonValue,
@@ -5563,6 +5576,7 @@ private constructor(
                     }
 
                     class InvalidRequestError
+                    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                     private constructor(
                         private val message: JsonField<String>,
                         private val type: JsonValue,
@@ -5776,6 +5790,7 @@ private constructor(
                     }
 
                     class AuthenticationError
+                    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                     private constructor(
                         private val message: JsonField<String>,
                         private val type: JsonValue,
@@ -5989,6 +6004,7 @@ private constructor(
                     }
 
                     class BillingError
+                    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                     private constructor(
                         private val message: JsonField<String>,
                         private val type: JsonValue,
@@ -6200,6 +6216,7 @@ private constructor(
                     }
 
                     class PermissionError
+                    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                     private constructor(
                         private val message: JsonField<String>,
                         private val type: JsonValue,
@@ -6411,6 +6428,7 @@ private constructor(
                     }
 
                     class NotFoundError
+                    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                     private constructor(
                         private val message: JsonField<String>,
                         private val type: JsonValue,
@@ -6622,6 +6640,7 @@ private constructor(
                     }
 
                     class RateLimitError
+                    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                     private constructor(
                         private val message: JsonField<String>,
                         private val type: JsonValue,
@@ -6833,6 +6852,7 @@ private constructor(
                     }
 
                     class TimeoutError
+                    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                     private constructor(
                         private val message: JsonField<String>,
                         private val type: JsonValue,
@@ -7044,6 +7064,7 @@ private constructor(
                     }
 
                     class ApiError
+                    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                     private constructor(
                         private val message: JsonField<String>,
                         private val type: JsonValue,
@@ -7253,6 +7274,7 @@ private constructor(
                     }
 
                     class OverloadedError
+                    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                     private constructor(
                         private val message: JsonField<String>,
                         private val type: JsonValue,

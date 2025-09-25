@@ -18,6 +18,7 @@ import me.elborai.api.core.checkRequired
 import me.elborai.api.errors.SamInvalidDataException
 
 class CompleteCreateResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val completion: JsonField<String>,
