@@ -2560,6 +2560,13 @@ private constructor(
              */
             fun id(): String = id.getRequired("id")
 
+            /**
+             * This arbitrary value can be deserialized into a custom type using the `convert`
+             * method:
+             * ```java
+             * MyClass myObject = toolUse.input().convert(MyClass.class);
+             * ```
+             */
             @JsonProperty("input") @ExcludeMissing fun _input(): JsonValue = input
 
             /**
