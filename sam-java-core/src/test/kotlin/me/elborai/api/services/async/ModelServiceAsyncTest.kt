@@ -1,0 +1,83 @@
+// File generated from our OpenAPI spec by Stainless.
+
+package me.elborai.api.services.async
+
+import me.elborai.api.TestServerExtension
+import me.elborai.api.client.okhttp.SamOkHttpClientAsync
+import me.elborai.api.models.models.ModelListParams
+import me.elborai.api.models.models.ModelRetrieveBetaParams
+import me.elborai.api.models.models.ModelRetrieveParams
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+
+@ExtendWith(TestServerExtension::class)
+internal class ModelServiceAsyncTest {
+
+    @Test
+    fun retrieve() {
+        val client =
+            SamOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val modelServiceAsync = client.models()
+
+        val modelFuture =
+            modelServiceAsync.retrieve(
+                ModelRetrieveParams.builder()
+                    .modelId("model_id")
+                    .anthropicVersion("anthropic-version")
+                    .xApiKey("x-api-key")
+                    .build()
+            )
+
+        val model = modelFuture.get()
+        model.validate()
+    }
+
+    @Test
+    fun list() {
+        val client =
+            SamOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val modelServiceAsync = client.models()
+
+        val modelsFuture =
+            modelServiceAsync.list(
+                ModelListParams.builder()
+                    .afterId("after_id")
+                    .beforeId("before_id")
+                    .limit(1L)
+                    .anthropicVersion("anthropic-version")
+                    .xApiKey("x-api-key")
+                    .build()
+            )
+
+        val models = modelsFuture.get()
+        models.validate()
+    }
+
+    @Test
+    fun retrieveBeta() {
+        val client =
+            SamOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val modelServiceAsync = client.models()
+
+        val responseFuture =
+            modelServiceAsync.retrieveBeta(
+                ModelRetrieveBetaParams.builder()
+                    .modelId("model_id")
+                    .anthropicVersion("anthropic-version")
+                    .xApiKey("x-api-key")
+                    .build()
+            )
+
+        val response = responseFuture.get()
+        response.validate()
+    }
+}
